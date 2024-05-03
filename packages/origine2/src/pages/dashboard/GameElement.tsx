@@ -5,7 +5,7 @@ import { setDashboardShow, setEditingGame } from "../../store/statusReducer";
 import { useValue } from "../../hooks/useValue";
 import useVarTrans from "@/hooks/useVarTrans";
 import { GameInfo } from "./DashBoard";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { api } from "@/api";
 import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Input, Menu, MenuButton, MenuItem, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
 import { Delete24Filled, Delete24Regular, FolderOpen24Filled, FolderOpen24Regular, MoreVertical24Filled, MoreVertical24Regular, Open24Filled, Open24Regular, Rename24Filled, Rename24Regular, bundleIcon } from "@fluentui/react-icons";

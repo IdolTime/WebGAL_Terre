@@ -16,15 +16,15 @@ export function ExportTab() {
 
   return <TopbarTab>
     <TabItem title={t("$导出")}>
-      <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsWeb(gameName)}
+      {/* <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsWeb(gameName)}
         icon={<GlobeIcon aria-label="Export Web" className={s.iconColor}/>}
-        text={t('commandBar.items.release.items.web')}/>
+        text={t('commandBar.items.release.items.web')}/> */}
       <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsExe(gameName)}
         icon={<DesktopIcon aria-label="Export Exe" className={s.iconColor}/>}
         text={t('commandBar.items.release.items.exe')}/>
-      <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsAndroid(gameName)}
+      {/* <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsAndroid(gameName)}
         icon={<img src={AndroidIcon} className={s.iconColor} alt="Export Android"/>}
-        text={t('commandBar.items.release.items.android')}/>
+        text={t('commandBar.items.release.items.android')}/> */}
     </TabItem>
   </TopbarTab>;
 }

@@ -84,6 +84,7 @@ export default function DashBoard() {
 
   useEffect(() => {
     refreashDashboard();
+
   }, []);
 
   const refreash = () => {
@@ -95,8 +96,8 @@ export default function DashBoard() {
     { isDashboardShow &&
       <div className={styles.dashboard_container}>
         <div className={styles.topBar}>
-        WebGAL Terre
-          <Toolbar>
+        idoltime
+          {/* <Toolbar>
             <About />
             <Menu>
               <MenuTrigger>
@@ -110,7 +111,7 @@ export default function DashBoard() {
                 </MenuList>
               </MenuPopover>
             </Menu>
-          </Toolbar>
+          </Toolbar> */}
         </div>
         <div className={styles.dashboard_main}>
           <Message ref={messageRef} />
