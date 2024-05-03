@@ -11,9 +11,9 @@ import { RootState } from "../../store/origineStore";
 import useTrans from "@/hooks/useTrans";
 import useLanguage from "@/hooks/useLanguage";
 import { language } from "@/store/statusReducer";
-import About from "./About";
+// import About from "./About";
 import { WebgalParser } from "../editor/GraphicalEditor/parser";
-import { Card, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, Toolbar, ToolbarButton } from "@fluentui/react-components";
+// import { Card, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, Toolbar, ToolbarButton } from "@fluentui/react-components";
 import { LocalLanguage24Filled, LocalLanguage24Regular, bundleIcon } from "@fluentui/react-icons";
 
 // 返回的文件信息（单个）
