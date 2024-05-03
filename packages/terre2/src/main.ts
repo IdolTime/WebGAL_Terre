@@ -17,8 +17,8 @@ async function bootstrap() {
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
   const config = new DocumentBuilder()
-    .setTitle('idoltime API')
-    .setDescription('API Refrence of idoltime Editor')
+    .setTitle('IdolTime API')
+    .setDescription('API Refrence of IdolTime Editor')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -27,7 +27,7 @@ async function bootstrap() {
 }
 
 bootstrap().then(() => {
-  console.log(`idoltime ${version_number} starting at ${process.cwd()}`);
+  console.log(`IdolTime ${version_number} starting at ${process.cwd()}`);
   if ((process?.env?.NODE_ENV ?? '') !== 'development')
     _open(`http://localhost:${WEBGAL_PORT + 1}`);
 });

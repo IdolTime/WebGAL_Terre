@@ -3,6 +3,6 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AppService {
   getApiTest() {
-    return 'idoltime Application API Test OK';
+    return 'IdolTime Application API Test OK';
   }
 }

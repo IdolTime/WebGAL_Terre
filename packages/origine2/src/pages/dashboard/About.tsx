@@ -70,7 +70,7 @@ const About: React.FunctionComponent = () => {
       <PopoverSurface>
         <div>
           <Text as='h1' block size={500}>
-            idoltime
+            IdolTime
           </Text>
           <Text as='b' block>
             <p>{t('about.slogan')}</p>

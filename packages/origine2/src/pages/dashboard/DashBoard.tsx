@@ -96,7 +96,7 @@ export default function DashBoard() {
     { isDashboardShow &&
       <div className={styles.dashboard_container}>
         <div className={styles.topBar}>
-        idoltime
+        IdolTime
           {/* <Toolbar>
             <About />
             <Menu>
