@@ -1,9 +1,2 @@
 ; 初始场景，以及特效演示
-bgm:s_Title.mp3;
-unlockBgm:s_Title.mp3 -name=雲を追いかけて;
-intro:你好|欢迎来到 IdolTime 的世界;
-changeBg:bg.png -next;
-unlockCg:bg.png -name=良夜; // 解锁CG并赋予名称
-changeFigure:stand.png -left -next;
-setAnimation:enter-from-left -target=fig-left -next;
-IdolTime:欢迎使用 IdolTime -v1.wav;
+
