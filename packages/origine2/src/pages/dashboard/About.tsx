@@ -70,7 +70,7 @@ const About: React.FunctionComponent = () => {
       <PopoverSurface>
         <div>
           <Text as='h1' block size={500}>
-            WebGAL Terre
+            idoltime
           </Text>
           <Text as='b' block>
             <p>{t('about.slogan')}</p>
@@ -90,26 +90,8 @@ const About: React.FunctionComponent = () => {
                   </Link>
                 }
               </p>
-              <hr />
-              <div >
-                Powered by <Link href="https://github.com/OpenWebGAL" target="_blank" >WebGAL</Link> Framework
-              </div>
-              <div>
-                Made with ❤ by <Link href="https://github.com/MakinoharaShoko" target="_blank" >Mahiru</Link>
-              </div>
             </small>
           </Text>
-          <div style={{display:'flex', gap:'0.5rem', marginTop:'1rem'}}>
-            <Link href="https://openwebgal.com/" target="_blank">
-              {t('about.homePage')}
-            </Link>
-            <Link href="https://docs.openwebgal.com/" target="_blank">
-              {t('about.document')}
-            </Link>
-            <Link href="https://github.com/MakinoharaShoko/WebGAL_Terre" target="_blank">
-              GitHub
-            </Link>
-          </div>
         </div>
       </PopoverSurface>
     </Popover>

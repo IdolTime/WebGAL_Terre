@@ -88,8 +88,8 @@ export default function TopBar() {
         onClick={() => handleTabClick(TopbarTabs.View)}/>
       <TopbarTabButton text={t("设置")} isActive={currentTopbarTab === TopbarTabs.Settings}
         onClick={() => handleTabClick(TopbarTabs.Settings)}/>
-      <TopbarTabButton text={t("帮助")} isActive={currentTopbarTab === TopbarTabs.Help}
-        onClick={() => handleTabClick(TopbarTabs.Help)}/>
+      {/* <TopbarTabButton text={t("帮助")} isActive={currentTopbarTab === TopbarTabs.Help}
+        onClick={() => handleTabClick(TopbarTabs.Help)}/> */}
       <TopbarTabButton text={t("导出")} isActive={currentTopbarTab === TopbarTabs.Export}
         onClick={() => handleTabClick(TopbarTabs.Export)}/>
       {isShowAddSceneTab &&
@@ -99,7 +99,7 @@ export default function TopBar() {
         {editingGame}
       </div>
       <Toolbar>
-        <Menu>
+        {/* <Menu>
           <MenuTrigger>
             <ToolbarButton icon={isAutoHideToolbar ? <EyeOffIcon /> : <PaddingTopIcon />} />
           </MenuTrigger>
@@ -109,27 +109,20 @@ export default function TopBar() {
               <MenuItem icon={<EyeOffIcon />} onClick={setAutoHideToolbarCallback}>{t('自动隐藏功能区')??''}</MenuItem>
             </MenuList>
           </MenuPopover>
-        </Menu>
-        <ToolbarButton 
+        </Menu> */}
+        {/* <ToolbarButton 
           icon={<img src={TerreIcon} height={20} width={20} alt="WebGAL Homepage"/>} 
           onClick={() => window.open("https://openwebgal.com", "_blank")}
           style={{fontWeight: 'normal', fontSize: '14px'}}
         >
           {t("主页")}
-        </ToolbarButton>
-        <ToolbarButton 
-          icon={<img src={GithubIcon} height={20} width={20} alt="GitHub Repo"/>} 
-          onClick={() => window.open("https://github.com/OpenWebGAL/WebGAL_Terre", "_blank")}
-          style={{fontWeight: 'normal', fontSize: '14px'}}
-        >
-          {t("源代码")}
-        </ToolbarButton>
+        </ToolbarButton> */}
       </Toolbar>
     </div>
     {currentTopbarTab === TopbarTabs.Config && <ConfigTab/>}
     {currentTopbarTab === TopbarTabs.View && <ViewTab/>}
     {currentTopbarTab === TopbarTabs.Settings && <SettingsTab/>}
-    {currentTopbarTab === TopbarTabs.Help && <HelpTab/>}
+    {/* {currentTopbarTab === TopbarTabs.Help && <HelpTab/>} */}
     {currentTopbarTab === TopbarTabs.Export && <ExportTab/>}
     {currentTopbarTab === TopbarTabs.AddSentence && <AddSentenceTab/>}
   </div>;

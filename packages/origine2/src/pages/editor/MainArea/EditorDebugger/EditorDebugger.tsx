@@ -59,7 +59,7 @@ export default function EditorDebugger() {
 
   const webgalConsole = <div>
     <Terminal
-      prompt="WebGAL Script >" pt={{
+      prompt="Idoltime Script >" pt={{
         root: {className: s.root},
         prompt: {className: s.prompt},
         command: {className: s.command},

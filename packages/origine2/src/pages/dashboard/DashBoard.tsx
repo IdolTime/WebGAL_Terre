@@ -11,9 +11,9 @@ import { RootState } from "../../store/origineStore";
 import useTrans from "@/hooks/useTrans";
 import useLanguage from "@/hooks/useLanguage";
 import { language } from "@/store/statusReducer";
-import About from "./About";
+// import About from "./About";
 import { WebgalParser } from "../editor/GraphicalEditor/parser";
-import { Card, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, Toolbar, ToolbarButton } from "@fluentui/react-components";
+// import { Card, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, Toolbar, ToolbarButton } from "@fluentui/react-components";
 import { LocalLanguage24Filled, LocalLanguage24Regular, bundleIcon } from "@fluentui/react-icons";
 
 // 返回的文件信息（单个）
@@ -84,6 +84,7 @@ export default function DashBoard() {
 
   useEffect(() => {
     refreashDashboard();
+
   }, []);
 
   const refreash = () => {
@@ -95,8 +96,8 @@ export default function DashBoard() {
     { isDashboardShow &&
       <div className={styles.dashboard_container}>
         <div className={styles.topBar}>
-        WebGAL Terre
-          <Toolbar>
+        idoltime
+          {/* <Toolbar>
             <About />
             <Menu>
               <MenuTrigger>
@@ -110,7 +111,7 @@ export default function DashBoard() {
                 </MenuList>
               </MenuPopover>
             </Menu>
-          </Toolbar>
+          </Toolbar> */}
         </div>
         <div className={styles.dashboard_main}>
           <Message ref={messageRef} />
