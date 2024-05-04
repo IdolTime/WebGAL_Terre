@@ -20,6 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "pkg": "cd dist && pkg main.js -o WebGAL_Terre",
+    "replace": "rcedit dist/WebGAL_Terre.exe --set-icon ./assets/icons/icon.png",
     "pkg:linux-arm64": "cd dist && pkg main.js -o WebGAL_Terre -t node18-linux-arm64"
   },
   "dependencies": {
@@ -54,6 +55,7 @@
     "jest": "28.0.3",
     "pkg": "^5.8.0",
     "prettier": "^2.3.2",
+    "rcedit": "^4.0.1",
     "source-map-support": "^0.5.20",
     "supertest": "^6.1.3",
     "ts-jest": "28.0.1",
