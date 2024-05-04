@@ -20,7 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "pkg": "cd dist && pkg main.js -o WebGAL_Terre",
-    "replace": "rcedit dist/WebGAL_Terre.exe --set-icon ./assets/icons/icon.png",
+    "replace": "node replace.js",
     "pkg:linux-arm64": "cd dist && pkg main.js -o WebGAL_Terre -t node18-linux-arm64"
   },
   "dependencies": {
