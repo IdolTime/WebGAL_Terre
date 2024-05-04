@@ -1,5 +1,5 @@
 const rcedit = require('rcedit');
 
-rcedit('./dist/WebGAL_Terre.exe', {
+rcedit('./dist/IdolTime_Editor.exe', {
     icon: './assets/icons/icon.ico',
 })

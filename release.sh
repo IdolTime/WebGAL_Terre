@@ -1,4 +1,4 @@
-echo "Welcome to build WebGAL Terre, the editor of WebGAL platform."
+echo "Welcome to build IdolTime Editor, the editor of IdolTime."
 # 安装依赖
 yarn install --frozen-lockfile --network-timeout=300000
 
@@ -13,8 +13,8 @@ yarn run build
 yarn run pkg
 yarn run replace
 cd dist
-cp -r WebGAL_Terre.exe  ../../../release
-rm WebGAL_Terre.exe
+cp -r IdolTime_Editor.exe  ../../../release
+rm IdolTime_Editor.exe
 cd ../
 mkdir Exported_Games
 cp -r public assets Exported_Games ../../release
@@ -56,4 +56,4 @@ rm -rf assets/templates/WebGAL_Android_Template/.gitattributes
 rm -rf assets/templates/WebGAL_Android_Template/app/src/main/assets/webgal/.gitkeep
 rm -rf assets/templates/WebGAL_Android_Template/app/src/main/java/com
 
-echo "WebGAL Terre is now ready to be deployed."
+echo "IdolTime Editor is now ready to be deployed."

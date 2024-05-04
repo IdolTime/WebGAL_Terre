@@ -1,4 +1,4 @@
-echo "Welcome to build WebGAL Terre, the editor of WebGAL platform."
+echo "Welcome to build IdolTime Editor, the editor of IdolTime."
 # 安装依赖
 yarn install --frozen-lockfile --network-timeout=300000
 
@@ -12,8 +12,8 @@ cd packages/terre2
 yarn run build
 yarn run pkg
 cd dist
-cp -r WebGAL_Terre  ../../../release
-rm WebGAL_Terre
+cp -r IdolTime_Editor  ../../../release
+rm IdolTime_Editor
 cd ../
 mkdir Exported_Games
 cp -r public assets Exported_Games ../../release
@@ -66,15 +66,15 @@ mv release-mac release
 cd release
 
 # 写脚本
-echo 'cd "$(dirname "$0")"' >> run-webgal-on-mac.command
-echo 'cd WebGAL' >> run-webgal-on-mac.command
-echo './WebGAL_Terre' >> run-webgal-on-mac.command
-chmod +x run-webgal-on-mac.command
+echo 'cd "$(dirname "$0")"' >> run-idoltime-on-mac.command
+echo 'cd WebGAL' >> run-idoltime-on-mac.command
+echo './IdolTime_Editor' >> run-idoltime-on-mac.command
+chmod +x run-idoltime-on-mac.command
 
 # readme
-echo '你需要在本目录下执行 "chmod -R +x ." 才能正确使用 WebGAL Terre' >> readme.txt
-echo 'You need to execute "chmod -R +x ." in this directory to use WebGAL Terre correctly' >> readme.txt
-echo 'WebGAL Terre を正しく使用するには、このディレクトリで "chmod -R +x ." を実行する必要があります。' >> readme.txt
+echo '你需要在本目录下执行 "chmod -R +x ." 才能正确使用 IdolTime Editor' >> readme.txt
+echo 'You need to execute "chmod -R +x ." in this directory to use IdolTime Editor correctly' >> readme.txt
+echo 'IdolTime Editor を正しく使用するには、このディレクトリで "chmod -R +x ." を実行する必要があります。' >> readme.txt
 chmod -R +x .
 
-echo "WebGAL Terre is now ready to be deployed."
+echo "IdolTime Editor is now ready to be deployed."
