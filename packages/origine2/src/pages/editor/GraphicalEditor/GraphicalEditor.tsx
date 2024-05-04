@@ -60,6 +60,7 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
   function updateSentenceByIndex(newSentence: string, updateIndex: number) {
     const arr = splitToArray(sceneText.value);
     arr[updateIndex] = newSentence;
+    // debugger
     submitSceneAndUpdate(mergeToString(arr), updateIndex);
   }
 
@@ -217,6 +218,7 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
                             </div>
                           </div>
                           {showSentence.value[i] && <SentenceEditor sentence={sentence} index={index} onSubmit={(newSentence) => {
+                            console.log('newSentence1231232312', newSentence);
                             updateSentenceByIndex(newSentence, i);
                           }}/>}
                         </div>
