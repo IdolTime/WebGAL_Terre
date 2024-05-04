@@ -212,13 +212,13 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
                                 <Play strokeWidth={3} style={{padding: "2px 4px 0 0"}} theme="outline" size="14"
                                   fill="#333"/>
                                 <div>
-                                  {t("$执行到此句123")}
+                                  {t("$执行到此句")}
                                 </div>
                               </div>
                             </div>
                           </div>
                           {showSentence.value[i] && <SentenceEditor sentence={sentence} index={index} onSubmit={(newSentence) => {
-                            console.log('newSentence1231232312', newSentence)
+                            console.log('newSentence1231232312', newSentence);
                             updateSentenceByIndex(newSentence, i);
                           }}/>}
                         </div>

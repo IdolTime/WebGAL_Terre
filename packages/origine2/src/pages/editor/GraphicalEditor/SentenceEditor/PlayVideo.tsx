@@ -17,71 +17,71 @@ export default function PlayVideo(props: ISentenceEditorProps) {
   const isChoose = useValue(!!getArgByKey(props.sentence, "choose"));
   const [chooseValue, setChooseValue] = useState(props.sentence.args.filter(ele => ele.key === 'choose')[0]?.value ||'选项:选择场景文件|选项:选择场景文件');
 
-  const initComanRef: any = []
+  const initComanRef: any = [];
   if (isSkipOff.value) {
-    initComanRef.push('-skipOff=true')
+    initComanRef.push('-skipOff=true');
   }
   if (isLoop.value) {
-    initComanRef.push('-loop=true')
+    initComanRef.push('-loop=true');
   }
   if (isChoose.value) {
-    initComanRef.push(`-choose=${chooseValue}`)
+    initComanRef.push(`-choose=${chooseValue}`);
   }
-  const commandRef = useRef<any>(initComanRef)
+  const commandRef = useRef<any>(initComanRef);
 
   // 启用视频跳过
   const submit = () => {
-    let res:any = []
+    let res: any = [];
     if (isSkipOff.value) {
-      res = [...commandRef.current, '-skipOff=true']
+      res = [...commandRef.current, '-skipOff=true'];
     } else {
-      res = commandRef.current.filter((item: string) => item !== '-skipOff=true')
+      res = commandRef.current.filter((item: string) => item !== '-skipOff=true');
     }
-    commandRef.current = res
-    dispacthProps(res)
+    commandRef.current = res;
+    dispacthProps(res);
   };
 
   // 循环播放视频
   const submitLoop = () => {
-    let res:any = []
+    let res: any = [];
     if (isLoop.value) {
-      res = [...commandRef.current, '-loop=true']
+      res = [...commandRef.current, '-loop=true'];
     } else {
-      res = commandRef.current.filter((item: string) => item !== '-loop=true')
+      res = commandRef.current.filter((item: string) => item !== '-loop=true');
     }
-    commandRef.current = res
-    dispacthProps(res)
+    commandRef.current = res;
+    dispacthProps(res);
   };
 
   // 是否选择分支
   const submitCoose = useCallback(() => {
-    let res:any = []
+    let res: any = [];
     if (isChoose.value) {
-      res = [...commandRef.current, `-choose=${chooseValue}`]
+      res = [...commandRef.current, `-choose=${chooseValue}`];
     } else {
-      res = commandRef.current.filter((item: string) => item !== `-choose=${chooseValue}`)
+      res = commandRef.current.filter((item: string) => item !== `-choose=${chooseValue}`);
     }
-    commandRef.current = res
-    dispacthProps(res)
+    commandRef.current = res;
+    dispacthProps(res);
   }, [isChoose]);
 
   const onChoose = (val: string) => {
-    const idx = commandRef.current.findIndex((item: string) => item === `-choose=${chooseValue}`)
+    const idx = commandRef.current.findIndex((item: string) => item === `-choose=${chooseValue}`);
     const res = commandRef.current.map((ele: any, i: number) => {
-      if (i == idx) {
-        return `-choose=${val}`
+      if (i === idx) {
+        return `-choose=${val}`;
       }
-      return ele
-    })
-    commandRef.current = res
-    setChooseValue(val)
-    dispacthProps(res)
-  }
+      return ele;
+    });
+    commandRef.current = res;
+    setChooseValue(val);
+    dispacthProps(res);
+  };
 
   function dispacthProps(res:any) {
-    const str = res.join(' ')
+    const str = res.join(' ');
     if (res.length > 0) {
-      props.onSubmit(`playVideo:${fileName.value}${str};`);
+      props.onSubmit(`playVideo:${fileName.value} ${str};`);
     } else {
       props.onSubmit(`playVideo:${fileName.value};`);
     }
@@ -111,7 +111,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
           submitLoop();
         }} onText='是' offText='否' isChecked={isLoop.value} />
       </CommonOptions>
-      <CommonOptions key="34" title='开启分支选择'>
+      <CommonOptions key="4" title='开启分支选择'>
         <TerreToggle title="" onChange={(newValue) => {
           isChoose.set(newValue);
           submitCoose();
