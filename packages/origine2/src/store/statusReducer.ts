@@ -5,6 +5,25 @@ const dashboardInitState = {
   showDashBoard: true
 };
 
+const loginInitState = {
+  showLogin: false
+};
+
+type IUserInfo = {
+  avatar: string;
+  email: string;
+  nickName: string;
+  userName: string;
+  userId: number;
+  gName: string;
+}
+
+const userInfoState = {
+  userDetail: null as IUserInfo | null,
+  sourceList: localStorage.getItem('sourceList') ? JSON.parse(localStorage.getItem('sourceList') as string) : [],
+  gId: localStorage.getItem('gId') ? Number(localStorage.getItem('gId') as string) : null
+}
+
 export enum sidebarTag {
   none,
   gameconfig,
@@ -79,7 +98,9 @@ export const editorInitState: IEditorState = {
 
 const initialState = {
   dashboard: cloneDeep(dashboardInitState),
-  editor: cloneDeep(editorInitState)
+  editor: cloneDeep(editorInitState),
+  login: cloneDeep(loginInitState),
+  userInfo: cloneDeep(userInfoState)
 };
 
 const statusSlice = createSlice({
@@ -97,6 +118,43 @@ const statusSlice = createSlice({
     setDashboardShow: function (state, action: PayloadAction<boolean>) {
       state.dashboard.showDashBoard = action.payload;
     },
+
+    /**
+     * 设置是否显示登录框
+     * @param state
+     * @param action
+     */
+    setLoginShow: function (state, action: PayloadAction<boolean>) {
+      state.login.showLogin = action.payload;
+    },
+    /**
+     * 设置素材列表
+     * @param state
+     * @param action
+     */
+
+    setSourceList: function (state, action: PayloadAction<any[]>) {
+      state.userInfo.sourceList = action.payload;
+    },
+
+    /**
+     * 设置作品 ID
+     * @param state
+     * @param action
+     */
+    setGId: function (state, action: PayloadAction<number>) {
+      state.userInfo.gId = action.payload;
+    },
+    /**
+     * 设置用户信息
+     * @param state
+     * @param action
+     */
+
+    setUserDetail: function (state, action: PayloadAction<IUserInfo>) {
+      state.userInfo.userDetail = action.payload;
+    },
+
     /**
      * 设置正在编辑的游戏
      * @param state
@@ -183,6 +241,10 @@ const statusSlice = createSlice({
 export const {
   setDashboardShow,
   setEditingGame,
+  setLoginShow,
+  setSourceList,
+  setGId,
+  setUserDetail,
   setEditorPreviewShow,
   setEditorSidebarTag,
   resetTagOrder,

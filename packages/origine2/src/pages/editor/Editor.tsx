@@ -11,6 +11,8 @@ import {statusActions} from "@/store/statusReducer";
 
 export default function Editor() {
   const isShowDashboard = useSelector((state: RootState) => state.status.dashboard.showDashBoard);
+  const isShowLogin = useSelector((state: RootState) => state.status.login.showLogin);
+
   const editorState = useSelector((state: RootState) => state.status.editor);
   const isShowPreview = editorState.showPreview;
   const dispatch = useDispatch();
@@ -25,7 +27,7 @@ export default function Editor() {
   }
 
   return <>
-    {!isShowDashboard && <div className={styles.editor}>
+    {!isShowDashboard && !isShowLogin && <div className={styles.editor}>
       <TopBar />
       <div className={styles.container} onClick={()=>handleMainAreaClick()}>
         {/* <Splitter style={{ height: "100%", flex: 1 }}> */}

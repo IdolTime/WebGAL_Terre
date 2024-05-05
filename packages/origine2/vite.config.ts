@@ -20,10 +20,15 @@ export default defineConfig({
     port: WEBGAL_PORT,
     proxy: {
       // 接口地址代理
+      // '/api': {
+      //   target: `http://localhost:${WEBGAL_PORT + 1}`, // 接口的域名
+      //   secure: true, // 如果是https接口，需要配置这个参数
+      //   changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
+      // },
       '/api': {
-        target: `http://localhost:${WEBGAL_PORT + 1}`, // 接口的域名
-        secure: true, // 如果是https接口，需要配置这个参数
-        changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
+        target: 'http://ec2-18-143-156-222.ap-southeast-1.compute.amazonaws.com:6082',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
       },
       '/games': {
         target: `http://localhost:${WEBGAL_PORT + 1}`, // 接口的域名

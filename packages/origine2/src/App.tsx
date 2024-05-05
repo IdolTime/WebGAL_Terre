@@ -4,6 +4,7 @@ import DashBoard from "./pages/dashboard/DashBoard";
 import {Provider} from "react-redux";
 import {origineStore, persistor} from "./store/origineStore";
 import Editor from "./pages/editor/Editor";
+import Login from "./pages/Login";
 import {useEffect} from "react";
 import "@icon-park/react/styles/index.css";
 import axios from "axios";
@@ -14,6 +15,8 @@ import {lspSceneName} from "@/runtime/WG_ORIGINE_RUNTIME";
 import './config/themes/theme.css';
 import {PersistGate} from 'redux-persist/integration/react';
 import './assets/font-family.css';
+import Header from "./components/Header";
+
 
 function App() {
   useEffect(() => {
@@ -58,9 +61,11 @@ function App() {
     <div className="App">
       <Provider store={origineStore}>
         <PersistGate loading={null} persistor={persistor}>
+          <Header/>
           <Translation/>
           <DashBoard/>
           <Editor/>
+          <Login/>
         </PersistGate>
       </Provider>
     </div>

@@ -1,19 +1,27 @@
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "@/store/origineStore";
 import {useEffect} from "react";
-import {setDashboardShow, setEditingGame, statusActions} from "@/store/statusReducer";
+import {setDashboardShow, setEditingGame, statusActions, setLoginShow} from "@/store/statusReducer";
 import {ITag} from "@/store/statusReducer";
 
 export function useHashRoute() {
   const state = useSelector((state: RootState) => state.status);
   const isShowDashboard = state.dashboard.showDashBoard;
+  const isShowLogin = state.login.showLogin;
   const editingGameName = state.editor.currentEditingGame;
   const currentTag = state.editor.selectedTagTarget;
+  console.log(currentTag, 'currentTag');
+  console.log(editingGameName, 'editingGameName');
+
   const dispatch = useDispatch();
   useEffect(() => {
     setTimeout(() => {
       // 写入 Hash
       // 如果显示 dashboard 或者两个状态都为空，则清空哈希
+      if (isShowLogin) {
+        window.location.hash = 'login';
+        return;
+      }
       if (isShowDashboard || (!editingGameName && !currentTag)) {
         window.location.hash = '';
         return;
@@ -31,10 +39,11 @@ export function useHashRoute() {
       window.location.hash = `#/${hashParts.join('/')}`;
     }, 50);
 
-  }, [isShowDashboard, editingGameName, currentTag]);
+  }, [isShowDashboard, editingGameName, currentTag, isShowLogin]);
 
   useEffect(() => {
     const result = decodeHash();
+    console.log(result, 'result');
     if (result.editingGameName !== '') {
       dispatch(setDashboardShow(false));
       dispatch(setEditingGame(decodeURIComponent(result.editingGameName)));
@@ -51,6 +60,9 @@ export function useHashRoute() {
         }
 
       }
+    } else if (result.login) {
+      dispatch(setDashboardShow(false));
+      dispatch(setLoginShow(true))
     }
   }, []);
 
@@ -59,24 +71,28 @@ export function useHashRoute() {
 function decodeHash() {
   // 获取当前 URL 的哈希部分
   const hash = window.location.hash;
-
+  console.log(hash, 'hash');
   // 如果没有哈希，返回空
   if (!hash) {
     return {editingGameName: '', currentTag: ''};
   }
-
-  // 移除哈希开头的 #/ ，然后分割字符串
-  const parts = hash.slice(2).split('/');
-
-  // 根据 parts 的长度返回相应的值
-  if (parts.length === 0) {
-    // 哈希存在但没有内容
-    return {editingGameName: '', currentTag: ''};
-  } else if (parts.length === 1) {
-    // 只有 editingGameName
-    return {editingGameName: parts[0], currentTag: ''};
+  if (hash !== '#login') {
+    // 移除哈希开头的 #/ ，然后分割字符串
+    const parts = hash.slice(2).split('/');
+    console.log(parts, 'parts');
+    // 根据 parts 的长度返回相应的值
+    if (parts.length === 0) {
+      // 哈希存在但没有内容
+      return {editingGameName: '', currentTag: ''};
+    } else if (parts.length === 1) {
+      // 只有 editingGameName
+      return {editingGameName: parts[0], currentTag: ''};
+    } else {
+      // 有 editingGameName 和 currentTag
+      return {editingGameName: parts[0], currentTag: parts[1]};
+    }
   } else {
-    // 有 editingGameName 和 currentTag
-    return {editingGameName: parts[0], currentTag: parts[1]};
+    return {editingGameName: '', currentTag: '', login: true};
   }
+ 
 }
