@@ -1,5 +1,5 @@
 import { useValue } from "../../../hooks/useValue";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store/origineStore";
@@ -30,6 +30,7 @@ export default function ChooseFile(props: IChooseFile) {
   const currentDirFiles = useValue<IFileDescription[]>([]);
   const fileSearch = useValue<string>('');
   const gameName = useSelector((state: RootState) => state.status.editor.currentEditingGame);
+  const [currentFile, setCurrentFile] = useState<IFileDescription>();
 
   const updateFileList = ()=>{
     /**
@@ -55,6 +56,7 @@ export default function ChooseFile(props: IChooseFile) {
   function onChooseFile(fileDescription: IFileDescription) {
     toggleIsCalloutVisible();
     fileDescription.name = currentChildDir.value.reduce((prev, curr) => prev + curr + "/", "") + fileDescription.name;
+    setCurrentFile(fileDescription);
     props.onChange(fileDescription);
   }
 
@@ -97,7 +99,7 @@ export default function ChooseFile(props: IChooseFile) {
       onOpenChange={isShowChooseFileCallout.value ? onCancel : toggleIsCalloutVisible}
     >
       <PopoverTrigger>
-        <Button style={{minWidth: 0}}>{isShowChooseFileCallout.value ? t('cancel') : t('choose')}</Button>
+        <Button style={{minWidth: 0}}>{isShowChooseFileCallout.value ? t('cancel') : t('choose') }</Button>
       </PopoverTrigger>
       <PopoverSurface>
         <div className={styles.chooseFileContentWarpper}>

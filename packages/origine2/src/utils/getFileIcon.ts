@@ -62,6 +62,7 @@ fileMappings.set("scene", "text");
 fileMappings.set("tex", "image");
 fileMappings.set("video", "video");
 fileMappings.set("vocal", "audio");
+fileMappings.set("ui", "image");
 
 // The function
 function getFileType(path: string): FileType {
