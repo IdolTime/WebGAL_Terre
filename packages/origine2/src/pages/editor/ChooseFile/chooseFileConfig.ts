@@ -20,5 +20,5 @@ dirNameToExtNameMap.set('bgm', ['.mp3', '.ogg', '.wav']);
 dirNameToExtNameMap.set('figure', ['.png', '.webp', '.json']);
 dirNameToExtNameMap.set('scene', ['.txt']);
 dirNameToExtNameMap.set('tex', ['.png', '.webp']);
-dirNameToExtNameMap.set('video', ['.mp4']);
+dirNameToExtNameMap.set('video', ['.mp4', '.flv']);
 dirNameToExtNameMap.set('vocal', ['.mp3', '.ogg', '.wav']);
