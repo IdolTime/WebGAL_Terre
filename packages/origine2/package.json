@@ -22,6 +22,7 @@
     "@uiw/react-json-view": "^2.0.0-alpha.12",
     "axios": "^1.6.0",
     "cloudlogjs": "^1.0.11",
+    "flv.js": "^1.6.2",
     "i18next": "^22.4.15",
     "lodash": "^4.17.21",
     "material-icon-theme": "^4.27.0",
