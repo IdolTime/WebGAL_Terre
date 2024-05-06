@@ -5,7 +5,7 @@ export async function login(data: {
   password: string
   gId: number
 }): Promise<any> {
-  return request('/api/editorLogin', {
+  return request('/login/editorLogin', {
     method: 'POST',
     data,
   });
@@ -19,14 +19,14 @@ export async function getResourceList(params: {
   resourceType: number,
   query: string
 }): Promise<any> {
-  return request('/api/editor/resource/list', {
+  return request('/login/editor/resource/list', {
     method: 'get',
     params,
   });
 }
 
 export async function getUserInfo(): Promise<any> {
-  return request('/api/editor/user_info', {
+  return request('/login/editor/user_info', {
     method: 'POST',
   });
 }
@@ -34,7 +34,7 @@ export async function getUserInfo(): Promise<any> {
 export async function getGameDetail(data : {
   gId: number
 }): Promise<any> {
-  return request('/api/editor/game/detail', {
+  return request('/login/editor/game/detail', {
     method: 'POST',
     data
   });
