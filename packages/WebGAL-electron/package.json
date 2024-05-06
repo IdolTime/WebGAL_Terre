@@ -37,7 +37,7 @@
       ]
     },
     "mac": {
-      "icon": "public/icon-mac.ico"
+      "icon": "public/icon-mac.png"
     },
     "electronDownload": {
       "mirror": "https://npmmirror.com/mirrors/electron/"
