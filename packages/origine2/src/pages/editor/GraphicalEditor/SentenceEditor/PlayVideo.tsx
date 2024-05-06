@@ -96,7 +96,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
             fileName.set(fileDesc?.name ?? "");
             submit();
           }}
-          extName={[".mp4", ".webm", ".ogg"]} />
+          extName={[".mp4", ".webm", ".ogg", "flv"]} />
         </>
       </CommonOptions>
       <CommonOptions key="2" title={t('video.option')}>

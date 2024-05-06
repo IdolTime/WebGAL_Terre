@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styles from "./resourceDisplay.module.scss";
 import {JsonResourceDisplay} from "@/pages/editor/ResourceDisplay/JsonResourceDisplay/JsonResourceDisplay";
+import FlvJs from "flv.js";
 
 export enum ResourceType {
   Image = "image",
@@ -17,13 +18,32 @@ export interface IResourceDisplayProps {
 
 function getComponent(resourceType: ResourceType, resourceUrl: string) {
   const url = processResourceUrl(resourceUrl);
+  const flvPlayerRef = useRef<FlvJs.Player | null>(null);
+
+  useEffect(() => {
+    if (resourceType === ResourceType.Video) {
+      const videoElement = document.getElementById("videoElement") as HTMLVideoElement;
+      
+      if (FlvJs.isSupported() && videoElement) {
+        flvPlayerRef.current = FlvJs.createPlayer({
+          type: url.endsWith('.flv') ? 'flv' : 'mp4',
+          url: url
+        });
+        flvPlayerRef.current.attachMediaElement(videoElement);
+        flvPlayerRef.current.load();
+        // flvPlayerRef.current.play();
+      } else {
+        videoElement.src = url;
+      }
+    }
+  }, []);
 
   switch (resourceType) {
   case ResourceType.Image:
     return () => <img className={styles.asset} src={url} alt="Resource"/>;
   case ResourceType.Video:
     return () => (
-      <video className={styles.asset} controls>
+      <video id="videoElement" className={styles.asset} controls>
         <source src={url} type="video/mp4"/>
           Your browser does not support the video tag.
       </video>

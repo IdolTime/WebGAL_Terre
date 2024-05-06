@@ -16,7 +16,7 @@ export function extractExtension(filename: string): FileType {
   const extension = filename.split(".").pop()?.toLowerCase() ?? "unknown";
 
   const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg", "webp"];
-  const videoExtensions = ["mp4", "webm", "ogg"];
+  const videoExtensions = ["mp4", "webm", "ogg", "flv"];
   const audioExtensions = ["wav", "mp3", "ogg"];
 
   if (imageExtensions.includes(extension)) {

@@ -53,7 +53,7 @@ export default function EditArea() {
 }
 
 const imageTypes = ["png", "jpg", "jpeg", "gif", "webp"];
-const videoTypes = ["mp4", "webm", "ogg"];
+const videoTypes = ["mp4", "webm", "ogg", "flv"];
 const audioTypes = ["mp3", "wav", "aac"];
 const animationTypes = ["json"];
 
