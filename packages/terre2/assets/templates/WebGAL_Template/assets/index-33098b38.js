@@ -20410,7 +20410,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-904d98e1.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-6a6102b0.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -30030,7 +30030,6 @@ const playVideo = (sentence) => {
         if (flvPlayer !== null && videoElement !== null) {
           flvPlayer.currentTime = 0;
           flvPlayer.volume = bgmVol;
-          console.log(55555, bgmVol);
           videoElement.loop = loopValue;
           const endPerform = () => {
             for (const e2 of WebGAL.gameplay.performController.performList) {
