@@ -73,6 +73,7 @@ jobs:
           path: bundle/IdolTime_Editor_Windows.exe
   release:
     name: Release
+    permissions: write-all
     runs-on: ubuntu-latest
     needs: ['build-mac','build-windows','build-windows-nsis']
     steps:
