@@ -20455,7 +20455,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-131ccdcd.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-51f1c32d.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -36512,7 +36512,7 @@ const Title = () => {
         onMouseEnter: playSeEnter
       }
     ),
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         className: applyStyle2("Title_main", styles$n.Title_main),
@@ -36520,18 +36520,32 @@ const Title = () => {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: applyStyle2("Title_button", styles$n.Title_button),
-            onClick: () => {
-              startGame();
-              playSeClick();
-            },
-            onMouseEnter: playSeEnter,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
-          }
-        ) })
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$n.Title_button),
+              onClick: () => {
+                startGame();
+                playSeClick();
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$n.Title_button),
+              onClick: () => {
+                playSeClick();
+                dispatch(setVisibility({ component: "showExtra", visibility: true }));
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("extra.title") })
+            }
+          )
+        ]
       }
     )
   ] });
