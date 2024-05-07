@@ -70,7 +70,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: IdolTime_Editor_Windows_Setup
-          path: bundle/IdolTime_Editor_Windows.exe
+          path: bundle/IdolTime_Editor_Windows_Setup.exe
   release:
     name: Release
     permissions: write-all
