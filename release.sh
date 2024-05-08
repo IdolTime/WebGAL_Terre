@@ -11,7 +11,6 @@ mkdir release
 cd packages/terre2
 yarn run build
 yarn run pkg
-yarn run replace
 cd dist
 cp -r IdolTime_Editor.exe  ../../../release
 rm IdolTime_Editor.exe
