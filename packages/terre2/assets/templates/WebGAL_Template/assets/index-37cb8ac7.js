@@ -20410,7 +20410,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-2d9be6b0.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-5341886c.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -100955,7 +100955,7 @@ var APNGLoader = (
   function() {
     function APNGLoader2() {
     }
-    APNGLoader2.use = function(resource, next2) {
+    APNGLoader2.use = async function(resource, next2) {
       if (resource.extension === "png" && resource.data) {
         try {
           var url2 = resource.url;
@@ -100966,11 +100966,15 @@ var APNGLoader = (
               throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
             }
             const arrayBuffer = await response.arrayBuffer();
-            return arrayBuffer;
+            const buffer = new Uint8Array(arrayBuffer);
+            if (APNGLoader2.validate(url3, buffer)) {
+              Object.assign(resource, registerAPNGTextures(name, APNGLoader2.parse(name, buffer), resource.metadata));
+            } else {
+              next2();
+              return;
+            }
           }
-          fetchFileAsArrayBuffer2(url2).then((arrayBuffer) => {
-            Object.assign(resource, registerAPNGTextures(name, APNGLoader2.parse(name, arrayBuffer), resource.metadata));
-          });
+          await fetchFileAsArrayBuffer2(url2);
         } catch (err) {
           next2(err);
           return;
@@ -100978,11 +100982,7 @@ var APNGLoader = (
       }
       next2();
     };
-    APNGLoader2.parse = function(url2, arrayBuffer) {
-      var buffer = new Uint8Array(arrayBuffer);
-      if (!APNGLoader2.validate(url2, buffer)) {
-        return null;
-      }
+    APNGLoader2.parse = function(url2, buffer) {
       var upngObj = UPNG.decode(buffer);
       var width = upngObj.width, height = upngObj.height, frames = upngObj.frames;
       var rgba2 = UPNG.toRGBA8(upngObj);
@@ -101003,9 +101003,9 @@ var APNGLoader = (
       return returnArray;
     };
     APNGLoader2.validate = function(url2, buffer) {
+      const actLBuffer = buffer.slice(37, 41);
       for (var i2 = 0; i2 < FILE_IDENTIFIER.length; i2++) {
-        if (buffer[i2] !== FILE_IDENTIFIER[i2]) {
-          console.error(url2 + " is not a valid *.apng file!");
+        if (actLBuffer[i2] !== FILE_IDENTIFIER[i2]) {
           return false;
         }
       }
