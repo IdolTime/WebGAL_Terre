@@ -5,12 +5,13 @@ import { cloneDeep } from "lodash";
 import ChooseFile from "../../ChooseFile/ChooseFile";
 import useTrans from "@/hooks/useTrans";
 import { Button } from "@fluentui/react-components";
+import { useMemo } from "react";
 
 export default function Choose(props: any) {
   const t = useTrans('editor.graphical.sentences.choose.');
   const chooseItems = useValue(props.chooseValue.split("|").map((e: any) => e.split(":")));
 
-  const setStyle = (index: number, key: string, value: number | string) => {
+  const setStyle = (index: number, key: string, value?: number | string) => {
     const styleRegex = /\$\{(.*?)\}/;
     const mainPart = chooseItems.value[index][0];
     const styleMatch = mainPart.match(styleRegex);
@@ -33,7 +34,11 @@ export default function Choose(props: any) {
       });
   
       // Update the style property
-      style[key] = value;
+      if (value !== undefined) {
+        style[key] = value;
+      } else {
+        delete style[key];
+      }
   
       // Reconstruct the script string with updated style
       const updatedStyleStr = Object.keys(style).map(k => `${k}=${style[k]}`).join(',');
@@ -48,6 +53,71 @@ export default function Choose(props: any) {
     newList[index][0] = updatedScript;
     chooseItems.set(newList);
   };
+
+  const parse = (script: string) => {
+    const parts = script.split('->');
+    const conditonPart = parts.length > 1 ? parts[0] : null;
+    const mainPart = parts.length > 1 ? parts[1] : parts[0];
+    const mainPartNodes = mainPart.split(':');
+
+    const text = mainPartNodes[0].replace(/\${[^{}]*}/, '');
+    const option = {
+      text,
+      jump: mainPartNodes[1],
+      style: {
+        x: undefined,
+        y: undefined,
+        scale: undefined,
+        fontSize: undefined,
+        fontColor: undefined,
+        image: undefined
+      } satisfies {
+        x?: number;
+        y?: number;
+        scale?: number;
+        fontSize?: number;
+        fontColor?: string;
+        image?: string;
+      },
+      showCondition: '',
+      enableCondition: ''
+    };
+
+    // Extract style information
+    const styleRegex = /\$\{(.*?)\}/;
+    const styleMatch = mainPart.match(styleRegex);
+    if (styleMatch) {
+      const styleStr = styleMatch[1];
+      const styleProps = styleStr.split(',');
+      const style: any = {}; // Change to specific type if possible
+
+      // Parse each style property
+      styleProps.forEach((prop) => {
+        const [key, value] = prop.split('=');
+        if (key && value) {
+          style[key.trim()] = isNaN(Number(value.trim())) ? value.trim() : Number(value.trim());
+        }
+      });
+
+      option.style = style;
+    }
+
+    if (conditonPart !== null) {
+      const showConditionPart = conditonPart.match(/\((.*)\)/);
+      if (showConditionPart) {
+        option.showCondition = showConditionPart[1];
+      }
+      const enableConditionPart = conditonPart.match(/\[(.*)\]/);
+      if (enableConditionPart) {
+        option.enableCondition = enableConditionPart[1];
+      }
+    }
+    return option;
+  };
+
+  const options = useMemo(() => {
+    return chooseItems.value.map((item: any) => parse(item.join(':')));
+  }, [chooseItems]);
 
   const submit = () => {
     const chooseItemsStr = chooseItems.value.map((e: any) => e.join(":"));
@@ -70,7 +140,7 @@ export default function Choose(props: any) {
           {t('delete')}
         </Button>
         <span style={{ marginLeft: '6px' }}>选项名称</span>
-        <input value={/(?:->|\})?\s*([^\s]+)$/.exec(item[i])?.[1] ?? ''}
+        <input value={options[i].text}
           onChange={(ev) => {
             const newValue = ev.target.value;
             const newList = cloneDeep(chooseItems.value);
@@ -82,7 +152,7 @@ export default function Choose(props: any) {
           placeholder={t('option.name')}
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
-        <span style={{ marginRight: '6px' }}>跳转 {item[1]}</span>
+        <span style={{ marginRight: '6px' }}>跳转 {options[i].jump}</span>
         <ChooseFile sourceBase="scene" onChange={(newFile) => {
           const newValue = newFile?.name ?? "";
           const newList = cloneDeep(chooseItems.value);
@@ -90,18 +160,20 @@ export default function Choose(props: any) {
           chooseItems.set(newList);
           submit();
         }} extName={[".txt"]} />
-        <span style={{ margin: '0 6px 0 6px' }}>按钮样式 {/image=(\w+\.(?:png|jpg|webp))/.exec(item[0])?.[1]}</span>
+        <span style={{ margin: '0 6px 0 6px' }}>按钮样式 {options[i].style.image}</span>
         <ChooseFile sourceBase="ui" onChange={(newFile) => {
           const newValue = newFile?.name ?? "";
 
           if (newFile) {
             setStyle(i, 'image', newValue);
+          } else {
+            setStyle(i, 'image', undefined);
           }
         }} extName={[".jpg", ".png", "webp"]} />
       </div>
       <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px", marginBottom: "8px"}}>
         <span style={{ marginLeft: '6px' }}>按钮位置X</span>
-        <input type="number" value={/x=(\d+)/.exec(item[0])?.[1] ?? ''}
+        <input type="number" value={options[i].style.x}
           onChange={(ev) => {
             setStyle(i, 'x', ev.target.value);
             submit();
@@ -112,7 +184,7 @@ export default function Choose(props: any) {
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
         <span style={{ marginLeft: '6px' }}>按钮位置X</span>
-        <input type="number" value={/y=(\d+)/.exec(item[0])?.[1] ?? ''}
+        <input type="number" value={options[i].style.y}
           onChange={(ev) => {
             setStyle(i, 'y', ev.target.value);
           }}
@@ -122,7 +194,7 @@ export default function Choose(props: any) {
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
         <span style={{ marginLeft: '6px' }}>缩放</span>
-        <input type="number" value={/scale=(\d+)/.exec(item[0])?.[1] ?? ''}
+        <input type="number" value={options[i].style.scale}
           onChange={(ev) => {
             setStyle(i, 'scale', ev.target.value);
           }}
@@ -134,7 +206,7 @@ export default function Choose(props: any) {
       </div>
       <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px"}}>
         <span style={{ marginLeft: '6px' }}>文字大小</span>
-        <input type="number" value={/fontSize=(\d+)/.exec(item[0])?.[1] ?? ''}
+        <input type="number" value={options[i].style.fontSize}
           onChange={(ev) => {
             setStyle(i, 'fontSize', ev.target.value);
           }}
@@ -144,7 +216,7 @@ export default function Choose(props: any) {
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
         <span style={{ marginLeft: '6px' }}>文字颜色</span>
-        <input type="color" value={/fontColor=(#[0-9A-Fa-f]{6})/.exec(item[0])?.[1] ?? ''}
+        <input type="color" value={options[i].style.fontColor || '#8E354A'}
           onChange={(ev) => {
             setStyle(i, 'fontColor', ev.target.value);
           }}

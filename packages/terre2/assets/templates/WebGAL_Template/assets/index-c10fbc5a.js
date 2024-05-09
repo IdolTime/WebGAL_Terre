@@ -19975,9 +19975,8 @@ class ChooseOption {
     const conditonPart = parts.length > 1 ? parts[0] : null;
     const mainPart = parts.length > 1 ? parts[1] : parts[0];
     const mainPartNodes = mainPart.split(":");
-    const mainPartRegex = /(?:[>}])([^:]+)/;
-    const mainPartMatch = mainPart.match(mainPartRegex);
-    let text2 = mainPartMatch ? mainPartMatch[1] : "";
+    const text2 = mainPartNodes[0].replace(/\${[^{}]*}/, "");
+    console.log(999999, script, mainPart, mainPartNodes[0], text2);
     const option = new ChooseOption(text2, mainPartNodes[1]);
     const styleRegex = /\$\{(.*?)\}/;
     const styleMatch = mainPart.match(styleRegex);
@@ -20455,7 +20454,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-51f1c32d.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-07548a2e.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -36512,7 +36511,7 @@ const Title = () => {
         onMouseEnter: playSeEnter
       }
     ),
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
         className: applyStyle2("Title_main", styles$n.Title_main),
@@ -36520,32 +36519,18 @@ const Title = () => {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: applyStyle2("Title_button", styles$n.Title_button),
-              onClick: () => {
-                startGame();
-                playSeClick();
-              },
-              onMouseEnter: playSeEnter,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
-            }
-          ) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: applyStyle2("Title_button", styles$n.Title_button),
-              onClick: () => {
-                playSeClick();
-                dispatch(setVisibility({ component: "showExtra", visibility: true }));
-              },
-              onMouseEnter: playSeEnter,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("extra.title") })
-            }
-          )
-        ]
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: applyStyle2("Title_button", styles$n.Title_button),
+            onClick: () => {
+              startGame();
+              playSeClick();
+            },
+            onMouseEnter: playSeEnter,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
+          }
+        ) })
       }
     )
   ] });
