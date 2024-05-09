@@ -20410,7 +20410,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-5341886c.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-bcbbbc4a.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -101410,7 +101410,7 @@ class PixiStage {
             }
             if (isApng) {
               const sprite = figureSprite;
-              sprite.animationSpeed = 0.5;
+              sprite.animationSpeed = 0.25;
               sprite.play();
               sprite.loop = false;
               sprite.onFrameChange = (frame2) => {
