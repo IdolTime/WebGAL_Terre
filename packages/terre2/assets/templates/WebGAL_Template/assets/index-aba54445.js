@@ -20410,7 +20410,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-6a6102b0.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-85dd0c02.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -30405,10 +30405,11 @@ const setTransition = (sentence) => {
     // 暂时不用，后面会交给自动清除
   };
 };
-const unlockBgm = (sentence) => {
+const unlockBgm$2 = (sentence) => {
   const url2 = sentence.content;
   let name = sentence.content;
   let series = "default";
+  console.log(sentence, "bgm-sentence");
   sentence.args.forEach((e2) => {
     if (e2.key === "name") {
       name = e2.value.toString();
@@ -30438,6 +30439,7 @@ const unlockCg = (sentence) => {
   const url2 = sentence.content;
   let name = sentence.content;
   let series = "default";
+  console.log(sentence, "cg-sentence");
   sentence.args.forEach((e2) => {
     if (e2.key === "name") {
       name = e2.value.toString();
@@ -33135,7 +33137,7 @@ const SCRIPT_TAG_MAP = defineScripts({
   setVar: ScriptConfig(commandType$1.setVar, setVar, { next: true }),
   showVars: ScriptConfig(commandType$1.showVars, showVars),
   unlockCg: ScriptConfig(commandType$1.unlockCg, unlockCg, { next: true }),
-  unlockBgm: ScriptConfig(commandType$1.unlockBgm, unlockBgm, { next: true }),
+  unlockBgm: ScriptConfig(commandType$1.unlockBgm, unlockBgm$2, { next: true }),
   say: ScriptConfig(commandType$1.say, say),
   filmMode: ScriptConfig(commandType$1.filmMode, filmMode, { next: true }),
   callScene: ScriptConfig(commandType$1.callScene, callSceneScript),
@@ -36444,8 +36446,8 @@ const Title = () => {
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
   const fullScreen = userDataState.optionData.fullScreen;
-  const background = GUIState.titleBg;
-  const showBackground = background === "" ? "rgba(0,0,0,1)" : `url("${background}")`;
+  const background2 = GUIState.titleBg;
+  const showBackground = background2 === "" ? "rgba(0,0,0,1)" : `url("${background2}")`;
   const t2 = useTrans("title.");
   const { playSeEnter, playSeClick } = useSoundEffect();
   const applyStyle2 = useApplyStyle("UI/Title/title.scss");
@@ -36467,7 +36469,7 @@ const Title = () => {
         onMouseEnter: playSeEnter
       }
     ),
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         className: applyStyle2("Title_main", styles$n.Title_main),
@@ -36475,18 +36477,32 @@ const Title = () => {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: applyStyle2("Title_button", styles$n.Title_button),
-            onClick: () => {
-              startGame();
-              playSeClick();
-            },
-            onMouseEnter: playSeEnter,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
-          }
-        ) })
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$n.Title_button),
+              onClick: () => {
+                startGame();
+                playSeClick();
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$n.Title_button),
+              onClick: () => {
+                playSeClick();
+                dispatch(setVisibility({ component: "showExtra", visibility: true }));
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("extra.title") })
+            }
+          )
+        ]
       }
     )
   ] });
@@ -94888,46 +94904,6 @@ const FolderOpen = IconWrapper("folder-open", true, function(props) {
     strokeLinejoin: props.strokeLinejoin
   }));
 });
-const GoEnd = IconWrapper("go-end", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M14 12L26 24L14 36",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M34 12V36",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }));
-});
-const GoStart = IconWrapper("go-start", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M34 36L22 24L34 12",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M14 12V36",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }));
-});
 const HamburgerButton = IconWrapper("hamburger-button", false, function(props) {
   return /* @__PURE__ */ React.createElement("svg", {
     width: props.size,
@@ -95047,44 +95023,6 @@ const Logout = IconWrapper("logout", true, function(props) {
     stroke: props.colors[0],
     strokeWidth: props.strokeWidth,
     strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }));
-});
-const MusicList = IconWrapper("music-list", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M24 19H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M24 10H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M8 38H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M8 28H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M8 10L16 15L8 20V10Z",
-    fill: props.colors[1],
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
     strokeLinejoin: props.strokeLinejoin
   }));
 });
@@ -95254,19 +95192,6 @@ const SettingTwo = IconWrapper("setting-two", false, function(props) {
     stroke: props.colors[2],
     strokeWidth: props.strokeWidth,
     strokeLinejoin: props.strokeLinejoin
-  }));
-});
-const SquareSmall = IconWrapper("square-small", false, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M34 12H14C12.8954 12 12 12.8954 12 14V34C12 35.1046 12.8954 36 14 36H34C35.1046 36 36 35.1046 36 34V14C36 12.8954 35.1046 12 34 12Z",
-    fill: props.colors[1],
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth
   }));
 });
 const Unlock = IconWrapper("unlock", true, function(props) {
@@ -97858,47 +97783,76 @@ function mergeStringsAndKeepObjects(arr) {
   }
   return result;
 }
-const extra = "_extra_1tymt_2";
-const extra_top = "_extra_top_1tymt_14";
-const extra_top_icon = "_extra_top_icon_1tymt_20";
-const extra_icon_softin = "_extra_icon_softin_1tymt_1";
-const extra_title = "_extra_title_1tymt_40";
-const mainContainer = "_mainContainer_1tymt_51";
-const bgmContainer = "_bgmContainer_1tymt_59";
-const bgmListContainer = "_bgmListContainer_1tymt_76";
-const bgmPlayerMain = "_bgmPlayerMain_1tymt_91";
-const bgmControlButton = "_bgmControlButton_1tymt_95";
-const bgmName = "_bgmName_1tymt_110";
-const bgmElement = "_bgmElement_1tymt_118";
-const bgmElement_active = "_bgmElement_active_1tymt_148";
-const cgMain = "_cgMain_1tymt_153";
-const cgContainer = "_cgContainer_1tymt_158";
-const cgElement = "_cgElement_1tymt_170";
-const cgShowDiv = "_cgShowDiv_1tymt_185";
-const cgShowDivWarpper = "_cgShowDivWarpper_1tymt_194";
-const cgNav = "_cgNav_1tymt_203";
-const cgNav_active = "_cgNav_active_1tymt_222";
-const showFullContainer = "_showFullContainer_1tymt_232";
-const showFullCgMain = "_showFullCgMain_1tymt_245";
-const fullCgIn = "_fullCgIn_1tymt_1";
-const bgmElement_In = "_bgmElement_In_1tymt_1";
+const extra = "_extra_18mgc_2";
+const extra_top = "_extra_top_18mgc_13";
+const mainContainer = "_mainContainer_18mgc_26";
+const mainTab = "_mainTab_18mgc_32";
+const mainTab_bg = "_mainTab_bg_18mgc_42";
+const mainTab_item1 = "_mainTab_item1_18mgc_50";
+const mainTab_item2 = "_mainTab_item2_18mgc_58";
+const mainTab_bgmunselect = "_mainTab_bgmunselect_18mgc_66";
+const mainTab_unselect = "_mainTab_unselect_18mgc_70";
+const mainTab_choose = "_mainTab_choose_18mgc_75";
+const mainTab_choose_bgm = "_mainTab_choose_bgm_18mgc_80";
+const mainTab_choose_cg = "_mainTab_choose_cg_18mgc_86";
+const bgmContainer = "_bgmContainer_18mgc_91";
+const bgmListContainer = "_bgmListContainer_18mgc_96";
+const bgmElement = "_bgmElement_18mgc_103";
+const bgmStar = "_bgmStar_18mgc_112";
+const bgmName = "_bgmName_18mgc_116";
+const bgm_item_name = "_bgm_item_name_18mgc_127";
+const bgmNameActive = "_bgmNameActive_18mgc_135";
+const soundunselect$1 = "_soundunselect_18mgc_139";
+const soundChoose$1 = "_soundChoose_18mgc_144";
+const unlockBgm$1 = "_unlockBgm_18mgc_148";
+const footer = "_footer_18mgc_152";
+const footerButton = "_footerButton_18mgc_162";
+const footer_page_container = "_footer_page_container_18mgc_167";
+const footerPageIcon = "_footerPageIcon_18mgc_172";
+const cgMain = "_cgMain_18mgc_184";
+const cgContainer = "_cgContainer_18mgc_189";
+const cgElement = "_cgElement_18mgc_195";
+const cgUnLock$1 = "_cgUnLock_18mgc_201";
+const cgShowDiv = "_cgShowDiv_18mgc_210";
+const cgShowDivWarpper = "_cgShowDivWarpper_18mgc_219";
+const cgNav = "_cgNav_18mgc_228";
+const cgNav_active = "_cgNav_active_18mgc_247";
+const showFullContainer = "_showFullContainer_18mgc_257";
+const showFullCgMain = "_showFullCgMain_18mgc_270";
+const fullCgIn = "_fullCgIn_18mgc_1";
+const extra_icon_softin = "_extra_icon_softin_18mgc_1";
+const bgmElement_In = "_bgmElement_In_18mgc_1";
 const styles$4 = {
   extra,
   extra_top,
-  extra_top_icon,
-  extra_icon_softin,
-  extra_title,
   mainContainer,
+  mainTab,
+  mainTab_bg,
+  mainTab_item1,
+  mainTab_item2,
+  mainTab_bgmunselect,
+  mainTab_unselect,
+  mainTab_choose,
+  mainTab_choose_bgm,
+  mainTab_choose_cg,
   bgmContainer,
   bgmListContainer,
-  bgmPlayerMain,
-  bgmControlButton,
-  bgmName,
   bgmElement,
-  bgmElement_active,
+  bgmStar,
+  bgmName,
+  bgm_item_name,
+  bgmNameActive,
+  soundunselect: soundunselect$1,
+  soundChoose: soundChoose$1,
+  unlockBgm: unlockBgm$1,
+  footer,
+  footerButton,
+  footer_page_container,
+  footerPageIcon,
   cgMain,
   cgContainer,
   cgElement,
+  cgUnLock: cgUnLock$1,
   cgShowDiv,
   cgShowDivWarpper,
   cgNav,
@@ -97906,23 +97860,29 @@ const styles$4 = {
   showFullContainer,
   showFullCgMain,
   fullCgIn,
+  extra_icon_softin,
   bgmElement_In
 };
+const bgmstar = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAAA+CAMAAABEH1h2AAAAflBMVEUAAADFxYvQxJDMw5DMwZLMwpLMwJDMwJLMwZTMwJDNwZLMwJHMwJLMwZLMv5LMwJLLwZLMwJLMwJLMwJLNwJLMwZLMvpDNwJLMwJLMwJLMwZLMwJLMwJLMwJLMwZLMwJLMwJLMwJLMwJLMwJHMwJLMwJLMwZLNwJLMv5HMwJL9jgmXAAAAKXRSTlMABAYJDREVGh0hJS0pMkM7NbNLP0fNN3RaUrqpk3to+PTmgGxg7ZmJnBmmzPgAAAJySURBVEjH7dfXjtswEAVQyips6t1Fct8N//8HMyPSkgM4phQhWCTYefGDceZSLKZM3pfjvP/+m/8tvtms4q67inveKu77qzilqzgXq1YtioiD9SfY2ZA4hrVzhlqMYdHblrjwqVsswEhg0fsrcbF0gyUakEeajnhYQwfj7RoxKnL4ID7U2GCW1hgYyTISQA0dpgFYs1EDI1XlUCjsYPwcjdEBqvOdUs4ZozgC8NZ41C5qxjlNlSpYGArOKIV8q8dw1AFoIYNeqYamkcQGg8fhW8IxmzIeyojulcpEkUAD7XW8PRx1LcuTUqdtUsYJenz+Id4WHlAuoroQEA7xaZ4Pfkb8I1zINBGNGuoz2aIPObPFO45+chh6KJqj5sfPIi6LVMfbOXjfC+K9Giu7pVKGdm7Kj/r9XT3VKevy0H/FHJgKPWbKZdH2zSGrzupFnavs43K9lalggedq5fzCo7jtu9/xe7X7cWlueR0+81cV1Nf96Zked5etDOynzez3wKf5ftK7PpFm48K+tS1cAAsH+7w7Gn3Ic73wj31j23RMREksL0aX7fZp3W3pw64L0yKW2TDyuDW7zr7uwM2el3VRb08wa7dYa8FRD3NuOTLmxCUig/CoNCduzpF5xKNPWaNUB+e9HrUZ+/t47UXIC6VKMf7aTBNnix88Z+x8FyJEPGrgFq8fHxowt6o8zhHDyM3QnVm3BHpKsh1hA7briWsPDfCSQovYro0f7xmfdBeCdrqjllywHrleCdDFV6xpQNobQWow6gUNNiQuyYRBz/fYgUQpWfxuYgqFEPhh8PKiFPiXvZR63le+kG82//B/mf+a/wR0OTfz4PRu3gAAAABJRU5ErkJggg==";
+const soundunselect = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAMAAACfvvDEAAAAZlBMVEUAAACjn5KkoJKjn5KhoZajn5Kkn5KjoJKjn5Kjn5Kjn5KjoJKinpOonZOjn5Kjn5KjoJKjoJOkoJKkno+koJKkn5Kkn5Kjn5KhoZSjn5KjoJKin5Kjn5Oin5Gjn5Oln5GiopOjn5K6nrBdAAAAIXRSTlMAxUbtCGWxy2rO2NMyDvKKW0pBIryTelAX5LRgp6U+JSENB1e1AAAA6UlEQVQ4y83U6arDIBAF4EnU3miz3yTd7tJ5/5dsKZRRj4ZSaOn5OXwyHAUJo3/bdheOmuNImO8tMxfh2S/mE8BR8TU2hsVfDCu+pYjghuJ0LHIN6iOLDCB2EQkQuogUiF1AJmHHKJsQ7mfrttYxSu1CePBAKGnhiSQ/nJc0aE+qjMS0D0v1XtmUQ3nPrl6TtT+xz8r17Z96S5KXvbt7WPYr8t8tPl2yUh+YjU/PvTn1RqG87TOJLw4llUmqNyBzlDqQWVqBzNJRiQQKvUQChV4ihVY608sSUEr3msPRwPOeUnSa6mhkGroAExRZGmoaLpUAAAAASUVORK5CYII=";
+const soundChoose = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABFCAMAAAA1muuoAAAAYFBMVEUAAADNwJLMwJLMwJLMwJLMwZLMwJLMwJPDw5XMwJLMwJHMwJLMzJnMwJLMwJLMwZLNwZLMwJLMwZLMwJLNwZLMwZHMv5LMwJHKwpLExJbMwJLNwJLMwJLMvpDMwJLMwJInZxg4AAAAH3RSTlMAxbntzmOyRghpIokK2dO8WvKwQJV6TCsVBOGpohvnvS6PHgAAAQNJREFUWMPt1ssOgjAURdFiASlQKALi+/z/X6oDc7UVk15MJNI9ZLByKCGpCIVCC07V9WA96s9MCkAnXkpwHDhUgVuxRQHKXypT3ItsautP5RXIeqLW/lQrQdY0SgFkTaMKkMWn6NTJIop36mQxqdwkiVESjrXvfameBMvKtCdlMGqJXW2ET3rE4tR80ZLLtvJVvXoUFdOsFk9d5rNrrmf/N9Zc/8fjJys5e1m7w6i176AzP6yLdRXrd1YExBnvSuK+4+aGlQxMvTv7lLmslY7FX5ZXjsVfVqZkcTGqcCz+awpF1vRlrXTvqxvgsBW8L0C7aJkRnLJT09grToMIhUKhX3YFGE9S+on0vvMAAAAASUVORK5CYII=";
+const unlockBgm = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAc4AAABDCAMAAAAiYRUwAAAAclBMVEUAAACTj5eRj5eSj5eQj5aRj5KbkpuSj5iTj5iTj5mSj5eSj5eWlqCPj5eZkZ6djJ2Uj5uZkJ+Wkp6XkJ2YkJ+YkJ+YkJ+WkJyYkZ+Xj56ZkZ+YkJ+YkJ+YkJ+YkJ+XkJ+XkJ+YkJ+Yj6GYkJ+Sj5eYkJ8gswvRAAAAJHRSTlMAQIC/MBAF72DPn98IIBYMkSoerOaghm5II3r8uFbyxWVRN9cnCwkTAAADIElEQVR42u3d626qQBSG4YXMyEFEQM6elbn/W9zIYbehNju6Zg+6sp6k/devad9g49Ao/NMSGCGckxTOSQrnJIVzksI5SQm4JyUbzkmJDIDREXJOSpINMDpiCYyOawiMjjIBRocbA6OjFsDoiCxgdGxLYHTsL8DouJ2BkRHsamBkJCoCRkap9sDIqFW6hBcJ66E1PGP9eETAM6T1mPkR+GVEmhnZK3WFF9nNQwt4xuLxiP3cj988Zn4EfhmxjIyEO6VyzkklZ62USjknkZzBUbVqZM7VooPM2Y+scDn9bsRuBqgRXE67G/G/ShgY2aq7XYzLaUMHmXPYxOW0JpvGR75+C5NNAyO56qUV5/z4nMlWjY4XzvnZOeP8qL7ZX5ac8yNzBmF8yE9qKs0KK0H8E/XPnLgrHuFvidlHJiXQI8tOsJFhEl9Lt462p5v63dHbZ3lxsESVyE2w7HDO98k5GpJWsbAu5zq77dQP6T4qDuW1LRm2KduWfHW+bc6pqjip73ZZGQCKqyPnutGRczWuzD7iP5ETOXJI1V9ZBa9a9CIHk9MdVlaYnNYwYjejuUbWw4jfjKz/PxJ6anCG1zVTQsd5YYF5eBxtNY7gzgsdEyNBOtbUmNMHDTk9qaGEIzSN4Eu4RkaEutuCxpwRaMhpS8CXWAk9I/gSjmtoJGtr7hItOf3hrjMqpzfeMEaV6EakphFUieI+sjY2Eo8XJ58efOLzkx9uSpWck0zOXB03nJNMzoM6AeckkzNWGeekk3Ojcs5JJyekBeDYrVX74QJCNIxEgOAOI/bsI6L9es9rPwnTI6cDoPmOADS3cQFNOP6bjEjPkzOMbEt8zf4oDH9DxsWHaBr/LUak159Umh7JLPT3HI+g8HeSIh336Gw5/4hw+hNC4yP5FV2z5+JrIq8KF3F+r3dEOIjze9TIOeachHJeKtDSU8uDrQ8o7hBi/hHhIGpiRqwQ0D37P534nhEAvqct32HknmIlzI+IkJ+oEHqiUknAWwOPTEk5x0jIL4BKCb/aNCn8WvCk8Ds1kMI1SeGcpHBOUjgnKZyTFM75Qf4AsGo7XPaqQ1gAAAAASUVORK5CYII=";
+const footerLeft = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAAA5CAMAAADTGTPKAAAAkFBMVEUAAADMwJLKxJbMv5POwJHMwJLNwpXMv5HMwJLNwZLMwJLMwZHMwJLMwJLNwJLMwJLMwZLMwZLMwZLMwJLLv5LLwpHMwJLMwJLMwZLMwJLMv5LLwZDMwJLNwJLMwJLNwZLMwJLNv5LNwJLMwJLMwZLMwJLNwZPMwJLMwZLNwJPKv5LMwJLMwJLMw5PNwJHMwJIEJMHMAAAAL3RSTlMA9gdSDJkWNd2tpSn64raIvLCOXD8h8NfIkk4S0YN6bWdJO8J2ci/qzGFEn1gdG0pHNjAAAAJiSURBVFjDzdnnjqMwFAXgC6b33iGk15nz/m+3FGWjSUBa7UwGfz8RFgf5Xtmy6Zs2B+JHEBI/cp7CyC3xw2uIH4JM3FCwJW4wJCLxwgDWxInSAnTihIvOB3GhFNAxiAs6BhviwBkjm4OGUnHn0NIOCQY8lE0kALykWeErR6GlxD6eJUul2Ql4sZVoCesMr05LtLd48zDBk+i3SWvZxpSAOqqzoY5SiPRuorrSj5hUFdS5CBAu/Yv7Yx69L494YLWvYYZzo16IXkidPWD7TRHTz/pU2U7e2phj621Mgx1GO+ow9KxUd8PIlOg7JMXcrMNdbmy1BHOE1MnP6t/ZyHGXU6ewcGfZlWME5/UmLv8hlqJeWNjualc2fG+bVdpRwDT75OnXoN6fi+igTOwlRjp1NhaeWYldZZ7jG3JQN81u1Z5DxiLxqTDDfeNedWe7rYYY8zIjaFZMjV//8PYYKNzuq8U8IbHTzOti5XuR5ondFF3Yqpb9TJtPlqSe0TCTHkwNI214Wjy+q2W6HLhu4DbtrbhEqvlRSv/Rax9qsc8dDbNSI/wbSDmhd1KGkcKQI5PbKKYfZRa1k2LOyT3QyAfg0+AIpDn7pDeJWe0lmOZHNLjiSj0pg3yhN1OYbGPSVaLemgbMLek3iEzHFE2lB4l+jRkkeGVFtAzFnUpzoIWYDl4ptJTWwhO5pMUctK8VvKEllRUeqpKWJaW4syVaWnnEyIppeRFGK+KBjF5FXJAEgJ8TRhdASpyIuamYngfrk3jR4kTcUBEQNxSciRuixktj93SV+FHzsC7d7Tm5xhiYEv2cPyYvp3C52LxYAAAAAElFTkSuQmCC";
+const footerRight = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAAA5CAMAAADTGTPKAAAAkFBMVEUAAADMwJLKxJbMv5POwJHMwJLNwpXMv5HMwJLNwZLMwJLMwZHMwJLMwJLNwJLMwJLMwZLMwZLMwZLMwJLLv5LLwpHMwJLMwJLMwZLMwJLMv5LLwZDMwJLNwJLMwJLNwZLMwJLNv5LNwJLMwJLMwZLMwJLNwZPMwJLMwZLNwJPKv5LMwJLMwJLMw5PNwJHMwJIEJMHMAAAAL3RSTlMA9gdSDJkWNd2tpSn64raIvLCOXD8h8NfIkk4S0YN6bWdJO8J2ci/qzGFEn1gdG0pHNjAAAAJoSURBVFjDzdkJbqNAEAXQD82+75sB431P3f92g0GJJ7GJZpTY3e8A1KdKrZaq8YsUG+K4bCCOtIE4dBPiWBgyhHEgDcKISIcw9tRBFG8OBRDFnIhSCCInIh9iWFBPUiCEmq5UiGBOowT8pQ6NdjPwprj0LlfA16ymm5pvb5YG/c3YgpuZSl84HXjR6J5ng5OtQ/d8DXwkj9Jk0Qu7o+BGN+gRk8l4hZnPMFiMyU70kKuyp4/rqFIxduZEJwySkB7LgoaleJI3VuZEOwyuCUKMtv6epuReU9n4VWnSqYVEPemCnjZW339Mwo6tnCYZXrmp9Av+m6zMLraeHKtz1/qR70eqWRgSvauG0sZ7FRs3NmutIM9oimQUodrM2XFpa/J3CTalaoVBkbuZRN+Zo3eWbgXO94ct1dm8jayCviPt6tXKM09+u4l1+XOYhLH40M3XbdtEfSwvKGo3c+grZ4meSTcm/qZtk+qwaaKTGezdyRhGXayC0FL9Zt3F7Kj/w7FTZulycYgsr3adW5phTCW9Kz9+Rz+UXi7RlMxYWeU6XvQjUn648Uhi38zHSAy9NY3WGKSd6dIUd6Wumf6G35VWbegSbdCL6SrG1dmjCUbYsK2MZ5GTcre5fv4okXREr6rpoZ0512U8m1xp6C09Hb1o4jJYKHg1JaAHgrOM15P3dK9YgAdlRXekNfjQMvoqTMGL5t3dFjxZn0aUgIPHabItePuYlAh7Pdml0QECWNJAkL20RT2J/0JkcCGBdnowiRxBGjNsGC2IQs6IQRgrkR4yVAniaMV5OgA6MTbSo7iEOOII4tgu8TN/AMxtp3DmOxv5AAAAAElFTkSuQmCC";
+const footerChecked = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAArCAMAAADWg4HyAAAAclBMVEUAAADWzKvRzajQzKXNzajQzKfSzaXRzajNzajRzajRzKfQzKjRzafPzKfRzajRzKfRzKfPy6fQzKfQzKfQzKfRzKfQzafQzKfQzKfQzajRzafQzKfQzKbQzKfRzKfRzKjQzKfQzKjQzKfPzajQzKbQzKfKnt8iAAAAJXRSTlMABwwRFCkXJR4bRjMvOkIhNz/2wuDNuaGUXVDo2NGbbe2MfHWHGkVkRAAAAYNJREFUOMvl1NlywjAMBdDSeN8dICFhh+b/f7ESTTsgmw6vner5jOZ6kd7+fC3megG+/xTlpWwaxoRgjDW/apRMaKViVEoLoglFGSW/lYxKg0ZcpyidTd6nZB2XSiCuUqEktz4HgxW8dYAZ4Dp1KZtrt2rb0/owBu94xM7lsZiWzodhP83Vboy3XJV4caMpXKa7WhoPMSBFkSByG64gKMbGZds8rqbH2gRIwagViifTT6ROo3d4vHsLEeBgxy212FhqCPEQV0ubD1Ri4kRCYFw42bK025rFuPvStsbzKAprX7aQN3SlXVUyNHi9m9J25QXjszk/7Ar7kd18ZyRwOFO6g7jzW5AQ3qyJvWRb+TyNgMZ5eHy5PiRsW/1oKQz3v+eA30xj2+oHzqZvv7MeA9D5r5eTieMWxnO3Xi/7o8mJUDLG3H0NZwg5WU4oWQ8KZ97CxOPIRy2eLwg4oFZRSlwlKBnSp+uswdWjFa4olCQAbY0cqmnKbfZ8qZIVXK95Vf+v+gRbzDtbBqUnoAAAAABJRU5ErkJggg==";
+const footerUncheck = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAY1BMVEUAAAA5LkQ5LUQ5LUQ6KUo5LkQ5LUM5LkM4LUQ4LkQ5L0Q5LkQ5LkQ4LUM4LkQ4LkQ5LkU5LUQ5L0Q4LkM5L0M5LUU6MEMxMUU5LkQ5LkQ5LUM6L0M5LUQ6LUQ5Kkc9MUk5LkTxS/uBAAAAIHRSTlMA97x3B/zw37Vm29DKo5R6b1lHPTMsGg3o5K6fbE8kFfzPmmYAAACSSURBVDjL7dLJDoMgFIVhBhkcqq1D7dz7/k/ZRRNDuAd0a+K//gKBHHG0lyb99L7tixU2Kvpnuyw9G1pqrmmnKaz6ptxgiMJUCtYUdcHuTXENhidi4fdUHOK7JYcaQrMV3jksIfQcThCWzDkBm28x7JjBRzo2IPzlchSpikfgbJ8dpF2m8xHZ5pdyUtbtII520g8R5CRcqW296gAAAABJRU5ErkJggg==";
 function ExtraBgm() {
   const { playSeClick, playSeEnter } = useSoundEffect();
+  const [page, setPage] = reactExports.useState(1);
+  const [list, setList] = reactExports.useState([]);
   const currentBgmSrc = useSelector((state) => state.GUI.titleBgm);
   const extraState = useSelector((state) => state.userData.appreciationData);
   const initName = "Title_BGM";
-  const isShowBgmList = useValue(false);
   let foundCurrentBgmName = initName;
-  let foundCurrentBgmIndex = -1;
-  const iconSize = 39;
-  const bgmPlayerHeight = isShowBgmList.value ? "80%" : "10%";
   const bgmListLen = extraState.bgm.length;
   extraState.bgm.forEach((e2, i2) => {
     if (e2.url === currentBgmSrc) {
       foundCurrentBgmName = e2.name;
-      foundCurrentBgmIndex = i2;
     }
   });
   const currentPlayingBgmName = useValue("");
@@ -97930,116 +97890,84 @@ function ExtraBgm() {
     currentPlayingBgmName.set(foundCurrentBgmName);
   }
   const dispatch = useDispatch();
-  function setBgmByIndex(index2) {
-    const e2 = extraState.bgm[index2];
-    currentPlayingBgmName.set(e2.name);
-    dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
-  }
-  const showBgmList = extraState.bgm.map((e2, i2) => {
-    let className = styles$4.bgmElement;
-    if (e2.name === currentPlayingBgmName.value) {
-      className = className + " " + styles$4.bgmElement_active;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        onClick: () => {
-          playSeClick();
-          currentPlayingBgmName.set(e2.name);
-          dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
-        },
-        className,
-        style: {
-          animationDelay: `${i2 * 150}ms`
-        },
-        onMouseEnter: playSeEnter,
-        children: e2.name
-      },
-      e2.name
-    );
-  });
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmContainer, style: { maxHeight: bgmPlayerHeight }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmPlayerMain, children: [
+  reactExports.useEffect(() => {
+    setList(extraState.bgm.slice((page - 1) * 8, page * 8) || []);
+  }, [extraState.bgm, page]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmContainer, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmListContainer, children: [
+      list.map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            onClick: () => {
+              playSeClick();
+              currentPlayingBgmName.set(e2.name);
+              dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
+            },
+            className: styles$4.bgmElement,
+            onMouseEnter: playSeEnter,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: bgmstar, alt: "", className: styles$4.bgmStar }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `${styles$4.bgmName} ${e2.name === currentPlayingBgmName.value ? styles$4.bgmNameActive : ""}`, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.bgm_item_name, children: e2.name }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "img",
+                  {
+                    src: e2.name === currentPlayingBgmName.value ? soundChoose : soundunselect,
+                    alt: "",
+                    className: e2.name === currentPlayingBgmName.value ? styles$4.soundChoose : styles$4.soundunselect
+                  }
+                )
+              ] })
+            ]
+          },
+          e2.name
+        );
+      }),
+      Array.from({ length: 8 - list.length }).map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.bgmElement, style: { cursor: "default" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: unlockBgm, alt: "", className: styles$4.unlockBgm }) });
+      })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.footer, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
+        "img",
         {
+          src: footerLeft,
+          alt: "",
+          className: styles$4.footerButton,
           onClick: () => {
             playSeClick();
-            if (foundCurrentBgmIndex <= 0) {
-              setBgmByIndex(bgmListLen - 1);
-            } else {
-              setBgmByIndex(foundCurrentBgmIndex - 1);
+            if (page > 1) {
+              setPage(page - 1);
             }
           },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoStart, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
+          onMouseEnter: playSeEnter
         }
       ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.footer_page_container, children: Array.from({ length: Math.ceil(bgmListLen / 8) }).map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: i2 + 1 === page ? footerChecked : footerUncheck, alt: "", className: styles$4.footerPageIcon });
+      }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
+        "img",
         {
+          src: footerRight,
+          alt: "",
+          className: styles$4.footerButton,
           onClick: () => {
             playSeClick();
-            const bgmControl = document.getElementById("currentBgm");
-            bgmControl == null ? void 0 : bgmControl.play().then();
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            if (foundCurrentBgmIndex >= bgmListLen - 1) {
-              setBgmByIndex(0);
-            } else {
-              setBgmByIndex(foundCurrentBgmIndex + 1);
+            if (page === Math.ceil(bgmListLen / 8)) {
+              return;
             }
+            setPage(page + 1);
           },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoEnd, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            const bgmControl = document.getElementById("currentBgm");
-            bgmControl.pause();
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(SquareSmall, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.bgmName, children: foundCurrentBgmName }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            isShowBgmList.set(!isShowBgmList.value);
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          style: { marginLeft: "auto" },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(MusicList, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
+          onMouseEnter: playSeEnter
         }
       )
-    ] }),
-    isShowBgmList.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmListContainer, children: [
-      " ",
-      showBgmList
     ] })
   ] });
 }
 const extraCG_animation_List = "";
+const cgUnLock = "" + new URL("cg-unLock-627ed56c.png", import.meta.url).href;
 function ExtraCgElement(props) {
   const showFull = useValue(false);
   const { playSeEnter, playSeClick } = useSoundEffect();
@@ -98067,7 +97995,7 @@ function ExtraCgElement(props) {
         ) })
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         onClick: () => {
@@ -98075,109 +98003,168 @@ function ExtraCgElement(props) {
           playSeClick();
         },
         onMouseEnter: playSeEnter,
-        style: {
-          // transform: `rotate(${deg}deg)`,
-          animation: `cg_softIn_${props.transformDeg} 1.5s ease-out ${100 + props.index * 100}ms forwards `
-        },
         className: styles$4.cgElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            style: {
-              backgroundImage: `url('${props.imgUrl}')`,
-              backgroundSize: `cover`,
-              backgroundPosition: "center",
-              width: "100%",
-              height: "100%"
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: cgUnLock, alt: "", style: { width: "100%" } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              style: {
+                background: `url('${props.imgUrl}') no-repeat center center`,
+                backgroundSize: `cover`
+              },
+              className: styles$4.cgUnLock
             }
-          }
-        )
+          )
+        ]
       },
       props.name
     )
   ] });
 }
+const cgLock = "" + new URL("cg-lock-8b96b0a0.png", import.meta.url).href;
 function ExtraCg() {
-  const cgPerPage = 8;
   const extraState = useSelector((state) => state.userData.appreciationData);
-  const pageNumber = Math.ceil(extraState.cg.length / cgPerPage);
-  const currentPage = useValue(1);
   const { playSeEnter, playSeClick } = useSoundEffect();
-  const showCgList = [];
-  const len = extraState.cg.length;
-  for (let i2 = (currentPage.value - 1) * cgPerPage; i2 < Math.min(len, (currentPage.value - 1) * cgPerPage + cgPerPage); i2++) {
-    const index2 = i2 - (currentPage.value - 1) * cgPerPage;
-    const deg = Random(-5, 5);
-    const temp2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ExtraCgElement,
-      {
-        name: extraState.cg[i2].name,
-        imgUrl: extraState.cg[i2].url,
-        transformDeg: deg,
-        index: index2
-      },
-      index2.toString() + extraState.cg[i2].url
-    );
-    showCgList.push(temp2);
-  }
-  const showNav = [];
-  for (let i2 = 1; i2 <= pageNumber; i2++) {
-    let className = styles$4.cgNav;
-    if (currentPage.value === i2) {
-      className = className + " " + styles$4.cgNav_active;
-    }
-    const temp2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        onClick: () => {
-          currentPage.set(i2);
-          playSeClick();
-        },
-        onMouseEnter: playSeEnter,
-        className,
-        children: i2
-      },
-      "nav" + i2
-    );
-    showNav.push(temp2);
-  }
+  const [page, setPage] = reactExports.useState(1);
+  const [list, setList] = reactExports.useState([]);
+  const cgLen = extraState.cg.length;
+  reactExports.useEffect(() => {
+    setList(extraState.cg.slice((page - 1) * 6, page * 6) || []);
+  }, [extraState.cg, page]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.cgMain, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDivWarpper, children: showNav }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgContainer, children: showCgList })
-  ] });
-}
-function Random(min, max2) {
-  return Math.round(Math.random() * (max2 - min)) + min;
-}
-function Extra() {
-  const { playSeClick } = useSoundEffect();
-  const showExtra = useSelector((state) => state.GUI.showExtra);
-  const dispatch = useDispatch();
-  const t2 = useTrans("extra.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: showExtra && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        CloseSmall,
-        {
-          className: styles$4.extra_top_icon,
-          onClick: () => {
-            dispatch(setVisibility({ component: "showExtra", visibility: false }));
-            playSeClick();
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.cgContainer, children: [
+      list.map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ExtraCgElement,
+          {
+            name: e2.name,
+            imgUrl: e2.url
           },
-          onMouseEnter: playSeClick,
-          theme: "outline",
-          size: "4em",
-          fill: "#fff",
-          strokeWidth: 3
+          i2.toString() + e2.url
+        );
+      }),
+      Array.from({ length: 6 - list.length }).map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgElement, style: { cursor: "default" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: cgLock, alt: "", style: { width: "100%" } }) }, i2);
+      })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.footer, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          src: footerLeft,
+          alt: "",
+          className: styles$4.footerButton,
+          onClick: () => {
+            playSeClick();
+            if (page > 1) {
+              setPage(page - 1);
+            }
+          },
+          onMouseEnter: playSeEnter
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.extra_title, children: t2("title") })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.mainContainer, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraCg, {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraBgm, {})
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.footer_page_container, children: Array.from({ length: Math.ceil(cgLen / 6) }).map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: i2 + 1 === page ? footerChecked : footerUncheck, alt: "", className: styles$4.footerPageIcon });
+      }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          src: footerRight,
+          alt: "",
+          className: styles$4.footerButton,
+          onClick: () => {
+            playSeClick();
+            if (page === Math.ceil(cgLen / 6)) {
+              return;
+            }
+            setPage(page + 1);
+          },
+          onMouseEnter: playSeEnter
+        }
+      )
     ] })
-  ] }) });
+  ] });
+}
+const background = "" + new URL("background-a6a3d990.png", import.meta.url).href;
+const backTitle = "" + new URL("back-title-ffa27ce6.png", import.meta.url).href;
+const cgbgmBg = "data:image/png;base64,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";
+const cgunselect = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAeCAMAAACrM+hrAAAAeFBMVEUAAADMwJPNwJLNwJHNwJPMwJLMwJLMwJLMwJLMwJLNwJLNwJLMwpHRy4zNwZLMwJLMwJLMwJLMwJLMwZLMwZLNwJHNwJPNwJPNwZHMw5LKxJHMwJHLwJPMwJLMwJLMwJLNwZLMwJLNwJLMv5LNv5LMwJHLwZPMv5MdsQU2AAAAKHRSTlMARDQ+OWi3SFlVvp4jBq6CdY1OfCAxYFwaEQwpF5jEp5PMo4dwbGNQ9TcTaAAAAalJREFUOMt91dmSgjAQBdBLWEQJskiELILoLP//h0M6Dxpmes6TldzOLSupAm+MyPOmqqomH8WEv0xbotsS9/x3ZCqXdT21vfDSvLs1qUHEtsW6zk0vyJh3S9O/yi/rNl5GJ/Z4J2+U2JUKBGkxz3Mhwfua/0scTp4C7zKfTvP873zRgtdSw5XZdefCc2BlBTHMdnP2OvAqmr8wu8OZHMFKQiJhtsfH8ngsiwCrXcjA/YOKDGA9AjBuAVi2Ik9mW94DsLL7dv79/sEd0AVgHTryyV1C4z2fYCVPkoPoJCIwXAKw0oZc981kwtAGYKWhYdwvE4XpIwDLtuSIWEkSIA/Amj5Jub8cYoHjF9Hg1H9XCGKBbCQOrP5KakTC4gFwR2LBsiXZVYzlWJZj4u/528vAqnuqUIiE3hSAPpAaLNl7CSI9oV6beBK8jCqm+IWTDJ5IvRqsWviKLEokRIV9mW1UvR8bXj+Vr6DE/iUGWvk7Ne/TWrv4q+Y7zO4hvX3ftFVKSW1o2EzS6BoxZ32JM7RujBBbHBHjBimtklK613RE+8TgzFQ7HSL4Abc9JxSAIwMnAAAAAElFTkSuQmCC";
+const bgmunselect = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAAAeCAMAAAD6p9sIAAAAflBMVEUAAADMwJLMwJLNv5HNwY7MwZLMwJLMwJLNwJHMwJLMwJLMwJLMwJHMwJLNwJLNwJLMwJLMwJLNwJLNwJPNwJLMwJPMwJLMv5LMwZLMwJLMwJLMwZLMwJPMwJLLxJLMwJPMwJLMwJLMwZLMwJLMwJLTxYvNwJLLv5LMwJLNwJEtfdFsAAAAKnRSTlMAVpg1C2JQSj4jXIMvfEKJdWieOXBGzSmzrse4H2sPwr2PGaIVBqaok2QTFA55AAADWElEQVRIx5TT3Y6CMBAF4ENBECs/ZVEElyhioL7/C247E6Q1Gzb7XZ525iRNin9r8r6vDKlUHEb4p1J4pvP5JoZDg9/l8nY+X8o8JEqJqQzxps7kgpV/IlALLYwUYFHSdkYbgHj2F7sshCutI2cpS/Ahupu0s3XJjjywykzdrWvTz5miM8aN93t1rMWHpGMa6ZF4S4abdX34bZUN54027LS+kQS+OeN8+LUuvRPptQnKjtiqG448OcHzdTf51eQDVEFSuK4MDkWJwJZDgYInT3AVBTgusJPkG64Lw+rJSbxdJ3G8kAork+XgWGIfkCdcLcOq5+SJLYEEZEtyd1YsGyWyiTRwfE/TPE/TAatqtipsCjKgmYl2HmYOgIlkKCvi1b2qcaxGGeGtGUmGTbE9z0ayx0KJCFjma0FSrBpKAm9RRXZ/1JV2uiIFwCJtpzgs0Wvi1OWF1jJ+wnXQWhgJNiU1jFqQryUUdhVn9fIR9ilr4rIP9g986AfyV10PIx1IBpZRyFm/fIQ4J8nLyr9S+FRBTiDpyfO+fFLu5RBWyF+aI/XTZxnsuA7CUNSRPSlBDGrFRGwoC5Qs3v//4ANbcQBVPZVacX0T38gJDdhfJoESW4LfJcLNFcrDwJmYrGOQ2SYxP3nxlB+RfmB5Mgk6HCd439oVysBANoz6jB3crrWu3w1RLCx/zDgtrErNEO+pSKgAA8fCqC0swCRxvwDq6U+WRFlgfTEFBpY3k7X/+91CzVcXEEMIRduteosyEfJfEEWEdfy/U/Afo6dPEmqFAUJGj8WrTtVb01rwLxKlLdvx3jIHDBRrW4hdbwoJtU4uUZ3O/KFTlAr+XIFl/Ri36HkqXgVjmckl4t1O45EV9DJktUNYmbmdqGbsvy7l660Sbz9KSYUrPj6Yqd0m6gaKxHKfQn1qR1LSZ+SKj76y7xkGwt7wJyjk9xaAoCNPoTYExbWK16U4EZxh8vT8+kbpNWLNDTbPfGxHsr1piSkQAzO0Iww1QThggJpo4pddJfVhovHm1JVjNojIUL8TsrKpVwtbqHR6Dg3M2i727mrtmjNJX/zKWT9UyhZbqzRdmSZxrXqQrA5ElzIoZXwFwS5wZghOYoA/vDjhG2cubQgblJwLTTUanXBDwn/0OFvkNnjBEwAAAABJRU5ErkJggg==";
+const tabchoose = "" + new URL("tab-choose-88991de2.png", import.meta.url).href;
+const cgchoose = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAeCAMAAACrM+hrAAAAdVBMVEUAAABcU4ddVIddVIZdVIVdU4VdVIZdVIZdVIZdVIZdVIZdVIVeUodeVIZdVIdcVIZdVIZdVIZdVIZdU4ZdVIVfVIddVIZdVIZdVIZdVIZdVIZdVIZdVIZdVIZdVIZcVodcU4ZdUoddVYZdU4ZgV4ddVIdbVIbMp1AiAAAAJ3RSTlMAU3hxhDV/WMG7bF8NKGVD1M3HozoUp6yykU62n4xIGZcuHpwHaSOk4p9mAAABm0lEQVQ4y33R0ZKiMBCF4RMgsIQEXE1Gh2Fggwzv/4ibNFMlsWi+O+2fY6nYMUKpW6BUJ3HIdKEYhluhlJAaia64Xi6DkqTJhqExOCjqrJNEqeGeydexvoTHp6SngbSoJfZMpkH05yUowNuKu2auH3+DJ8hJ8eCfjyaQk0Iy5/walSAnxY25yiuxYE1/SMWci+0MXrYVzHfUdR2vT/AedXRnrrYmJViegq9v5tx8kQasaity7id4kAosdV4Ud3IyUJ4X5QcRSPCFEQmD7EZOBrZieCu0IQ7Z8ByC/mTgSd4K1xOD/B85GWgOizknFuMnGcH6LQQSbiQr5DdpwPJb8fM20JEVriAtWMtWKCTWgnRAUxLwqqNiLkkH+IxMYM1bYY7etPED8qgDT1AxHv8LgGtV0C5gaSqUxs70QySNtZEFzzWx6JKBlsjtRdUEK96s7rVAhd0PNMSDLLYK/IIXN8n9y0XGwurdZNQ7/NKyF6L3jgo3e+8mpLQfhRB2dkvc06sQo0wbvXpru3601huHI3o21lpjYebJhKHoPyK+KOI+tz21AAAAAElFTkSuQmCC";
+const bgmchoose = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAAAeCAMAAAD6p9sIAAAAclBMVEUAAABdVIZdVIZdVohdVIZdU4ZdVIZdVIZdVIZdVIZdU4ZdU4ZdVIZdVIZdVIddVIVdVIVdU4ZdVIddVIddVIZdVYddVYZdU4ZdU4VdVIZdVIZdVIZdVIZdVIZdVIVdU4ZcVYVdVIddVIVdU4ddVoZdVIbJwJ13AAAAJnRSTlMApcsUu5WAbGDFmo9VtnpyNNagZ1opDImFwKvRdkSwLSNPSD0cOPRgD30AAAMqSURBVEjHlZaNcqowEIWPphgUBBQIVEF+ff9XvGFXQpJ67fRzpk2+3eyRGUTxZ56xTHaaRMr2ib9CRzcel8t+F4Ql3qKG4HK5PGRGtDK5PuQMg7wQX0b4lSuSK1FuE7/oSIifyP1yZHZcK+2hzAAPdbxc7porBknYM2p+j/4Vlre71jX+T35nzvAY7swJZUYoWJyodpzdtOMiI3yKO532+/v+fvcv73zYE+/jSi5Gjvte1Lf6HJfxyYfrp/3LB0hPRA+bPWOrHZkUH+MCBHxycHwQ4EjouIBw446MZUY2PT4RBsi472ZZ7Uae+B1hDIn5l7ibmfIpLgKib2K0dKOPsY3WcgeLnp38Yerf47ovYrdZsXyo2FaIeOHENaROyhrEXSE+UlQAKm5tjU1vCjh/nTUVVb247ryQw6I6E+1vcXSauK5S3VIALKt1kBU33HRzLmBzMl0f42po6gfRrvKxjGJXr8WhY55hVMuhh8eD+SUuPvDThwjABCTZHXDghYyJ8LAQjyVcbsxLT7GDMHGJ/dSfuHdHh1gla82an5FKM1jsvC5GlITy4sqrZreLaBPxvyuRoOGFM2giVVnuynhx5UCYqxsaEM2JmJYW+guwadaHmDuoZfk0ombRw+GZErOJS0H0AVEDSCNFik26PcQcGrYCzNrVwaEfCdM1SjB5RDwhopENCwnJCy9uZFuY98370YtrCRPX5mBERSSIq1eRRY6cF15cX7/KL8q6qjUDHNqa6O04JuZKW8dgeB8iPBB+HNvQiGTbb0ze2cnUhdZObZ1XJMQMh5ltsU1modw47+y09Y/egIYoUPDCi5vYZkYo2aRadO6dqZ19Zz7jrT8lzA3P2xixdzMzhVZS5mozvVwI3TjvZ1U2wNC67ZIYMOSEGzezLG1XkupslXHb2zi1VLKtlejffpuLYlGFf/tQoy2zkBB40Y3YmPQEZXbjQpuhLQgBg8rIPBU8BPV2m++osTWia7Gh9AgYWkLHxYQolX6JsptGvZuyHu8Q2RDHQzYLmqeyOG47AUM5wSKLlXWSUFCCAL0Uu0+ovpumSUxq7kQvvJpydjN+xP0DnbtY2rsPD5gAAAAASUVORK5CYII=";
+function Extra() {
+  const { playSeClick, playSeEnter } = useSoundEffect();
+  const showExtra = useSelector((state) => state.GUI.showExtra);
+  const dispatch = useDispatch();
+  const [checked, setCheked] = reactExports.useState("bgm");
+  reactExports.useEffect(() => {
+    const bgmControl = document.getElementById("currentBgm");
+    bgmControl.pause();
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: showExtra && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: styles$4.extra,
+      style: {
+        background: `url(${background}) no-repeat center center`,
+        backgroundSize: "cover"
+      },
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: styles$4.extra_top,
+            onClick: () => {
+              dispatch(setVisibility({ component: "showExtra", visibility: false }));
+              playSeClick();
+            },
+            onMouseEnter: playSeEnter,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: backTitle, alt: "", style: { width: "100%", objectFit: "cover" } })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.mainContainer, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.mainTab, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: cgbgmBg, alt: "", className: styles$4.mainTab_bg }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.mainTab_item1, children: checked === "bgm" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabchoose, alt: "", className: styles$4.mainTab_choose }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: bgmchoose, alt: "", className: styles$4.mainTab_choose_bgm })
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: bgmunselect,
+                alt: "",
+                className: `${styles$4.mainTab_unselect} ${styles$4.mainTab_bgmunselect}`,
+                onClick: () => {
+                  setCheked("bgm");
+                  playSeClick();
+                },
+                onMouseEnter: playSeEnter
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.mainTab_item2, children: checked === "cg" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabchoose, alt: "", className: styles$4.mainTab_choose }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: cgchoose, alt: "", className: styles$4.mainTab_choose_cg })
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: cgunselect,
+                alt: "",
+                className: styles$4.mainTab_unselect,
+                onClick: () => {
+                  setCheked("cg");
+                  playSeClick();
+                },
+                onMouseEnter: playSeEnter
+              }
+            ) })
+          ] }),
+          checked === "bgm" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraBgm, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraCg, {})
+        ] })
+      ]
+    }
+  ) });
 }
 const tag = "_tag_yghix_2";
 const container = "_container_yghix_17";
