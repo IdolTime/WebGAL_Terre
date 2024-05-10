@@ -20410,7 +20410,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-e0d37b24.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-685d6650.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -85101,13 +85101,13 @@ function getUserAnimation() {
     }
   });
 }
-const Menu_main = "_Menu_main_1a7i6_1";
-const Menu_ShowSoftly = "_Menu_ShowSoftly_1a7i6_1";
-const Menu_TagContent = "_Menu_TagContent_1a7i6_10";
+const Menu_main = "_Menu_main_3bt98_1";
+const Menu_TagContent = "_Menu_TagContent_3bt98_8";
+const Menu_ShowSoftly = "_Menu_ShowSoftly_3bt98_1";
 const styles$d = {
   Menu_main,
-  Menu_ShowSoftly,
-  Menu_TagContent
+  Menu_TagContent,
+  Menu_ShowSoftly
 };
 const MenuPanel_main = "_MenuPanel_main_1c9ky_1";
 const MenuPanel_button = "_MenuPanel_button_1c9ky_10";
@@ -86059,43 +86059,42 @@ const MenuPanel = () => {
     )
   ] });
 };
-const Save_Load_main = "_Save_Load_main_1fx8j_2";
-const Save_Load_top = "_Save_Load_top_1fx8j_13";
-const Elements_in = "_Elements_in_1fx8j_1";
-const Save_Load_title_save = "_Save_Load_title_save_1fx8j_21";
-const Save_back$1 = "_Save_back_1fx8j_34";
-const Save_title = "_Save_title_1fx8j_48";
-const Load_title = "_Load_title_1fx8j_61";
-const Save_Load_title = "_Save_Load_title_1fx8j_21";
-const Save_Load_top_buttonList = "_Save_Load_top_buttonList_1fx8j_92";
-const Save_Load_top_button = "_Save_Load_top_button_1fx8j_92";
-const Save_Load_top_button_on = "_Save_Load_top_button_on_1fx8j_120";
-const Load_top_button_on = "_Load_top_button_on_1fx8j_136";
-const Load_top_button = "_Load_top_button_1fx8j_136";
-const Save_Load_content = "_Save_Load_content_1fx8j_149";
-const Save_Load_content_element = "_Save_Load_content_element_1fx8j_163";
-const Elements_in_transform = "_Elements_in_transform_1fx8j_1";
-const Save_Load_border = "_Save_Load_border_1fx8j_178";
-const Save_Load_info_box = "_Save_Load_info_box_1fx8j_186";
-const Save_Load_content_miniRen = "_Save_Load_content_miniRen_1fx8j_189";
-const Save_Load_content_element_top = "_Save_Load_content_element_top_1fx8j_193";
-const Save_Load_content_element_top_index = "_Save_Load_content_element_top_index_1fx8j_200";
-const Load_content_elememt_top_index = "_Load_content_elememt_top_index_1fx8j_211";
-const Save_Load_content_element_top_date = "_Save_Load_content_element_top_date_1fx8j_222";
-const Load_content_element_top_date = "_Load_content_element_top_date_1fx8j_236";
-const Save_Load_content_text = "_Save_Load_content_text_1fx8j_240";
-const Save_Load_info = "_Save_Load_info_1fx8j_186";
-const Save_Load_content_text_padding = "_Save_Load_content_text_padding_1fx8j_265";
-const Save_Load_content_speaker = "_Save_Load_content_speaker_1fx8j_269";
-const Load_content_speaker = "_Load_content_speaker_1fx8j_278";
-const Load_content_text = "_Load_content_text_1fx8j_282";
-const Save_Load_content_space = "_Save_Load_content_space_1fx8j_298";
-const Save_Load_content_miniRen_bg = "_Save_Load_content_miniRen_bg_1fx8j_309";
-const Save_Load_content_miniRen_figure = "_Save_Load_content_miniRen_figure_1fx8j_316";
-const Save_Load_content_miniRen_figLeft = "_Save_Load_content_miniRen_figLeft_1fx8j_324";
-const Save_Load_content_miniRen_figRight = "_Save_Load_content_miniRen_figRight_1fx8j_329";
-const Btn_l = "_Btn_l_1fx8j_348";
-const Btn_r = "_Btn_r_1fx8j_358";
+const Save_Load_main = "_Save_Load_main_140by_2";
+const Save_Load_top = "_Save_Load_top_140by_13";
+const Elements_in = "_Elements_in_140by_1";
+const Save_Load_title_save = "_Save_Load_title_save_140by_21";
+const Save_back$1 = "_Save_back_140by_34";
+const Save_title = "_Save_title_140by_48";
+const Load_title = "_Load_title_140by_61";
+const Save_Load_title = "_Save_Load_title_140by_21";
+const Save_Load_top_buttonList = "_Save_Load_top_buttonList_140by_92";
+const Save_Load_top_button = "_Save_Load_top_button_140by_92";
+const Save_Load_top_button_on = "_Save_Load_top_button_on_140by_120";
+const Load_top_button_on = "_Load_top_button_on_140by_136";
+const Save_Load_content = "_Save_Load_content_140by_143";
+const Save_Load_content_element = "_Save_Load_content_element_140by_157";
+const Elements_in_transform = "_Elements_in_transform_140by_1";
+const Save_Load_border = "_Save_Load_border_140by_172";
+const Save_Load_info_box = "_Save_Load_info_box_140by_180";
+const Save_Load_content_miniRen = "_Save_Load_content_miniRen_140by_183";
+const Save_Load_content_element_top = "_Save_Load_content_element_top_140by_187";
+const Save_Load_content_element_top_index = "_Save_Load_content_element_top_index_140by_194";
+const Load_content_elememt_top_index = "_Load_content_elememt_top_index_140by_205";
+const Save_Load_content_element_top_date = "_Save_Load_content_element_top_date_140by_216";
+const Load_content_element_top_date = "_Load_content_element_top_date_140by_230";
+const Save_Load_content_text = "_Save_Load_content_text_140by_234";
+const Save_Load_info = "_Save_Load_info_140by_180";
+const Save_Load_content_text_padding = "_Save_Load_content_text_padding_140by_259";
+const Save_Load_content_speaker = "_Save_Load_content_speaker_140by_263";
+const Load_content_speaker = "_Load_content_speaker_140by_272";
+const Load_content_text = "_Load_content_text_140by_276";
+const Save_Load_content_space = "_Save_Load_content_space_140by_292";
+const Save_Load_content_miniRen_bg = "_Save_Load_content_miniRen_bg_140by_303";
+const Save_Load_content_miniRen_figure = "_Save_Load_content_miniRen_figure_140by_310";
+const Save_Load_content_miniRen_figLeft = "_Save_Load_content_miniRen_figLeft_140by_318";
+const Save_Load_content_miniRen_figRight = "_Save_Load_content_miniRen_figRight_140by_323";
+const Btn_l = "_Btn_l_140by_342";
+const Btn_r = "_Btn_r_140by_352";
 const styles$a = {
   Save_Load_main,
   Save_Load_top,
@@ -86109,7 +86108,6 @@ const styles$a = {
   Save_Load_top_button,
   Save_Load_top_button_on,
   Load_top_button_on,
-  Load_top_button,
   Save_Load_content,
   Save_Load_content_element,
   Elements_in_transform,
