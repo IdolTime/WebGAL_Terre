@@ -20417,7 +20417,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-76dd8ccb.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-0371b237.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -35832,23 +35832,23 @@ function useUpdated(callback) {
     callback();
   });
 }
-const main = "_main_1p8eh_1";
-const button$2 = "_button_1p8eh_16";
-const button_text$1 = "_button_text_1p8eh_23";
-const button_on = "_button_on_1p8eh_31";
-const singleButton$1 = "_singleButton_1p8eh_42";
-const autoButton = "_autoButton_1p8eh_55";
-const fastForwardButton = "_fastForwardButton_1p8eh_65";
-const flashbackButton = "_flashbackButton_1p8eh_74";
-const fastSlPreview = "_fastSlPreview_1p8eh_84";
-const fastSlEnter = "_fastSlEnter_1p8eh_1";
-const fastsave = "_fastsave_1p8eh_98";
-const fastSPreview = "_fastSPreview_1p8eh_98";
-const fastload = "_fastload_1p8eh_102";
-const fastLPreview = "_fastLPreview_1p8eh_102";
-const slPreviewMain = "_slPreviewMain_1p8eh_114";
-const imgContainer = "_imgContainer_1p8eh_122";
-const textContainer = "_textContainer_1p8eh_130";
+const main = "_main_18f1c_1";
+const button$2 = "_button_18f1c_16";
+const button_text$1 = "_button_text_18f1c_23";
+const button_on = "_button_on_18f1c_31";
+const singleButton$1 = "_singleButton_18f1c_41";
+const autoButton = "_autoButton_18f1c_54";
+const fastForwardButton = "_fastForwardButton_18f1c_71";
+const flashbackButton = "_flashbackButton_18f1c_87";
+const fastSlPreview = "_fastSlPreview_18f1c_105";
+const fastSlEnter = "_fastSlEnter_18f1c_1";
+const fastsave = "_fastsave_18f1c_119";
+const fastSPreview = "_fastSPreview_18f1c_119";
+const fastload = "_fastload_18f1c_123";
+const fastLPreview = "_fastLPreview_18f1c_123";
+const slPreviewMain = "_slPreviewMain_18f1c_135";
+const imgContainer = "_imgContainer_18f1c_143";
+const textContainer = "_textContainer_18f1c_151";
 const styles$h = {
   main,
   button: button$2,
@@ -36455,7 +36455,7 @@ const Title = () => {
         onMouseEnter: playSeEnter
       }
     ),
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
         className: applyStyle2("Title_main", styles$l.Title_main),
@@ -36463,71 +36463,45 @@ const Title = () => {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: applyStyle2("Title_buttonList", styles$l.Title_buttonList), children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: applyStyle2("Title_button", styles$l.Title_button),
-                onClick: () => {
-                  startGame();
-                  playSeClick();
-                },
-                onMouseEnter: playSeEnter,
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("start.title") })
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: applyStyle2("Title_button", styles$l.Title_button),
-                onClick: () => {
-                  playSeClick();
-                  dispatch(setVisibility({ component: "showMenuPanel", visibility: true }));
-                  dispatch(setMenuPanelTag(MenuPanelTag.Load));
-                },
-                onMouseEnter: playSeEnter,
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("load.title") })
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: applyStyle2("Title_button", styles$l.Title_button),
-                onClick: () => {
-                  playSeClick();
-                  dispatch(setVisibility({ component: "showMenuPanel", visibility: true }));
-                  dispatch(setMenuPanelTag(MenuPanelTag.Option));
-                },
-                onMouseEnter: playSeEnter,
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("options.title") })
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: applyStyle2("Title_button", styles$l.Title_button),
-                onClick: () => {
-                  playSeClick();
-                  dispatch(setVisibility({ component: "showExtra", visibility: true }));
-                },
-                onMouseEnter: playSeEnter,
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("extra.title") })
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "div",
-              {
-                className: applyStyle2("Title_button", styles$l.Title_button),
-                onClick: () => {
-                  playSeClick();
-                  window.history.back();
-                },
-                onMouseEnter: playSeEnter,
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("quit.title") })
-              }
-            )
-          ] }),
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: applyStyle2("Title_buttonList", styles$l.Title_buttonList), children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$l.Title_button),
+              onClick: () => {
+                startGame();
+                playSeClick();
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("start.title") })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$l.Title_button),
+              onClick: () => {
+                playSeClick();
+                dispatch(setVisibility({ component: "showMenuPanel", visibility: true }));
+                dispatch(setMenuPanelTag(MenuPanelTag.Load));
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("load.title") })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$l.Title_button),
+              onClick: () => {
+                playSeClick();
+                dispatch(setVisibility({ component: "showMenuPanel", visibility: true }));
+                dispatch(setMenuPanelTag(MenuPanelTag.Option));
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("options.title") })
+            }
+          ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
@@ -36539,8 +36513,20 @@ const Title = () => {
               onMouseEnter: playSeEnter,
               children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("extra.title") })
             }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$l.Title_button),
+              onClick: () => {
+                playSeClick();
+                window.history.back();
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("quit.title") })
+            }
           )
-        ]
+        ] })
       }
     )
   ] });
@@ -104951,9 +104937,9 @@ const GameMenuPanel = () => {
     showGlogalDialog({
       title: t2("buttons.quitTips"),
       leftText: "",
-      //t('$common.confirm'),
+      // t('$common.confirm'),
       rightText: "",
-      //t('$common.cancel'),
+      // t('$common.cancel'),
       leftFunc: () => {
         setComponentVisibility("isShowGameMenu", false);
         backToTitle();
@@ -104963,14 +104949,7 @@ const GameMenuPanel = () => {
     });
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.gameMenuPanel, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        className: styles.menuButton,
-        onClick: handleShowGameMenuPanel,
-        onMouseEnter: playSeEnter
-      }
-    ) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.gameMenuPanel, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.menuButton, onClick: handleShowGameMenuPanel, onMouseEnter: playSeEnter }) }),
     show && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.gameMenuPanelContentWrapper, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.mask }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.gameMenuPanelContent, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.buttonswrapper, children: [
