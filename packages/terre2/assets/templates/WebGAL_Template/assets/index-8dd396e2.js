@@ -6963,7 +6963,7 @@ const Title_buttonList = "_Title_buttonList_xpe81_8";
 const Title_button = "_Title_button_xpe81_8";
 const Title_button_text = "_Title_button_text_xpe81_41";
 const Title_backup_background = "_Title_backup_background_xpe81_48";
-const styles$n = {
+const styles$k = {
   Title_main,
   Title_buttonList,
   Title_button,
@@ -6990,7 +6990,7 @@ function t$5(n2) {
       return true;
     var t2 = Object.hasOwnProperty.call(r3, "constructor") && r3.constructor;
     return t2 === Object || "function" == typeof t2 && Function.toString.call(t2) === Z;
-  }(n2) || Array.isArray(n2) || !!n2[L] || !!(null === (r2 = n2.constructor) || void 0 === r2 ? void 0 : r2[L]) || s$3(n2) || v$3(n2));
+  }(n2) || Array.isArray(n2) || !!n2[L] || !!(null === (r2 = n2.constructor) || void 0 === r2 ? void 0 : r2[L]) || s$2(n2) || v$3(n2));
 }
 function i$1(n2, r2, t2) {
   void 0 === t2 && (t2 = false), 0 === o(n2) ? (t2 ? Object.keys : nn)(n2).forEach(function(e2) {
@@ -7001,7 +7001,7 @@ function i$1(n2, r2, t2) {
 }
 function o(n2) {
   var r2 = n2[Q];
-  return r2 ? r2.i > 3 ? r2.i - 4 : r2.i : Array.isArray(n2) ? 1 : s$3(n2) ? 2 : v$3(n2) ? 3 : 0;
+  return r2 ? r2.i > 3 ? r2.i - 4 : r2.i : Array.isArray(n2) ? 1 : s$2(n2) ? 2 : v$3(n2) ? 3 : 0;
 }
 function u$4(n2, r2) {
   return 2 === o(n2) ? n2.has(r2) : Object.prototype.hasOwnProperty.call(n2, r2);
@@ -7016,7 +7016,7 @@ function f$2(n2, r2, t2) {
 function c$3(n2, r2) {
   return n2 === r2 ? 0 !== n2 || 1 / n2 == 1 / r2 : n2 != n2 && r2 != r2;
 }
-function s$3(n2) {
+function s$2(n2) {
   return X && n2 instanceof Map;
 }
 function v$3(n2) {
@@ -7136,7 +7136,7 @@ function E(n2) {
   n2.o || (n2.o = l$3(n2.t));
 }
 function N(n2, r2, t2) {
-  var e2 = s$3(r2) ? b$2("MapSet").F(r2, t2) : v$3(r2) ? b$2("MapSet").T(r2, t2) : n2.O ? function(n3, r3) {
+  var e2 = s$2(r2) ? b$2("MapSet").F(r2, t2) : v$3(r2) ? b$2("MapSet").T(r2, t2) : n2.O ? function(n3, r3) {
     var t3 = Array.isArray(n3), e3 = { i: t3 ? 1 : 0, A: r3 ? r3.A : _(), P: false, I: false, R: {}, l: r3, t: n3, k: null, o: null, j: null, C: false }, i2 = e3, o2 = en$1;
     t3 && (i2 = [e3], o2 = on);
     var u2 = Proxy.revocable(i2, o2), a2 = u2.revoke, f2 = u2.proxy;
@@ -14272,8 +14272,8 @@ const initialOptionSet = {
   slPage: 1,
   volumeMain: 100,
   // 主音量
-  textSpeed: playSpeed.normal,
-  // 文字速度
+  textSpeed: 50,
+  // 文字速度  [0, 100] =>[3, 80]
   autoSpeed: playSpeed.normal,
   // 自动播放速度
   textSize: textSize.medium,
@@ -19282,7 +19282,7 @@ const jmp = (labelName) => {
 const Choose_Main$1 = "_Choose_Main_cegqk_1";
 const Choose_item$1 = "_Choose_item_cegqk_13";
 const Choose_item_disabled = "_Choose_item_disabled_cegqk_29";
-const styles$m = {
+const styles$j = {
   Choose_Main: Choose_Main$1,
   Choose_item: Choose_item$1,
   Choose_item_disabled
@@ -19991,7 +19991,7 @@ const choose = (sentence, chooseCallback) => {
   const runtimeBuildList = (chooseListFull) => {
     return chooseListFull.filter((e2, i2) => whenChecker(e2.showCondition)).map((e2, i2) => {
       const enable = whenChecker(e2.enableCondition);
-      const className = enable ? styles$m.Choose_item : styles$m.Choose_item_disabled;
+      const className = enable ? styles$j.Choose_item : styles$j.Choose_item_disabled;
       const onClick = enable ? () => {
         playSeClick();
         chooseCallback == null ? void 0 : chooseCallback();
@@ -20017,7 +20017,7 @@ const choose = (sentence, chooseCallback) => {
     });
   };
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$m.Choose_Main, children: runtimeBuildList(chooseOptions) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.Choose_Main, children: runtimeBuildList(chooseOptions) }),
     document.getElementById("chooseContainer")
   );
   return {
@@ -20069,14 +20069,14 @@ const Choose_Main = "_Choose_Main_4xkm5_1";
 const Choose_item = "_Choose_item_4xkm5_13";
 const glabalDialog_container_inner$1 = "_glabalDialog_container_inner_4xkm5_28";
 const glabalDialog_container$1 = "_glabalDialog_container_4xkm5_28";
-const title$2 = "_title_4xkm5_47";
+const title$1 = "_title_4xkm5_47";
 const button$2 = "_button_4xkm5_59";
-const styles$l = {
+const styles$i = {
   Choose_Main,
   Choose_item,
   glabalDialog_container_inner: glabalDialog_container_inner$1,
   glabalDialog_container: glabalDialog_container$1,
-  title: title$2,
+  title: title$1,
   button: button$2
 };
 const getUserInput = (sentence) => {
@@ -20088,9 +20088,9 @@ const getUserInput = (sentence) => {
   const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
   const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
   const { playSeEnter, playSeClick } = useSEByWebgalStore();
-  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$l.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$l.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.title, children: title2 }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$l.Choose_item }),
+  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$i.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.title, children: title2 }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$i.Choose_item }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -20106,13 +20106,13 @@ const getUserInput = (sentence) => {
           WebGAL.gameplay.performController.unmountPerform("userInput");
           nextSentence();
         },
-        className: styles$l.button,
+        className: styles$i.button,
         children: buttonText
       }
     )
   ] }) });
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.Choose_Main, children: chooseElements }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.Choose_Main, children: chooseElements }),
     document.getElementById("chooseContainer")
   );
   return {
@@ -20141,7 +20141,7 @@ const pixelateEffect = "_pixelateEffect_7er8a_95";
 const pixelateAnimation = "_pixelateAnimation_7er8a_1";
 const revealAnimation = "_revealAnimation_7er8a_101";
 const videoContainer = "_videoContainer_7er8a_115";
-const styles$k = {
+const styles$h = {
   FullScreenPerform_main,
   FullScreenPerform_element,
   fullScreen_video,
@@ -20164,20 +20164,20 @@ const intro = (sentence) => {
   const animationClass = (type2, length2 = 0) => {
     switch (type2) {
       case "fadeIn":
-        return styles$k.fadeIn;
+        return styles$h.fadeIn;
       case "slideIn":
-        return styles$k.slideIn;
+        return styles$h.slideIn;
       case "typingEffect":
-        return `${styles$k.typingEffect} ${length2}`;
+        return `${styles$h.typingEffect} ${length2}`;
       case "pixelateEffect":
-        return styles$k.pixelateEffect;
+        return styles$h.pixelateEffect;
       case "revealAnimation":
-        return styles$k.revealAnimation;
+        return styles$h.revealAnimation;
       default:
-        return styles$k.fadeIn;
+        return styles$h.fadeIn;
     }
   };
-  let chosenAnimationClass = styles$k.fadeIn;
+  let chosenAnimationClass = styles$h.fadeIn;
   let delayTime = 1500;
   let isHold = false;
   for (const e2 of sentence.args) {
@@ -20410,7 +20410,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-6a6102b0.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-e0d37b24.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -20522,9455 +20522,6 @@ const playEffect = (sentence) => {
     })
   };
 };
-var flv = { exports: {} };
-(function(module, exports) {
-  (function webpackUniversalModuleDefinition(root2, factory) {
-    module.exports = factory();
-  })(self, function() {
-    return (
-      /******/
-      function() {
-        var __webpack_modules__ = {
-          /***/
-          "./node_modules/es6-promise/dist/es6-promise.js": (
-            /*!******************************************************!*\
-              !*** ./node_modules/es6-promise/dist/es6-promise.js ***!
-              \******************************************************/
-            /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
-              /*!
-               * @overview es6-promise - a tiny implementation of Promises/A+.
-               * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
-               * @license   Licensed under MIT license
-               *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
-               * @version   v4.2.8+1e68dce6
-               */
-              (function(global2, factory) {
-                module2.exports = factory();
-              })(this, function() {
-                function objectOrFunction(x) {
-                  var type2 = typeof x;
-                  return x !== null && (type2 === "object" || type2 === "function");
-                }
-                function isFunction2(x) {
-                  return typeof x === "function";
-                }
-                var _isArray = void 0;
-                if (Array.isArray) {
-                  _isArray = Array.isArray;
-                } else {
-                  _isArray = function(x) {
-                    return Object.prototype.toString.call(x) === "[object Array]";
-                  };
-                }
-                var isArray2 = _isArray;
-                var len = 0;
-                var vertxNext = void 0;
-                var customSchedulerFn = void 0;
-                var asap = function asap2(callback, arg) {
-                  queue[len] = callback;
-                  queue[len + 1] = arg;
-                  len += 2;
-                  if (len === 2) {
-                    if (customSchedulerFn) {
-                      customSchedulerFn(flush);
-                    } else {
-                      scheduleFlush();
-                    }
-                  }
-                };
-                function setScheduler(scheduleFn) {
-                  customSchedulerFn = scheduleFn;
-                }
-                function setAsap(asapFn) {
-                  asap = asapFn;
-                }
-                var browserWindow = typeof window !== "undefined" ? window : void 0;
-                var browserGlobal = browserWindow || {};
-                var BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-                var isNode = typeof self === "undefined" && typeof process !== "undefined" && {}.toString.call(process) === "[object process]";
-                var isWorker = typeof Uint8ClampedArray !== "undefined" && typeof importScripts !== "undefined" && typeof MessageChannel !== "undefined";
-                function useNextTick() {
-                  return function() {
-                    return process.nextTick(flush);
-                  };
-                }
-                function useVertxTimer() {
-                  if (typeof vertxNext !== "undefined") {
-                    return function() {
-                      vertxNext(flush);
-                    };
-                  }
-                  return useSetTimeout();
-                }
-                function useMutationObserver() {
-                  var iterations = 0;
-                  var observer = new BrowserMutationObserver(flush);
-                  var node2 = document.createTextNode("");
-                  observer.observe(node2, { characterData: true });
-                  return function() {
-                    node2.data = iterations = ++iterations % 2;
-                  };
-                }
-                function useMessageChannel() {
-                  var channel = new MessageChannel();
-                  channel.port1.onmessage = flush;
-                  return function() {
-                    return channel.port2.postMessage(0);
-                  };
-                }
-                function useSetTimeout() {
-                  var globalSetTimeout = setTimeout;
-                  return function() {
-                    return globalSetTimeout(flush, 1);
-                  };
-                }
-                var queue = new Array(1e3);
-                function flush() {
-                  for (var i2 = 0; i2 < len; i2 += 2) {
-                    var callback = queue[i2];
-                    var arg = queue[i2 + 1];
-                    callback(arg);
-                    queue[i2] = void 0;
-                    queue[i2 + 1] = void 0;
-                  }
-                  len = 0;
-                }
-                function attemptVertx() {
-                  try {
-                    var vertx = Function("return this")().require("vertx");
-                    vertxNext = vertx.runOnLoop || vertx.runOnContext;
-                    return useVertxTimer();
-                  } catch (e2) {
-                    return useSetTimeout();
-                  }
-                }
-                var scheduleFlush = void 0;
-                if (isNode) {
-                  scheduleFlush = useNextTick();
-                } else if (BrowserMutationObserver) {
-                  scheduleFlush = useMutationObserver();
-                } else if (isWorker) {
-                  scheduleFlush = useMessageChannel();
-                } else if (browserWindow === void 0 && true) {
-                  scheduleFlush = attemptVertx();
-                } else {
-                  scheduleFlush = useSetTimeout();
-                }
-                function then(onFulfillment, onRejection) {
-                  var parent = this;
-                  var child = new this.constructor(noop2);
-                  if (child[PROMISE_ID] === void 0) {
-                    makePromise(child);
-                  }
-                  var _state = parent._state;
-                  if (_state) {
-                    var callback = arguments[_state - 1];
-                    asap(function() {
-                      return invokeCallback(_state, child, callback, parent._result);
-                    });
-                  } else {
-                    subscribe(parent, child, onFulfillment, onRejection);
-                  }
-                  return child;
-                }
-                function resolve$12(object) {
-                  var Constructor = this;
-                  if (object && typeof object === "object" && object.constructor === Constructor) {
-                    return object;
-                  }
-                  var promise2 = new Constructor(noop2);
-                  resolve2(promise2, object);
-                  return promise2;
-                }
-                var PROMISE_ID = Math.random().toString(36).substring(2);
-                function noop2() {
-                }
-                var PENDING = void 0;
-                var FULFILLED = 1;
-                var REJECTED = 2;
-                function selfFulfillment() {
-                  return new TypeError("You cannot resolve a promise with itself");
-                }
-                function cannotReturnOwn() {
-                  return new TypeError("A promises callback cannot return that same promise.");
-                }
-                function tryThen(then$$1, value, fulfillmentHandler, rejectionHandler) {
-                  try {
-                    then$$1.call(value, fulfillmentHandler, rejectionHandler);
-                  } catch (e2) {
-                    return e2;
-                  }
-                }
-                function handleForeignThenable(promise2, thenable, then$$1) {
-                  asap(function(promise3) {
-                    var sealed = false;
-                    var error2 = tryThen(then$$1, thenable, function(value) {
-                      if (sealed) {
-                        return;
-                      }
-                      sealed = true;
-                      if (thenable !== value) {
-                        resolve2(promise3, value);
-                      } else {
-                        fulfill(promise3, value);
-                      }
-                    }, function(reason) {
-                      if (sealed) {
-                        return;
-                      }
-                      sealed = true;
-                      reject2(promise3, reason);
-                    }, "Settle: " + (promise3._label || " unknown promise"));
-                    if (!sealed && error2) {
-                      sealed = true;
-                      reject2(promise3, error2);
-                    }
-                  }, promise2);
-                }
-                function handleOwnThenable(promise2, thenable) {
-                  if (thenable._state === FULFILLED) {
-                    fulfill(promise2, thenable._result);
-                  } else if (thenable._state === REJECTED) {
-                    reject2(promise2, thenable._result);
-                  } else {
-                    subscribe(thenable, void 0, function(value) {
-                      return resolve2(promise2, value);
-                    }, function(reason) {
-                      return reject2(promise2, reason);
-                    });
-                  }
-                }
-                function handleMaybeThenable(promise2, maybeThenable, then$$1) {
-                  if (maybeThenable.constructor === promise2.constructor && then$$1 === then && maybeThenable.constructor.resolve === resolve$12) {
-                    handleOwnThenable(promise2, maybeThenable);
-                  } else {
-                    if (then$$1 === void 0) {
-                      fulfill(promise2, maybeThenable);
-                    } else if (isFunction2(then$$1)) {
-                      handleForeignThenable(promise2, maybeThenable, then$$1);
-                    } else {
-                      fulfill(promise2, maybeThenable);
-                    }
-                  }
-                }
-                function resolve2(promise2, value) {
-                  if (promise2 === value) {
-                    reject2(promise2, selfFulfillment());
-                  } else if (objectOrFunction(value)) {
-                    var then$$1 = void 0;
-                    try {
-                      then$$1 = value.then;
-                    } catch (error2) {
-                      reject2(promise2, error2);
-                      return;
-                    }
-                    handleMaybeThenable(promise2, value, then$$1);
-                  } else {
-                    fulfill(promise2, value);
-                  }
-                }
-                function publishRejection(promise2) {
-                  if (promise2._onerror) {
-                    promise2._onerror(promise2._result);
-                  }
-                  publish(promise2);
-                }
-                function fulfill(promise2, value) {
-                  if (promise2._state !== PENDING) {
-                    return;
-                  }
-                  promise2._result = value;
-                  promise2._state = FULFILLED;
-                  if (promise2._subscribers.length !== 0) {
-                    asap(publish, promise2);
-                  }
-                }
-                function reject2(promise2, reason) {
-                  if (promise2._state !== PENDING) {
-                    return;
-                  }
-                  promise2._state = REJECTED;
-                  promise2._result = reason;
-                  asap(publishRejection, promise2);
-                }
-                function subscribe(parent, child, onFulfillment, onRejection) {
-                  var _subscribers = parent._subscribers;
-                  var length2 = _subscribers.length;
-                  parent._onerror = null;
-                  _subscribers[length2] = child;
-                  _subscribers[length2 + FULFILLED] = onFulfillment;
-                  _subscribers[length2 + REJECTED] = onRejection;
-                  if (length2 === 0 && parent._state) {
-                    asap(publish, parent);
-                  }
-                }
-                function publish(promise2) {
-                  var subscribers = promise2._subscribers;
-                  var settled = promise2._state;
-                  if (subscribers.length === 0) {
-                    return;
-                  }
-                  var child = void 0, callback = void 0, detail = promise2._result;
-                  for (var i2 = 0; i2 < subscribers.length; i2 += 3) {
-                    child = subscribers[i2];
-                    callback = subscribers[i2 + settled];
-                    if (child) {
-                      invokeCallback(settled, child, callback, detail);
-                    } else {
-                      callback(detail);
-                    }
-                  }
-                  promise2._subscribers.length = 0;
-                }
-                function invokeCallback(settled, promise2, callback, detail) {
-                  var hasCallback = isFunction2(callback), value = void 0, error2 = void 0, succeeded = true;
-                  if (hasCallback) {
-                    try {
-                      value = callback(detail);
-                    } catch (e2) {
-                      succeeded = false;
-                      error2 = e2;
-                    }
-                    if (promise2 === value) {
-                      reject2(promise2, cannotReturnOwn());
-                      return;
-                    }
-                  } else {
-                    value = detail;
-                  }
-                  if (promise2._state !== PENDING)
-                    ;
-                  else if (hasCallback && succeeded) {
-                    resolve2(promise2, value);
-                  } else if (succeeded === false) {
-                    reject2(promise2, error2);
-                  } else if (settled === FULFILLED) {
-                    fulfill(promise2, value);
-                  } else if (settled === REJECTED) {
-                    reject2(promise2, value);
-                  }
-                }
-                function initializePromise(promise2, resolver2) {
-                  try {
-                    resolver2(function resolvePromise(value) {
-                      resolve2(promise2, value);
-                    }, function rejectPromise(reason) {
-                      reject2(promise2, reason);
-                    });
-                  } catch (e2) {
-                    reject2(promise2, e2);
-                  }
-                }
-                var id2 = 0;
-                function nextId() {
-                  return id2++;
-                }
-                function makePromise(promise2) {
-                  promise2[PROMISE_ID] = id2++;
-                  promise2._state = void 0;
-                  promise2._result = void 0;
-                  promise2._subscribers = [];
-                }
-                function validationError() {
-                  return new Error("Array Methods must be provided an Array");
-                }
-                var Enumerator = function() {
-                  function Enumerator2(Constructor, input) {
-                    this._instanceConstructor = Constructor;
-                    this.promise = new Constructor(noop2);
-                    if (!this.promise[PROMISE_ID]) {
-                      makePromise(this.promise);
-                    }
-                    if (isArray2(input)) {
-                      this.length = input.length;
-                      this._remaining = input.length;
-                      this._result = new Array(this.length);
-                      if (this.length === 0) {
-                        fulfill(this.promise, this._result);
-                      } else {
-                        this.length = this.length || 0;
-                        this._enumerate(input);
-                        if (this._remaining === 0) {
-                          fulfill(this.promise, this._result);
-                        }
-                      }
-                    } else {
-                      reject2(this.promise, validationError());
-                    }
-                  }
-                  Enumerator2.prototype._enumerate = function _enumerate(input) {
-                    for (var i2 = 0; this._state === PENDING && i2 < input.length; i2++) {
-                      this._eachEntry(input[i2], i2);
-                    }
-                  };
-                  Enumerator2.prototype._eachEntry = function _eachEntry(entry, i2) {
-                    var c2 = this._instanceConstructor;
-                    var resolve$$1 = c2.resolve;
-                    if (resolve$$1 === resolve$12) {
-                      var _then = void 0;
-                      var error2 = void 0;
-                      var didError = false;
-                      try {
-                        _then = entry.then;
-                      } catch (e2) {
-                        didError = true;
-                        error2 = e2;
-                      }
-                      if (_then === then && entry._state !== PENDING) {
-                        this._settledAt(entry._state, i2, entry._result);
-                      } else if (typeof _then !== "function") {
-                        this._remaining--;
-                        this._result[i2] = entry;
-                      } else if (c2 === Promise$12) {
-                        var promise2 = new c2(noop2);
-                        if (didError) {
-                          reject2(promise2, error2);
-                        } else {
-                          handleMaybeThenable(promise2, entry, _then);
-                        }
-                        this._willSettleAt(promise2, i2);
-                      } else {
-                        this._willSettleAt(new c2(function(resolve$$12) {
-                          return resolve$$12(entry);
-                        }), i2);
-                      }
-                    } else {
-                      this._willSettleAt(resolve$$1(entry), i2);
-                    }
-                  };
-                  Enumerator2.prototype._settledAt = function _settledAt(state, i2, value) {
-                    var promise2 = this.promise;
-                    if (promise2._state === PENDING) {
-                      this._remaining--;
-                      if (state === REJECTED) {
-                        reject2(promise2, value);
-                      } else {
-                        this._result[i2] = value;
-                      }
-                    }
-                    if (this._remaining === 0) {
-                      fulfill(promise2, this._result);
-                    }
-                  };
-                  Enumerator2.prototype._willSettleAt = function _willSettleAt(promise2, i2) {
-                    var enumerator = this;
-                    subscribe(promise2, void 0, function(value) {
-                      return enumerator._settledAt(FULFILLED, i2, value);
-                    }, function(reason) {
-                      return enumerator._settledAt(REJECTED, i2, reason);
-                    });
-                  };
-                  return Enumerator2;
-                }();
-                function all3(entries) {
-                  return new Enumerator(this, entries).promise;
-                }
-                function race(entries) {
-                  var Constructor = this;
-                  if (!isArray2(entries)) {
-                    return new Constructor(function(_24, reject3) {
-                      return reject3(new TypeError("You must pass an array to race."));
-                    });
-                  } else {
-                    return new Constructor(function(resolve3, reject3) {
-                      var length2 = entries.length;
-                      for (var i2 = 0; i2 < length2; i2++) {
-                        Constructor.resolve(entries[i2]).then(resolve3, reject3);
-                      }
-                    });
-                  }
-                }
-                function reject$1(reason) {
-                  var Constructor = this;
-                  var promise2 = new Constructor(noop2);
-                  reject2(promise2, reason);
-                  return promise2;
-                }
-                function needsResolver() {
-                  throw new TypeError("You must pass a resolver function as the first argument to the promise constructor");
-                }
-                function needsNew() {
-                  throw new TypeError("Failed to construct 'Promise': Please use the 'new' operator, this object constructor cannot be called as a function.");
-                }
-                var Promise$12 = function() {
-                  function Promise2(resolver2) {
-                    this[PROMISE_ID] = nextId();
-                    this._result = this._state = void 0;
-                    this._subscribers = [];
-                    if (noop2 !== resolver2) {
-                      typeof resolver2 !== "function" && needsResolver();
-                      this instanceof Promise2 ? initializePromise(this, resolver2) : needsNew();
-                    }
-                  }
-                  Promise2.prototype.catch = function _catch(onRejection) {
-                    return this.then(null, onRejection);
-                  };
-                  Promise2.prototype.finally = function _finally(callback) {
-                    var promise2 = this;
-                    var constructor = promise2.constructor;
-                    if (isFunction2(callback)) {
-                      return promise2.then(function(value) {
-                        return constructor.resolve(callback()).then(function() {
-                          return value;
-                        });
-                      }, function(reason) {
-                        return constructor.resolve(callback()).then(function() {
-                          throw reason;
-                        });
-                      });
-                    }
-                    return promise2.then(callback, callback);
-                  };
-                  return Promise2;
-                }();
-                Promise$12.prototype.then = then;
-                Promise$12.all = all3;
-                Promise$12.race = race;
-                Promise$12.resolve = resolve$12;
-                Promise$12.reject = reject$1;
-                Promise$12._setScheduler = setScheduler;
-                Promise$12._setAsap = setAsap;
-                Promise$12._asap = asap;
-                function polyfill2() {
-                  var local = void 0;
-                  if (typeof __webpack_require__2.g !== "undefined") {
-                    local = __webpack_require__2.g;
-                  } else if (typeof self !== "undefined") {
-                    local = self;
-                  } else {
-                    try {
-                      local = Function("return this")();
-                    } catch (e2) {
-                      throw new Error("polyfill failed because global object is unavailable in this environment");
-                    }
-                  }
-                  var P2 = local.Promise;
-                  if (P2) {
-                    var promiseToString = null;
-                    try {
-                      promiseToString = Object.prototype.toString.call(P2.resolve());
-                    } catch (e2) {
-                    }
-                    if (promiseToString === "[object Promise]" && !P2.cast) {
-                      return;
-                    }
-                  }
-                  local.Promise = Promise$12;
-                }
-                Promise$12.polyfill = polyfill2;
-                Promise$12.Promise = Promise$12;
-                return Promise$12;
-              });
-            }
-          ),
-          /***/
-          "./node_modules/events/events.js": (
-            /*!***************************************!*\
-              !*** ./node_modules/events/events.js ***!
-              \***************************************/
-            /***/
-            function(module2) {
-              var R2 = typeof Reflect === "object" ? Reflect : null;
-              var ReflectApply = R2 && typeof R2.apply === "function" ? R2.apply : function ReflectApply2(target, receiver, args) {
-                return Function.prototype.apply.call(target, receiver, args);
-              };
-              var ReflectOwnKeys;
-              if (R2 && typeof R2.ownKeys === "function") {
-                ReflectOwnKeys = R2.ownKeys;
-              } else if (Object.getOwnPropertySymbols) {
-                ReflectOwnKeys = function ReflectOwnKeys2(target) {
-                  return Object.getOwnPropertyNames(target).concat(Object.getOwnPropertySymbols(target));
-                };
-              } else {
-                ReflectOwnKeys = function ReflectOwnKeys2(target) {
-                  return Object.getOwnPropertyNames(target);
-                };
-              }
-              function ProcessEmitWarning(warning2) {
-                if (console && console.warn)
-                  console.warn(warning2);
-              }
-              var NumberIsNaN = Number.isNaN || function NumberIsNaN2(value) {
-                return value !== value;
-              };
-              function EventEmitter2() {
-                EventEmitter2.init.call(this);
-              }
-              module2.exports = EventEmitter2;
-              module2.exports.once = once;
-              EventEmitter2.EventEmitter = EventEmitter2;
-              EventEmitter2.prototype._events = void 0;
-              EventEmitter2.prototype._eventsCount = 0;
-              EventEmitter2.prototype._maxListeners = void 0;
-              var defaultMaxListeners = 10;
-              function checkListener(listener) {
-                if (typeof listener !== "function") {
-                  throw new TypeError('The "listener" argument must be of type Function. Received type ' + typeof listener);
-                }
-              }
-              Object.defineProperty(EventEmitter2, "defaultMaxListeners", {
-                enumerable: true,
-                get: function() {
-                  return defaultMaxListeners;
-                },
-                set: function(arg) {
-                  if (typeof arg !== "number" || arg < 0 || NumberIsNaN(arg)) {
-                    throw new RangeError('The value of "defaultMaxListeners" is out of range. It must be a non-negative number. Received ' + arg + ".");
-                  }
-                  defaultMaxListeners = arg;
-                }
-              });
-              EventEmitter2.init = function() {
-                if (this._events === void 0 || this._events === Object.getPrototypeOf(this)._events) {
-                  this._events = /* @__PURE__ */ Object.create(null);
-                  this._eventsCount = 0;
-                }
-                this._maxListeners = this._maxListeners || void 0;
-              };
-              EventEmitter2.prototype.setMaxListeners = function setMaxListeners(n2) {
-                if (typeof n2 !== "number" || n2 < 0 || NumberIsNaN(n2)) {
-                  throw new RangeError('The value of "n" is out of range. It must be a non-negative number. Received ' + n2 + ".");
-                }
-                this._maxListeners = n2;
-                return this;
-              };
-              function _getMaxListeners(that) {
-                if (that._maxListeners === void 0)
-                  return EventEmitter2.defaultMaxListeners;
-                return that._maxListeners;
-              }
-              EventEmitter2.prototype.getMaxListeners = function getMaxListeners() {
-                return _getMaxListeners(this);
-              };
-              EventEmitter2.prototype.emit = function emit(type2) {
-                var args = [];
-                for (var i2 = 1; i2 < arguments.length; i2++)
-                  args.push(arguments[i2]);
-                var doError = type2 === "error";
-                var events = this._events;
-                if (events !== void 0)
-                  doError = doError && events.error === void 0;
-                else if (!doError)
-                  return false;
-                if (doError) {
-                  var er;
-                  if (args.length > 0)
-                    er = args[0];
-                  if (er instanceof Error) {
-                    throw er;
-                  }
-                  var err = new Error("Unhandled error." + (er ? " (" + er.message + ")" : ""));
-                  err.context = er;
-                  throw err;
-                }
-                var handler = events[type2];
-                if (handler === void 0)
-                  return false;
-                if (typeof handler === "function") {
-                  ReflectApply(handler, this, args);
-                } else {
-                  var len = handler.length;
-                  var listeners = arrayClone(handler, len);
-                  for (var i2 = 0; i2 < len; ++i2)
-                    ReflectApply(listeners[i2], this, args);
-                }
-                return true;
-              };
-              function _addListener(target, type2, listener, prepend) {
-                var m2;
-                var events;
-                var existing;
-                checkListener(listener);
-                events = target._events;
-                if (events === void 0) {
-                  events = target._events = /* @__PURE__ */ Object.create(null);
-                  target._eventsCount = 0;
-                } else {
-                  if (events.newListener !== void 0) {
-                    target.emit("newListener", type2, listener.listener ? listener.listener : listener);
-                    events = target._events;
-                  }
-                  existing = events[type2];
-                }
-                if (existing === void 0) {
-                  existing = events[type2] = listener;
-                  ++target._eventsCount;
-                } else {
-                  if (typeof existing === "function") {
-                    existing = events[type2] = prepend ? [listener, existing] : [existing, listener];
-                  } else if (prepend) {
-                    existing.unshift(listener);
-                  } else {
-                    existing.push(listener);
-                  }
-                  m2 = _getMaxListeners(target);
-                  if (m2 > 0 && existing.length > m2 && !existing.warned) {
-                    existing.warned = true;
-                    var w2 = new Error("Possible EventEmitter memory leak detected. " + existing.length + " " + String(type2) + " listeners added. Use emitter.setMaxListeners() to increase limit");
-                    w2.name = "MaxListenersExceededWarning";
-                    w2.emitter = target;
-                    w2.type = type2;
-                    w2.count = existing.length;
-                    ProcessEmitWarning(w2);
-                  }
-                }
-                return target;
-              }
-              EventEmitter2.prototype.addListener = function addListener(type2, listener) {
-                return _addListener(this, type2, listener, false);
-              };
-              EventEmitter2.prototype.on = EventEmitter2.prototype.addListener;
-              EventEmitter2.prototype.prependListener = function prependListener(type2, listener) {
-                return _addListener(this, type2, listener, true);
-              };
-              function onceWrapper() {
-                if (!this.fired) {
-                  this.target.removeListener(this.type, this.wrapFn);
-                  this.fired = true;
-                  if (arguments.length === 0)
-                    return this.listener.call(this.target);
-                  return this.listener.apply(this.target, arguments);
-                }
-              }
-              function _onceWrap(target, type2, listener) {
-                var state = { fired: false, wrapFn: void 0, target, type: type2, listener };
-                var wrapped = onceWrapper.bind(state);
-                wrapped.listener = listener;
-                state.wrapFn = wrapped;
-                return wrapped;
-              }
-              EventEmitter2.prototype.once = function once2(type2, listener) {
-                checkListener(listener);
-                this.on(type2, _onceWrap(this, type2, listener));
-                return this;
-              };
-              EventEmitter2.prototype.prependOnceListener = function prependOnceListener(type2, listener) {
-                checkListener(listener);
-                this.prependListener(type2, _onceWrap(this, type2, listener));
-                return this;
-              };
-              EventEmitter2.prototype.removeListener = function removeListener(type2, listener) {
-                var list, events, position2, i2, originalListener;
-                checkListener(listener);
-                events = this._events;
-                if (events === void 0)
-                  return this;
-                list = events[type2];
-                if (list === void 0)
-                  return this;
-                if (list === listener || list.listener === listener) {
-                  if (--this._eventsCount === 0)
-                    this._events = /* @__PURE__ */ Object.create(null);
-                  else {
-                    delete events[type2];
-                    if (events.removeListener)
-                      this.emit("removeListener", type2, list.listener || listener);
-                  }
-                } else if (typeof list !== "function") {
-                  position2 = -1;
-                  for (i2 = list.length - 1; i2 >= 0; i2--) {
-                    if (list[i2] === listener || list[i2].listener === listener) {
-                      originalListener = list[i2].listener;
-                      position2 = i2;
-                      break;
-                    }
-                  }
-                  if (position2 < 0)
-                    return this;
-                  if (position2 === 0)
-                    list.shift();
-                  else {
-                    spliceOne(list, position2);
-                  }
-                  if (list.length === 1)
-                    events[type2] = list[0];
-                  if (events.removeListener !== void 0)
-                    this.emit("removeListener", type2, originalListener || listener);
-                }
-                return this;
-              };
-              EventEmitter2.prototype.off = EventEmitter2.prototype.removeListener;
-              EventEmitter2.prototype.removeAllListeners = function removeAllListeners(type2) {
-                var listeners, events, i2;
-                events = this._events;
-                if (events === void 0)
-                  return this;
-                if (events.removeListener === void 0) {
-                  if (arguments.length === 0) {
-                    this._events = /* @__PURE__ */ Object.create(null);
-                    this._eventsCount = 0;
-                  } else if (events[type2] !== void 0) {
-                    if (--this._eventsCount === 0)
-                      this._events = /* @__PURE__ */ Object.create(null);
-                    else
-                      delete events[type2];
-                  }
-                  return this;
-                }
-                if (arguments.length === 0) {
-                  var keys2 = Object.keys(events);
-                  var key;
-                  for (i2 = 0; i2 < keys2.length; ++i2) {
-                    key = keys2[i2];
-                    if (key === "removeListener")
-                      continue;
-                    this.removeAllListeners(key);
-                  }
-                  this.removeAllListeners("removeListener");
-                  this._events = /* @__PURE__ */ Object.create(null);
-                  this._eventsCount = 0;
-                  return this;
-                }
-                listeners = events[type2];
-                if (typeof listeners === "function") {
-                  this.removeListener(type2, listeners);
-                } else if (listeners !== void 0) {
-                  for (i2 = listeners.length - 1; i2 >= 0; i2--) {
-                    this.removeListener(type2, listeners[i2]);
-                  }
-                }
-                return this;
-              };
-              function _listeners(target, type2, unwrap) {
-                var events = target._events;
-                if (events === void 0)
-                  return [];
-                var evlistener = events[type2];
-                if (evlistener === void 0)
-                  return [];
-                if (typeof evlistener === "function")
-                  return unwrap ? [evlistener.listener || evlistener] : [evlistener];
-                return unwrap ? unwrapListeners(evlistener) : arrayClone(evlistener, evlistener.length);
-              }
-              EventEmitter2.prototype.listeners = function listeners(type2) {
-                return _listeners(this, type2, true);
-              };
-              EventEmitter2.prototype.rawListeners = function rawListeners(type2) {
-                return _listeners(this, type2, false);
-              };
-              EventEmitter2.listenerCount = function(emitter, type2) {
-                if (typeof emitter.listenerCount === "function") {
-                  return emitter.listenerCount(type2);
-                } else {
-                  return listenerCount.call(emitter, type2);
-                }
-              };
-              EventEmitter2.prototype.listenerCount = listenerCount;
-              function listenerCount(type2) {
-                var events = this._events;
-                if (events !== void 0) {
-                  var evlistener = events[type2];
-                  if (typeof evlistener === "function") {
-                    return 1;
-                  } else if (evlistener !== void 0) {
-                    return evlistener.length;
-                  }
-                }
-                return 0;
-              }
-              EventEmitter2.prototype.eventNames = function eventNames() {
-                return this._eventsCount > 0 ? ReflectOwnKeys(this._events) : [];
-              };
-              function arrayClone(arr, n2) {
-                var copy2 = new Array(n2);
-                for (var i2 = 0; i2 < n2; ++i2)
-                  copy2[i2] = arr[i2];
-                return copy2;
-              }
-              function spliceOne(list, index2) {
-                for (; index2 + 1 < list.length; index2++)
-                  list[index2] = list[index2 + 1];
-                list.pop();
-              }
-              function unwrapListeners(arr) {
-                var ret = new Array(arr.length);
-                for (var i2 = 0; i2 < ret.length; ++i2) {
-                  ret[i2] = arr[i2].listener || arr[i2];
-                }
-                return ret;
-              }
-              function once(emitter, name) {
-                return new Promise(function(resolve2, reject2) {
-                  function errorListener(err) {
-                    emitter.removeListener(name, resolver2);
-                    reject2(err);
-                  }
-                  function resolver2() {
-                    if (typeof emitter.removeListener === "function") {
-                      emitter.removeListener("error", errorListener);
-                    }
-                    resolve2([].slice.call(arguments));
-                  }
-                  eventTargetAgnosticAddListener(emitter, name, resolver2, { once: true });
-                  if (name !== "error") {
-                    addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
-                  }
-                });
-              }
-              function addErrorHandlerIfEventEmitter(emitter, handler, flags) {
-                if (typeof emitter.on === "function") {
-                  eventTargetAgnosticAddListener(emitter, "error", handler, flags);
-                }
-              }
-              function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
-                if (typeof emitter.on === "function") {
-                  if (flags.once) {
-                    emitter.once(name, listener);
-                  } else {
-                    emitter.on(name, listener);
-                  }
-                } else if (typeof emitter.addEventListener === "function") {
-                  emitter.addEventListener(name, function wrapListener(arg) {
-                    if (flags.once) {
-                      emitter.removeEventListener(name, wrapListener);
-                    }
-                    listener(arg);
-                  });
-                } else {
-                  throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type ' + typeof emitter);
-                }
-              }
-            }
-          ),
-          /***/
-          "./node_modules/webworkify-webpack/index.js": (
-            /*!**************************************************!*\
-              !*** ./node_modules/webworkify-webpack/index.js ***!
-              \**************************************************/
-            /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
-              function webpackBootstrapFunc(modules) {
-                var installedModules = {};
-                function __nested_webpack_require_164__(moduleId) {
-                  if (installedModules[moduleId])
-                    return installedModules[moduleId].exports;
-                  var module3 = installedModules[moduleId] = {
-                    /******/
-                    i: moduleId,
-                    /******/
-                    l: false,
-                    /******/
-                    exports: {}
-                    /******/
-                  };
-                  modules[moduleId].call(module3.exports, module3, module3.exports, __nested_webpack_require_164__);
-                  module3.l = true;
-                  return module3.exports;
-                }
-                __nested_webpack_require_164__.m = modules;
-                __nested_webpack_require_164__.c = installedModules;
-                __nested_webpack_require_164__.i = function(value) {
-                  return value;
-                };
-                __nested_webpack_require_164__.d = function(exports2, name, getter) {
-                  if (!__nested_webpack_require_164__.o(exports2, name)) {
-                    Object.defineProperty(exports2, name, {
-                      /******/
-                      configurable: false,
-                      /******/
-                      enumerable: true,
-                      /******/
-                      get: getter
-                      /******/
-                    });
-                  }
-                };
-                __nested_webpack_require_164__.r = function(exports2) {
-                  Object.defineProperty(exports2, "__esModule", { value: true });
-                };
-                __nested_webpack_require_164__.n = function(module3) {
-                  var getter = module3 && module3.__esModule ? (
-                    /******/
-                    function getDefault() {
-                      return module3["default"];
-                    }
-                  ) : (
-                    /******/
-                    function getModuleExports() {
-                      return module3;
-                    }
-                  );
-                  __nested_webpack_require_164__.d(getter, "a", getter);
-                  return getter;
-                };
-                __nested_webpack_require_164__.o = function(object, property2) {
-                  return Object.prototype.hasOwnProperty.call(object, property2);
-                };
-                __nested_webpack_require_164__.p = "/";
-                __nested_webpack_require_164__.oe = function(err) {
-                  console.error(err);
-                  throw err;
-                };
-                var f2 = __nested_webpack_require_164__(__nested_webpack_require_164__.s = ENTRY_MODULE);
-                return f2.default || f2;
-              }
-              var moduleNameReqExp = "[\\.|\\-|\\+|\\w|/|@]+";
-              var dependencyRegExp = "\\(\\s*(/\\*.*?\\*/)?\\s*.*?(" + moduleNameReqExp + ").*?\\)";
-              function quoteRegExp(str) {
-                return (str + "").replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
-              }
-              function isNumeric(n2) {
-                return !isNaN(1 * n2);
-              }
-              function getModuleDependencies(sources, module3, queueName) {
-                var retval = {};
-                retval[queueName] = [];
-                var fnString = module3.toString();
-                var wrapperSignature = fnString.match(/^function\s?\w*\(\w+,\s*\w+,\s*(\w+)\)/);
-                if (!wrapperSignature)
-                  return retval;
-                var webpackRequireName = wrapperSignature[1];
-                var re2 = new RegExp("(\\\\n|\\W)" + quoteRegExp(webpackRequireName) + dependencyRegExp, "g");
-                var match2;
-                while (match2 = re2.exec(fnString)) {
-                  if (match2[3] === "dll-reference")
-                    continue;
-                  retval[queueName].push(match2[3]);
-                }
-                re2 = new RegExp("\\(" + quoteRegExp(webpackRequireName) + '\\("(dll-reference\\s(' + moduleNameReqExp + '))"\\)\\)' + dependencyRegExp, "g");
-                while (match2 = re2.exec(fnString)) {
-                  if (!sources[match2[2]]) {
-                    retval[queueName].push(match2[1]);
-                    sources[match2[2]] = __webpack_require__2(match2[1]).m;
-                  }
-                  retval[match2[2]] = retval[match2[2]] || [];
-                  retval[match2[2]].push(match2[4]);
-                }
-                var keys2 = Object.keys(retval);
-                for (var i2 = 0; i2 < keys2.length; i2++) {
-                  for (var j2 = 0; j2 < retval[keys2[i2]].length; j2++) {
-                    if (isNumeric(retval[keys2[i2]][j2])) {
-                      retval[keys2[i2]][j2] = 1 * retval[keys2[i2]][j2];
-                    }
-                  }
-                }
-                return retval;
-              }
-              function hasValuesInQueues(queues) {
-                var keys2 = Object.keys(queues);
-                return keys2.reduce(function(hasValues, key) {
-                  return hasValues || queues[key].length > 0;
-                }, false);
-              }
-              function getRequiredModules(sources, moduleId) {
-                var modulesQueue = {
-                  main: [moduleId]
-                };
-                var requiredModules = {
-                  main: []
-                };
-                var seenModules = {
-                  main: {}
-                };
-                while (hasValuesInQueues(modulesQueue)) {
-                  var queues = Object.keys(modulesQueue);
-                  for (var i2 = 0; i2 < queues.length; i2++) {
-                    var queueName = queues[i2];
-                    var queue = modulesQueue[queueName];
-                    var moduleToCheck = queue.pop();
-                    seenModules[queueName] = seenModules[queueName] || {};
-                    if (seenModules[queueName][moduleToCheck] || !sources[queueName][moduleToCheck])
-                      continue;
-                    seenModules[queueName][moduleToCheck] = true;
-                    requiredModules[queueName] = requiredModules[queueName] || [];
-                    requiredModules[queueName].push(moduleToCheck);
-                    var newModules = getModuleDependencies(sources, sources[queueName][moduleToCheck], queueName);
-                    var newModulesKeys = Object.keys(newModules);
-                    for (var j2 = 0; j2 < newModulesKeys.length; j2++) {
-                      modulesQueue[newModulesKeys[j2]] = modulesQueue[newModulesKeys[j2]] || [];
-                      modulesQueue[newModulesKeys[j2]] = modulesQueue[newModulesKeys[j2]].concat(newModules[newModulesKeys[j2]]);
-                    }
-                  }
-                }
-                return requiredModules;
-              }
-              module2.exports = function(moduleId, options) {
-                options = options || {};
-                var sources = {
-                  main: __webpack_require__2.m
-                };
-                var requiredModules = options.all ? { main: Object.keys(sources.main) } : getRequiredModules(sources, moduleId);
-                var src = "";
-                Object.keys(requiredModules).filter(function(m2) {
-                  return m2 !== "main";
-                }).forEach(function(module3) {
-                  var entryModule = 0;
-                  while (requiredModules[module3][entryModule]) {
-                    entryModule++;
-                  }
-                  requiredModules[module3].push(entryModule);
-                  sources[module3][entryModule] = "(function(module, exports, __webpack_require__) { module.exports = __webpack_require__; })";
-                  src = src + "var " + module3 + " = (" + webpackBootstrapFunc.toString().replace("ENTRY_MODULE", JSON.stringify(entryModule)) + ")({" + requiredModules[module3].map(function(id2) {
-                    return "" + JSON.stringify(id2) + ": " + sources[module3][id2].toString();
-                  }).join(",") + "});\n";
-                });
-                src = src + "new ((" + webpackBootstrapFunc.toString().replace("ENTRY_MODULE", JSON.stringify(moduleId)) + ")({" + requiredModules.main.map(function(id2) {
-                  return "" + JSON.stringify(id2) + ": " + sources.main[id2].toString();
-                }).join(",") + "}))(self);";
-                var blob = new window.Blob([src], { type: "text/javascript" });
-                if (options.bare) {
-                  return blob;
-                }
-                var URL2 = window.URL || window.webkitURL || window.mozURL || window.msURL;
-                var workerUrl = URL2.createObjectURL(blob);
-                var worker = new window.Worker(workerUrl);
-                worker.objectURL = workerUrl;
-                return worker;
-              };
-            }
-          ),
-          /***/
-          "./src/config.js": (
-            /*!***********************!*\
-              !*** ./src/config.js ***!
-              \***********************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              __webpack_require__2.d(__webpack_exports__2, {
-                /* harmony export */
-                "defaultConfig": function() {
-                  return (
-                    /* binding */
-                    defaultConfig
-                  );
-                },
-                /* harmony export */
-                "createDefaultConfig": function() {
-                  return (
-                    /* binding */
-                    createDefaultConfig
-                  );
-                }
-                /* harmony export */
-              });
-              var defaultConfig = {
-                enableWorker: false,
-                enableStashBuffer: true,
-                stashInitialSize: void 0,
-                isLive: false,
-                lazyLoad: true,
-                lazyLoadMaxDuration: 3 * 60,
-                lazyLoadRecoverDuration: 30,
-                deferLoadAfterSourceOpen: true,
-                // autoCleanupSourceBuffer: default as false, leave unspecified
-                autoCleanupMaxBackwardDuration: 3 * 60,
-                autoCleanupMinBackwardDuration: 2 * 60,
-                statisticsInfoReportInterval: 600,
-                fixAudioTimestampGap: true,
-                accurateSeek: false,
-                seekType: "range",
-                seekParamStart: "bstart",
-                seekParamEnd: "bend",
-                rangeLoadZeroStart: false,
-                customSeekHandler: void 0,
-                reuseRedirectedURL: false,
-                // referrerPolicy: leave as unspecified
-                headers: void 0,
-                customLoader: void 0
-              };
-              function createDefaultConfig() {
-                return Object.assign({}, defaultConfig);
-              }
-            }
-          ),
-          /***/
-          "./src/core/features.js": (
-            /*!******************************!*\
-              !*** ./src/core/features.js ***!
-              \******************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _io_io_controller_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../io/io-controller.js */
-                "./src/io/io-controller.js"
-              );
-              var _config_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ../config.js */
-                "./src/config.js"
-              );
-              var Features = (
-                /** @class */
-                function() {
-                  function Features2() {
-                  }
-                  Features2.supportMSEH264Playback = function() {
-                    return window.MediaSource && window.MediaSource.isTypeSupported('video/mp4; codecs="avc1.42E01E,mp4a.40.2"');
-                  };
-                  Features2.supportNetworkStreamIO = function() {
-                    var ioctl = new _io_io_controller_js__WEBPACK_IMPORTED_MODULE_0__.default({}, (0, _config_js__WEBPACK_IMPORTED_MODULE_1__.createDefaultConfig)());
-                    var loaderType = ioctl.loaderType;
-                    ioctl.destroy();
-                    return loaderType == "fetch-stream-loader" || loaderType == "xhr-moz-chunked-loader";
-                  };
-                  Features2.getNetworkLoaderTypeName = function() {
-                    var ioctl = new _io_io_controller_js__WEBPACK_IMPORTED_MODULE_0__.default({}, (0, _config_js__WEBPACK_IMPORTED_MODULE_1__.createDefaultConfig)());
-                    var loaderType = ioctl.loaderType;
-                    ioctl.destroy();
-                    return loaderType;
-                  };
-                  Features2.supportNativeMediaPlayback = function(mimeType) {
-                    if (Features2.videoElement == void 0) {
-                      Features2.videoElement = window.document.createElement("video");
-                    }
-                    var canPlay = Features2.videoElement.canPlayType(mimeType);
-                    return canPlay === "probably" || canPlay == "maybe";
-                  };
-                  Features2.getFeatureList = function() {
-                    var features = {
-                      mseFlvPlayback: false,
-                      mseLiveFlvPlayback: false,
-                      networkStreamIO: false,
-                      networkLoaderName: "",
-                      nativeMP4H264Playback: false,
-                      nativeWebmVP8Playback: false,
-                      nativeWebmVP9Playback: false
-                    };
-                    features.mseFlvPlayback = Features2.supportMSEH264Playback();
-                    features.networkStreamIO = Features2.supportNetworkStreamIO();
-                    features.networkLoaderName = Features2.getNetworkLoaderTypeName();
-                    features.mseLiveFlvPlayback = features.mseFlvPlayback && features.networkStreamIO;
-                    features.nativeMP4H264Playback = Features2.supportNativeMediaPlayback('video/mp4; codecs="avc1.42001E, mp4a.40.2"');
-                    features.nativeWebmVP8Playback = Features2.supportNativeMediaPlayback('video/webm; codecs="vp8.0, vorbis"');
-                    features.nativeWebmVP9Playback = Features2.supportNativeMediaPlayback('video/webm; codecs="vp9"');
-                    return features;
-                  };
-                  return Features2;
-                }()
-              );
-              __webpack_exports__2["default"] = Features;
-            }
-          ),
-          /***/
-          "./src/core/media-info.js": (
-            /*!********************************!*\
-              !*** ./src/core/media-info.js ***!
-              \********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var MediaInfo = (
-                /** @class */
-                function() {
-                  function MediaInfo2() {
-                    this.mimeType = null;
-                    this.duration = null;
-                    this.hasAudio = null;
-                    this.hasVideo = null;
-                    this.audioCodec = null;
-                    this.videoCodec = null;
-                    this.audioDataRate = null;
-                    this.videoDataRate = null;
-                    this.audioSampleRate = null;
-                    this.audioChannelCount = null;
-                    this.width = null;
-                    this.height = null;
-                    this.fps = null;
-                    this.profile = null;
-                    this.level = null;
-                    this.refFrames = null;
-                    this.chromaFormat = null;
-                    this.sarNum = null;
-                    this.sarDen = null;
-                    this.metadata = null;
-                    this.segments = null;
-                    this.segmentCount = null;
-                    this.hasKeyframesIndex = null;
-                    this.keyframesIndex = null;
-                  }
-                  MediaInfo2.prototype.isComplete = function() {
-                    var audioInfoComplete = this.hasAudio === false || this.hasAudio === true && this.audioCodec != null && this.audioSampleRate != null && this.audioChannelCount != null;
-                    var videoInfoComplete = this.hasVideo === false || this.hasVideo === true && this.videoCodec != null && this.width != null && this.height != null && this.fps != null && this.profile != null && this.level != null && this.refFrames != null && this.chromaFormat != null && this.sarNum != null && this.sarDen != null;
-                    return this.mimeType != null && this.duration != null && this.metadata != null && this.hasKeyframesIndex != null && audioInfoComplete && videoInfoComplete;
-                  };
-                  MediaInfo2.prototype.isSeekable = function() {
-                    return this.hasKeyframesIndex === true;
-                  };
-                  MediaInfo2.prototype.getNearestKeyframe = function(milliseconds) {
-                    if (this.keyframesIndex == null) {
-                      return null;
-                    }
-                    var table = this.keyframesIndex;
-                    var keyframeIdx = this._search(table.times, milliseconds);
-                    return {
-                      index: keyframeIdx,
-                      milliseconds: table.times[keyframeIdx],
-                      fileposition: table.filepositions[keyframeIdx]
-                    };
-                  };
-                  MediaInfo2.prototype._search = function(list, value) {
-                    var idx = 0;
-                    var last = list.length - 1;
-                    var mid = 0;
-                    var lbound = 0;
-                    var ubound = last;
-                    if (value < list[0]) {
-                      idx = 0;
-                      lbound = ubound + 1;
-                    }
-                    while (lbound <= ubound) {
-                      mid = lbound + Math.floor((ubound - lbound) / 2);
-                      if (mid === last || value >= list[mid] && value < list[mid + 1]) {
-                        idx = mid;
-                        break;
-                      } else if (list[mid] < value) {
-                        lbound = mid + 1;
-                      } else {
-                        ubound = mid - 1;
-                      }
-                    }
-                    return idx;
-                  };
-                  return MediaInfo2;
-                }()
-              );
-              __webpack_exports__2["default"] = MediaInfo;
-            }
-          ),
-          /***/
-          "./src/core/media-segment-info.js": (
-            /*!****************************************!*\
-              !*** ./src/core/media-segment-info.js ***!
-              \****************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              __webpack_require__2.d(__webpack_exports__2, {
-                /* harmony export */
-                "SampleInfo": function() {
-                  return (
-                    /* binding */
-                    SampleInfo
-                  );
-                },
-                /* harmony export */
-                "MediaSegmentInfo": function() {
-                  return (
-                    /* binding */
-                    MediaSegmentInfo
-                  );
-                },
-                /* harmony export */
-                "IDRSampleList": function() {
-                  return (
-                    /* binding */
-                    IDRSampleList
-                  );
-                },
-                /* harmony export */
-                "MediaSegmentInfoList": function() {
-                  return (
-                    /* binding */
-                    MediaSegmentInfoList
-                  );
-                }
-                /* harmony export */
-              });
-              var SampleInfo = (
-                /** @class */
-                function() {
-                  function SampleInfo2(dts, pts, duration, originalDts, isSync) {
-                    this.dts = dts;
-                    this.pts = pts;
-                    this.duration = duration;
-                    this.originalDts = originalDts;
-                    this.isSyncPoint = isSync;
-                    this.fileposition = null;
-                  }
-                  return SampleInfo2;
-                }()
-              );
-              var MediaSegmentInfo = (
-                /** @class */
-                function() {
-                  function MediaSegmentInfo2() {
-                    this.beginDts = 0;
-                    this.endDts = 0;
-                    this.beginPts = 0;
-                    this.endPts = 0;
-                    this.originalBeginDts = 0;
-                    this.originalEndDts = 0;
-                    this.syncPoints = [];
-                    this.firstSample = null;
-                    this.lastSample = null;
-                  }
-                  MediaSegmentInfo2.prototype.appendSyncPoint = function(sampleInfo) {
-                    sampleInfo.isSyncPoint = true;
-                    this.syncPoints.push(sampleInfo);
-                  };
-                  return MediaSegmentInfo2;
-                }()
-              );
-              var IDRSampleList = (
-                /** @class */
-                function() {
-                  function IDRSampleList2() {
-                    this._list = [];
-                  }
-                  IDRSampleList2.prototype.clear = function() {
-                    this._list = [];
-                  };
-                  IDRSampleList2.prototype.appendArray = function(syncPoints) {
-                    var list = this._list;
-                    if (syncPoints.length === 0) {
-                      return;
-                    }
-                    if (list.length > 0 && syncPoints[0].originalDts < list[list.length - 1].originalDts) {
-                      this.clear();
-                    }
-                    Array.prototype.push.apply(list, syncPoints);
-                  };
-                  IDRSampleList2.prototype.getLastSyncPointBeforeDts = function(dts) {
-                    if (this._list.length == 0) {
-                      return null;
-                    }
-                    var list = this._list;
-                    var idx = 0;
-                    var last = list.length - 1;
-                    var mid = 0;
-                    var lbound = 0;
-                    var ubound = last;
-                    if (dts < list[0].dts) {
-                      idx = 0;
-                      lbound = ubound + 1;
-                    }
-                    while (lbound <= ubound) {
-                      mid = lbound + Math.floor((ubound - lbound) / 2);
-                      if (mid === last || dts >= list[mid].dts && dts < list[mid + 1].dts) {
-                        idx = mid;
-                        break;
-                      } else if (list[mid].dts < dts) {
-                        lbound = mid + 1;
-                      } else {
-                        ubound = mid - 1;
-                      }
-                    }
-                    return this._list[idx];
-                  };
-                  return IDRSampleList2;
-                }()
-              );
-              var MediaSegmentInfoList = (
-                /** @class */
-                function() {
-                  function MediaSegmentInfoList2(type2) {
-                    this._type = type2;
-                    this._list = [];
-                    this._lastAppendLocation = -1;
-                  }
-                  Object.defineProperty(MediaSegmentInfoList2.prototype, "type", {
-                    get: function() {
-                      return this._type;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(MediaSegmentInfoList2.prototype, "length", {
-                    get: function() {
-                      return this._list.length;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  MediaSegmentInfoList2.prototype.isEmpty = function() {
-                    return this._list.length === 0;
-                  };
-                  MediaSegmentInfoList2.prototype.clear = function() {
-                    this._list = [];
-                    this._lastAppendLocation = -1;
-                  };
-                  MediaSegmentInfoList2.prototype._searchNearestSegmentBefore = function(originalBeginDts) {
-                    var list = this._list;
-                    if (list.length === 0) {
-                      return -2;
-                    }
-                    var last = list.length - 1;
-                    var mid = 0;
-                    var lbound = 0;
-                    var ubound = last;
-                    var idx = 0;
-                    if (originalBeginDts < list[0].originalBeginDts) {
-                      idx = -1;
-                      return idx;
-                    }
-                    while (lbound <= ubound) {
-                      mid = lbound + Math.floor((ubound - lbound) / 2);
-                      if (mid === last || originalBeginDts > list[mid].lastSample.originalDts && originalBeginDts < list[mid + 1].originalBeginDts) {
-                        idx = mid;
-                        break;
-                      } else if (list[mid].originalBeginDts < originalBeginDts) {
-                        lbound = mid + 1;
-                      } else {
-                        ubound = mid - 1;
-                      }
-                    }
-                    return idx;
-                  };
-                  MediaSegmentInfoList2.prototype._searchNearestSegmentAfter = function(originalBeginDts) {
-                    return this._searchNearestSegmentBefore(originalBeginDts) + 1;
-                  };
-                  MediaSegmentInfoList2.prototype.append = function(mediaSegmentInfo) {
-                    var list = this._list;
-                    var msi = mediaSegmentInfo;
-                    var lastAppendIdx = this._lastAppendLocation;
-                    var insertIdx = 0;
-                    if (lastAppendIdx !== -1 && lastAppendIdx < list.length && msi.originalBeginDts >= list[lastAppendIdx].lastSample.originalDts && (lastAppendIdx === list.length - 1 || lastAppendIdx < list.length - 1 && msi.originalBeginDts < list[lastAppendIdx + 1].originalBeginDts)) {
-                      insertIdx = lastAppendIdx + 1;
-                    } else {
-                      if (list.length > 0) {
-                        insertIdx = this._searchNearestSegmentBefore(msi.originalBeginDts) + 1;
-                      }
-                    }
-                    this._lastAppendLocation = insertIdx;
-                    this._list.splice(insertIdx, 0, msi);
-                  };
-                  MediaSegmentInfoList2.prototype.getLastSegmentBefore = function(originalBeginDts) {
-                    var idx = this._searchNearestSegmentBefore(originalBeginDts);
-                    if (idx >= 0) {
-                      return this._list[idx];
-                    } else {
-                      return null;
-                    }
-                  };
-                  MediaSegmentInfoList2.prototype.getLastSampleBefore = function(originalBeginDts) {
-                    var segment = this.getLastSegmentBefore(originalBeginDts);
-                    if (segment != null) {
-                      return segment.lastSample;
-                    } else {
-                      return null;
-                    }
-                  };
-                  MediaSegmentInfoList2.prototype.getLastSyncPointBefore = function(originalBeginDts) {
-                    var segmentIdx = this._searchNearestSegmentBefore(originalBeginDts);
-                    var syncPoints = this._list[segmentIdx].syncPoints;
-                    while (syncPoints.length === 0 && segmentIdx > 0) {
-                      segmentIdx--;
-                      syncPoints = this._list[segmentIdx].syncPoints;
-                    }
-                    if (syncPoints.length > 0) {
-                      return syncPoints[syncPoints.length - 1];
-                    } else {
-                      return null;
-                    }
-                  };
-                  return MediaSegmentInfoList2;
-                }()
-              );
-            }
-          ),
-          /***/
-          "./src/core/mse-controller.js": (
-            /*!************************************!*\
-              !*** ./src/core/mse-controller.js ***!
-              \************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! events */
-                "./node_modules/events/events.js"
-              );
-              var events__WEBPACK_IMPORTED_MODULE_0___default = /* @__PURE__ */ __webpack_require__2.n(events__WEBPACK_IMPORTED_MODULE_0__);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ../utils/browser.js */
-                "./src/utils/browser.js"
-              );
-              var _mse_events_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ./mse-events.js */
-                "./src/core/mse-events.js"
-              );
-              var _media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__2(
-                /*! ./media-segment-info.js */
-                "./src/core/media-segment-info.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var MSEController = (
-                /** @class */
-                function() {
-                  function MSEController2(config) {
-                    this.TAG = "MSEController";
-                    this._config = config;
-                    this._emitter = new (events__WEBPACK_IMPORTED_MODULE_0___default())();
-                    if (this._config.isLive && this._config.autoCleanupSourceBuffer == void 0) {
-                      this._config.autoCleanupSourceBuffer = true;
-                    }
-                    this.e = {
-                      onSourceOpen: this._onSourceOpen.bind(this),
-                      onSourceEnded: this._onSourceEnded.bind(this),
-                      onSourceClose: this._onSourceClose.bind(this),
-                      onSourceBufferError: this._onSourceBufferError.bind(this),
-                      onSourceBufferUpdateEnd: this._onSourceBufferUpdateEnd.bind(this)
-                    };
-                    this._mediaSource = null;
-                    this._mediaSourceObjectURL = null;
-                    this._mediaElement = null;
-                    this._isBufferFull = false;
-                    this._hasPendingEos = false;
-                    this._requireSetMediaDuration = false;
-                    this._pendingMediaDuration = 0;
-                    this._pendingSourceBufferInit = [];
-                    this._mimeTypes = {
-                      video: null,
-                      audio: null
-                    };
-                    this._sourceBuffers = {
-                      video: null,
-                      audio: null
-                    };
-                    this._lastInitSegments = {
-                      video: null,
-                      audio: null
-                    };
-                    this._pendingSegments = {
-                      video: [],
-                      audio: []
-                    };
-                    this._pendingRemoveRanges = {
-                      video: [],
-                      audio: []
-                    };
-                    this._idrList = new _media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.IDRSampleList();
-                  }
-                  MSEController2.prototype.destroy = function() {
-                    if (this._mediaElement || this._mediaSource) {
-                      this.detachMediaElement();
-                    }
-                    this.e = null;
-                    this._emitter.removeAllListeners();
-                    this._emitter = null;
-                  };
-                  MSEController2.prototype.on = function(event, listener) {
-                    this._emitter.addListener(event, listener);
-                  };
-                  MSEController2.prototype.off = function(event, listener) {
-                    this._emitter.removeListener(event, listener);
-                  };
-                  MSEController2.prototype.attachMediaElement = function(mediaElement) {
-                    if (this._mediaSource) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_5__.IllegalStateException("MediaSource has been attached to an HTMLMediaElement!");
-                    }
-                    var ms = this._mediaSource = new window.MediaSource();
-                    ms.addEventListener("sourceopen", this.e.onSourceOpen);
-                    ms.addEventListener("sourceended", this.e.onSourceEnded);
-                    ms.addEventListener("sourceclose", this.e.onSourceClose);
-                    this._mediaElement = mediaElement;
-                    this._mediaSourceObjectURL = window.URL.createObjectURL(this._mediaSource);
-                    mediaElement.src = this._mediaSourceObjectURL;
-                  };
-                  MSEController2.prototype.detachMediaElement = function() {
-                    if (this._mediaSource) {
-                      var ms = this._mediaSource;
-                      for (var type2 in this._sourceBuffers) {
-                        var ps = this._pendingSegments[type2];
-                        ps.splice(0, ps.length);
-                        this._pendingSegments[type2] = null;
-                        this._pendingRemoveRanges[type2] = null;
-                        this._lastInitSegments[type2] = null;
-                        var sb2 = this._sourceBuffers[type2];
-                        if (sb2) {
-                          if (ms.readyState !== "closed") {
-                            try {
-                              ms.removeSourceBuffer(sb2);
-                            } catch (error2) {
-                              _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.e(this.TAG, error2.message);
-                            }
-                            sb2.removeEventListener("error", this.e.onSourceBufferError);
-                            sb2.removeEventListener("updateend", this.e.onSourceBufferUpdateEnd);
-                          }
-                          this._mimeTypes[type2] = null;
-                          this._sourceBuffers[type2] = null;
-                        }
-                      }
-                      if (ms.readyState === "open") {
-                        try {
-                          ms.endOfStream();
-                        } catch (error2) {
-                          _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.e(this.TAG, error2.message);
-                        }
-                      }
-                      ms.removeEventListener("sourceopen", this.e.onSourceOpen);
-                      ms.removeEventListener("sourceended", this.e.onSourceEnded);
-                      ms.removeEventListener("sourceclose", this.e.onSourceClose);
-                      this._pendingSourceBufferInit = [];
-                      this._isBufferFull = false;
-                      this._idrList.clear();
-                      this._mediaSource = null;
-                    }
-                    if (this._mediaElement) {
-                      this._mediaElement.src = "";
-                      this._mediaElement.removeAttribute("src");
-                      this._mediaElement = null;
-                    }
-                    if (this._mediaSourceObjectURL) {
-                      window.URL.revokeObjectURL(this._mediaSourceObjectURL);
-                      this._mediaSourceObjectURL = null;
-                    }
-                  };
-                  MSEController2.prototype.appendInitSegment = function(initSegment, deferred) {
-                    if (!this._mediaSource || this._mediaSource.readyState !== "open") {
-                      this._pendingSourceBufferInit.push(initSegment);
-                      this._pendingSegments[initSegment.type].push(initSegment);
-                      return;
-                    }
-                    var is = initSegment;
-                    var mimeType = "" + is.container;
-                    if (is.codec && is.codec.length > 0) {
-                      mimeType += ";codecs=" + is.codec;
-                    }
-                    var firstInitSegment = false;
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "Received Initialization Segment, mimeType: " + mimeType);
-                    this._lastInitSegments[is.type] = is;
-                    if (mimeType !== this._mimeTypes[is.type]) {
-                      if (!this._mimeTypes[is.type]) {
-                        firstInitSegment = true;
-                        try {
-                          var sb2 = this._sourceBuffers[is.type] = this._mediaSource.addSourceBuffer(mimeType);
-                          sb2.addEventListener("error", this.e.onSourceBufferError);
-                          sb2.addEventListener("updateend", this.e.onSourceBufferUpdateEnd);
-                        } catch (error2) {
-                          _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.e(this.TAG, error2.message);
-                          this._emitter.emit(_mse_events_js__WEBPACK_IMPORTED_MODULE_3__.default.ERROR, { code: error2.code, msg: error2.message });
-                          return;
-                        }
-                      } else {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "Notice: " + is.type + " mimeType changed, origin: " + this._mimeTypes[is.type] + ", target: " + mimeType);
-                      }
-                      this._mimeTypes[is.type] = mimeType;
-                    }
-                    if (!deferred) {
-                      this._pendingSegments[is.type].push(is);
-                    }
-                    if (!firstInitSegment) {
-                      if (this._sourceBuffers[is.type] && !this._sourceBuffers[is.type].updating) {
-                        this._doAppendSegments();
-                      }
-                    }
-                    if (_utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.safari && is.container === "audio/mpeg" && is.mediaDuration > 0) {
-                      this._requireSetMediaDuration = true;
-                      this._pendingMediaDuration = is.mediaDuration / 1e3;
-                      this._updateMediaSourceDuration();
-                    }
-                  };
-                  MSEController2.prototype.appendMediaSegment = function(mediaSegment) {
-                    var ms = mediaSegment;
-                    this._pendingSegments[ms.type].push(ms);
-                    if (this._config.autoCleanupSourceBuffer && this._needCleanupSourceBuffer()) {
-                      this._doCleanupSourceBuffer();
-                    }
-                    var sb2 = this._sourceBuffers[ms.type];
-                    if (sb2 && !sb2.updating && !this._hasPendingRemoveRanges()) {
-                      this._doAppendSegments();
-                    }
-                  };
-                  MSEController2.prototype.seek = function(seconds) {
-                    for (var type2 in this._sourceBuffers) {
-                      if (!this._sourceBuffers[type2]) {
-                        continue;
-                      }
-                      var sb2 = this._sourceBuffers[type2];
-                      if (this._mediaSource.readyState === "open") {
-                        try {
-                          sb2.abort();
-                        } catch (error2) {
-                          _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.e(this.TAG, error2.message);
-                        }
-                      }
-                      this._idrList.clear();
-                      var ps = this._pendingSegments[type2];
-                      ps.splice(0, ps.length);
-                      if (this._mediaSource.readyState === "closed") {
-                        continue;
-                      }
-                      for (var i2 = 0; i2 < sb2.buffered.length; i2++) {
-                        var start = sb2.buffered.start(i2);
-                        var end2 = sb2.buffered.end(i2);
-                        this._pendingRemoveRanges[type2].push({ start, end: end2 });
-                      }
-                      if (!sb2.updating) {
-                        this._doRemoveRanges();
-                      }
-                      if (_utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.safari) {
-                        var lastInitSegment = this._lastInitSegments[type2];
-                        if (lastInitSegment) {
-                          this._pendingSegments[type2].push(lastInitSegment);
-                          if (!sb2.updating) {
-                            this._doAppendSegments();
-                          }
-                        }
-                      }
-                    }
-                  };
-                  MSEController2.prototype.endOfStream = function() {
-                    var ms = this._mediaSource;
-                    var sb2 = this._sourceBuffers;
-                    if (!ms || ms.readyState !== "open") {
-                      if (ms && ms.readyState === "closed" && this._hasPendingSegments()) {
-                        this._hasPendingEos = true;
-                      }
-                      return;
-                    }
-                    if (sb2.video && sb2.video.updating || sb2.audio && sb2.audio.updating) {
-                      this._hasPendingEos = true;
-                    } else {
-                      this._hasPendingEos = false;
-                      ms.endOfStream();
-                    }
-                  };
-                  MSEController2.prototype.getNearestKeyframe = function(dts) {
-                    return this._idrList.getLastSyncPointBeforeDts(dts);
-                  };
-                  MSEController2.prototype._needCleanupSourceBuffer = function() {
-                    if (!this._config.autoCleanupSourceBuffer) {
-                      return false;
-                    }
-                    var currentTime = this._mediaElement.currentTime;
-                    for (var type2 in this._sourceBuffers) {
-                      var sb2 = this._sourceBuffers[type2];
-                      if (sb2) {
-                        var buffered = sb2.buffered;
-                        if (buffered.length >= 1) {
-                          if (currentTime - buffered.start(0) >= this._config.autoCleanupMaxBackwardDuration) {
-                            return true;
-                          }
-                        }
-                      }
-                    }
-                    return false;
-                  };
-                  MSEController2.prototype._doCleanupSourceBuffer = function() {
-                    var currentTime = this._mediaElement.currentTime;
-                    for (var type2 in this._sourceBuffers) {
-                      var sb2 = this._sourceBuffers[type2];
-                      if (sb2) {
-                        var buffered = sb2.buffered;
-                        var doRemove = false;
-                        for (var i2 = 0; i2 < buffered.length; i2++) {
-                          var start = buffered.start(i2);
-                          var end2 = buffered.end(i2);
-                          if (start <= currentTime && currentTime < end2 + 3) {
-                            if (currentTime - start >= this._config.autoCleanupMaxBackwardDuration) {
-                              doRemove = true;
-                              var removeEnd = currentTime - this._config.autoCleanupMinBackwardDuration;
-                              this._pendingRemoveRanges[type2].push({ start, end: removeEnd });
-                            }
-                          } else if (end2 < currentTime) {
-                            doRemove = true;
-                            this._pendingRemoveRanges[type2].push({ start, end: end2 });
-                          }
-                        }
-                        if (doRemove && !sb2.updating) {
-                          this._doRemoveRanges();
-                        }
-                      }
-                    }
-                  };
-                  MSEController2.prototype._updateMediaSourceDuration = function() {
-                    var sb2 = this._sourceBuffers;
-                    if (this._mediaElement.readyState === 0 || this._mediaSource.readyState !== "open") {
-                      return;
-                    }
-                    if (sb2.video && sb2.video.updating || sb2.audio && sb2.audio.updating) {
-                      return;
-                    }
-                    var current = this._mediaSource.duration;
-                    var target = this._pendingMediaDuration;
-                    if (target > 0 && (isNaN(current) || target > current)) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "Update MediaSource duration from " + current + " to " + target);
-                      this._mediaSource.duration = target;
-                    }
-                    this._requireSetMediaDuration = false;
-                    this._pendingMediaDuration = 0;
-                  };
-                  MSEController2.prototype._doRemoveRanges = function() {
-                    for (var type2 in this._pendingRemoveRanges) {
-                      if (!this._sourceBuffers[type2] || this._sourceBuffers[type2].updating) {
-                        continue;
-                      }
-                      var sb2 = this._sourceBuffers[type2];
-                      var ranges = this._pendingRemoveRanges[type2];
-                      while (ranges.length && !sb2.updating) {
-                        var range2 = ranges.shift();
-                        sb2.remove(range2.start, range2.end);
-                      }
-                    }
-                  };
-                  MSEController2.prototype._doAppendSegments = function() {
-                    var pendingSegments = this._pendingSegments;
-                    for (var type2 in pendingSegments) {
-                      if (!this._sourceBuffers[type2] || this._sourceBuffers[type2].updating) {
-                        continue;
-                      }
-                      if (pendingSegments[type2].length > 0) {
-                        var segment = pendingSegments[type2].shift();
-                        if (segment.timestampOffset) {
-                          var currentOffset = this._sourceBuffers[type2].timestampOffset;
-                          var targetOffset = segment.timestampOffset / 1e3;
-                          var delta = Math.abs(currentOffset - targetOffset);
-                          if (delta > 0.1) {
-                            _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "Update MPEG audio timestampOffset from " + currentOffset + " to " + targetOffset);
-                            this._sourceBuffers[type2].timestampOffset = targetOffset;
-                          }
-                          delete segment.timestampOffset;
-                        }
-                        if (!segment.data || segment.data.byteLength === 0) {
-                          continue;
-                        }
-                        try {
-                          this._sourceBuffers[type2].appendBuffer(segment.data);
-                          this._isBufferFull = false;
-                          if (type2 === "video" && segment.hasOwnProperty("info")) {
-                            this._idrList.appendArray(segment.info.syncPoints);
-                          }
-                        } catch (error2) {
-                          this._pendingSegments[type2].unshift(segment);
-                          if (error2.code === 22) {
-                            if (!this._isBufferFull) {
-                              this._emitter.emit(_mse_events_js__WEBPACK_IMPORTED_MODULE_3__.default.BUFFER_FULL);
-                            }
-                            this._isBufferFull = true;
-                          } else {
-                            _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.e(this.TAG, error2.message);
-                            this._emitter.emit(_mse_events_js__WEBPACK_IMPORTED_MODULE_3__.default.ERROR, { code: error2.code, msg: error2.message });
-                          }
-                        }
-                      }
-                    }
-                  };
-                  MSEController2.prototype._onSourceOpen = function() {
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "MediaSource onSourceOpen");
-                    this._mediaSource.removeEventListener("sourceopen", this.e.onSourceOpen);
-                    if (this._pendingSourceBufferInit.length > 0) {
-                      var pendings = this._pendingSourceBufferInit;
-                      while (pendings.length) {
-                        var segment = pendings.shift();
-                        this.appendInitSegment(segment, true);
-                      }
-                    }
-                    if (this._hasPendingSegments()) {
-                      this._doAppendSegments();
-                    }
-                    this._emitter.emit(_mse_events_js__WEBPACK_IMPORTED_MODULE_3__.default.SOURCE_OPEN);
-                  };
-                  MSEController2.prototype._onSourceEnded = function() {
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "MediaSource onSourceEnded");
-                  };
-                  MSEController2.prototype._onSourceClose = function() {
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "MediaSource onSourceClose");
-                    if (this._mediaSource && this.e != null) {
-                      this._mediaSource.removeEventListener("sourceopen", this.e.onSourceOpen);
-                      this._mediaSource.removeEventListener("sourceended", this.e.onSourceEnded);
-                      this._mediaSource.removeEventListener("sourceclose", this.e.onSourceClose);
-                    }
-                  };
-                  MSEController2.prototype._hasPendingSegments = function() {
-                    var ps = this._pendingSegments;
-                    return ps.video.length > 0 || ps.audio.length > 0;
-                  };
-                  MSEController2.prototype._hasPendingRemoveRanges = function() {
-                    var prr = this._pendingRemoveRanges;
-                    return prr.video.length > 0 || prr.audio.length > 0;
-                  };
-                  MSEController2.prototype._onSourceBufferUpdateEnd = function() {
-                    if (this._requireSetMediaDuration) {
-                      this._updateMediaSourceDuration();
-                    } else if (this._hasPendingRemoveRanges()) {
-                      this._doRemoveRanges();
-                    } else if (this._hasPendingSegments()) {
-                      this._doAppendSegments();
-                    } else if (this._hasPendingEos) {
-                      this.endOfStream();
-                    }
-                    this._emitter.emit(_mse_events_js__WEBPACK_IMPORTED_MODULE_3__.default.UPDATE_END);
-                  };
-                  MSEController2.prototype._onSourceBufferError = function(e2) {
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.e(this.TAG, "SourceBuffer Error: " + e2);
-                  };
-                  return MSEController2;
-                }()
-              );
-              __webpack_exports__2["default"] = MSEController;
-            }
-          ),
-          /***/
-          "./src/core/mse-events.js": (
-            /*!********************************!*\
-              !*** ./src/core/mse-events.js ***!
-              \********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var MSEEvents = {
-                ERROR: "error",
-                SOURCE_OPEN: "source_open",
-                UPDATE_END: "update_end",
-                BUFFER_FULL: "buffer_full"
-              };
-              __webpack_exports__2["default"] = MSEEvents;
-            }
-          ),
-          /***/
-          "./src/core/transmuxer.js": (
-            /*!********************************!*\
-              !*** ./src/core/transmuxer.js ***!
-              \********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! events */
-                "./node_modules/events/events.js"
-              );
-              var events__WEBPACK_IMPORTED_MODULE_0___default = /* @__PURE__ */ __webpack_require__2.n(events__WEBPACK_IMPORTED_MODULE_0__);
-              var webworkify_webpack__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! webworkify-webpack */
-                "./node_modules/webworkify-webpack/index.js"
-              );
-              var webworkify_webpack__WEBPACK_IMPORTED_MODULE_1___default = /* @__PURE__ */ __webpack_require__2.n(webworkify_webpack__WEBPACK_IMPORTED_MODULE_1__);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ../utils/logging-control.js */
-                "./src/utils/logging-control.js"
-              );
-              var _transmuxing_controller_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__2(
-                /*! ./transmuxing-controller.js */
-                "./src/core/transmuxing-controller.js"
-              );
-              var _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__2(
-                /*! ./transmuxing-events.js */
-                "./src/core/transmuxing-events.js"
-              );
-              var _media_info_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__2(
-                /*! ./media-info.js */
-                "./src/core/media-info.js"
-              );
-              var Transmuxer = (
-                /** @class */
-                function() {
-                  function Transmuxer2(mediaDataSource, config) {
-                    this.TAG = "Transmuxer";
-                    this._emitter = new (events__WEBPACK_IMPORTED_MODULE_0___default())();
-                    if (config.enableWorker && typeof Worker !== "undefined") {
-                      try {
-                        this._worker = webworkify_webpack__WEBPACK_IMPORTED_MODULE_1___default()(
-                          /*require.resolve*/
-                          /*! ./transmuxing-worker */
-                          "./src/core/transmuxing-worker.js"
-                        );
-                        this._workerDestroying = false;
-                        this._worker.addEventListener("message", this._onWorkerMessage.bind(this));
-                        this._worker.postMessage({ cmd: "init", param: [mediaDataSource, config] });
-                        this.e = {
-                          onLoggingConfigChanged: this._onLoggingConfigChanged.bind(this)
-                        };
-                        _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_3__.default.registerListener(this.e.onLoggingConfigChanged);
-                        this._worker.postMessage({ cmd: "logging_config", param: _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_3__.default.getConfig() });
-                      } catch (error2) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_2__.default.e(this.TAG, "Error while initialize transmuxing worker, fallback to inline transmuxing");
-                        this._worker = null;
-                        this._controller = new _transmuxing_controller_js__WEBPACK_IMPORTED_MODULE_4__.default(mediaDataSource, config);
-                      }
-                    } else {
-                      this._controller = new _transmuxing_controller_js__WEBPACK_IMPORTED_MODULE_4__.default(mediaDataSource, config);
-                    }
-                    if (this._controller) {
-                      var ctl = this._controller;
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.IO_ERROR, this._onIOError.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.DEMUX_ERROR, this._onDemuxError.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.INIT_SEGMENT, this._onInitSegment.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.MEDIA_SEGMENT, this._onMediaSegment.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.LOADING_COMPLETE, this._onLoadingComplete.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.RECOVERED_EARLY_EOF, this._onRecoveredEarlyEof.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.MEDIA_INFO, this._onMediaInfo.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.METADATA_ARRIVED, this._onMetaDataArrived.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.SCRIPTDATA_ARRIVED, this._onScriptDataArrived.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.STATISTICS_INFO, this._onStatisticsInfo.bind(this));
-                      ctl.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.RECOMMEND_SEEKPOINT, this._onRecommendSeekpoint.bind(this));
-                    }
-                  }
-                  Transmuxer2.prototype.destroy = function() {
-                    if (this._worker) {
-                      if (!this._workerDestroying) {
-                        this._workerDestroying = true;
-                        this._worker.postMessage({ cmd: "destroy" });
-                        _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_3__.default.removeListener(this.e.onLoggingConfigChanged);
-                        this.e = null;
-                      }
-                    } else {
-                      this._controller.destroy();
-                      this._controller = null;
-                    }
-                    this._emitter.removeAllListeners();
-                    this._emitter = null;
-                  };
-                  Transmuxer2.prototype.on = function(event, listener) {
-                    this._emitter.addListener(event, listener);
-                  };
-                  Transmuxer2.prototype.off = function(event, listener) {
-                    this._emitter.removeListener(event, listener);
-                  };
-                  Transmuxer2.prototype.hasWorker = function() {
-                    return this._worker != null;
-                  };
-                  Transmuxer2.prototype.open = function() {
-                    if (this._worker) {
-                      this._worker.postMessage({ cmd: "start" });
-                    } else {
-                      this._controller.start();
-                    }
-                  };
-                  Transmuxer2.prototype.close = function() {
-                    if (this._worker) {
-                      this._worker.postMessage({ cmd: "stop" });
-                    } else {
-                      this._controller.stop();
-                    }
-                  };
-                  Transmuxer2.prototype.seek = function(milliseconds) {
-                    if (this._worker) {
-                      this._worker.postMessage({ cmd: "seek", param: milliseconds });
-                    } else {
-                      this._controller.seek(milliseconds);
-                    }
-                  };
-                  Transmuxer2.prototype.pause = function() {
-                    if (this._worker) {
-                      this._worker.postMessage({ cmd: "pause" });
-                    } else {
-                      this._controller.pause();
-                    }
-                  };
-                  Transmuxer2.prototype.resume = function() {
-                    if (this._worker) {
-                      this._worker.postMessage({ cmd: "resume" });
-                    } else {
-                      this._controller.resume();
-                    }
-                  };
-                  Transmuxer2.prototype._onInitSegment = function(type2, initSegment) {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.INIT_SEGMENT, type2, initSegment);
-                    });
-                  };
-                  Transmuxer2.prototype._onMediaSegment = function(type2, mediaSegment) {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.MEDIA_SEGMENT, type2, mediaSegment);
-                    });
-                  };
-                  Transmuxer2.prototype._onLoadingComplete = function() {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.LOADING_COMPLETE);
-                    });
-                  };
-                  Transmuxer2.prototype._onRecoveredEarlyEof = function() {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.RECOVERED_EARLY_EOF);
-                    });
-                  };
-                  Transmuxer2.prototype._onMediaInfo = function(mediaInfo) {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.MEDIA_INFO, mediaInfo);
-                    });
-                  };
-                  Transmuxer2.prototype._onMetaDataArrived = function(metadata) {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.METADATA_ARRIVED, metadata);
-                    });
-                  };
-                  Transmuxer2.prototype._onScriptDataArrived = function(data2) {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.SCRIPTDATA_ARRIVED, data2);
-                    });
-                  };
-                  Transmuxer2.prototype._onStatisticsInfo = function(statisticsInfo) {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.STATISTICS_INFO, statisticsInfo);
-                    });
-                  };
-                  Transmuxer2.prototype._onIOError = function(type2, info) {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.IO_ERROR, type2, info);
-                    });
-                  };
-                  Transmuxer2.prototype._onDemuxError = function(type2, info) {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.DEMUX_ERROR, type2, info);
-                    });
-                  };
-                  Transmuxer2.prototype._onRecommendSeekpoint = function(milliseconds) {
-                    var _this = this;
-                    Promise.resolve().then(function() {
-                      _this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.RECOMMEND_SEEKPOINT, milliseconds);
-                    });
-                  };
-                  Transmuxer2.prototype._onLoggingConfigChanged = function(config) {
-                    if (this._worker) {
-                      this._worker.postMessage({ cmd: "logging_config", param: config });
-                    }
-                  };
-                  Transmuxer2.prototype._onWorkerMessage = function(e2) {
-                    var message = e2.data;
-                    var data2 = message.data;
-                    if (message.msg === "destroyed" || this._workerDestroying) {
-                      this._workerDestroying = false;
-                      this._worker.terminate();
-                      this._worker = null;
-                      return;
-                    }
-                    switch (message.msg) {
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.INIT_SEGMENT:
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.MEDIA_SEGMENT:
-                        this._emitter.emit(message.msg, data2.type, data2.data);
-                        break;
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.LOADING_COMPLETE:
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.RECOVERED_EARLY_EOF:
-                        this._emitter.emit(message.msg);
-                        break;
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.MEDIA_INFO:
-                        Object.setPrototypeOf(data2, _media_info_js__WEBPACK_IMPORTED_MODULE_6__.default.prototype);
-                        this._emitter.emit(message.msg, data2);
-                        break;
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.METADATA_ARRIVED:
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.SCRIPTDATA_ARRIVED:
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.STATISTICS_INFO:
-                        this._emitter.emit(message.msg, data2);
-                        break;
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.IO_ERROR:
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.DEMUX_ERROR:
-                        this._emitter.emit(message.msg, data2.type, data2.info);
-                        break;
-                      case _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.RECOMMEND_SEEKPOINT:
-                        this._emitter.emit(message.msg, data2);
-                        break;
-                      case "logcat_callback":
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_2__.default.emitter.emit("log", data2.type, data2.logcat);
-                        break;
-                    }
-                  };
-                  return Transmuxer2;
-                }()
-              );
-              __webpack_exports__2["default"] = Transmuxer;
-            }
-          ),
-          /***/
-          "./src/core/transmuxing-controller.js": (
-            /*!********************************************!*\
-              !*** ./src/core/transmuxing-controller.js ***!
-              \********************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! events */
-                "./node_modules/events/events.js"
-              );
-              var events__WEBPACK_IMPORTED_MODULE_0___default = /* @__PURE__ */ __webpack_require__2.n(events__WEBPACK_IMPORTED_MODULE_0__);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ../utils/browser.js */
-                "./src/utils/browser.js"
-              );
-              var _media_info_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ./media-info.js */
-                "./src/core/media-info.js"
-              );
-              var _demux_flv_demuxer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__2(
-                /*! ../demux/flv-demuxer.js */
-                "./src/demux/flv-demuxer.js"
-              );
-              var _remux_mp4_remuxer_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__2(
-                /*! ../remux/mp4-remuxer.js */
-                "./src/remux/mp4-remuxer.js"
-              );
-              var _demux_demux_errors_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__2(
-                /*! ../demux/demux-errors.js */
-                "./src/demux/demux-errors.js"
-              );
-              var _io_io_controller_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__2(
-                /*! ../io/io-controller.js */
-                "./src/io/io-controller.js"
-              );
-              var _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__2(
-                /*! ./transmuxing-events.js */
-                "./src/core/transmuxing-events.js"
-              );
-              var TransmuxingController = (
-                /** @class */
-                function() {
-                  function TransmuxingController2(mediaDataSource, config) {
-                    this.TAG = "TransmuxingController";
-                    this._emitter = new (events__WEBPACK_IMPORTED_MODULE_0___default())();
-                    this._config = config;
-                    if (!mediaDataSource.segments) {
-                      mediaDataSource.segments = [{
-                        duration: mediaDataSource.duration,
-                        filesize: mediaDataSource.filesize,
-                        url: mediaDataSource.url
-                      }];
-                    }
-                    if (typeof mediaDataSource.cors !== "boolean") {
-                      mediaDataSource.cors = true;
-                    }
-                    if (typeof mediaDataSource.withCredentials !== "boolean") {
-                      mediaDataSource.withCredentials = false;
-                    }
-                    this._mediaDataSource = mediaDataSource;
-                    this._currentSegmentIndex = 0;
-                    var totalDuration = 0;
-                    this._mediaDataSource.segments.forEach(function(segment) {
-                      segment.timestampBase = totalDuration;
-                      totalDuration += segment.duration;
-                      segment.cors = mediaDataSource.cors;
-                      segment.withCredentials = mediaDataSource.withCredentials;
-                      if (config.referrerPolicy) {
-                        segment.referrerPolicy = config.referrerPolicy;
-                      }
-                    });
-                    if (!isNaN(totalDuration) && this._mediaDataSource.duration !== totalDuration) {
-                      this._mediaDataSource.duration = totalDuration;
-                    }
-                    this._mediaInfo = null;
-                    this._demuxer = null;
-                    this._remuxer = null;
-                    this._ioctl = null;
-                    this._pendingSeekTime = null;
-                    this._pendingResolveSeekPoint = null;
-                    this._statisticsReporter = null;
-                  }
-                  TransmuxingController2.prototype.destroy = function() {
-                    this._mediaInfo = null;
-                    this._mediaDataSource = null;
-                    if (this._statisticsReporter) {
-                      this._disableStatisticsReporter();
-                    }
-                    if (this._ioctl) {
-                      this._ioctl.destroy();
-                      this._ioctl = null;
-                    }
-                    if (this._demuxer) {
-                      this._demuxer.destroy();
-                      this._demuxer = null;
-                    }
-                    if (this._remuxer) {
-                      this._remuxer.destroy();
-                      this._remuxer = null;
-                    }
-                    this._emitter.removeAllListeners();
-                    this._emitter = null;
-                  };
-                  TransmuxingController2.prototype.on = function(event, listener) {
-                    this._emitter.addListener(event, listener);
-                  };
-                  TransmuxingController2.prototype.off = function(event, listener) {
-                    this._emitter.removeListener(event, listener);
-                  };
-                  TransmuxingController2.prototype.start = function() {
-                    this._loadSegment(0);
-                    this._enableStatisticsReporter();
-                  };
-                  TransmuxingController2.prototype._loadSegment = function(segmentIndex, optionalFrom) {
-                    this._currentSegmentIndex = segmentIndex;
-                    var dataSource = this._mediaDataSource.segments[segmentIndex];
-                    var ioctl = this._ioctl = new _io_io_controller_js__WEBPACK_IMPORTED_MODULE_7__.default(dataSource, this._config, segmentIndex);
-                    ioctl.onError = this._onIOException.bind(this);
-                    ioctl.onSeeked = this._onIOSeeked.bind(this);
-                    ioctl.onComplete = this._onIOComplete.bind(this);
-                    ioctl.onRedirect = this._onIORedirect.bind(this);
-                    ioctl.onRecoveredEarlyEof = this._onIORecoveredEarlyEof.bind(this);
-                    if (optionalFrom) {
-                      this._demuxer.bindDataSource(this._ioctl);
-                    } else {
-                      ioctl.onDataArrival = this._onInitChunkArrival.bind(this);
-                    }
-                    ioctl.open(optionalFrom);
-                  };
-                  TransmuxingController2.prototype.stop = function() {
-                    this._internalAbort();
-                    this._disableStatisticsReporter();
-                  };
-                  TransmuxingController2.prototype._internalAbort = function() {
-                    if (this._ioctl) {
-                      this._ioctl.destroy();
-                      this._ioctl = null;
-                    }
-                  };
-                  TransmuxingController2.prototype.pause = function() {
-                    if (this._ioctl && this._ioctl.isWorking()) {
-                      this._ioctl.pause();
-                      this._disableStatisticsReporter();
-                    }
-                  };
-                  TransmuxingController2.prototype.resume = function() {
-                    if (this._ioctl && this._ioctl.isPaused()) {
-                      this._ioctl.resume();
-                      this._enableStatisticsReporter();
-                    }
-                  };
-                  TransmuxingController2.prototype.seek = function(milliseconds) {
-                    if (this._mediaInfo == null || !this._mediaInfo.isSeekable()) {
-                      return;
-                    }
-                    var targetSegmentIndex = this._searchSegmentIndexContains(milliseconds);
-                    if (targetSegmentIndex === this._currentSegmentIndex) {
-                      var segmentInfo = this._mediaInfo.segments[targetSegmentIndex];
-                      if (segmentInfo == void 0) {
-                        this._pendingSeekTime = milliseconds;
-                      } else {
-                        var keyframe = segmentInfo.getNearestKeyframe(milliseconds);
-                        this._remuxer.seek(keyframe.milliseconds);
-                        this._ioctl.seek(keyframe.fileposition);
-                        this._pendingResolveSeekPoint = keyframe.milliseconds;
-                      }
-                    } else {
-                      var targetSegmentInfo = this._mediaInfo.segments[targetSegmentIndex];
-                      if (targetSegmentInfo == void 0) {
-                        this._pendingSeekTime = milliseconds;
-                        this._internalAbort();
-                        this._remuxer.seek();
-                        this._remuxer.insertDiscontinuity();
-                        this._loadSegment(targetSegmentIndex);
-                      } else {
-                        var keyframe = targetSegmentInfo.getNearestKeyframe(milliseconds);
-                        this._internalAbort();
-                        this._remuxer.seek(milliseconds);
-                        this._remuxer.insertDiscontinuity();
-                        this._demuxer.resetMediaInfo();
-                        this._demuxer.timestampBase = this._mediaDataSource.segments[targetSegmentIndex].timestampBase;
-                        this._loadSegment(targetSegmentIndex, keyframe.fileposition);
-                        this._pendingResolveSeekPoint = keyframe.milliseconds;
-                        this._reportSegmentMediaInfo(targetSegmentIndex);
-                      }
-                    }
-                    this._enableStatisticsReporter();
-                  };
-                  TransmuxingController2.prototype._searchSegmentIndexContains = function(milliseconds) {
-                    var segments = this._mediaDataSource.segments;
-                    var idx = segments.length - 1;
-                    for (var i2 = 0; i2 < segments.length; i2++) {
-                      if (milliseconds < segments[i2].timestampBase) {
-                        idx = i2 - 1;
-                        break;
-                      }
-                    }
-                    return idx;
-                  };
-                  TransmuxingController2.prototype._onInitChunkArrival = function(data2, byteStart) {
-                    var _this = this;
-                    var probeData = null;
-                    var consumed = 0;
-                    if (byteStart > 0) {
-                      this._demuxer.bindDataSource(this._ioctl);
-                      this._demuxer.timestampBase = this._mediaDataSource.segments[this._currentSegmentIndex].timestampBase;
-                      consumed = this._demuxer.parseChunks(data2, byteStart);
-                    } else if ((probeData = _demux_flv_demuxer_js__WEBPACK_IMPORTED_MODULE_4__.default.probe(data2)).match) {
-                      this._demuxer = new _demux_flv_demuxer_js__WEBPACK_IMPORTED_MODULE_4__.default(probeData, this._config);
-                      if (!this._remuxer) {
-                        this._remuxer = new _remux_mp4_remuxer_js__WEBPACK_IMPORTED_MODULE_5__.default(this._config);
-                      }
-                      var mds = this._mediaDataSource;
-                      if (mds.duration != void 0 && !isNaN(mds.duration)) {
-                        this._demuxer.overridedDuration = mds.duration;
-                      }
-                      if (typeof mds.hasAudio === "boolean") {
-                        this._demuxer.overridedHasAudio = mds.hasAudio;
-                      }
-                      if (typeof mds.hasVideo === "boolean") {
-                        this._demuxer.overridedHasVideo = mds.hasVideo;
-                      }
-                      this._demuxer.timestampBase = mds.segments[this._currentSegmentIndex].timestampBase;
-                      this._demuxer.onError = this._onDemuxException.bind(this);
-                      this._demuxer.onMediaInfo = this._onMediaInfo.bind(this);
-                      this._demuxer.onMetaDataArrived = this._onMetaDataArrived.bind(this);
-                      this._demuxer.onScriptDataArrived = this._onScriptDataArrived.bind(this);
-                      this._remuxer.bindDataSource(this._demuxer.bindDataSource(this._ioctl));
-                      this._remuxer.onInitSegment = this._onRemuxerInitSegmentArrival.bind(this);
-                      this._remuxer.onMediaSegment = this._onRemuxerMediaSegmentArrival.bind(this);
-                      consumed = this._demuxer.parseChunks(data2, byteStart);
-                    } else {
-                      probeData = null;
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.e(this.TAG, "Non-FLV, Unsupported media type!");
-                      Promise.resolve().then(function() {
-                        _this._internalAbort();
-                      });
-                      this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.DEMUX_ERROR, _demux_demux_errors_js__WEBPACK_IMPORTED_MODULE_6__.default.FORMAT_UNSUPPORTED, "Non-FLV, Unsupported media type");
-                      consumed = 0;
-                    }
-                    return consumed;
-                  };
-                  TransmuxingController2.prototype._onMediaInfo = function(mediaInfo) {
-                    var _this = this;
-                    if (this._mediaInfo == null) {
-                      this._mediaInfo = Object.assign({}, mediaInfo);
-                      this._mediaInfo.keyframesIndex = null;
-                      this._mediaInfo.segments = [];
-                      this._mediaInfo.segmentCount = this._mediaDataSource.segments.length;
-                      Object.setPrototypeOf(this._mediaInfo, _media_info_js__WEBPACK_IMPORTED_MODULE_3__.default.prototype);
-                    }
-                    var segmentInfo = Object.assign({}, mediaInfo);
-                    Object.setPrototypeOf(segmentInfo, _media_info_js__WEBPACK_IMPORTED_MODULE_3__.default.prototype);
-                    this._mediaInfo.segments[this._currentSegmentIndex] = segmentInfo;
-                    this._reportSegmentMediaInfo(this._currentSegmentIndex);
-                    if (this._pendingSeekTime != null) {
-                      Promise.resolve().then(function() {
-                        var target = _this._pendingSeekTime;
-                        _this._pendingSeekTime = null;
-                        _this.seek(target);
-                      });
-                    }
-                  };
-                  TransmuxingController2.prototype._onMetaDataArrived = function(metadata) {
-                    this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.METADATA_ARRIVED, metadata);
-                  };
-                  TransmuxingController2.prototype._onScriptDataArrived = function(data2) {
-                    this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.SCRIPTDATA_ARRIVED, data2);
-                  };
-                  TransmuxingController2.prototype._onIOSeeked = function() {
-                    this._remuxer.insertDiscontinuity();
-                  };
-                  TransmuxingController2.prototype._onIOComplete = function(extraData) {
-                    var segmentIndex = extraData;
-                    var nextSegmentIndex = segmentIndex + 1;
-                    if (nextSegmentIndex < this._mediaDataSource.segments.length) {
-                      this._internalAbort();
-                      this._remuxer.flushStashedSamples();
-                      this._loadSegment(nextSegmentIndex);
-                    } else {
-                      this._remuxer.flushStashedSamples();
-                      this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.LOADING_COMPLETE);
-                      this._disableStatisticsReporter();
-                    }
-                  };
-                  TransmuxingController2.prototype._onIORedirect = function(redirectedURL) {
-                    var segmentIndex = this._ioctl.extraData;
-                    this._mediaDataSource.segments[segmentIndex].redirectedURL = redirectedURL;
-                  };
-                  TransmuxingController2.prototype._onIORecoveredEarlyEof = function() {
-                    this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.RECOVERED_EARLY_EOF);
-                  };
-                  TransmuxingController2.prototype._onIOException = function(type2, info) {
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.e(this.TAG, "IOException: type = " + type2 + ", code = " + info.code + ", msg = " + info.msg);
-                    this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.IO_ERROR, type2, info);
-                    this._disableStatisticsReporter();
-                  };
-                  TransmuxingController2.prototype._onDemuxException = function(type2, info) {
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.e(this.TAG, "DemuxException: type = " + type2 + ", info = " + info);
-                    this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.DEMUX_ERROR, type2, info);
-                  };
-                  TransmuxingController2.prototype._onRemuxerInitSegmentArrival = function(type2, initSegment) {
-                    this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.INIT_SEGMENT, type2, initSegment);
-                  };
-                  TransmuxingController2.prototype._onRemuxerMediaSegmentArrival = function(type2, mediaSegment) {
-                    if (this._pendingSeekTime != null) {
-                      return;
-                    }
-                    this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.MEDIA_SEGMENT, type2, mediaSegment);
-                    if (this._pendingResolveSeekPoint != null && type2 === "video") {
-                      var syncPoints = mediaSegment.info.syncPoints;
-                      var seekpoint = this._pendingResolveSeekPoint;
-                      this._pendingResolveSeekPoint = null;
-                      if (_utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.safari && syncPoints.length > 0 && syncPoints[0].originalDts === seekpoint) {
-                        seekpoint = syncPoints[0].pts;
-                      }
-                      this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.RECOMMEND_SEEKPOINT, seekpoint);
-                    }
-                  };
-                  TransmuxingController2.prototype._enableStatisticsReporter = function() {
-                    if (this._statisticsReporter == null) {
-                      this._statisticsReporter = self.setInterval(this._reportStatisticsInfo.bind(this), this._config.statisticsInfoReportInterval);
-                    }
-                  };
-                  TransmuxingController2.prototype._disableStatisticsReporter = function() {
-                    if (this._statisticsReporter) {
-                      self.clearInterval(this._statisticsReporter);
-                      this._statisticsReporter = null;
-                    }
-                  };
-                  TransmuxingController2.prototype._reportSegmentMediaInfo = function(segmentIndex) {
-                    var segmentInfo = this._mediaInfo.segments[segmentIndex];
-                    var exportInfo = Object.assign({}, segmentInfo);
-                    exportInfo.duration = this._mediaInfo.duration;
-                    exportInfo.segmentCount = this._mediaInfo.segmentCount;
-                    delete exportInfo.segments;
-                    delete exportInfo.keyframesIndex;
-                    this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.MEDIA_INFO, exportInfo);
-                  };
-                  TransmuxingController2.prototype._reportStatisticsInfo = function() {
-                    var info = {};
-                    info.url = this._ioctl.currentURL;
-                    info.hasRedirect = this._ioctl.hasRedirect;
-                    if (info.hasRedirect) {
-                      info.redirectedURL = this._ioctl.currentRedirectedURL;
-                    }
-                    info.speed = this._ioctl.currentSpeed;
-                    info.loaderType = this._ioctl.loaderType;
-                    info.currentSegmentIndex = this._currentSegmentIndex;
-                    info.totalSegmentCount = this._mediaDataSource.segments.length;
-                    this._emitter.emit(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_8__.default.STATISTICS_INFO, info);
-                  };
-                  return TransmuxingController2;
-                }()
-              );
-              __webpack_exports__2["default"] = TransmuxingController;
-            }
-          ),
-          /***/
-          "./src/core/transmuxing-events.js": (
-            /*!****************************************!*\
-              !*** ./src/core/transmuxing-events.js ***!
-              \****************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var TransmuxingEvents = {
-                IO_ERROR: "io_error",
-                DEMUX_ERROR: "demux_error",
-                INIT_SEGMENT: "init_segment",
-                MEDIA_SEGMENT: "media_segment",
-                LOADING_COMPLETE: "loading_complete",
-                RECOVERED_EARLY_EOF: "recovered_early_eof",
-                MEDIA_INFO: "media_info",
-                METADATA_ARRIVED: "metadata_arrived",
-                SCRIPTDATA_ARRIVED: "scriptdata_arrived",
-                STATISTICS_INFO: "statistics_info",
-                RECOMMEND_SEEKPOINT: "recommend_seekpoint"
-              };
-              __webpack_exports__2["default"] = TransmuxingEvents;
-            }
-          ),
-          /***/
-          "./src/core/transmuxing-worker.js": (
-            /*!****************************************!*\
-              !*** ./src/core/transmuxing-worker.js ***!
-              \****************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/logging-control.js */
-                "./src/utils/logging-control.js"
-              );
-              var _utils_polyfill_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ../utils/polyfill.js */
-                "./src/utils/polyfill.js"
-              );
-              var _transmuxing_controller_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ./transmuxing-controller.js */
-                "./src/core/transmuxing-controller.js"
-              );
-              var _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ./transmuxing-events.js */
-                "./src/core/transmuxing-events.js"
-              );
-              var TransmuxingWorker = function(self2) {
-                var controller = null;
-                var logcatListener = onLogcatCallback.bind(this);
-                _utils_polyfill_js__WEBPACK_IMPORTED_MODULE_1__.default.install();
-                self2.addEventListener("message", function(e2) {
-                  switch (e2.data.cmd) {
-                    case "init":
-                      controller = new _transmuxing_controller_js__WEBPACK_IMPORTED_MODULE_2__.default(e2.data.param[0], e2.data.param[1]);
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.IO_ERROR, onIOError.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.DEMUX_ERROR, onDemuxError.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.INIT_SEGMENT, onInitSegment.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.MEDIA_SEGMENT, onMediaSegment.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.LOADING_COMPLETE, onLoadingComplete.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.RECOVERED_EARLY_EOF, onRecoveredEarlyEof.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.MEDIA_INFO, onMediaInfo.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.METADATA_ARRIVED, onMetaDataArrived.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.SCRIPTDATA_ARRIVED, onScriptDataArrived.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.STATISTICS_INFO, onStatisticsInfo.bind(this));
-                      controller.on(_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.RECOMMEND_SEEKPOINT, onRecommendSeekpoint.bind(this));
-                      break;
-                    case "destroy":
-                      if (controller) {
-                        controller.destroy();
-                        controller = null;
-                      }
-                      self2.postMessage({ msg: "destroyed" });
-                      break;
-                    case "start":
-                      controller.start();
-                      break;
-                    case "stop":
-                      controller.stop();
-                      break;
-                    case "seek":
-                      controller.seek(e2.data.param);
-                      break;
-                    case "pause":
-                      controller.pause();
-                      break;
-                    case "resume":
-                      controller.resume();
-                      break;
-                    case "logging_config": {
-                      var config = e2.data.param;
-                      _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_0__.default.applyConfig(config);
-                      if (config.enableCallback === true) {
-                        _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_0__.default.addLogListener(logcatListener);
-                      } else {
-                        _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_0__.default.removeLogListener(logcatListener);
-                      }
-                      break;
-                    }
-                  }
-                });
-                function onInitSegment(type2, initSegment) {
-                  var obj = {
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.INIT_SEGMENT,
-                    data: {
-                      type: type2,
-                      data: initSegment
-                    }
-                  };
-                  self2.postMessage(obj, [initSegment.data]);
-                }
-                function onMediaSegment(type2, mediaSegment) {
-                  var obj = {
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.MEDIA_SEGMENT,
-                    data: {
-                      type: type2,
-                      data: mediaSegment
-                    }
-                  };
-                  self2.postMessage(obj, [mediaSegment.data]);
-                }
-                function onLoadingComplete() {
-                  var obj = {
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.LOADING_COMPLETE
-                  };
-                  self2.postMessage(obj);
-                }
-                function onRecoveredEarlyEof() {
-                  var obj = {
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.RECOVERED_EARLY_EOF
-                  };
-                  self2.postMessage(obj);
-                }
-                function onMediaInfo(mediaInfo) {
-                  var obj = {
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.MEDIA_INFO,
-                    data: mediaInfo
-                  };
-                  self2.postMessage(obj);
-                }
-                function onMetaDataArrived(metadata) {
-                  var obj = {
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.METADATA_ARRIVED,
-                    data: metadata
-                  };
-                  self2.postMessage(obj);
-                }
-                function onScriptDataArrived(data2) {
-                  var obj = {
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.SCRIPTDATA_ARRIVED,
-                    data: data2
-                  };
-                  self2.postMessage(obj);
-                }
-                function onStatisticsInfo(statInfo) {
-                  var obj = {
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.STATISTICS_INFO,
-                    data: statInfo
-                  };
-                  self2.postMessage(obj);
-                }
-                function onIOError(type2, info) {
-                  self2.postMessage({
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.IO_ERROR,
-                    data: {
-                      type: type2,
-                      info
-                    }
-                  });
-                }
-                function onDemuxError(type2, info) {
-                  self2.postMessage({
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.DEMUX_ERROR,
-                    data: {
-                      type: type2,
-                      info
-                    }
-                  });
-                }
-                function onRecommendSeekpoint(milliseconds) {
-                  self2.postMessage({
-                    msg: _transmuxing_events_js__WEBPACK_IMPORTED_MODULE_3__.default.RECOMMEND_SEEKPOINT,
-                    data: milliseconds
-                  });
-                }
-                function onLogcatCallback(type2, str) {
-                  self2.postMessage({
-                    msg: "logcat_callback",
-                    data: {
-                      type: type2,
-                      logcat: str
-                    }
-                  });
-                }
-              };
-              __webpack_exports__2["default"] = TransmuxingWorker;
-            }
-          ),
-          /***/
-          "./src/demux/amf-parser.js": (
-            /*!*********************************!*\
-              !*** ./src/demux/amf-parser.js ***!
-              \*********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _utils_utf8_conv_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ../utils/utf8-conv.js */
-                "./src/utils/utf8-conv.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var le2 = function() {
-                var buf = new ArrayBuffer(2);
-                new DataView(buf).setInt16(0, 256, true);
-                return new Int16Array(buf)[0] === 256;
-              }();
-              var AMF = (
-                /** @class */
-                function() {
-                  function AMF2() {
-                  }
-                  AMF2.parseScriptData = function(arrayBuffer, dataOffset, dataSize) {
-                    var data2 = {};
-                    try {
-                      var name_1 = AMF2.parseValue(arrayBuffer, dataOffset, dataSize);
-                      var value = AMF2.parseValue(arrayBuffer, dataOffset + name_1.size, dataSize - name_1.size);
-                      data2[name_1.data] = value.data;
-                    } catch (e2) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.e("AMF", e2.toString());
-                    }
-                    return data2;
-                  };
-                  AMF2.parseObject = function(arrayBuffer, dataOffset, dataSize) {
-                    if (dataSize < 3) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.IllegalStateException("Data not enough when parse ScriptDataObject");
-                    }
-                    var name = AMF2.parseString(arrayBuffer, dataOffset, dataSize);
-                    var value = AMF2.parseValue(arrayBuffer, dataOffset + name.size, dataSize - name.size);
-                    var isObjectEnd = value.objectEnd;
-                    return {
-                      data: {
-                        name: name.data,
-                        value: value.data
-                      },
-                      size: name.size + value.size,
-                      objectEnd: isObjectEnd
-                    };
-                  };
-                  AMF2.parseVariable = function(arrayBuffer, dataOffset, dataSize) {
-                    return AMF2.parseObject(arrayBuffer, dataOffset, dataSize);
-                  };
-                  AMF2.parseString = function(arrayBuffer, dataOffset, dataSize) {
-                    if (dataSize < 2) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.IllegalStateException("Data not enough when parse String");
-                    }
-                    var v2 = new DataView(arrayBuffer, dataOffset, dataSize);
-                    var length2 = v2.getUint16(0, !le2);
-                    var str;
-                    if (length2 > 0) {
-                      str = (0, _utils_utf8_conv_js__WEBPACK_IMPORTED_MODULE_1__.default)(new Uint8Array(arrayBuffer, dataOffset + 2, length2));
-                    } else {
-                      str = "";
-                    }
-                    return {
-                      data: str,
-                      size: 2 + length2
-                    };
-                  };
-                  AMF2.parseLongString = function(arrayBuffer, dataOffset, dataSize) {
-                    if (dataSize < 4) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.IllegalStateException("Data not enough when parse LongString");
-                    }
-                    var v2 = new DataView(arrayBuffer, dataOffset, dataSize);
-                    var length2 = v2.getUint32(0, !le2);
-                    var str;
-                    if (length2 > 0) {
-                      str = (0, _utils_utf8_conv_js__WEBPACK_IMPORTED_MODULE_1__.default)(new Uint8Array(arrayBuffer, dataOffset + 4, length2));
-                    } else {
-                      str = "";
-                    }
-                    return {
-                      data: str,
-                      size: 4 + length2
-                    };
-                  };
-                  AMF2.parseDate = function(arrayBuffer, dataOffset, dataSize) {
-                    if (dataSize < 10) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.IllegalStateException("Data size invalid when parse Date");
-                    }
-                    var v2 = new DataView(arrayBuffer, dataOffset, dataSize);
-                    var timestamp = v2.getFloat64(0, !le2);
-                    var localTimeOffset = v2.getInt16(8, !le2);
-                    timestamp += localTimeOffset * 60 * 1e3;
-                    return {
-                      data: new Date(timestamp),
-                      size: 8 + 2
-                    };
-                  };
-                  AMF2.parseValue = function(arrayBuffer, dataOffset, dataSize) {
-                    if (dataSize < 1) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.IllegalStateException("Data not enough when parse Value");
-                    }
-                    var v2 = new DataView(arrayBuffer, dataOffset, dataSize);
-                    var offset = 1;
-                    var type2 = v2.getUint8(0);
-                    var value;
-                    var objectEnd = false;
-                    try {
-                      switch (type2) {
-                        case 0:
-                          value = v2.getFloat64(1, !le2);
-                          offset += 8;
-                          break;
-                        case 1: {
-                          var b2 = v2.getUint8(1);
-                          value = b2 ? true : false;
-                          offset += 1;
-                          break;
-                        }
-                        case 2: {
-                          var amfstr = AMF2.parseString(arrayBuffer, dataOffset + 1, dataSize - 1);
-                          value = amfstr.data;
-                          offset += amfstr.size;
-                          break;
-                        }
-                        case 3: {
-                          value = {};
-                          var terminal = 0;
-                          if ((v2.getUint32(dataSize - 4, !le2) & 16777215) === 9) {
-                            terminal = 3;
-                          }
-                          while (offset < dataSize - 4) {
-                            var amfobj = AMF2.parseObject(arrayBuffer, dataOffset + offset, dataSize - offset - terminal);
-                            if (amfobj.objectEnd)
-                              break;
-                            value[amfobj.data.name] = amfobj.data.value;
-                            offset += amfobj.size;
-                          }
-                          if (offset <= dataSize - 3) {
-                            var marker = v2.getUint32(offset - 1, !le2) & 16777215;
-                            if (marker === 9) {
-                              offset += 3;
-                            }
-                          }
-                          break;
-                        }
-                        case 8: {
-                          value = {};
-                          offset += 4;
-                          var terminal = 0;
-                          if ((v2.getUint32(dataSize - 4, !le2) & 16777215) === 9) {
-                            terminal = 3;
-                          }
-                          while (offset < dataSize - 8) {
-                            var amfvar = AMF2.parseVariable(arrayBuffer, dataOffset + offset, dataSize - offset - terminal);
-                            if (amfvar.objectEnd)
-                              break;
-                            value[amfvar.data.name] = amfvar.data.value;
-                            offset += amfvar.size;
-                          }
-                          if (offset <= dataSize - 3) {
-                            var marker = v2.getUint32(offset - 1, !le2) & 16777215;
-                            if (marker === 9) {
-                              offset += 3;
-                            }
-                          }
-                          break;
-                        }
-                        case 9:
-                          value = void 0;
-                          offset = 1;
-                          objectEnd = true;
-                          break;
-                        case 10: {
-                          value = [];
-                          var strictArrayLength = v2.getUint32(1, !le2);
-                          offset += 4;
-                          for (var i2 = 0; i2 < strictArrayLength; i2++) {
-                            var val = AMF2.parseValue(arrayBuffer, dataOffset + offset, dataSize - offset);
-                            value.push(val.data);
-                            offset += val.size;
-                          }
-                          break;
-                        }
-                        case 11: {
-                          var date = AMF2.parseDate(arrayBuffer, dataOffset + 1, dataSize - 1);
-                          value = date.data;
-                          offset += date.size;
-                          break;
-                        }
-                        case 12: {
-                          var amfLongStr = AMF2.parseString(arrayBuffer, dataOffset + 1, dataSize - 1);
-                          value = amfLongStr.data;
-                          offset += amfLongStr.size;
-                          break;
-                        }
-                        default:
-                          offset = dataSize;
-                          _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w("AMF", "Unsupported AMF value type " + type2);
-                      }
-                    } catch (e2) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.e("AMF", e2.toString());
-                    }
-                    return {
-                      data: value,
-                      size: offset,
-                      objectEnd
-                    };
-                  };
-                  return AMF2;
-                }()
-              );
-              __webpack_exports__2["default"] = AMF;
-            }
-          ),
-          /***/
-          "./src/demux/demux-errors.js": (
-            /*!***********************************!*\
-              !*** ./src/demux/demux-errors.js ***!
-              \***********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var DemuxErrors = {
-                OK: "OK",
-                FORMAT_ERROR: "FormatError",
-                FORMAT_UNSUPPORTED: "FormatUnsupported",
-                CODEC_UNSUPPORTED: "CodecUnsupported"
-              };
-              __webpack_exports__2["default"] = DemuxErrors;
-            }
-          ),
-          /***/
-          "./src/demux/exp-golomb.js": (
-            /*!*********************************!*\
-              !*** ./src/demux/exp-golomb.js ***!
-              \*********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var ExpGolomb = (
-                /** @class */
-                function() {
-                  function ExpGolomb2(uint8array) {
-                    this.TAG = "ExpGolomb";
-                    this._buffer = uint8array;
-                    this._buffer_index = 0;
-                    this._total_bytes = uint8array.byteLength;
-                    this._total_bits = uint8array.byteLength * 8;
-                    this._current_word = 0;
-                    this._current_word_bits_left = 0;
-                  }
-                  ExpGolomb2.prototype.destroy = function() {
-                    this._buffer = null;
-                  };
-                  ExpGolomb2.prototype._fillCurrentWord = function() {
-                    var buffer_bytes_left = this._total_bytes - this._buffer_index;
-                    if (buffer_bytes_left <= 0)
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_0__.IllegalStateException("ExpGolomb: _fillCurrentWord() but no bytes available");
-                    var bytes_read = Math.min(4, buffer_bytes_left);
-                    var word = new Uint8Array(4);
-                    word.set(this._buffer.subarray(this._buffer_index, this._buffer_index + bytes_read));
-                    this._current_word = new DataView(word.buffer).getUint32(0, false);
-                    this._buffer_index += bytes_read;
-                    this._current_word_bits_left = bytes_read * 8;
-                  };
-                  ExpGolomb2.prototype.readBits = function(bits) {
-                    if (bits > 32)
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_0__.InvalidArgumentException("ExpGolomb: readBits() bits exceeded max 32bits!");
-                    if (bits <= this._current_word_bits_left) {
-                      var result_1 = this._current_word >>> 32 - bits;
-                      this._current_word <<= bits;
-                      this._current_word_bits_left -= bits;
-                      return result_1;
-                    }
-                    var result = this._current_word_bits_left ? this._current_word : 0;
-                    result = result >>> 32 - this._current_word_bits_left;
-                    var bits_need_left = bits - this._current_word_bits_left;
-                    this._fillCurrentWord();
-                    var bits_read_next = Math.min(bits_need_left, this._current_word_bits_left);
-                    var result2 = this._current_word >>> 32 - bits_read_next;
-                    this._current_word <<= bits_read_next;
-                    this._current_word_bits_left -= bits_read_next;
-                    result = result << bits_read_next | result2;
-                    return result;
-                  };
-                  ExpGolomb2.prototype.readBool = function() {
-                    return this.readBits(1) === 1;
-                  };
-                  ExpGolomb2.prototype.readByte = function() {
-                    return this.readBits(8);
-                  };
-                  ExpGolomb2.prototype._skipLeadingZero = function() {
-                    var zero_count;
-                    for (zero_count = 0; zero_count < this._current_word_bits_left; zero_count++) {
-                      if (0 !== (this._current_word & 2147483648 >>> zero_count)) {
-                        this._current_word <<= zero_count;
-                        this._current_word_bits_left -= zero_count;
-                        return zero_count;
-                      }
-                    }
-                    this._fillCurrentWord();
-                    return zero_count + this._skipLeadingZero();
-                  };
-                  ExpGolomb2.prototype.readUEG = function() {
-                    var leading_zeros = this._skipLeadingZero();
-                    return this.readBits(leading_zeros + 1) - 1;
-                  };
-                  ExpGolomb2.prototype.readSEG = function() {
-                    var value = this.readUEG();
-                    if (value & 1) {
-                      return value + 1 >>> 1;
-                    } else {
-                      return -1 * (value >>> 1);
-                    }
-                  };
-                  return ExpGolomb2;
-                }()
-              );
-              __webpack_exports__2["default"] = ExpGolomb;
-            }
-          ),
-          /***/
-          "./src/demux/flv-demuxer.js": (
-            /*!**********************************!*\
-              !*** ./src/demux/flv-demuxer.js ***!
-              \**********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _amf_parser_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ./amf-parser.js */
-                "./src/demux/amf-parser.js"
-              );
-              var _sps_parser_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ./sps-parser.js */
-                "./src/demux/sps-parser.js"
-              );
-              var _demux_errors_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ./demux-errors.js */
-                "./src/demux/demux-errors.js"
-              );
-              var _core_media_info_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__2(
-                /*! ../core/media-info.js */
-                "./src/core/media-info.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              function ReadBig32(array, index2) {
-                return array[index2] << 24 | array[index2 + 1] << 16 | array[index2 + 2] << 8 | array[index2 + 3];
-              }
-              var FLVDemuxer = (
-                /** @class */
-                function() {
-                  function FLVDemuxer2(probeData, config) {
-                    this.TAG = "FLVDemuxer";
-                    this._config = config;
-                    this._onError = null;
-                    this._onMediaInfo = null;
-                    this._onMetaDataArrived = null;
-                    this._onScriptDataArrived = null;
-                    this._onTrackMetadata = null;
-                    this._onDataAvailable = null;
-                    this._dataOffset = probeData.dataOffset;
-                    this._firstParse = true;
-                    this._dispatch = false;
-                    this._hasAudio = probeData.hasAudioTrack;
-                    this._hasVideo = probeData.hasVideoTrack;
-                    this._hasAudioFlagOverrided = false;
-                    this._hasVideoFlagOverrided = false;
-                    this._audioInitialMetadataDispatched = false;
-                    this._videoInitialMetadataDispatched = false;
-                    this._mediaInfo = new _core_media_info_js__WEBPACK_IMPORTED_MODULE_4__.default();
-                    this._mediaInfo.hasAudio = this._hasAudio;
-                    this._mediaInfo.hasVideo = this._hasVideo;
-                    this._metadata = null;
-                    this._audioMetadata = null;
-                    this._videoMetadata = null;
-                    this._naluLengthSize = 4;
-                    this._timestampBase = 0;
-                    this._timescale = 1e3;
-                    this._duration = 0;
-                    this._durationOverrided = false;
-                    this._referenceFrameRate = {
-                      fixed: true,
-                      fps: 23.976,
-                      fps_num: 23976,
-                      fps_den: 1e3
-                    };
-                    this._flvSoundRateTable = [5500, 11025, 22050, 44100, 48e3];
-                    this._mpegSamplingRates = [
-                      96e3,
-                      88200,
-                      64e3,
-                      48e3,
-                      44100,
-                      32e3,
-                      24e3,
-                      22050,
-                      16e3,
-                      12e3,
-                      11025,
-                      8e3,
-                      7350
-                    ];
-                    this._mpegAudioV10SampleRateTable = [44100, 48e3, 32e3, 0];
-                    this._mpegAudioV20SampleRateTable = [22050, 24e3, 16e3, 0];
-                    this._mpegAudioV25SampleRateTable = [11025, 12e3, 8e3, 0];
-                    this._mpegAudioL1BitRateTable = [0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448, -1];
-                    this._mpegAudioL2BitRateTable = [0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384, -1];
-                    this._mpegAudioL3BitRateTable = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, -1];
-                    this._videoTrack = { type: "video", id: 1, sequenceNumber: 0, samples: [], length: 0 };
-                    this._audioTrack = { type: "audio", id: 2, sequenceNumber: 0, samples: [], length: 0 };
-                    this._littleEndian = function() {
-                      var buf = new ArrayBuffer(2);
-                      new DataView(buf).setInt16(0, 256, true);
-                      return new Int16Array(buf)[0] === 256;
-                    }();
-                  }
-                  FLVDemuxer2.prototype.destroy = function() {
-                    this._mediaInfo = null;
-                    this._metadata = null;
-                    this._audioMetadata = null;
-                    this._videoMetadata = null;
-                    this._videoTrack = null;
-                    this._audioTrack = null;
-                    this._onError = null;
-                    this._onMediaInfo = null;
-                    this._onMetaDataArrived = null;
-                    this._onScriptDataArrived = null;
-                    this._onTrackMetadata = null;
-                    this._onDataAvailable = null;
-                  };
-                  FLVDemuxer2.probe = function(buffer) {
-                    var data2 = new Uint8Array(buffer);
-                    var mismatch = { match: false };
-                    if (data2[0] !== 70 || data2[1] !== 76 || data2[2] !== 86 || data2[3] !== 1) {
-                      return mismatch;
-                    }
-                    var hasAudio = (data2[4] & 4) >>> 2 !== 0;
-                    var hasVideo = (data2[4] & 1) !== 0;
-                    var offset = ReadBig32(data2, 5);
-                    if (offset < 9) {
-                      return mismatch;
-                    }
-                    return {
-                      match: true,
-                      consumed: offset,
-                      dataOffset: offset,
-                      hasAudioTrack: hasAudio,
-                      hasVideoTrack: hasVideo
-                    };
-                  };
-                  FLVDemuxer2.prototype.bindDataSource = function(loader) {
-                    loader.onDataArrival = this.parseChunks.bind(this);
-                    return this;
-                  };
-                  Object.defineProperty(FLVDemuxer2.prototype, "onTrackMetadata", {
-                    // prototype: function(type: string, metadata: any): void
-                    get: function() {
-                      return this._onTrackMetadata;
-                    },
-                    set: function(callback) {
-                      this._onTrackMetadata = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FLVDemuxer2.prototype, "onMediaInfo", {
-                    // prototype: function(mediaInfo: MediaInfo): void
-                    get: function() {
-                      return this._onMediaInfo;
-                    },
-                    set: function(callback) {
-                      this._onMediaInfo = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FLVDemuxer2.prototype, "onMetaDataArrived", {
-                    get: function() {
-                      return this._onMetaDataArrived;
-                    },
-                    set: function(callback) {
-                      this._onMetaDataArrived = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FLVDemuxer2.prototype, "onScriptDataArrived", {
-                    get: function() {
-                      return this._onScriptDataArrived;
-                    },
-                    set: function(callback) {
-                      this._onScriptDataArrived = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FLVDemuxer2.prototype, "onError", {
-                    // prototype: function(type: number, info: string): void
-                    get: function() {
-                      return this._onError;
-                    },
-                    set: function(callback) {
-                      this._onError = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FLVDemuxer2.prototype, "onDataAvailable", {
-                    // prototype: function(videoTrack: any, audioTrack: any): void
-                    get: function() {
-                      return this._onDataAvailable;
-                    },
-                    set: function(callback) {
-                      this._onDataAvailable = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FLVDemuxer2.prototype, "timestampBase", {
-                    // timestamp base for output samples, must be in milliseconds
-                    get: function() {
-                      return this._timestampBase;
-                    },
-                    set: function(base) {
-                      this._timestampBase = base;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FLVDemuxer2.prototype, "overridedDuration", {
-                    get: function() {
-                      return this._duration;
-                    },
-                    // Force-override media duration. Must be in milliseconds, int32
-                    set: function(duration) {
-                      this._durationOverrided = true;
-                      this._duration = duration;
-                      this._mediaInfo.duration = duration;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FLVDemuxer2.prototype, "overridedHasAudio", {
-                    // Force-override audio track present flag, boolean
-                    set: function(hasAudio) {
-                      this._hasAudioFlagOverrided = true;
-                      this._hasAudio = hasAudio;
-                      this._mediaInfo.hasAudio = hasAudio;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FLVDemuxer2.prototype, "overridedHasVideo", {
-                    // Force-override video track present flag, boolean
-                    set: function(hasVideo) {
-                      this._hasVideoFlagOverrided = true;
-                      this._hasVideo = hasVideo;
-                      this._mediaInfo.hasVideo = hasVideo;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  FLVDemuxer2.prototype.resetMediaInfo = function() {
-                    this._mediaInfo = new _core_media_info_js__WEBPACK_IMPORTED_MODULE_4__.default();
-                  };
-                  FLVDemuxer2.prototype._isInitialMetadataDispatched = function() {
-                    if (this._hasAudio && this._hasVideo) {
-                      return this._audioInitialMetadataDispatched && this._videoInitialMetadataDispatched;
-                    }
-                    if (this._hasAudio && !this._hasVideo) {
-                      return this._audioInitialMetadataDispatched;
-                    }
-                    if (!this._hasAudio && this._hasVideo) {
-                      return this._videoInitialMetadataDispatched;
-                    }
-                    return false;
-                  };
-                  FLVDemuxer2.prototype.parseChunks = function(chunk, byteStart) {
-                    if (!this._onError || !this._onMediaInfo || !this._onTrackMetadata || !this._onDataAvailable) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_5__.IllegalStateException("Flv: onError & onMediaInfo & onTrackMetadata & onDataAvailable callback must be specified");
-                    }
-                    var offset = 0;
-                    var le2 = this._littleEndian;
-                    if (byteStart === 0) {
-                      if (chunk.byteLength > 13) {
-                        var probeData = FLVDemuxer2.probe(chunk);
-                        offset = probeData.dataOffset;
-                      } else {
-                        return 0;
-                      }
-                    }
-                    if (this._firstParse) {
-                      this._firstParse = false;
-                      if (byteStart + offset !== this._dataOffset) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "First time parsing but chunk byteStart invalid!");
-                      }
-                      var v2 = new DataView(chunk, offset);
-                      var prevTagSize0 = v2.getUint32(0, !le2);
-                      if (prevTagSize0 !== 0) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "PrevTagSize0 !== 0 !!!");
-                      }
-                      offset += 4;
-                    }
-                    while (offset < chunk.byteLength) {
-                      this._dispatch = true;
-                      var v2 = new DataView(chunk, offset);
-                      if (offset + 11 + 4 > chunk.byteLength) {
-                        break;
-                      }
-                      var tagType = v2.getUint8(0);
-                      var dataSize = v2.getUint32(0, !le2) & 16777215;
-                      if (offset + 11 + dataSize + 4 > chunk.byteLength) {
-                        break;
-                      }
-                      if (tagType !== 8 && tagType !== 9 && tagType !== 18) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Unsupported tag type " + tagType + ", skipped");
-                        offset += 11 + dataSize + 4;
-                        continue;
-                      }
-                      var ts2 = v2.getUint8(4);
-                      var ts1 = v2.getUint8(5);
-                      var ts0 = v2.getUint8(6);
-                      var ts3 = v2.getUint8(7);
-                      var timestamp = ts0 | ts1 << 8 | ts2 << 16 | ts3 << 24;
-                      var streamId = v2.getUint32(7, !le2) & 16777215;
-                      if (streamId !== 0) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Meet tag which has StreamID != 0!");
-                      }
-                      var dataOffset = offset + 11;
-                      switch (tagType) {
-                        case 8:
-                          this._parseAudioData(chunk, dataOffset, dataSize, timestamp);
-                          break;
-                        case 9:
-                          this._parseVideoData(chunk, dataOffset, dataSize, timestamp, byteStart + offset);
-                          break;
-                        case 18:
-                          this._parseScriptData(chunk, dataOffset, dataSize);
-                          break;
-                      }
-                      var prevTagSize = v2.getUint32(11 + dataSize, !le2);
-                      if (prevTagSize !== 11 + dataSize) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Invalid PrevTagSize " + prevTagSize);
-                      }
-                      offset += 11 + dataSize + 4;
-                    }
-                    if (this._isInitialMetadataDispatched()) {
-                      if (this._dispatch && (this._audioTrack.length || this._videoTrack.length)) {
-                        this._onDataAvailable(this._audioTrack, this._videoTrack);
-                      }
-                    }
-                    return offset;
-                  };
-                  FLVDemuxer2.prototype._parseScriptData = function(arrayBuffer, dataOffset, dataSize) {
-                    var scriptData = _amf_parser_js__WEBPACK_IMPORTED_MODULE_1__.default.parseScriptData(arrayBuffer, dataOffset, dataSize);
-                    if (scriptData.hasOwnProperty("onMetaData")) {
-                      if (scriptData.onMetaData == null || typeof scriptData.onMetaData !== "object") {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Invalid onMetaData structure!");
-                        return;
-                      }
-                      if (this._metadata) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Found another onMetaData tag!");
-                      }
-                      this._metadata = scriptData;
-                      var onMetaData = this._metadata.onMetaData;
-                      if (this._onMetaDataArrived) {
-                        this._onMetaDataArrived(Object.assign({}, onMetaData));
-                      }
-                      if (typeof onMetaData.hasAudio === "boolean") {
-                        if (this._hasAudioFlagOverrided === false) {
-                          this._hasAudio = onMetaData.hasAudio;
-                          this._mediaInfo.hasAudio = this._hasAudio;
-                        }
-                      }
-                      if (typeof onMetaData.hasVideo === "boolean") {
-                        if (this._hasVideoFlagOverrided === false) {
-                          this._hasVideo = onMetaData.hasVideo;
-                          this._mediaInfo.hasVideo = this._hasVideo;
-                        }
-                      }
-                      if (typeof onMetaData.audiodatarate === "number") {
-                        this._mediaInfo.audioDataRate = onMetaData.audiodatarate;
-                      }
-                      if (typeof onMetaData.videodatarate === "number") {
-                        this._mediaInfo.videoDataRate = onMetaData.videodatarate;
-                      }
-                      if (typeof onMetaData.width === "number") {
-                        this._mediaInfo.width = onMetaData.width;
-                      }
-                      if (typeof onMetaData.height === "number") {
-                        this._mediaInfo.height = onMetaData.height;
-                      }
-                      if (typeof onMetaData.duration === "number") {
-                        if (!this._durationOverrided) {
-                          var duration = Math.floor(onMetaData.duration * this._timescale);
-                          this._duration = duration;
-                          this._mediaInfo.duration = duration;
-                        }
-                      } else {
-                        this._mediaInfo.duration = 0;
-                      }
-                      if (typeof onMetaData.framerate === "number") {
-                        var fps_num = Math.floor(onMetaData.framerate * 1e3);
-                        if (fps_num > 0) {
-                          var fps = fps_num / 1e3;
-                          this._referenceFrameRate.fixed = true;
-                          this._referenceFrameRate.fps = fps;
-                          this._referenceFrameRate.fps_num = fps_num;
-                          this._referenceFrameRate.fps_den = 1e3;
-                          this._mediaInfo.fps = fps;
-                        }
-                      }
-                      if (typeof onMetaData.keyframes === "object") {
-                        this._mediaInfo.hasKeyframesIndex = true;
-                        var keyframes2 = onMetaData.keyframes;
-                        this._mediaInfo.keyframesIndex = this._parseKeyframesIndex(keyframes2);
-                        onMetaData.keyframes = null;
-                      } else {
-                        this._mediaInfo.hasKeyframesIndex = false;
-                      }
-                      this._dispatch = false;
-                      this._mediaInfo.metadata = onMetaData;
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.v(this.TAG, "Parsed onMetaData");
-                      if (this._mediaInfo.isComplete()) {
-                        this._onMediaInfo(this._mediaInfo);
-                      }
-                    }
-                    if (Object.keys(scriptData).length > 0) {
-                      if (this._onScriptDataArrived) {
-                        this._onScriptDataArrived(Object.assign({}, scriptData));
-                      }
-                    }
-                  };
-                  FLVDemuxer2.prototype._parseKeyframesIndex = function(keyframes2) {
-                    var times = [];
-                    var filepositions = [];
-                    for (var i2 = 1; i2 < keyframes2.times.length; i2++) {
-                      var time = this._timestampBase + Math.floor(keyframes2.times[i2] * 1e3);
-                      times.push(time);
-                      filepositions.push(keyframes2.filepositions[i2]);
-                    }
-                    return {
-                      times,
-                      filepositions
-                    };
-                  };
-                  FLVDemuxer2.prototype._parseAudioData = function(arrayBuffer, dataOffset, dataSize, tagTimestamp) {
-                    if (dataSize <= 1) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Flv: Invalid audio packet, missing SoundData payload!");
-                      return;
-                    }
-                    if (this._hasAudioFlagOverrided === true && this._hasAudio === false) {
-                      return;
-                    }
-                    this._littleEndian;
-                    var v2 = new DataView(arrayBuffer, dataOffset, dataSize);
-                    var soundSpec = v2.getUint8(0);
-                    var soundFormat = soundSpec >>> 4;
-                    if (soundFormat !== 2 && soundFormat !== 10) {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.CODEC_UNSUPPORTED, "Flv: Unsupported audio codec idx: " + soundFormat);
-                      return;
-                    }
-                    var soundRate = 0;
-                    var soundRateIndex = (soundSpec & 12) >>> 2;
-                    if (soundRateIndex >= 0 && soundRateIndex <= 4) {
-                      soundRate = this._flvSoundRateTable[soundRateIndex];
-                    } else {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.FORMAT_ERROR, "Flv: Invalid audio sample rate idx: " + soundRateIndex);
-                      return;
-                    }
-                    var soundType = soundSpec & 1;
-                    var meta = this._audioMetadata;
-                    var track = this._audioTrack;
-                    if (!meta) {
-                      if (this._hasAudio === false && this._hasAudioFlagOverrided === false) {
-                        this._hasAudio = true;
-                        this._mediaInfo.hasAudio = true;
-                      }
-                      meta = this._audioMetadata = {};
-                      meta.type = "audio";
-                      meta.id = track.id;
-                      meta.timescale = this._timescale;
-                      meta.duration = this._duration;
-                      meta.audioSampleRate = soundRate;
-                      meta.channelCount = soundType === 0 ? 1 : 2;
-                    }
-                    if (soundFormat === 10) {
-                      var aacData = this._parseAACAudioData(arrayBuffer, dataOffset + 1, dataSize - 1);
-                      if (aacData == void 0) {
-                        return;
-                      }
-                      if (aacData.packetType === 0) {
-                        if (meta.config) {
-                          _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Found another AudioSpecificConfig!");
-                        }
-                        var misc = aacData.data;
-                        meta.audioSampleRate = misc.samplingRate;
-                        meta.channelCount = misc.channelCount;
-                        meta.codec = misc.codec;
-                        meta.originalCodec = misc.originalCodec;
-                        meta.config = misc.config;
-                        meta.refSampleDuration = 1024 / meta.audioSampleRate * meta.timescale;
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.v(this.TAG, "Parsed AudioSpecificConfig");
-                        if (this._isInitialMetadataDispatched()) {
-                          if (this._dispatch && (this._audioTrack.length || this._videoTrack.length)) {
-                            this._onDataAvailable(this._audioTrack, this._videoTrack);
-                          }
-                        } else {
-                          this._audioInitialMetadataDispatched = true;
-                        }
-                        this._dispatch = false;
-                        this._onTrackMetadata("audio", meta);
-                        var mi2 = this._mediaInfo;
-                        mi2.audioCodec = meta.originalCodec;
-                        mi2.audioSampleRate = meta.audioSampleRate;
-                        mi2.audioChannelCount = meta.channelCount;
-                        if (mi2.hasVideo) {
-                          if (mi2.videoCodec != null) {
-                            mi2.mimeType = 'video/x-flv; codecs="' + mi2.videoCodec + "," + mi2.audioCodec + '"';
-                          }
-                        } else {
-                          mi2.mimeType = 'video/x-flv; codecs="' + mi2.audioCodec + '"';
-                        }
-                        if (mi2.isComplete()) {
-                          this._onMediaInfo(mi2);
-                        }
-                      } else if (aacData.packetType === 1) {
-                        var dts = this._timestampBase + tagTimestamp;
-                        var aacSample = { unit: aacData.data, length: aacData.data.byteLength, dts, pts: dts };
-                        track.samples.push(aacSample);
-                        track.length += aacData.data.length;
-                      } else {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.e(this.TAG, "Flv: Unsupported AAC data type " + aacData.packetType);
-                      }
-                    } else if (soundFormat === 2) {
-                      if (!meta.codec) {
-                        var misc = this._parseMP3AudioData(arrayBuffer, dataOffset + 1, dataSize - 1, true);
-                        if (misc == void 0) {
-                          return;
-                        }
-                        meta.audioSampleRate = misc.samplingRate;
-                        meta.channelCount = misc.channelCount;
-                        meta.codec = misc.codec;
-                        meta.originalCodec = misc.originalCodec;
-                        meta.refSampleDuration = 1152 / meta.audioSampleRate * meta.timescale;
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.v(this.TAG, "Parsed MPEG Audio Frame Header");
-                        this._audioInitialMetadataDispatched = true;
-                        this._onTrackMetadata("audio", meta);
-                        var mi2 = this._mediaInfo;
-                        mi2.audioCodec = meta.codec;
-                        mi2.audioSampleRate = meta.audioSampleRate;
-                        mi2.audioChannelCount = meta.channelCount;
-                        mi2.audioDataRate = misc.bitRate;
-                        if (mi2.hasVideo) {
-                          if (mi2.videoCodec != null) {
-                            mi2.mimeType = 'video/x-flv; codecs="' + mi2.videoCodec + "," + mi2.audioCodec + '"';
-                          }
-                        } else {
-                          mi2.mimeType = 'video/x-flv; codecs="' + mi2.audioCodec + '"';
-                        }
-                        if (mi2.isComplete()) {
-                          this._onMediaInfo(mi2);
-                        }
-                      }
-                      var data2 = this._parseMP3AudioData(arrayBuffer, dataOffset + 1, dataSize - 1, false);
-                      if (data2 == void 0) {
-                        return;
-                      }
-                      var dts = this._timestampBase + tagTimestamp;
-                      var mp3Sample = { unit: data2, length: data2.byteLength, dts, pts: dts };
-                      track.samples.push(mp3Sample);
-                      track.length += data2.length;
-                    }
-                  };
-                  FLVDemuxer2.prototype._parseAACAudioData = function(arrayBuffer, dataOffset, dataSize) {
-                    if (dataSize <= 1) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Flv: Invalid AAC packet, missing AACPacketType or/and Data!");
-                      return;
-                    }
-                    var result = {};
-                    var array = new Uint8Array(arrayBuffer, dataOffset, dataSize);
-                    result.packetType = array[0];
-                    if (array[0] === 0) {
-                      result.data = this._parseAACAudioSpecificConfig(arrayBuffer, dataOffset + 1, dataSize - 1);
-                    } else {
-                      result.data = array.subarray(1);
-                    }
-                    return result;
-                  };
-                  FLVDemuxer2.prototype._parseAACAudioSpecificConfig = function(arrayBuffer, dataOffset, dataSize) {
-                    var array = new Uint8Array(arrayBuffer, dataOffset, dataSize);
-                    var config = null;
-                    var audioObjectType = 0;
-                    var originalAudioObjectType = 0;
-                    var samplingIndex = 0;
-                    var extensionSamplingIndex = null;
-                    audioObjectType = originalAudioObjectType = array[0] >>> 3;
-                    samplingIndex = (array[0] & 7) << 1 | array[1] >>> 7;
-                    if (samplingIndex < 0 || samplingIndex >= this._mpegSamplingRates.length) {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.FORMAT_ERROR, "Flv: AAC invalid sampling frequency index!");
-                      return;
-                    }
-                    var samplingFrequence = this._mpegSamplingRates[samplingIndex];
-                    var channelConfig = (array[1] & 120) >>> 3;
-                    if (channelConfig < 0 || channelConfig >= 8) {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.FORMAT_ERROR, "Flv: AAC invalid channel configuration");
-                      return;
-                    }
-                    if (audioObjectType === 5) {
-                      extensionSamplingIndex = (array[1] & 7) << 1 | array[2] >>> 7;
-                      (array[2] & 124) >>> 2;
-                    }
-                    var userAgent2 = self.navigator.userAgent.toLowerCase();
-                    if (userAgent2.indexOf("firefox") !== -1) {
-                      if (samplingIndex >= 6) {
-                        audioObjectType = 5;
-                        config = new Array(4);
-                        extensionSamplingIndex = samplingIndex - 3;
-                      } else {
-                        audioObjectType = 2;
-                        config = new Array(2);
-                        extensionSamplingIndex = samplingIndex;
-                      }
-                    } else if (userAgent2.indexOf("android") !== -1) {
-                      audioObjectType = 2;
-                      config = new Array(2);
-                      extensionSamplingIndex = samplingIndex;
-                    } else {
-                      audioObjectType = 5;
-                      extensionSamplingIndex = samplingIndex;
-                      config = new Array(4);
-                      if (samplingIndex >= 6) {
-                        extensionSamplingIndex = samplingIndex - 3;
-                      } else if (channelConfig === 1) {
-                        audioObjectType = 2;
-                        config = new Array(2);
-                        extensionSamplingIndex = samplingIndex;
-                      }
-                    }
-                    config[0] = audioObjectType << 3;
-                    config[0] |= (samplingIndex & 15) >>> 1;
-                    config[1] = (samplingIndex & 15) << 7;
-                    config[1] |= (channelConfig & 15) << 3;
-                    if (audioObjectType === 5) {
-                      config[1] |= (extensionSamplingIndex & 15) >>> 1;
-                      config[2] = (extensionSamplingIndex & 1) << 7;
-                      config[2] |= 2 << 2;
-                      config[3] = 0;
-                    }
-                    return {
-                      config,
-                      samplingRate: samplingFrequence,
-                      channelCount: channelConfig,
-                      codec: "mp4a.40." + audioObjectType,
-                      originalCodec: "mp4a.40." + originalAudioObjectType
-                    };
-                  };
-                  FLVDemuxer2.prototype._parseMP3AudioData = function(arrayBuffer, dataOffset, dataSize, requestHeader) {
-                    if (dataSize < 4) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Flv: Invalid MP3 packet, header missing!");
-                      return;
-                    }
-                    this._littleEndian;
-                    var array = new Uint8Array(arrayBuffer, dataOffset, dataSize);
-                    var result = null;
-                    if (requestHeader) {
-                      if (array[0] !== 255) {
-                        return;
-                      }
-                      var ver = array[1] >>> 3 & 3;
-                      var layer = (array[1] & 6) >> 1;
-                      var bitrate_index = (array[2] & 240) >>> 4;
-                      var sampling_freq_index = (array[2] & 12) >>> 2;
-                      var channel_mode = array[3] >>> 6 & 3;
-                      var channel_count = channel_mode !== 3 ? 2 : 1;
-                      var sample_rate = 0;
-                      var bit_rate = 0;
-                      var codec = "mp3";
-                      switch (ver) {
-                        case 0:
-                          sample_rate = this._mpegAudioV25SampleRateTable[sampling_freq_index];
-                          break;
-                        case 2:
-                          sample_rate = this._mpegAudioV20SampleRateTable[sampling_freq_index];
-                          break;
-                        case 3:
-                          sample_rate = this._mpegAudioV10SampleRateTable[sampling_freq_index];
-                          break;
-                      }
-                      switch (layer) {
-                        case 1:
-                          if (bitrate_index < this._mpegAudioL3BitRateTable.length) {
-                            bit_rate = this._mpegAudioL3BitRateTable[bitrate_index];
-                          }
-                          break;
-                        case 2:
-                          if (bitrate_index < this._mpegAudioL2BitRateTable.length) {
-                            bit_rate = this._mpegAudioL2BitRateTable[bitrate_index];
-                          }
-                          break;
-                        case 3:
-                          if (bitrate_index < this._mpegAudioL1BitRateTable.length) {
-                            bit_rate = this._mpegAudioL1BitRateTable[bitrate_index];
-                          }
-                          break;
-                      }
-                      result = {
-                        bitRate: bit_rate,
-                        samplingRate: sample_rate,
-                        channelCount: channel_count,
-                        codec,
-                        originalCodec: codec
-                      };
-                    } else {
-                      result = array;
-                    }
-                    return result;
-                  };
-                  FLVDemuxer2.prototype._parseVideoData = function(arrayBuffer, dataOffset, dataSize, tagTimestamp, tagPosition) {
-                    if (dataSize <= 1) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Flv: Invalid video packet, missing VideoData payload!");
-                      return;
-                    }
-                    if (this._hasVideoFlagOverrided === true && this._hasVideo === false) {
-                      return;
-                    }
-                    var spec = new Uint8Array(arrayBuffer, dataOffset, dataSize)[0];
-                    var frameType = (spec & 240) >>> 4;
-                    var codecId = spec & 15;
-                    if (codecId !== 7) {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.CODEC_UNSUPPORTED, "Flv: Unsupported codec in video frame: " + codecId);
-                      return;
-                    }
-                    this._parseAVCVideoPacket(arrayBuffer, dataOffset + 1, dataSize - 1, tagTimestamp, tagPosition, frameType);
-                  };
-                  FLVDemuxer2.prototype._parseAVCVideoPacket = function(arrayBuffer, dataOffset, dataSize, tagTimestamp, tagPosition, frameType) {
-                    if (dataSize < 4) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Flv: Invalid AVC packet, missing AVCPacketType or/and CompositionTime");
-                      return;
-                    }
-                    var le2 = this._littleEndian;
-                    var v2 = new DataView(arrayBuffer, dataOffset, dataSize);
-                    var packetType = v2.getUint8(0);
-                    var cts_unsigned = v2.getUint32(0, !le2) & 16777215;
-                    var cts = cts_unsigned << 8 >> 8;
-                    if (packetType === 0) {
-                      this._parseAVCDecoderConfigurationRecord(arrayBuffer, dataOffset + 4, dataSize - 4);
-                    } else if (packetType === 1) {
-                      this._parseAVCVideoData(arrayBuffer, dataOffset + 4, dataSize - 4, tagTimestamp, tagPosition, frameType, cts);
-                    } else if (packetType === 2)
-                      ;
-                    else {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.FORMAT_ERROR, "Flv: Invalid video packet type " + packetType);
-                      return;
-                    }
-                  };
-                  FLVDemuxer2.prototype._parseAVCDecoderConfigurationRecord = function(arrayBuffer, dataOffset, dataSize) {
-                    if (dataSize < 7) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Flv: Invalid AVCDecoderConfigurationRecord, lack of data!");
-                      return;
-                    }
-                    var meta = this._videoMetadata;
-                    var track = this._videoTrack;
-                    var le2 = this._littleEndian;
-                    var v2 = new DataView(arrayBuffer, dataOffset, dataSize);
-                    if (!meta) {
-                      if (this._hasVideo === false && this._hasVideoFlagOverrided === false) {
-                        this._hasVideo = true;
-                        this._mediaInfo.hasVideo = true;
-                      }
-                      meta = this._videoMetadata = {};
-                      meta.type = "video";
-                      meta.id = track.id;
-                      meta.timescale = this._timescale;
-                      meta.duration = this._duration;
-                    } else {
-                      if (typeof meta.avcc !== "undefined") {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Found another AVCDecoderConfigurationRecord!");
-                      }
-                    }
-                    var version = v2.getUint8(0);
-                    var avcProfile = v2.getUint8(1);
-                    v2.getUint8(2);
-                    v2.getUint8(3);
-                    if (version !== 1 || avcProfile === 0) {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.FORMAT_ERROR, "Flv: Invalid AVCDecoderConfigurationRecord");
-                      return;
-                    }
-                    this._naluLengthSize = (v2.getUint8(4) & 3) + 1;
-                    if (this._naluLengthSize !== 3 && this._naluLengthSize !== 4) {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.FORMAT_ERROR, "Flv: Strange NaluLengthSizeMinusOne: " + (this._naluLengthSize - 1));
-                      return;
-                    }
-                    var spsCount = v2.getUint8(5) & 31;
-                    if (spsCount === 0) {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.FORMAT_ERROR, "Flv: Invalid AVCDecoderConfigurationRecord: No SPS");
-                      return;
-                    } else if (spsCount > 1) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Flv: Strange AVCDecoderConfigurationRecord: SPS Count = " + spsCount);
-                    }
-                    var offset = 6;
-                    for (var i2 = 0; i2 < spsCount; i2++) {
-                      var len = v2.getUint16(offset, !le2);
-                      offset += 2;
-                      if (len === 0) {
-                        continue;
-                      }
-                      var sps = new Uint8Array(arrayBuffer, dataOffset + offset, len);
-                      offset += len;
-                      var config = _sps_parser_js__WEBPACK_IMPORTED_MODULE_2__.default.parseSPS(sps);
-                      if (i2 !== 0) {
-                        continue;
-                      }
-                      meta.codecWidth = config.codec_size.width;
-                      meta.codecHeight = config.codec_size.height;
-                      meta.presentWidth = config.present_size.width;
-                      meta.presentHeight = config.present_size.height;
-                      meta.profile = config.profile_string;
-                      meta.level = config.level_string;
-                      meta.bitDepth = config.bit_depth;
-                      meta.chromaFormat = config.chroma_format;
-                      meta.sarRatio = config.sar_ratio;
-                      meta.frameRate = config.frame_rate;
-                      if (config.frame_rate.fixed === false || config.frame_rate.fps_num === 0 || config.frame_rate.fps_den === 0) {
-                        meta.frameRate = this._referenceFrameRate;
-                      }
-                      var fps_den = meta.frameRate.fps_den;
-                      var fps_num = meta.frameRate.fps_num;
-                      meta.refSampleDuration = meta.timescale * (fps_den / fps_num);
-                      var codecArray = sps.subarray(1, 4);
-                      var codecString = "avc1.";
-                      for (var j2 = 0; j2 < 3; j2++) {
-                        var h2 = codecArray[j2].toString(16);
-                        if (h2.length < 2) {
-                          h2 = "0" + h2;
-                        }
-                        codecString += h2;
-                      }
-                      meta.codec = codecString;
-                      var mi2 = this._mediaInfo;
-                      mi2.width = meta.codecWidth;
-                      mi2.height = meta.codecHeight;
-                      mi2.fps = meta.frameRate.fps;
-                      mi2.profile = meta.profile;
-                      mi2.level = meta.level;
-                      mi2.refFrames = config.ref_frames;
-                      mi2.chromaFormat = config.chroma_format_string;
-                      mi2.sarNum = meta.sarRatio.width;
-                      mi2.sarDen = meta.sarRatio.height;
-                      mi2.videoCodec = codecString;
-                      if (mi2.hasAudio) {
-                        if (mi2.audioCodec != null) {
-                          mi2.mimeType = 'video/x-flv; codecs="' + mi2.videoCodec + "," + mi2.audioCodec + '"';
-                        }
-                      } else {
-                        mi2.mimeType = 'video/x-flv; codecs="' + mi2.videoCodec + '"';
-                      }
-                      if (mi2.isComplete()) {
-                        this._onMediaInfo(mi2);
-                      }
-                    }
-                    var ppsCount = v2.getUint8(offset);
-                    if (ppsCount === 0) {
-                      this._onError(_demux_errors_js__WEBPACK_IMPORTED_MODULE_3__.default.FORMAT_ERROR, "Flv: Invalid AVCDecoderConfigurationRecord: No PPS");
-                      return;
-                    } else if (ppsCount > 1) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Flv: Strange AVCDecoderConfigurationRecord: PPS Count = " + ppsCount);
-                    }
-                    offset++;
-                    for (var i2 = 0; i2 < ppsCount; i2++) {
-                      var len = v2.getUint16(offset, !le2);
-                      offset += 2;
-                      if (len === 0) {
-                        continue;
-                      }
-                      offset += len;
-                    }
-                    meta.avcc = new Uint8Array(dataSize);
-                    meta.avcc.set(new Uint8Array(arrayBuffer, dataOffset, dataSize), 0);
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.v(this.TAG, "Parsed AVCDecoderConfigurationRecord");
-                    if (this._isInitialMetadataDispatched()) {
-                      if (this._dispatch && (this._audioTrack.length || this._videoTrack.length)) {
-                        this._onDataAvailable(this._audioTrack, this._videoTrack);
-                      }
-                    } else {
-                      this._videoInitialMetadataDispatched = true;
-                    }
-                    this._dispatch = false;
-                    this._onTrackMetadata("video", meta);
-                  };
-                  FLVDemuxer2.prototype._parseAVCVideoData = function(arrayBuffer, dataOffset, dataSize, tagTimestamp, tagPosition, frameType, cts) {
-                    var le2 = this._littleEndian;
-                    var v2 = new DataView(arrayBuffer, dataOffset, dataSize);
-                    var units = [], length2 = 0;
-                    var offset = 0;
-                    var lengthSize = this._naluLengthSize;
-                    var dts = this._timestampBase + tagTimestamp;
-                    var keyframe = frameType === 1;
-                    while (offset < dataSize) {
-                      if (offset + 4 >= dataSize) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Malformed Nalu near timestamp " + dts + ", offset = " + offset + ", dataSize = " + dataSize);
-                        break;
-                      }
-                      var naluSize = v2.getUint32(offset, !le2);
-                      if (lengthSize === 3) {
-                        naluSize >>>= 8;
-                      }
-                      if (naluSize > dataSize - lengthSize) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Malformed Nalus near timestamp " + dts + ", NaluSize > DataSize!");
-                        return;
-                      }
-                      var unitType = v2.getUint8(offset + lengthSize) & 31;
-                      if (unitType === 5) {
-                        keyframe = true;
-                      }
-                      var data2 = new Uint8Array(arrayBuffer, dataOffset + offset, lengthSize + naluSize);
-                      var unit = { type: unitType, data: data2 };
-                      units.push(unit);
-                      length2 += data2.byteLength;
-                      offset += lengthSize + naluSize;
-                    }
-                    if (units.length) {
-                      var track = this._videoTrack;
-                      var avcSample = {
-                        units,
-                        length: length2,
-                        isKeyframe: keyframe,
-                        dts,
-                        cts,
-                        pts: dts + cts
-                      };
-                      if (keyframe) {
-                        avcSample.fileposition = tagPosition;
-                      }
-                      track.samples.push(avcSample);
-                      track.length += length2;
-                    }
-                  };
-                  return FLVDemuxer2;
-                }()
-              );
-              __webpack_exports__2["default"] = FLVDemuxer;
-            }
-          ),
-          /***/
-          "./src/demux/sps-parser.js": (
-            /*!*********************************!*\
-              !*** ./src/demux/sps-parser.js ***!
-              \*********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _exp_golomb_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ./exp-golomb.js */
-                "./src/demux/exp-golomb.js"
-              );
-              var SPSParser = (
-                /** @class */
-                function() {
-                  function SPSParser2() {
-                  }
-                  SPSParser2._ebsp2rbsp = function(uint8array) {
-                    var src = uint8array;
-                    var src_length = src.byteLength;
-                    var dst = new Uint8Array(src_length);
-                    var dst_idx = 0;
-                    for (var i2 = 0; i2 < src_length; i2++) {
-                      if (i2 >= 2) {
-                        if (src[i2] === 3 && src[i2 - 1] === 0 && src[i2 - 2] === 0) {
-                          continue;
-                        }
-                      }
-                      dst[dst_idx] = src[i2];
-                      dst_idx++;
-                    }
-                    return new Uint8Array(dst.buffer, 0, dst_idx);
-                  };
-                  SPSParser2.parseSPS = function(uint8array) {
-                    var rbsp = SPSParser2._ebsp2rbsp(uint8array);
-                    var gb2 = new _exp_golomb_js__WEBPACK_IMPORTED_MODULE_0__.default(rbsp);
-                    gb2.readByte();
-                    var profile_idc = gb2.readByte();
-                    gb2.readByte();
-                    var level_idc = gb2.readByte();
-                    gb2.readUEG();
-                    var profile_string = SPSParser2.getProfileString(profile_idc);
-                    var level_string = SPSParser2.getLevelString(level_idc);
-                    var chroma_format_idc = 1;
-                    var chroma_format = 420;
-                    var chroma_format_table = [0, 420, 422, 444];
-                    var bit_depth = 8;
-                    if (profile_idc === 100 || profile_idc === 110 || profile_idc === 122 || profile_idc === 244 || profile_idc === 44 || profile_idc === 83 || profile_idc === 86 || profile_idc === 118 || profile_idc === 128 || profile_idc === 138 || profile_idc === 144) {
-                      chroma_format_idc = gb2.readUEG();
-                      if (chroma_format_idc === 3) {
-                        gb2.readBits(1);
-                      }
-                      if (chroma_format_idc <= 3) {
-                        chroma_format = chroma_format_table[chroma_format_idc];
-                      }
-                      bit_depth = gb2.readUEG() + 8;
-                      gb2.readUEG();
-                      gb2.readBits(1);
-                      if (gb2.readBool()) {
-                        var scaling_list_count = chroma_format_idc !== 3 ? 8 : 12;
-                        for (var i2 = 0; i2 < scaling_list_count; i2++) {
-                          if (gb2.readBool()) {
-                            if (i2 < 6) {
-                              SPSParser2._skipScalingList(gb2, 16);
-                            } else {
-                              SPSParser2._skipScalingList(gb2, 64);
-                            }
-                          }
-                        }
-                      }
-                    }
-                    gb2.readUEG();
-                    var pic_order_cnt_type = gb2.readUEG();
-                    if (pic_order_cnt_type === 0) {
-                      gb2.readUEG();
-                    } else if (pic_order_cnt_type === 1) {
-                      gb2.readBits(1);
-                      gb2.readSEG();
-                      gb2.readSEG();
-                      var num_ref_frames_in_pic_order_cnt_cycle = gb2.readUEG();
-                      for (var i2 = 0; i2 < num_ref_frames_in_pic_order_cnt_cycle; i2++) {
-                        gb2.readSEG();
-                      }
-                    }
-                    var ref_frames = gb2.readUEG();
-                    gb2.readBits(1);
-                    var pic_width_in_mbs_minus1 = gb2.readUEG();
-                    var pic_height_in_map_units_minus1 = gb2.readUEG();
-                    var frame_mbs_only_flag = gb2.readBits(1);
-                    if (frame_mbs_only_flag === 0) {
-                      gb2.readBits(1);
-                    }
-                    gb2.readBits(1);
-                    var frame_crop_left_offset = 0;
-                    var frame_crop_right_offset = 0;
-                    var frame_crop_top_offset = 0;
-                    var frame_crop_bottom_offset = 0;
-                    var frame_cropping_flag = gb2.readBool();
-                    if (frame_cropping_flag) {
-                      frame_crop_left_offset = gb2.readUEG();
-                      frame_crop_right_offset = gb2.readUEG();
-                      frame_crop_top_offset = gb2.readUEG();
-                      frame_crop_bottom_offset = gb2.readUEG();
-                    }
-                    var sar_width = 1, sar_height = 1;
-                    var fps = 0, fps_fixed = true, fps_num = 0, fps_den = 0;
-                    var vui_parameters_present_flag = gb2.readBool();
-                    if (vui_parameters_present_flag) {
-                      if (gb2.readBool()) {
-                        var aspect_ratio_idc = gb2.readByte();
-                        var sar_w_table = [1, 12, 10, 16, 40, 24, 20, 32, 80, 18, 15, 64, 160, 4, 3, 2];
-                        var sar_h_table = [1, 11, 11, 11, 33, 11, 11, 11, 33, 11, 11, 33, 99, 3, 2, 1];
-                        if (aspect_ratio_idc > 0 && aspect_ratio_idc < 16) {
-                          sar_width = sar_w_table[aspect_ratio_idc - 1];
-                          sar_height = sar_h_table[aspect_ratio_idc - 1];
-                        } else if (aspect_ratio_idc === 255) {
-                          sar_width = gb2.readByte() << 8 | gb2.readByte();
-                          sar_height = gb2.readByte() << 8 | gb2.readByte();
-                        }
-                      }
-                      if (gb2.readBool()) {
-                        gb2.readBool();
-                      }
-                      if (gb2.readBool()) {
-                        gb2.readBits(4);
-                        if (gb2.readBool()) {
-                          gb2.readBits(24);
-                        }
-                      }
-                      if (gb2.readBool()) {
-                        gb2.readUEG();
-                        gb2.readUEG();
-                      }
-                      if (gb2.readBool()) {
-                        var num_units_in_tick = gb2.readBits(32);
-                        var time_scale = gb2.readBits(32);
-                        fps_fixed = gb2.readBool();
-                        fps_num = time_scale;
-                        fps_den = num_units_in_tick * 2;
-                        fps = fps_num / fps_den;
-                      }
-                    }
-                    var sarScale = 1;
-                    if (sar_width !== 1 || sar_height !== 1) {
-                      sarScale = sar_width / sar_height;
-                    }
-                    var crop_unit_x = 0, crop_unit_y = 0;
-                    if (chroma_format_idc === 0) {
-                      crop_unit_x = 1;
-                      crop_unit_y = 2 - frame_mbs_only_flag;
-                    } else {
-                      var sub_wc = chroma_format_idc === 3 ? 1 : 2;
-                      var sub_hc = chroma_format_idc === 1 ? 2 : 1;
-                      crop_unit_x = sub_wc;
-                      crop_unit_y = sub_hc * (2 - frame_mbs_only_flag);
-                    }
-                    var codec_width = (pic_width_in_mbs_minus1 + 1) * 16;
-                    var codec_height = (2 - frame_mbs_only_flag) * ((pic_height_in_map_units_minus1 + 1) * 16);
-                    codec_width -= (frame_crop_left_offset + frame_crop_right_offset) * crop_unit_x;
-                    codec_height -= (frame_crop_top_offset + frame_crop_bottom_offset) * crop_unit_y;
-                    var present_width = Math.ceil(codec_width * sarScale);
-                    gb2.destroy();
-                    gb2 = null;
-                    return {
-                      profile_string,
-                      level_string,
-                      bit_depth,
-                      ref_frames,
-                      chroma_format,
-                      chroma_format_string: SPSParser2.getChromaFormatString(chroma_format),
-                      frame_rate: {
-                        fixed: fps_fixed,
-                        fps,
-                        fps_den,
-                        fps_num
-                      },
-                      sar_ratio: {
-                        width: sar_width,
-                        height: sar_height
-                      },
-                      codec_size: {
-                        width: codec_width,
-                        height: codec_height
-                      },
-                      present_size: {
-                        width: present_width,
-                        height: codec_height
-                      }
-                    };
-                  };
-                  SPSParser2._skipScalingList = function(gb2, count) {
-                    var last_scale = 8, next_scale = 8;
-                    var delta_scale = 0;
-                    for (var i2 = 0; i2 < count; i2++) {
-                      if (next_scale !== 0) {
-                        delta_scale = gb2.readSEG();
-                        next_scale = (last_scale + delta_scale + 256) % 256;
-                      }
-                      last_scale = next_scale === 0 ? last_scale : next_scale;
-                    }
-                  };
-                  SPSParser2.getProfileString = function(profile_idc) {
-                    switch (profile_idc) {
-                      case 66:
-                        return "Baseline";
-                      case 77:
-                        return "Main";
-                      case 88:
-                        return "Extended";
-                      case 100:
-                        return "High";
-                      case 110:
-                        return "High10";
-                      case 122:
-                        return "High422";
-                      case 244:
-                        return "High444";
-                      default:
-                        return "Unknown";
-                    }
-                  };
-                  SPSParser2.getLevelString = function(level_idc) {
-                    return (level_idc / 10).toFixed(1);
-                  };
-                  SPSParser2.getChromaFormatString = function(chroma) {
-                    switch (chroma) {
-                      case 420:
-                        return "4:2:0";
-                      case 422:
-                        return "4:2:2";
-                      case 444:
-                        return "4:4:4";
-                      default:
-                        return "Unknown";
-                    }
-                  };
-                  return SPSParser2;
-                }()
-              );
-              __webpack_exports__2["default"] = SPSParser;
-            }
-          ),
-          /***/
-          "./src/flv.js": (
-            /*!********************!*\
-              !*** ./src/flv.js ***!
-              \********************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_polyfill_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ./utils/polyfill.js */
-                "./src/utils/polyfill.js"
-              );
-              var _core_features_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ./core/features.js */
-                "./src/core/features.js"
-              );
-              var _io_loader_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ./io/loader.js */
-                "./src/io/loader.js"
-              );
-              var _player_flv_player_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ./player/flv-player.js */
-                "./src/player/flv-player.js"
-              );
-              var _player_native_player_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__2(
-                /*! ./player/native-player.js */
-                "./src/player/native-player.js"
-              );
-              var _player_player_events_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__2(
-                /*! ./player/player-events.js */
-                "./src/player/player-events.js"
-              );
-              var _player_player_errors_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__2(
-                /*! ./player/player-errors.js */
-                "./src/player/player-errors.js"
-              );
-              var _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__2(
-                /*! ./utils/logging-control.js */
-                "./src/utils/logging-control.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__2(
-                /*! ./utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              _utils_polyfill_js__WEBPACK_IMPORTED_MODULE_0__.default.install();
-              function createPlayer(mediaDataSource, optionalConfig) {
-                var mds = mediaDataSource;
-                if (mds == null || typeof mds !== "object") {
-                  throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_8__.InvalidArgumentException("MediaDataSource must be an javascript object!");
-                }
-                if (!mds.hasOwnProperty("type")) {
-                  throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_8__.InvalidArgumentException("MediaDataSource must has type field to indicate video file type!");
-                }
-                switch (mds.type) {
-                  case "flv":
-                    return new _player_flv_player_js__WEBPACK_IMPORTED_MODULE_3__.default(mds, optionalConfig);
-                  default:
-                    return new _player_native_player_js__WEBPACK_IMPORTED_MODULE_4__.default(mds, optionalConfig);
-                }
-              }
-              function isSupported() {
-                return _core_features_js__WEBPACK_IMPORTED_MODULE_1__.default.supportMSEH264Playback();
-              }
-              function getFeatureList() {
-                return _core_features_js__WEBPACK_IMPORTED_MODULE_1__.default.getFeatureList();
-              }
-              var flvjs = {};
-              flvjs.createPlayer = createPlayer;
-              flvjs.isSupported = isSupported;
-              flvjs.getFeatureList = getFeatureList;
-              flvjs.BaseLoader = _io_loader_js__WEBPACK_IMPORTED_MODULE_2__.BaseLoader;
-              flvjs.LoaderStatus = _io_loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderStatus;
-              flvjs.LoaderErrors = _io_loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors;
-              flvjs.Events = _player_player_events_js__WEBPACK_IMPORTED_MODULE_5__.default;
-              flvjs.ErrorTypes = _player_player_errors_js__WEBPACK_IMPORTED_MODULE_6__.ErrorTypes;
-              flvjs.ErrorDetails = _player_player_errors_js__WEBPACK_IMPORTED_MODULE_6__.ErrorDetails;
-              flvjs.FlvPlayer = _player_flv_player_js__WEBPACK_IMPORTED_MODULE_3__.default;
-              flvjs.NativePlayer = _player_native_player_js__WEBPACK_IMPORTED_MODULE_4__.default;
-              flvjs.LoggingControl = _utils_logging_control_js__WEBPACK_IMPORTED_MODULE_7__.default;
-              Object.defineProperty(flvjs, "version", {
-                enumerable: true,
-                get: function() {
-                  return "1.6.2";
-                }
-              });
-              __webpack_exports__2["default"] = flvjs;
-            }
-          ),
-          /***/
-          "./src/index.js": (
-            /*!**********************!*\
-              !*** ./src/index.js ***!
-              \**********************/
-            /***/
-            function(module2, __unused_webpack_exports, __webpack_require__2) {
-              module2.exports = __webpack_require__2(
-                /*! ./flv.js */
-                "./src/flv.js"
-              ).default;
-            }
-          ),
-          /***/
-          "./src/io/fetch-stream-loader.js": (
-            /*!***************************************!*\
-              !*** ./src/io/fetch-stream-loader.js ***!
-              \***************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_browser_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/browser.js */
-                "./src/utils/browser.js"
-              );
-              var _loader_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ./loader.js */
-                "./src/io/loader.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var __extends2 = function() {
-                var extendStatics2 = function(d2, b2) {
-                  extendStatics2 = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d3, b3) {
-                    d3.__proto__ = b3;
-                  } || function(d3, b3) {
-                    for (var p in b3)
-                      if (Object.prototype.hasOwnProperty.call(b3, p))
-                        d3[p] = b3[p];
-                  };
-                  return extendStatics2(d2, b2);
-                };
-                return function(d2, b2) {
-                  if (typeof b2 !== "function" && b2 !== null)
-                    throw new TypeError("Class extends value " + String(b2) + " is not a constructor or null");
-                  extendStatics2(d2, b2);
-                  function __() {
-                    this.constructor = d2;
-                  }
-                  d2.prototype = b2 === null ? Object.create(b2) : (__.prototype = b2.prototype, new __());
-                };
-              }();
-              var FetchStreamLoader = (
-                /** @class */
-                function(_super) {
-                  __extends2(FetchStreamLoader2, _super);
-                  function FetchStreamLoader2(seekHandler, config) {
-                    var _this = _super.call(this, "fetch-stream-loader") || this;
-                    _this.TAG = "FetchStreamLoader";
-                    _this._seekHandler = seekHandler;
-                    _this._config = config;
-                    _this._needStash = true;
-                    _this._requestAbort = false;
-                    _this._contentLength = null;
-                    _this._receivedLength = 0;
-                    return _this;
-                  }
-                  FetchStreamLoader2.isSupported = function() {
-                    try {
-                      var isWorkWellEdge = _utils_browser_js__WEBPACK_IMPORTED_MODULE_0__.default.msedge && _utils_browser_js__WEBPACK_IMPORTED_MODULE_0__.default.version.minor >= 15048;
-                      var browserNotBlacklisted = _utils_browser_js__WEBPACK_IMPORTED_MODULE_0__.default.msedge ? isWorkWellEdge : true;
-                      return self.fetch && self.ReadableStream && browserNotBlacklisted;
-                    } catch (e2) {
-                      return false;
-                    }
-                  };
-                  FetchStreamLoader2.prototype.destroy = function() {
-                    if (this.isWorking()) {
-                      this.abort();
-                    }
-                    _super.prototype.destroy.call(this);
-                  };
-                  FetchStreamLoader2.prototype.open = function(dataSource, range2) {
-                    var _this = this;
-                    this._dataSource = dataSource;
-                    this._range = range2;
-                    var sourceURL = dataSource.url;
-                    if (this._config.reuseRedirectedURL && dataSource.redirectedURL != void 0) {
-                      sourceURL = dataSource.redirectedURL;
-                    }
-                    var seekConfig = this._seekHandler.getConfig(sourceURL, range2);
-                    var headers = new self.Headers();
-                    if (typeof seekConfig.headers === "object") {
-                      var configHeaders = seekConfig.headers;
-                      for (var key in configHeaders) {
-                        if (configHeaders.hasOwnProperty(key)) {
-                          headers.append(key, configHeaders[key]);
-                        }
-                      }
-                    }
-                    var params = {
-                      method: "GET",
-                      headers,
-                      mode: "cors",
-                      cache: "default",
-                      // The default policy of Fetch API in the whatwg standard
-                      // Safari incorrectly indicates 'no-referrer' as default policy, fuck it
-                      referrerPolicy: "no-referrer-when-downgrade"
-                    };
-                    if (typeof this._config.headers === "object") {
-                      for (var key in this._config.headers) {
-                        headers.append(key, this._config.headers[key]);
-                      }
-                    }
-                    if (dataSource.cors === false) {
-                      params.mode = "same-origin";
-                    }
-                    if (dataSource.withCredentials) {
-                      params.credentials = "include";
-                    }
-                    if (dataSource.referrerPolicy) {
-                      params.referrerPolicy = dataSource.referrerPolicy;
-                    }
-                    if (self.AbortController) {
-                      this._abortController = new self.AbortController();
-                      params.signal = this._abortController.signal;
-                    }
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kConnecting;
-                    self.fetch(seekConfig.url, params).then(function(res) {
-                      if (_this._requestAbort) {
-                        _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kIdle;
-                        res.body.cancel();
-                        return;
-                      }
-                      if (res.ok && (res.status >= 200 && res.status <= 299)) {
-                        if (res.url !== seekConfig.url) {
-                          if (_this._onURLRedirect) {
-                            var redirectedURL = _this._seekHandler.removeURLParameters(res.url);
-                            _this._onURLRedirect(redirectedURL);
-                          }
-                        }
-                        var lengthHeader = res.headers.get("Content-Length");
-                        if (lengthHeader != null) {
-                          _this._contentLength = parseInt(lengthHeader);
-                          if (_this._contentLength !== 0) {
-                            if (_this._onContentLengthKnown) {
-                              _this._onContentLengthKnown(_this._contentLength);
-                            }
-                          }
-                        }
-                        return _this._pump.call(_this, res.body.getReader());
-                      } else {
-                        _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kError;
-                        if (_this._onError) {
-                          _this._onError(_loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderErrors.HTTP_STATUS_CODE_INVALID, { code: res.status, msg: res.statusText });
-                        } else {
-                          throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.RuntimeException("FetchStreamLoader: Http code invalid, " + res.status + " " + res.statusText);
-                        }
-                      }
-                    }).catch(function(e2) {
-                      if (_this._abortController && _this._abortController.signal.aborted) {
-                        return;
-                      }
-                      _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kError;
-                      if (_this._onError) {
-                        _this._onError(_loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderErrors.EXCEPTION, { code: -1, msg: e2.message });
-                      } else {
-                        throw e2;
-                      }
-                    });
-                  };
-                  FetchStreamLoader2.prototype.abort = function() {
-                    this._requestAbort = true;
-                    if (this._status !== _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kBuffering || !_utils_browser_js__WEBPACK_IMPORTED_MODULE_0__.default.chrome) {
-                      if (this._abortController) {
-                        try {
-                          this._abortController.abort();
-                        } catch (e2) {
-                        }
-                      }
-                    }
-                  };
-                  FetchStreamLoader2.prototype._pump = function(reader) {
-                    var _this = this;
-                    return reader.read().then(function(result) {
-                      if (result.done) {
-                        if (_this._contentLength !== null && _this._receivedLength < _this._contentLength) {
-                          _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kError;
-                          var type2 = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderErrors.EARLY_EOF;
-                          var info = { code: -1, msg: "Fetch stream meet Early-EOF" };
-                          if (_this._onError) {
-                            _this._onError(type2, info);
-                          } else {
-                            throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.RuntimeException(info.msg);
-                          }
-                        } else {
-                          _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kComplete;
-                          if (_this._onComplete) {
-                            _this._onComplete(_this._range.from, _this._range.from + _this._receivedLength - 1);
-                          }
-                        }
-                      } else {
-                        if (_this._abortController && _this._abortController.signal.aborted) {
-                          _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kComplete;
-                          return;
-                        } else if (_this._requestAbort === true) {
-                          _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kComplete;
-                          return reader.cancel();
-                        }
-                        _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kBuffering;
-                        var chunk = result.value.buffer;
-                        var byteStart = _this._range.from + _this._receivedLength;
-                        _this._receivedLength += chunk.byteLength;
-                        if (_this._onDataArrival) {
-                          _this._onDataArrival(chunk, byteStart, _this._receivedLength);
-                        }
-                        _this._pump(reader);
-                      }
-                    }).catch(function(e2) {
-                      if (_this._abortController && _this._abortController.signal.aborted) {
-                        _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kComplete;
-                        return;
-                      }
-                      if (e2.code === 11 && _utils_browser_js__WEBPACK_IMPORTED_MODULE_0__.default.msedge) {
-                        return;
-                      }
-                      _this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kError;
-                      var type2 = 0;
-                      var info = null;
-                      if ((e2.code === 19 || e2.message === "network error") && // NETWORK_ERR
-                      (_this._contentLength === null || _this._contentLength !== null && _this._receivedLength < _this._contentLength)) {
-                        type2 = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderErrors.EARLY_EOF;
-                        info = { code: e2.code, msg: "Fetch stream meet Early-EOF" };
-                      } else {
-                        type2 = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderErrors.EXCEPTION;
-                        info = { code: e2.code, msg: e2.message };
-                      }
-                      if (_this._onError) {
-                        _this._onError(type2, info);
-                      } else {
-                        throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.RuntimeException(info.msg);
-                      }
-                    });
-                  };
-                  return FetchStreamLoader2;
-                }(_loader_js__WEBPACK_IMPORTED_MODULE_1__.BaseLoader)
-              );
-              __webpack_exports__2["default"] = FetchStreamLoader;
-            }
-          ),
-          /***/
-          "./src/io/io-controller.js": (
-            /*!*********************************!*\
-              !*** ./src/io/io-controller.js ***!
-              \*********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _speed_sampler_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ./speed-sampler.js */
-                "./src/io/speed-sampler.js"
-              );
-              var _loader_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ./loader.js */
-                "./src/io/loader.js"
-              );
-              var _fetch_stream_loader_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ./fetch-stream-loader.js */
-                "./src/io/fetch-stream-loader.js"
-              );
-              var _xhr_moz_chunked_loader_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__2(
-                /*! ./xhr-moz-chunked-loader.js */
-                "./src/io/xhr-moz-chunked-loader.js"
-              );
-              var _xhr_range_loader_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__2(
-                /*! ./xhr-range-loader.js */
-                "./src/io/xhr-range-loader.js"
-              );
-              var _websocket_loader_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__2(
-                /*! ./websocket-loader.js */
-                "./src/io/websocket-loader.js"
-              );
-              var _range_seek_handler_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__2(
-                /*! ./range-seek-handler.js */
-                "./src/io/range-seek-handler.js"
-              );
-              var _param_seek_handler_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__2(
-                /*! ./param-seek-handler.js */
-                "./src/io/param-seek-handler.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var IOController = (
-                /** @class */
-                function() {
-                  function IOController2(dataSource, config, extraData) {
-                    this.TAG = "IOController";
-                    this._config = config;
-                    this._extraData = extraData;
-                    this._stashInitialSize = 1024 * 384;
-                    if (config.stashInitialSize != void 0 && config.stashInitialSize > 0) {
-                      this._stashInitialSize = config.stashInitialSize;
-                    }
-                    this._stashUsed = 0;
-                    this._stashSize = this._stashInitialSize;
-                    this._bufferSize = 1024 * 1024 * 3;
-                    this._stashBuffer = new ArrayBuffer(this._bufferSize);
-                    this._stashByteStart = 0;
-                    this._enableStash = true;
-                    if (config.enableStashBuffer === false) {
-                      this._enableStash = false;
-                    }
-                    this._loader = null;
-                    this._loaderClass = null;
-                    this._seekHandler = null;
-                    this._dataSource = dataSource;
-                    this._isWebSocketURL = /wss?:\/\/(.+?)/.test(dataSource.url);
-                    this._refTotalLength = dataSource.filesize ? dataSource.filesize : null;
-                    this._totalLength = this._refTotalLength;
-                    this._fullRequestFlag = false;
-                    this._currentRange = null;
-                    this._redirectedURL = null;
-                    this._speedNormalized = 0;
-                    this._speedSampler = new _speed_sampler_js__WEBPACK_IMPORTED_MODULE_1__.default();
-                    this._speedNormalizeList = [64, 128, 256, 384, 512, 768, 1024, 1536, 2048, 3072, 4096];
-                    this._isEarlyEofReconnecting = false;
-                    this._paused = false;
-                    this._resumeFrom = 0;
-                    this._onDataArrival = null;
-                    this._onSeeked = null;
-                    this._onError = null;
-                    this._onComplete = null;
-                    this._onRedirect = null;
-                    this._onRecoveredEarlyEof = null;
-                    this._selectSeekHandler();
-                    this._selectLoader();
-                    this._createLoader();
-                  }
-                  IOController2.prototype.destroy = function() {
-                    if (this._loader.isWorking()) {
-                      this._loader.abort();
-                    }
-                    this._loader.destroy();
-                    this._loader = null;
-                    this._loaderClass = null;
-                    this._dataSource = null;
-                    this._stashBuffer = null;
-                    this._stashUsed = this._stashSize = this._bufferSize = this._stashByteStart = 0;
-                    this._currentRange = null;
-                    this._speedSampler = null;
-                    this._isEarlyEofReconnecting = false;
-                    this._onDataArrival = null;
-                    this._onSeeked = null;
-                    this._onError = null;
-                    this._onComplete = null;
-                    this._onRedirect = null;
-                    this._onRecoveredEarlyEof = null;
-                    this._extraData = null;
-                  };
-                  IOController2.prototype.isWorking = function() {
-                    return this._loader && this._loader.isWorking() && !this._paused;
-                  };
-                  IOController2.prototype.isPaused = function() {
-                    return this._paused;
-                  };
-                  Object.defineProperty(IOController2.prototype, "status", {
-                    get: function() {
-                      return this._loader.status;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "extraData", {
-                    get: function() {
-                      return this._extraData;
-                    },
-                    set: function(data2) {
-                      this._extraData = data2;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "onDataArrival", {
-                    // prototype: function onDataArrival(chunks: ArrayBuffer, byteStart: number): number
-                    get: function() {
-                      return this._onDataArrival;
-                    },
-                    set: function(callback) {
-                      this._onDataArrival = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "onSeeked", {
-                    get: function() {
-                      return this._onSeeked;
-                    },
-                    set: function(callback) {
-                      this._onSeeked = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "onError", {
-                    // prototype: function onError(type: number, info: {code: number, msg: string}): void
-                    get: function() {
-                      return this._onError;
-                    },
-                    set: function(callback) {
-                      this._onError = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "onComplete", {
-                    get: function() {
-                      return this._onComplete;
-                    },
-                    set: function(callback) {
-                      this._onComplete = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "onRedirect", {
-                    get: function() {
-                      return this._onRedirect;
-                    },
-                    set: function(callback) {
-                      this._onRedirect = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "onRecoveredEarlyEof", {
-                    get: function() {
-                      return this._onRecoveredEarlyEof;
-                    },
-                    set: function(callback) {
-                      this._onRecoveredEarlyEof = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "currentURL", {
-                    get: function() {
-                      return this._dataSource.url;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "hasRedirect", {
-                    get: function() {
-                      return this._redirectedURL != null || this._dataSource.redirectedURL != void 0;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "currentRedirectedURL", {
-                    get: function() {
-                      return this._redirectedURL || this._dataSource.redirectedURL;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "currentSpeed", {
-                    // in KB/s
-                    get: function() {
-                      if (this._loaderClass === _xhr_range_loader_js__WEBPACK_IMPORTED_MODULE_5__.default) {
-                        return this._loader.currentSpeed;
-                      }
-                      return this._speedSampler.lastSecondKBps;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(IOController2.prototype, "loaderType", {
-                    get: function() {
-                      return this._loader.type;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  IOController2.prototype._selectSeekHandler = function() {
-                    var config = this._config;
-                    if (config.seekType === "range") {
-                      this._seekHandler = new _range_seek_handler_js__WEBPACK_IMPORTED_MODULE_7__.default(this._config.rangeLoadZeroStart);
-                    } else if (config.seekType === "param") {
-                      var paramStart = config.seekParamStart || "bstart";
-                      var paramEnd = config.seekParamEnd || "bend";
-                      this._seekHandler = new _param_seek_handler_js__WEBPACK_IMPORTED_MODULE_8__.default(paramStart, paramEnd);
-                    } else if (config.seekType === "custom") {
-                      if (typeof config.customSeekHandler !== "function") {
-                        throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_9__.InvalidArgumentException("Custom seekType specified in config but invalid customSeekHandler!");
-                      }
-                      this._seekHandler = new config.customSeekHandler();
-                    } else {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_9__.InvalidArgumentException("Invalid seekType in config: " + config.seekType);
-                    }
-                  };
-                  IOController2.prototype._selectLoader = function() {
-                    if (this._config.customLoader != null) {
-                      this._loaderClass = this._config.customLoader;
-                    } else if (this._isWebSocketURL) {
-                      this._loaderClass = _websocket_loader_js__WEBPACK_IMPORTED_MODULE_6__.default;
-                    } else if (_fetch_stream_loader_js__WEBPACK_IMPORTED_MODULE_3__.default.isSupported()) {
-                      this._loaderClass = _fetch_stream_loader_js__WEBPACK_IMPORTED_MODULE_3__.default;
-                    } else if (_xhr_moz_chunked_loader_js__WEBPACK_IMPORTED_MODULE_4__.default.isSupported()) {
-                      this._loaderClass = _xhr_moz_chunked_loader_js__WEBPACK_IMPORTED_MODULE_4__.default;
-                    } else if (_xhr_range_loader_js__WEBPACK_IMPORTED_MODULE_5__.default.isSupported()) {
-                      this._loaderClass = _xhr_range_loader_js__WEBPACK_IMPORTED_MODULE_5__.default;
-                    } else {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_9__.RuntimeException("Your browser doesn't support xhr with arraybuffer responseType!");
-                    }
-                  };
-                  IOController2.prototype._createLoader = function() {
-                    this._loader = new this._loaderClass(this._seekHandler, this._config);
-                    if (this._loader.needStashBuffer === false) {
-                      this._enableStash = false;
-                    }
-                    this._loader.onContentLengthKnown = this._onContentLengthKnown.bind(this);
-                    this._loader.onURLRedirect = this._onURLRedirect.bind(this);
-                    this._loader.onDataArrival = this._onLoaderChunkArrival.bind(this);
-                    this._loader.onComplete = this._onLoaderComplete.bind(this);
-                    this._loader.onError = this._onLoaderError.bind(this);
-                  };
-                  IOController2.prototype.open = function(optionalFrom) {
-                    this._currentRange = { from: 0, to: -1 };
-                    if (optionalFrom) {
-                      this._currentRange.from = optionalFrom;
-                    }
-                    this._speedSampler.reset();
-                    if (!optionalFrom) {
-                      this._fullRequestFlag = true;
-                    }
-                    this._loader.open(this._dataSource, Object.assign({}, this._currentRange));
-                  };
-                  IOController2.prototype.abort = function() {
-                    this._loader.abort();
-                    if (this._paused) {
-                      this._paused = false;
-                      this._resumeFrom = 0;
-                    }
-                  };
-                  IOController2.prototype.pause = function() {
-                    if (this.isWorking()) {
-                      this._loader.abort();
-                      if (this._stashUsed !== 0) {
-                        this._resumeFrom = this._stashByteStart;
-                        this._currentRange.to = this._stashByteStart - 1;
-                      } else {
-                        this._resumeFrom = this._currentRange.to + 1;
-                      }
-                      this._stashUsed = 0;
-                      this._stashByteStart = 0;
-                      this._paused = true;
-                    }
-                  };
-                  IOController2.prototype.resume = function() {
-                    if (this._paused) {
-                      this._paused = false;
-                      var bytes = this._resumeFrom;
-                      this._resumeFrom = 0;
-                      this._internalSeek(bytes, true);
-                    }
-                  };
-                  IOController2.prototype.seek = function(bytes) {
-                    this._paused = false;
-                    this._stashUsed = 0;
-                    this._stashByteStart = 0;
-                    this._internalSeek(bytes, true);
-                  };
-                  IOController2.prototype._internalSeek = function(bytes, dropUnconsumed) {
-                    if (this._loader.isWorking()) {
-                      this._loader.abort();
-                    }
-                    this._flushStashBuffer(dropUnconsumed);
-                    this._loader.destroy();
-                    this._loader = null;
-                    var requestRange = { from: bytes, to: -1 };
-                    this._currentRange = { from: requestRange.from, to: -1 };
-                    this._speedSampler.reset();
-                    this._stashSize = this._stashInitialSize;
-                    this._createLoader();
-                    this._loader.open(this._dataSource, requestRange);
-                    if (this._onSeeked) {
-                      this._onSeeked();
-                    }
-                  };
-                  IOController2.prototype.updateUrl = function(url2) {
-                    if (!url2 || typeof url2 !== "string" || url2.length === 0) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_9__.InvalidArgumentException("Url must be a non-empty string!");
-                    }
-                    this._dataSource.url = url2;
-                  };
-                  IOController2.prototype._expandBuffer = function(expectedBytes) {
-                    var bufferNewSize = this._stashSize;
-                    while (bufferNewSize + 1024 * 1024 * 1 < expectedBytes) {
-                      bufferNewSize *= 2;
-                    }
-                    bufferNewSize += 1024 * 1024 * 1;
-                    if (bufferNewSize === this._bufferSize) {
-                      return;
-                    }
-                    var newBuffer = new ArrayBuffer(bufferNewSize);
-                    if (this._stashUsed > 0) {
-                      var stashOldArray = new Uint8Array(this._stashBuffer, 0, this._stashUsed);
-                      var stashNewArray = new Uint8Array(newBuffer, 0, bufferNewSize);
-                      stashNewArray.set(stashOldArray, 0);
-                    }
-                    this._stashBuffer = newBuffer;
-                    this._bufferSize = bufferNewSize;
-                  };
-                  IOController2.prototype._normalizeSpeed = function(input) {
-                    var list = this._speedNormalizeList;
-                    var last = list.length - 1;
-                    var mid = 0;
-                    var lbound = 0;
-                    var ubound = last;
-                    if (input < list[0]) {
-                      return list[0];
-                    }
-                    while (lbound <= ubound) {
-                      mid = lbound + Math.floor((ubound - lbound) / 2);
-                      if (mid === last || input >= list[mid] && input < list[mid + 1]) {
-                        return list[mid];
-                      } else if (list[mid] < input) {
-                        lbound = mid + 1;
-                      } else {
-                        ubound = mid - 1;
-                      }
-                    }
-                  };
-                  IOController2.prototype._adjustStashSize = function(normalized) {
-                    var stashSizeKB = 0;
-                    if (this._config.isLive) {
-                      stashSizeKB = normalized;
-                    } else {
-                      if (normalized < 512) {
-                        stashSizeKB = normalized;
-                      } else if (normalized >= 512 && normalized <= 1024) {
-                        stashSizeKB = Math.floor(normalized * 1.5);
-                      } else {
-                        stashSizeKB = normalized * 2;
-                      }
-                    }
-                    if (stashSizeKB > 8192) {
-                      stashSizeKB = 8192;
-                    }
-                    var bufferSize = stashSizeKB * 1024 + 1024 * 1024 * 1;
-                    if (this._bufferSize < bufferSize) {
-                      this._expandBuffer(bufferSize);
-                    }
-                    this._stashSize = stashSizeKB * 1024;
-                  };
-                  IOController2.prototype._dispatchChunks = function(chunks, byteStart) {
-                    this._currentRange.to = byteStart + chunks.byteLength - 1;
-                    return this._onDataArrival(chunks, byteStart);
-                  };
-                  IOController2.prototype._onURLRedirect = function(redirectedURL) {
-                    this._redirectedURL = redirectedURL;
-                    if (this._onRedirect) {
-                      this._onRedirect(redirectedURL);
-                    }
-                  };
-                  IOController2.prototype._onContentLengthKnown = function(contentLength) {
-                    if (contentLength && this._fullRequestFlag) {
-                      this._totalLength = contentLength;
-                      this._fullRequestFlag = false;
-                    }
-                  };
-                  IOController2.prototype._onLoaderChunkArrival = function(chunk, byteStart, receivedLength) {
-                    if (!this._onDataArrival) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_9__.IllegalStateException("IOController: No existing consumer (onDataArrival) callback!");
-                    }
-                    if (this._paused) {
-                      return;
-                    }
-                    if (this._isEarlyEofReconnecting) {
-                      this._isEarlyEofReconnecting = false;
-                      if (this._onRecoveredEarlyEof) {
-                        this._onRecoveredEarlyEof();
-                      }
-                    }
-                    this._speedSampler.addBytes(chunk.byteLength);
-                    var KBps = this._speedSampler.lastSecondKBps;
-                    if (KBps !== 0) {
-                      var normalized = this._normalizeSpeed(KBps);
-                      if (this._speedNormalized !== normalized) {
-                        this._speedNormalized = normalized;
-                        this._adjustStashSize(normalized);
-                      }
-                    }
-                    if (!this._enableStash) {
-                      if (this._stashUsed === 0) {
-                        var consumed = this._dispatchChunks(chunk, byteStart);
-                        if (consumed < chunk.byteLength) {
-                          var remain = chunk.byteLength - consumed;
-                          if (remain > this._bufferSize) {
-                            this._expandBuffer(remain);
-                          }
-                          var stashArray = new Uint8Array(this._stashBuffer, 0, this._bufferSize);
-                          stashArray.set(new Uint8Array(chunk, consumed), 0);
-                          this._stashUsed += remain;
-                          this._stashByteStart = byteStart + consumed;
-                        }
-                      } else {
-                        if (this._stashUsed + chunk.byteLength > this._bufferSize) {
-                          this._expandBuffer(this._stashUsed + chunk.byteLength);
-                        }
-                        var stashArray = new Uint8Array(this._stashBuffer, 0, this._bufferSize);
-                        stashArray.set(new Uint8Array(chunk), this._stashUsed);
-                        this._stashUsed += chunk.byteLength;
-                        var consumed = this._dispatchChunks(this._stashBuffer.slice(0, this._stashUsed), this._stashByteStart);
-                        if (consumed < this._stashUsed && consumed > 0) {
-                          var remainArray = new Uint8Array(this._stashBuffer, consumed);
-                          stashArray.set(remainArray, 0);
-                        }
-                        this._stashUsed -= consumed;
-                        this._stashByteStart += consumed;
-                      }
-                    } else {
-                      if (this._stashUsed === 0 && this._stashByteStart === 0) {
-                        this._stashByteStart = byteStart;
-                      }
-                      if (this._stashUsed + chunk.byteLength <= this._stashSize) {
-                        var stashArray = new Uint8Array(this._stashBuffer, 0, this._stashSize);
-                        stashArray.set(new Uint8Array(chunk), this._stashUsed);
-                        this._stashUsed += chunk.byteLength;
-                      } else {
-                        var stashArray = new Uint8Array(this._stashBuffer, 0, this._bufferSize);
-                        if (this._stashUsed > 0) {
-                          var buffer = this._stashBuffer.slice(0, this._stashUsed);
-                          var consumed = this._dispatchChunks(buffer, this._stashByteStart);
-                          if (consumed < buffer.byteLength) {
-                            if (consumed > 0) {
-                              var remainArray = new Uint8Array(buffer, consumed);
-                              stashArray.set(remainArray, 0);
-                              this._stashUsed = remainArray.byteLength;
-                              this._stashByteStart += consumed;
-                            }
-                          } else {
-                            this._stashUsed = 0;
-                            this._stashByteStart += consumed;
-                          }
-                          if (this._stashUsed + chunk.byteLength > this._bufferSize) {
-                            this._expandBuffer(this._stashUsed + chunk.byteLength);
-                            stashArray = new Uint8Array(this._stashBuffer, 0, this._bufferSize);
-                          }
-                          stashArray.set(new Uint8Array(chunk), this._stashUsed);
-                          this._stashUsed += chunk.byteLength;
-                        } else {
-                          var consumed = this._dispatchChunks(chunk, byteStart);
-                          if (consumed < chunk.byteLength) {
-                            var remain = chunk.byteLength - consumed;
-                            if (remain > this._bufferSize) {
-                              this._expandBuffer(remain);
-                              stashArray = new Uint8Array(this._stashBuffer, 0, this._bufferSize);
-                            }
-                            stashArray.set(new Uint8Array(chunk, consumed), 0);
-                            this._stashUsed += remain;
-                            this._stashByteStart = byteStart + consumed;
-                          }
-                        }
-                      }
-                    }
-                  };
-                  IOController2.prototype._flushStashBuffer = function(dropUnconsumed) {
-                    if (this._stashUsed > 0) {
-                      var buffer = this._stashBuffer.slice(0, this._stashUsed);
-                      var consumed = this._dispatchChunks(buffer, this._stashByteStart);
-                      var remain = buffer.byteLength - consumed;
-                      if (consumed < buffer.byteLength) {
-                        if (dropUnconsumed) {
-                          _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, remain + " bytes unconsumed data remain when flush buffer, dropped");
-                        } else {
-                          if (consumed > 0) {
-                            var stashArray = new Uint8Array(this._stashBuffer, 0, this._bufferSize);
-                            var remainArray = new Uint8Array(buffer, consumed);
-                            stashArray.set(remainArray, 0);
-                            this._stashUsed = remainArray.byteLength;
-                            this._stashByteStart += consumed;
-                          }
-                          return 0;
-                        }
-                      }
-                      this._stashUsed = 0;
-                      this._stashByteStart = 0;
-                      return remain;
-                    }
-                    return 0;
-                  };
-                  IOController2.prototype._onLoaderComplete = function(from2, to) {
-                    this._flushStashBuffer(true);
-                    if (this._onComplete) {
-                      this._onComplete(this._extraData);
-                    }
-                  };
-                  IOController2.prototype._onLoaderError = function(type2, data2) {
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.e(this.TAG, "Loader error, code = " + data2.code + ", msg = " + data2.msg);
-                    this._flushStashBuffer(false);
-                    if (this._isEarlyEofReconnecting) {
-                      this._isEarlyEofReconnecting = false;
-                      type2 = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.UNRECOVERABLE_EARLY_EOF;
-                    }
-                    switch (type2) {
-                      case _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.EARLY_EOF: {
-                        if (!this._config.isLive) {
-                          if (this._totalLength) {
-                            var nextFrom = this._currentRange.to + 1;
-                            if (nextFrom < this._totalLength) {
-                              _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Connection lost, trying reconnect...");
-                              this._isEarlyEofReconnecting = true;
-                              this._internalSeek(nextFrom, false);
-                            }
-                            return;
-                          }
-                        }
-                        type2 = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.UNRECOVERABLE_EARLY_EOF;
-                        break;
-                      }
-                      case _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.UNRECOVERABLE_EARLY_EOF:
-                      case _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.CONNECTING_TIMEOUT:
-                      case _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.HTTP_STATUS_CODE_INVALID:
-                      case _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.EXCEPTION:
-                        break;
-                    }
-                    if (this._onError) {
-                      this._onError(type2, data2);
-                    } else {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_9__.RuntimeException("IOException: " + data2.msg);
-                    }
-                  };
-                  return IOController2;
-                }()
-              );
-              __webpack_exports__2["default"] = IOController;
-            }
-          ),
-          /***/
-          "./src/io/loader.js": (
-            /*!**************************!*\
-              !*** ./src/io/loader.js ***!
-              \**************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              __webpack_require__2.d(__webpack_exports__2, {
-                /* harmony export */
-                "LoaderStatus": function() {
-                  return (
-                    /* binding */
-                    LoaderStatus
-                  );
-                },
-                /* harmony export */
-                "LoaderErrors": function() {
-                  return (
-                    /* binding */
-                    LoaderErrors
-                  );
-                },
-                /* harmony export */
-                "BaseLoader": function() {
-                  return (
-                    /* binding */
-                    BaseLoader
-                  );
-                }
-                /* harmony export */
-              });
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var LoaderStatus = {
-                kIdle: 0,
-                kConnecting: 1,
-                kBuffering: 2,
-                kError: 3,
-                kComplete: 4
-              };
-              var LoaderErrors = {
-                OK: "OK",
-                EXCEPTION: "Exception",
-                HTTP_STATUS_CODE_INVALID: "HttpStatusCodeInvalid",
-                CONNECTING_TIMEOUT: "ConnectingTimeout",
-                EARLY_EOF: "EarlyEof",
-                UNRECOVERABLE_EARLY_EOF: "UnrecoverableEarlyEof"
-              };
-              var BaseLoader = (
-                /** @class */
-                function() {
-                  function BaseLoader2(typeName) {
-                    this._type = typeName || "undefined";
-                    this._status = LoaderStatus.kIdle;
-                    this._needStash = false;
-                    this._onContentLengthKnown = null;
-                    this._onURLRedirect = null;
-                    this._onDataArrival = null;
-                    this._onError = null;
-                    this._onComplete = null;
-                  }
-                  BaseLoader2.prototype.destroy = function() {
-                    this._status = LoaderStatus.kIdle;
-                    this._onContentLengthKnown = null;
-                    this._onURLRedirect = null;
-                    this._onDataArrival = null;
-                    this._onError = null;
-                    this._onComplete = null;
-                  };
-                  BaseLoader2.prototype.isWorking = function() {
-                    return this._status === LoaderStatus.kConnecting || this._status === LoaderStatus.kBuffering;
-                  };
-                  Object.defineProperty(BaseLoader2.prototype, "type", {
-                    get: function() {
-                      return this._type;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(BaseLoader2.prototype, "status", {
-                    get: function() {
-                      return this._status;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(BaseLoader2.prototype, "needStashBuffer", {
-                    get: function() {
-                      return this._needStash;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(BaseLoader2.prototype, "onContentLengthKnown", {
-                    get: function() {
-                      return this._onContentLengthKnown;
-                    },
-                    set: function(callback) {
-                      this._onContentLengthKnown = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(BaseLoader2.prototype, "onURLRedirect", {
-                    get: function() {
-                      return this._onURLRedirect;
-                    },
-                    set: function(callback) {
-                      this._onURLRedirect = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(BaseLoader2.prototype, "onDataArrival", {
-                    get: function() {
-                      return this._onDataArrival;
-                    },
-                    set: function(callback) {
-                      this._onDataArrival = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(BaseLoader2.prototype, "onError", {
-                    get: function() {
-                      return this._onError;
-                    },
-                    set: function(callback) {
-                      this._onError = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(BaseLoader2.prototype, "onComplete", {
-                    get: function() {
-                      return this._onComplete;
-                    },
-                    set: function(callback) {
-                      this._onComplete = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  BaseLoader2.prototype.open = function(dataSource, range2) {
-                    throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_0__.NotImplementedException("Unimplemented abstract function!");
-                  };
-                  BaseLoader2.prototype.abort = function() {
-                    throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_0__.NotImplementedException("Unimplemented abstract function!");
-                  };
-                  return BaseLoader2;
-                }()
-              );
-            }
-          ),
-          /***/
-          "./src/io/param-seek-handler.js": (
-            /*!**************************************!*\
-              !*** ./src/io/param-seek-handler.js ***!
-              \**************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var ParamSeekHandler = (
-                /** @class */
-                function() {
-                  function ParamSeekHandler2(paramStart, paramEnd) {
-                    this._startName = paramStart;
-                    this._endName = paramEnd;
-                  }
-                  ParamSeekHandler2.prototype.getConfig = function(baseUrl, range2) {
-                    var url2 = baseUrl;
-                    if (range2.from !== 0 || range2.to !== -1) {
-                      var needAnd = true;
-                      if (url2.indexOf("?") === -1) {
-                        url2 += "?";
-                        needAnd = false;
-                      }
-                      if (needAnd) {
-                        url2 += "&";
-                      }
-                      url2 += this._startName + "=" + range2.from.toString();
-                      if (range2.to !== -1) {
-                        url2 += "&" + this._endName + "=" + range2.to.toString();
-                      }
-                    }
-                    return {
-                      url: url2,
-                      headers: {}
-                    };
-                  };
-                  ParamSeekHandler2.prototype.removeURLParameters = function(seekedURL) {
-                    var baseURL = seekedURL.split("?")[0];
-                    var params = void 0;
-                    var queryIndex = seekedURL.indexOf("?");
-                    if (queryIndex !== -1) {
-                      params = seekedURL.substring(queryIndex + 1);
-                    }
-                    var resultParams = "";
-                    if (params != void 0 && params.length > 0) {
-                      var pairs = params.split("&");
-                      for (var i2 = 0; i2 < pairs.length; i2++) {
-                        var pair = pairs[i2].split("=");
-                        var requireAnd = i2 > 0;
-                        if (pair[0] !== this._startName && pair[0] !== this._endName) {
-                          if (requireAnd) {
-                            resultParams += "&";
-                          }
-                          resultParams += pairs[i2];
-                        }
-                      }
-                    }
-                    return resultParams.length === 0 ? baseURL : baseURL + "?" + resultParams;
-                  };
-                  return ParamSeekHandler2;
-                }()
-              );
-              __webpack_exports__2["default"] = ParamSeekHandler;
-            }
-          ),
-          /***/
-          "./src/io/range-seek-handler.js": (
-            /*!**************************************!*\
-              !*** ./src/io/range-seek-handler.js ***!
-              \**************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var RangeSeekHandler = (
-                /** @class */
-                function() {
-                  function RangeSeekHandler2(zeroStart) {
-                    this._zeroStart = zeroStart || false;
-                  }
-                  RangeSeekHandler2.prototype.getConfig = function(url2, range2) {
-                    var headers = {};
-                    if (range2.from !== 0 || range2.to !== -1) {
-                      var param = void 0;
-                      if (range2.to !== -1) {
-                        param = "bytes=" + range2.from.toString() + "-" + range2.to.toString();
-                      } else {
-                        param = "bytes=" + range2.from.toString() + "-";
-                      }
-                      headers["Range"] = param;
-                    } else if (this._zeroStart) {
-                      headers["Range"] = "bytes=0-";
-                    }
-                    return {
-                      url: url2,
-                      headers
-                    };
-                  };
-                  RangeSeekHandler2.prototype.removeURLParameters = function(seekedURL) {
-                    return seekedURL;
-                  };
-                  return RangeSeekHandler2;
-                }()
-              );
-              __webpack_exports__2["default"] = RangeSeekHandler;
-            }
-          ),
-          /***/
-          "./src/io/speed-sampler.js": (
-            /*!*********************************!*\
-              !*** ./src/io/speed-sampler.js ***!
-              \*********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var SpeedSampler = (
-                /** @class */
-                function() {
-                  function SpeedSampler2() {
-                    this._firstCheckpoint = 0;
-                    this._lastCheckpoint = 0;
-                    this._intervalBytes = 0;
-                    this._totalBytes = 0;
-                    this._lastSecondBytes = 0;
-                    if (self.performance && self.performance.now) {
-                      this._now = self.performance.now.bind(self.performance);
-                    } else {
-                      this._now = Date.now;
-                    }
-                  }
-                  SpeedSampler2.prototype.reset = function() {
-                    this._firstCheckpoint = this._lastCheckpoint = 0;
-                    this._totalBytes = this._intervalBytes = 0;
-                    this._lastSecondBytes = 0;
-                  };
-                  SpeedSampler2.prototype.addBytes = function(bytes) {
-                    if (this._firstCheckpoint === 0) {
-                      this._firstCheckpoint = this._now();
-                      this._lastCheckpoint = this._firstCheckpoint;
-                      this._intervalBytes += bytes;
-                      this._totalBytes += bytes;
-                    } else if (this._now() - this._lastCheckpoint < 1e3) {
-                      this._intervalBytes += bytes;
-                      this._totalBytes += bytes;
-                    } else {
-                      this._lastSecondBytes = this._intervalBytes;
-                      this._intervalBytes = bytes;
-                      this._totalBytes += bytes;
-                      this._lastCheckpoint = this._now();
-                    }
-                  };
-                  Object.defineProperty(SpeedSampler2.prototype, "currentKBps", {
-                    get: function() {
-                      this.addBytes(0);
-                      var durationSeconds = (this._now() - this._lastCheckpoint) / 1e3;
-                      if (durationSeconds == 0)
-                        durationSeconds = 1;
-                      return this._intervalBytes / durationSeconds / 1024;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(SpeedSampler2.prototype, "lastSecondKBps", {
-                    get: function() {
-                      this.addBytes(0);
-                      if (this._lastSecondBytes !== 0) {
-                        return this._lastSecondBytes / 1024;
-                      } else {
-                        if (this._now() - this._lastCheckpoint >= 500) {
-                          return this.currentKBps;
-                        } else {
-                          return 0;
-                        }
-                      }
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(SpeedSampler2.prototype, "averageKBps", {
-                    get: function() {
-                      var durationSeconds = (this._now() - this._firstCheckpoint) / 1e3;
-                      return this._totalBytes / durationSeconds / 1024;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  return SpeedSampler2;
-                }()
-              );
-              __webpack_exports__2["default"] = SpeedSampler;
-            }
-          ),
-          /***/
-          "./src/io/websocket-loader.js": (
-            /*!************************************!*\
-              !*** ./src/io/websocket-loader.js ***!
-              \************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _loader_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ./loader.js */
-                "./src/io/loader.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var __extends2 = function() {
-                var extendStatics2 = function(d2, b2) {
-                  extendStatics2 = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d3, b3) {
-                    d3.__proto__ = b3;
-                  } || function(d3, b3) {
-                    for (var p in b3)
-                      if (Object.prototype.hasOwnProperty.call(b3, p))
-                        d3[p] = b3[p];
-                  };
-                  return extendStatics2(d2, b2);
-                };
-                return function(d2, b2) {
-                  if (typeof b2 !== "function" && b2 !== null)
-                    throw new TypeError("Class extends value " + String(b2) + " is not a constructor or null");
-                  extendStatics2(d2, b2);
-                  function __() {
-                    this.constructor = d2;
-                  }
-                  d2.prototype = b2 === null ? Object.create(b2) : (__.prototype = b2.prototype, new __());
-                };
-              }();
-              var WebSocketLoader = (
-                /** @class */
-                function(_super) {
-                  __extends2(WebSocketLoader2, _super);
-                  function WebSocketLoader2() {
-                    var _this = _super.call(this, "websocket-loader") || this;
-                    _this.TAG = "WebSocketLoader";
-                    _this._needStash = true;
-                    _this._ws = null;
-                    _this._requestAbort = false;
-                    _this._receivedLength = 0;
-                    return _this;
-                  }
-                  WebSocketLoader2.isSupported = function() {
-                    try {
-                      return typeof self.WebSocket !== "undefined";
-                    } catch (e2) {
-                      return false;
-                    }
-                  };
-                  WebSocketLoader2.prototype.destroy = function() {
-                    if (this._ws) {
-                      this.abort();
-                    }
-                    _super.prototype.destroy.call(this);
-                  };
-                  WebSocketLoader2.prototype.open = function(dataSource) {
-                    try {
-                      var ws = this._ws = new self.WebSocket(dataSource.url);
-                      ws.binaryType = "arraybuffer";
-                      ws.onopen = this._onWebSocketOpen.bind(this);
-                      ws.onclose = this._onWebSocketClose.bind(this);
-                      ws.onmessage = this._onWebSocketMessage.bind(this);
-                      ws.onerror = this._onWebSocketError.bind(this);
-                      this._status = _loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderStatus.kConnecting;
-                    } catch (e2) {
-                      this._status = _loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderStatus.kError;
-                      var info = { code: e2.code, msg: e2.message };
-                      if (this._onError) {
-                        this._onError(_loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderErrors.EXCEPTION, info);
-                      } else {
-                        throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_1__.RuntimeException(info.msg);
-                      }
-                    }
-                  };
-                  WebSocketLoader2.prototype.abort = function() {
-                    var ws = this._ws;
-                    if (ws && (ws.readyState === 0 || ws.readyState === 1)) {
-                      this._requestAbort = true;
-                      ws.close();
-                    }
-                    this._ws = null;
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderStatus.kComplete;
-                  };
-                  WebSocketLoader2.prototype._onWebSocketOpen = function(e2) {
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderStatus.kBuffering;
-                  };
-                  WebSocketLoader2.prototype._onWebSocketClose = function(e2) {
-                    if (this._requestAbort === true) {
-                      this._requestAbort = false;
-                      return;
-                    }
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderStatus.kComplete;
-                    if (this._onComplete) {
-                      this._onComplete(0, this._receivedLength - 1);
-                    }
-                  };
-                  WebSocketLoader2.prototype._onWebSocketMessage = function(e2) {
-                    var _this = this;
-                    if (e2.data instanceof ArrayBuffer) {
-                      this._dispatchArrayBuffer(e2.data);
-                    } else if (e2.data instanceof Blob) {
-                      var reader_1 = new FileReader();
-                      reader_1.onload = function() {
-                        _this._dispatchArrayBuffer(reader_1.result);
-                      };
-                      reader_1.readAsArrayBuffer(e2.data);
-                    } else {
-                      this._status = _loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderStatus.kError;
-                      var info = { code: -1, msg: "Unsupported WebSocket message type: " + e2.data.constructor.name };
-                      if (this._onError) {
-                        this._onError(_loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderErrors.EXCEPTION, info);
-                      } else {
-                        throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_1__.RuntimeException(info.msg);
-                      }
-                    }
-                  };
-                  WebSocketLoader2.prototype._dispatchArrayBuffer = function(arraybuffer) {
-                    var chunk = arraybuffer;
-                    var byteStart = this._receivedLength;
-                    this._receivedLength += chunk.byteLength;
-                    if (this._onDataArrival) {
-                      this._onDataArrival(chunk, byteStart, this._receivedLength);
-                    }
-                  };
-                  WebSocketLoader2.prototype._onWebSocketError = function(e2) {
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderStatus.kError;
-                    var info = {
-                      code: e2.code,
-                      msg: e2.message
-                    };
-                    if (this._onError) {
-                      this._onError(_loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderErrors.EXCEPTION, info);
-                    } else {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_1__.RuntimeException(info.msg);
-                    }
-                  };
-                  return WebSocketLoader2;
-                }(_loader_js__WEBPACK_IMPORTED_MODULE_0__.BaseLoader)
-              );
-              __webpack_exports__2["default"] = WebSocketLoader;
-            }
-          ),
-          /***/
-          "./src/io/xhr-moz-chunked-loader.js": (
-            /*!******************************************!*\
-              !*** ./src/io/xhr-moz-chunked-loader.js ***!
-              \******************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _loader_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ./loader.js */
-                "./src/io/loader.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var __extends2 = function() {
-                var extendStatics2 = function(d2, b2) {
-                  extendStatics2 = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d3, b3) {
-                    d3.__proto__ = b3;
-                  } || function(d3, b3) {
-                    for (var p in b3)
-                      if (Object.prototype.hasOwnProperty.call(b3, p))
-                        d3[p] = b3[p];
-                  };
-                  return extendStatics2(d2, b2);
-                };
-                return function(d2, b2) {
-                  if (typeof b2 !== "function" && b2 !== null)
-                    throw new TypeError("Class extends value " + String(b2) + " is not a constructor or null");
-                  extendStatics2(d2, b2);
-                  function __() {
-                    this.constructor = d2;
-                  }
-                  d2.prototype = b2 === null ? Object.create(b2) : (__.prototype = b2.prototype, new __());
-                };
-              }();
-              var MozChunkedLoader = (
-                /** @class */
-                function(_super) {
-                  __extends2(MozChunkedLoader2, _super);
-                  function MozChunkedLoader2(seekHandler, config) {
-                    var _this = _super.call(this, "xhr-moz-chunked-loader") || this;
-                    _this.TAG = "MozChunkedLoader";
-                    _this._seekHandler = seekHandler;
-                    _this._config = config;
-                    _this._needStash = true;
-                    _this._xhr = null;
-                    _this._requestAbort = false;
-                    _this._contentLength = null;
-                    _this._receivedLength = 0;
-                    return _this;
-                  }
-                  MozChunkedLoader2.isSupported = function() {
-                    try {
-                      var xhr2 = new XMLHttpRequest();
-                      xhr2.open("GET", "https://example.com", true);
-                      xhr2.responseType = "moz-chunked-arraybuffer";
-                      return xhr2.responseType === "moz-chunked-arraybuffer";
-                    } catch (e2) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w("MozChunkedLoader", e2.message);
-                      return false;
-                    }
-                  };
-                  MozChunkedLoader2.prototype.destroy = function() {
-                    if (this.isWorking()) {
-                      this.abort();
-                    }
-                    if (this._xhr) {
-                      this._xhr.onreadystatechange = null;
-                      this._xhr.onprogress = null;
-                      this._xhr.onloadend = null;
-                      this._xhr.onerror = null;
-                      this._xhr = null;
-                    }
-                    _super.prototype.destroy.call(this);
-                  };
-                  MozChunkedLoader2.prototype.open = function(dataSource, range2) {
-                    this._dataSource = dataSource;
-                    this._range = range2;
-                    var sourceURL = dataSource.url;
-                    if (this._config.reuseRedirectedURL && dataSource.redirectedURL != void 0) {
-                      sourceURL = dataSource.redirectedURL;
-                    }
-                    var seekConfig = this._seekHandler.getConfig(sourceURL, range2);
-                    this._requestURL = seekConfig.url;
-                    var xhr2 = this._xhr = new XMLHttpRequest();
-                    xhr2.open("GET", seekConfig.url, true);
-                    xhr2.responseType = "moz-chunked-arraybuffer";
-                    xhr2.onreadystatechange = this._onReadyStateChange.bind(this);
-                    xhr2.onprogress = this._onProgress.bind(this);
-                    xhr2.onloadend = this._onLoadEnd.bind(this);
-                    xhr2.onerror = this._onXhrError.bind(this);
-                    if (dataSource.withCredentials) {
-                      xhr2.withCredentials = true;
-                    }
-                    if (typeof seekConfig.headers === "object") {
-                      var headers = seekConfig.headers;
-                      for (var key in headers) {
-                        if (headers.hasOwnProperty(key)) {
-                          xhr2.setRequestHeader(key, headers[key]);
-                        }
-                      }
-                    }
-                    if (typeof this._config.headers === "object") {
-                      var headers = this._config.headers;
-                      for (var key in headers) {
-                        if (headers.hasOwnProperty(key)) {
-                          xhr2.setRequestHeader(key, headers[key]);
-                        }
-                      }
-                    }
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kConnecting;
-                    xhr2.send();
-                  };
-                  MozChunkedLoader2.prototype.abort = function() {
-                    this._requestAbort = true;
-                    if (this._xhr) {
-                      this._xhr.abort();
-                    }
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kComplete;
-                  };
-                  MozChunkedLoader2.prototype._onReadyStateChange = function(e2) {
-                    var xhr2 = e2.target;
-                    if (xhr2.readyState === 2) {
-                      if (xhr2.responseURL != void 0 && xhr2.responseURL !== this._requestURL) {
-                        if (this._onURLRedirect) {
-                          var redirectedURL = this._seekHandler.removeURLParameters(xhr2.responseURL);
-                          this._onURLRedirect(redirectedURL);
-                        }
-                      }
-                      if (xhr2.status !== 0 && (xhr2.status < 200 || xhr2.status > 299)) {
-                        this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kError;
-                        if (this._onError) {
-                          this._onError(_loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderErrors.HTTP_STATUS_CODE_INVALID, { code: xhr2.status, msg: xhr2.statusText });
-                        } else {
-                          throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.RuntimeException("MozChunkedLoader: Http code invalid, " + xhr2.status + " " + xhr2.statusText);
-                        }
-                      } else {
-                        this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kBuffering;
-                      }
-                    }
-                  };
-                  MozChunkedLoader2.prototype._onProgress = function(e2) {
-                    if (this._status === _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kError) {
-                      return;
-                    }
-                    if (this._contentLength === null) {
-                      if (e2.total !== null && e2.total !== 0) {
-                        this._contentLength = e2.total;
-                        if (this._onContentLengthKnown) {
-                          this._onContentLengthKnown(this._contentLength);
-                        }
-                      }
-                    }
-                    var chunk = e2.target.response;
-                    var byteStart = this._range.from + this._receivedLength;
-                    this._receivedLength += chunk.byteLength;
-                    if (this._onDataArrival) {
-                      this._onDataArrival(chunk, byteStart, this._receivedLength);
-                    }
-                  };
-                  MozChunkedLoader2.prototype._onLoadEnd = function(e2) {
-                    if (this._requestAbort === true) {
-                      this._requestAbort = false;
-                      return;
-                    } else if (this._status === _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kError) {
-                      return;
-                    }
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kComplete;
-                    if (this._onComplete) {
-                      this._onComplete(this._range.from, this._range.from + this._receivedLength - 1);
-                    }
-                  };
-                  MozChunkedLoader2.prototype._onXhrError = function(e2) {
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderStatus.kError;
-                    var type2 = 0;
-                    var info = null;
-                    if (this._contentLength && e2.loaded < this._contentLength) {
-                      type2 = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderErrors.EARLY_EOF;
-                      info = { code: -1, msg: "Moz-Chunked stream meet Early-Eof" };
-                    } else {
-                      type2 = _loader_js__WEBPACK_IMPORTED_MODULE_1__.LoaderErrors.EXCEPTION;
-                      info = { code: -1, msg: e2.constructor.name + " " + e2.type };
-                    }
-                    if (this._onError) {
-                      this._onError(type2, info);
-                    } else {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.RuntimeException(info.msg);
-                    }
-                  };
-                  return MozChunkedLoader2;
-                }(_loader_js__WEBPACK_IMPORTED_MODULE_1__.BaseLoader)
-              );
-              __webpack_exports__2["default"] = MozChunkedLoader;
-            }
-          ),
-          /***/
-          "./src/io/xhr-range-loader.js": (
-            /*!************************************!*\
-              !*** ./src/io/xhr-range-loader.js ***!
-              \************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _speed_sampler_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ./speed-sampler.js */
-                "./src/io/speed-sampler.js"
-              );
-              var _loader_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ./loader.js */
-                "./src/io/loader.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var __extends2 = function() {
-                var extendStatics2 = function(d2, b2) {
-                  extendStatics2 = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d3, b3) {
-                    d3.__proto__ = b3;
-                  } || function(d3, b3) {
-                    for (var p in b3)
-                      if (Object.prototype.hasOwnProperty.call(b3, p))
-                        d3[p] = b3[p];
-                  };
-                  return extendStatics2(d2, b2);
-                };
-                return function(d2, b2) {
-                  if (typeof b2 !== "function" && b2 !== null)
-                    throw new TypeError("Class extends value " + String(b2) + " is not a constructor or null");
-                  extendStatics2(d2, b2);
-                  function __() {
-                    this.constructor = d2;
-                  }
-                  d2.prototype = b2 === null ? Object.create(b2) : (__.prototype = b2.prototype, new __());
-                };
-              }();
-              var RangeLoader = (
-                /** @class */
-                function(_super) {
-                  __extends2(RangeLoader2, _super);
-                  function RangeLoader2(seekHandler, config) {
-                    var _this = _super.call(this, "xhr-range-loader") || this;
-                    _this.TAG = "RangeLoader";
-                    _this._seekHandler = seekHandler;
-                    _this._config = config;
-                    _this._needStash = false;
-                    _this._chunkSizeKBList = [
-                      128,
-                      256,
-                      384,
-                      512,
-                      768,
-                      1024,
-                      1536,
-                      2048,
-                      3072,
-                      4096,
-                      5120,
-                      6144,
-                      7168,
-                      8192
-                    ];
-                    _this._currentChunkSizeKB = 384;
-                    _this._currentSpeedNormalized = 0;
-                    _this._zeroSpeedChunkCount = 0;
-                    _this._xhr = null;
-                    _this._speedSampler = new _speed_sampler_js__WEBPACK_IMPORTED_MODULE_1__.default();
-                    _this._requestAbort = false;
-                    _this._waitForTotalLength = false;
-                    _this._totalLengthReceived = false;
-                    _this._currentRequestURL = null;
-                    _this._currentRedirectedURL = null;
-                    _this._currentRequestRange = null;
-                    _this._totalLength = null;
-                    _this._contentLength = null;
-                    _this._receivedLength = 0;
-                    _this._lastTimeLoaded = 0;
-                    return _this;
-                  }
-                  RangeLoader2.isSupported = function() {
-                    try {
-                      var xhr2 = new XMLHttpRequest();
-                      xhr2.open("GET", "https://example.com", true);
-                      xhr2.responseType = "arraybuffer";
-                      return xhr2.responseType === "arraybuffer";
-                    } catch (e2) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w("RangeLoader", e2.message);
-                      return false;
-                    }
-                  };
-                  RangeLoader2.prototype.destroy = function() {
-                    if (this.isWorking()) {
-                      this.abort();
-                    }
-                    if (this._xhr) {
-                      this._xhr.onreadystatechange = null;
-                      this._xhr.onprogress = null;
-                      this._xhr.onload = null;
-                      this._xhr.onerror = null;
-                      this._xhr = null;
-                    }
-                    _super.prototype.destroy.call(this);
-                  };
-                  Object.defineProperty(RangeLoader2.prototype, "currentSpeed", {
-                    get: function() {
-                      return this._speedSampler.lastSecondKBps;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  RangeLoader2.prototype.open = function(dataSource, range2) {
-                    this._dataSource = dataSource;
-                    this._range = range2;
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderStatus.kConnecting;
-                    var useRefTotalLength = false;
-                    if (this._dataSource.filesize != void 0 && this._dataSource.filesize !== 0) {
-                      useRefTotalLength = true;
-                      this._totalLength = this._dataSource.filesize;
-                    }
-                    if (!this._totalLengthReceived && !useRefTotalLength) {
-                      this._waitForTotalLength = true;
-                      this._internalOpen(this._dataSource, { from: 0, to: -1 });
-                    } else {
-                      this._openSubRange();
-                    }
-                  };
-                  RangeLoader2.prototype._openSubRange = function() {
-                    var chunkSize = this._currentChunkSizeKB * 1024;
-                    var from2 = this._range.from + this._receivedLength;
-                    var to = from2 + chunkSize;
-                    if (this._contentLength != null) {
-                      if (to - this._range.from >= this._contentLength) {
-                        to = this._range.from + this._contentLength - 1;
-                      }
-                    }
-                    this._currentRequestRange = { from: from2, to };
-                    this._internalOpen(this._dataSource, this._currentRequestRange);
-                  };
-                  RangeLoader2.prototype._internalOpen = function(dataSource, range2) {
-                    this._lastTimeLoaded = 0;
-                    var sourceURL = dataSource.url;
-                    if (this._config.reuseRedirectedURL) {
-                      if (this._currentRedirectedURL != void 0) {
-                        sourceURL = this._currentRedirectedURL;
-                      } else if (dataSource.redirectedURL != void 0) {
-                        sourceURL = dataSource.redirectedURL;
-                      }
-                    }
-                    var seekConfig = this._seekHandler.getConfig(sourceURL, range2);
-                    this._currentRequestURL = seekConfig.url;
-                    var xhr2 = this._xhr = new XMLHttpRequest();
-                    xhr2.open("GET", seekConfig.url, true);
-                    xhr2.responseType = "arraybuffer";
-                    xhr2.onreadystatechange = this._onReadyStateChange.bind(this);
-                    xhr2.onprogress = this._onProgress.bind(this);
-                    xhr2.onload = this._onLoad.bind(this);
-                    xhr2.onerror = this._onXhrError.bind(this);
-                    if (dataSource.withCredentials) {
-                      xhr2.withCredentials = true;
-                    }
-                    if (typeof seekConfig.headers === "object") {
-                      var headers = seekConfig.headers;
-                      for (var key in headers) {
-                        if (headers.hasOwnProperty(key)) {
-                          xhr2.setRequestHeader(key, headers[key]);
-                        }
-                      }
-                    }
-                    if (typeof this._config.headers === "object") {
-                      var headers = this._config.headers;
-                      for (var key in headers) {
-                        if (headers.hasOwnProperty(key)) {
-                          xhr2.setRequestHeader(key, headers[key]);
-                        }
-                      }
-                    }
-                    xhr2.send();
-                  };
-                  RangeLoader2.prototype.abort = function() {
-                    this._requestAbort = true;
-                    this._internalAbort();
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderStatus.kComplete;
-                  };
-                  RangeLoader2.prototype._internalAbort = function() {
-                    if (this._xhr) {
-                      this._xhr.onreadystatechange = null;
-                      this._xhr.onprogress = null;
-                      this._xhr.onload = null;
-                      this._xhr.onerror = null;
-                      this._xhr.abort();
-                      this._xhr = null;
-                    }
-                  };
-                  RangeLoader2.prototype._onReadyStateChange = function(e2) {
-                    var xhr2 = e2.target;
-                    if (xhr2.readyState === 2) {
-                      if (xhr2.responseURL != void 0) {
-                        var redirectedURL = this._seekHandler.removeURLParameters(xhr2.responseURL);
-                        if (xhr2.responseURL !== this._currentRequestURL && redirectedURL !== this._currentRedirectedURL) {
-                          this._currentRedirectedURL = redirectedURL;
-                          if (this._onURLRedirect) {
-                            this._onURLRedirect(redirectedURL);
-                          }
-                        }
-                      }
-                      if (xhr2.status >= 200 && xhr2.status <= 299) {
-                        if (this._waitForTotalLength) {
-                          return;
-                        }
-                        this._status = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderStatus.kBuffering;
-                      } else {
-                        this._status = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderStatus.kError;
-                        if (this._onError) {
-                          this._onError(_loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.HTTP_STATUS_CODE_INVALID, { code: xhr2.status, msg: xhr2.statusText });
-                        } else {
-                          throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_3__.RuntimeException("RangeLoader: Http code invalid, " + xhr2.status + " " + xhr2.statusText);
-                        }
-                      }
-                    }
-                  };
-                  RangeLoader2.prototype._onProgress = function(e2) {
-                    if (this._status === _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderStatus.kError) {
-                      return;
-                    }
-                    if (this._contentLength === null) {
-                      var openNextRange = false;
-                      if (this._waitForTotalLength) {
-                        this._waitForTotalLength = false;
-                        this._totalLengthReceived = true;
-                        openNextRange = true;
-                        var total = e2.total;
-                        this._internalAbort();
-                        if (total != null & total !== 0) {
-                          this._totalLength = total;
-                        }
-                      }
-                      if (this._range.to === -1) {
-                        this._contentLength = this._totalLength - this._range.from;
-                      } else {
-                        this._contentLength = this._range.to - this._range.from + 1;
-                      }
-                      if (openNextRange) {
-                        this._openSubRange();
-                        return;
-                      }
-                      if (this._onContentLengthKnown) {
-                        this._onContentLengthKnown(this._contentLength);
-                      }
-                    }
-                    var delta = e2.loaded - this._lastTimeLoaded;
-                    this._lastTimeLoaded = e2.loaded;
-                    this._speedSampler.addBytes(delta);
-                  };
-                  RangeLoader2.prototype._normalizeSpeed = function(input) {
-                    var list = this._chunkSizeKBList;
-                    var last = list.length - 1;
-                    var mid = 0;
-                    var lbound = 0;
-                    var ubound = last;
-                    if (input < list[0]) {
-                      return list[0];
-                    }
-                    while (lbound <= ubound) {
-                      mid = lbound + Math.floor((ubound - lbound) / 2);
-                      if (mid === last || input >= list[mid] && input < list[mid + 1]) {
-                        return list[mid];
-                      } else if (list[mid] < input) {
-                        lbound = mid + 1;
-                      } else {
-                        ubound = mid - 1;
-                      }
-                    }
-                  };
-                  RangeLoader2.prototype._onLoad = function(e2) {
-                    if (this._status === _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderStatus.kError) {
-                      return;
-                    }
-                    if (this._waitForTotalLength) {
-                      this._waitForTotalLength = false;
-                      return;
-                    }
-                    this._lastTimeLoaded = 0;
-                    var KBps = this._speedSampler.lastSecondKBps;
-                    if (KBps === 0) {
-                      this._zeroSpeedChunkCount++;
-                      if (this._zeroSpeedChunkCount >= 3) {
-                        KBps = this._speedSampler.currentKBps;
-                      }
-                    }
-                    if (KBps !== 0) {
-                      var normalized = this._normalizeSpeed(KBps);
-                      if (this._currentSpeedNormalized !== normalized) {
-                        this._currentSpeedNormalized = normalized;
-                        this._currentChunkSizeKB = normalized;
-                      }
-                    }
-                    var chunk = e2.target.response;
-                    var byteStart = this._range.from + this._receivedLength;
-                    this._receivedLength += chunk.byteLength;
-                    var reportComplete = false;
-                    if (this._contentLength != null && this._receivedLength < this._contentLength) {
-                      this._openSubRange();
-                    } else {
-                      reportComplete = true;
-                    }
-                    if (this._onDataArrival) {
-                      this._onDataArrival(chunk, byteStart, this._receivedLength);
-                    }
-                    if (reportComplete) {
-                      this._status = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderStatus.kComplete;
-                      if (this._onComplete) {
-                        this._onComplete(this._range.from, this._range.from + this._receivedLength - 1);
-                      }
-                    }
-                  };
-                  RangeLoader2.prototype._onXhrError = function(e2) {
-                    this._status = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderStatus.kError;
-                    var type2 = 0;
-                    var info = null;
-                    if (this._contentLength && this._receivedLength > 0 && this._receivedLength < this._contentLength) {
-                      type2 = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.EARLY_EOF;
-                      info = { code: -1, msg: "RangeLoader meet Early-Eof" };
-                    } else {
-                      type2 = _loader_js__WEBPACK_IMPORTED_MODULE_2__.LoaderErrors.EXCEPTION;
-                      info = { code: -1, msg: e2.constructor.name + " " + e2.type };
-                    }
-                    if (this._onError) {
-                      this._onError(type2, info);
-                    } else {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_3__.RuntimeException(info.msg);
-                    }
-                  };
-                  return RangeLoader2;
-                }(_loader_js__WEBPACK_IMPORTED_MODULE_2__.BaseLoader)
-              );
-              __webpack_exports__2["default"] = RangeLoader;
-            }
-          ),
-          /***/
-          "./src/player/flv-player.js": (
-            /*!**********************************!*\
-              !*** ./src/player/flv-player.js ***!
-              \**********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! events */
-                "./node_modules/events/events.js"
-              );
-              var events__WEBPACK_IMPORTED_MODULE_0___default = /* @__PURE__ */ __webpack_require__2.n(events__WEBPACK_IMPORTED_MODULE_0__);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ../utils/browser.js */
-                "./src/utils/browser.js"
-              );
-              var _player_events_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ./player-events.js */
-                "./src/player/player-events.js"
-              );
-              var _core_transmuxer_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__2(
-                /*! ../core/transmuxer.js */
-                "./src/core/transmuxer.js"
-              );
-              var _core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__2(
-                /*! ../core/transmuxing-events.js */
-                "./src/core/transmuxing-events.js"
-              );
-              var _core_mse_controller_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__2(
-                /*! ../core/mse-controller.js */
-                "./src/core/mse-controller.js"
-              );
-              var _core_mse_events_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__2(
-                /*! ../core/mse-events.js */
-                "./src/core/mse-events.js"
-              );
-              var _player_errors_js__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__2(
-                /*! ./player-errors.js */
-                "./src/player/player-errors.js"
-              );
-              var _config_js__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__2(
-                /*! ../config.js */
-                "./src/config.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var FlvPlayer = (
-                /** @class */
-                function() {
-                  function FlvPlayer2(mediaDataSource, config) {
-                    this.TAG = "FlvPlayer";
-                    this._type = "FlvPlayer";
-                    this._emitter = new (events__WEBPACK_IMPORTED_MODULE_0___default())();
-                    this._config = (0, _config_js__WEBPACK_IMPORTED_MODULE_9__.createDefaultConfig)();
-                    if (typeof config === "object") {
-                      Object.assign(this._config, config);
-                    }
-                    if (mediaDataSource.type.toLowerCase() !== "flv") {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_10__.InvalidArgumentException("FlvPlayer requires an flv MediaDataSource input!");
-                    }
-                    if (mediaDataSource.isLive === true) {
-                      this._config.isLive = true;
-                    }
-                    this.e = {
-                      onvLoadedMetadata: this._onvLoadedMetadata.bind(this),
-                      onvSeeking: this._onvSeeking.bind(this),
-                      onvCanPlay: this._onvCanPlay.bind(this),
-                      onvStalled: this._onvStalled.bind(this),
-                      onvProgress: this._onvProgress.bind(this)
-                    };
-                    if (self.performance && self.performance.now) {
-                      this._now = self.performance.now.bind(self.performance);
-                    } else {
-                      this._now = Date.now;
-                    }
-                    this._pendingSeekTime = null;
-                    this._requestSetTime = false;
-                    this._seekpointRecord = null;
-                    this._progressChecker = null;
-                    this._mediaDataSource = mediaDataSource;
-                    this._mediaElement = null;
-                    this._msectl = null;
-                    this._transmuxer = null;
-                    this._mseSourceOpened = false;
-                    this._hasPendingLoad = false;
-                    this._receivedCanPlay = false;
-                    this._mediaInfo = null;
-                    this._statisticsInfo = null;
-                    var chromeNeedIDRFix = _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.chrome && (_utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.version.major < 50 || _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.version.major === 50 && _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.version.build < 2661);
-                    this._alwaysSeekKeyframe = chromeNeedIDRFix || _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.msedge || _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.msie ? true : false;
-                    if (this._alwaysSeekKeyframe) {
-                      this._config.accurateSeek = false;
-                    }
-                  }
-                  FlvPlayer2.prototype.destroy = function() {
-                    if (this._progressChecker != null) {
-                      window.clearInterval(this._progressChecker);
-                      this._progressChecker = null;
-                    }
-                    if (this._transmuxer) {
-                      this.unload();
-                    }
-                    if (this._mediaElement) {
-                      this.detachMediaElement();
-                    }
-                    this.e = null;
-                    this._mediaDataSource = null;
-                    this._emitter.removeAllListeners();
-                    this._emitter = null;
-                  };
-                  FlvPlayer2.prototype.on = function(event, listener) {
-                    var _this = this;
-                    if (event === _player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.MEDIA_INFO) {
-                      if (this._mediaInfo != null) {
-                        Promise.resolve().then(function() {
-                          _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.MEDIA_INFO, _this.mediaInfo);
-                        });
-                      }
-                    } else if (event === _player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.STATISTICS_INFO) {
-                      if (this._statisticsInfo != null) {
-                        Promise.resolve().then(function() {
-                          _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.STATISTICS_INFO, _this.statisticsInfo);
-                        });
-                      }
-                    }
-                    this._emitter.addListener(event, listener);
-                  };
-                  FlvPlayer2.prototype.off = function(event, listener) {
-                    this._emitter.removeListener(event, listener);
-                  };
-                  FlvPlayer2.prototype.attachMediaElement = function(mediaElement) {
-                    var _this = this;
-                    this._mediaElement = mediaElement;
-                    mediaElement.addEventListener("loadedmetadata", this.e.onvLoadedMetadata);
-                    mediaElement.addEventListener("seeking", this.e.onvSeeking);
-                    mediaElement.addEventListener("canplay", this.e.onvCanPlay);
-                    mediaElement.addEventListener("stalled", this.e.onvStalled);
-                    mediaElement.addEventListener("progress", this.e.onvProgress);
-                    this._msectl = new _core_mse_controller_js__WEBPACK_IMPORTED_MODULE_6__.default(this._config);
-                    this._msectl.on(_core_mse_events_js__WEBPACK_IMPORTED_MODULE_7__.default.UPDATE_END, this._onmseUpdateEnd.bind(this));
-                    this._msectl.on(_core_mse_events_js__WEBPACK_IMPORTED_MODULE_7__.default.BUFFER_FULL, this._onmseBufferFull.bind(this));
-                    this._msectl.on(_core_mse_events_js__WEBPACK_IMPORTED_MODULE_7__.default.SOURCE_OPEN, function() {
-                      _this._mseSourceOpened = true;
-                      if (_this._hasPendingLoad) {
-                        _this._hasPendingLoad = false;
-                        _this.load();
-                      }
-                    });
-                    this._msectl.on(_core_mse_events_js__WEBPACK_IMPORTED_MODULE_7__.default.ERROR, function(info) {
-                      _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.ERROR, _player_errors_js__WEBPACK_IMPORTED_MODULE_8__.ErrorTypes.MEDIA_ERROR, _player_errors_js__WEBPACK_IMPORTED_MODULE_8__.ErrorDetails.MEDIA_MSE_ERROR, info);
-                    });
-                    this._msectl.attachMediaElement(mediaElement);
-                    if (this._pendingSeekTime != null) {
-                      try {
-                        mediaElement.currentTime = this._pendingSeekTime;
-                        this._pendingSeekTime = null;
-                      } catch (e2) {
-                      }
-                    }
-                  };
-                  FlvPlayer2.prototype.detachMediaElement = function() {
-                    if (this._mediaElement) {
-                      this._msectl.detachMediaElement();
-                      this._mediaElement.removeEventListener("loadedmetadata", this.e.onvLoadedMetadata);
-                      this._mediaElement.removeEventListener("seeking", this.e.onvSeeking);
-                      this._mediaElement.removeEventListener("canplay", this.e.onvCanPlay);
-                      this._mediaElement.removeEventListener("stalled", this.e.onvStalled);
-                      this._mediaElement.removeEventListener("progress", this.e.onvProgress);
-                      this._mediaElement = null;
-                    }
-                    if (this._msectl) {
-                      this._msectl.destroy();
-                      this._msectl = null;
-                    }
-                  };
-                  FlvPlayer2.prototype.load = function() {
-                    var _this = this;
-                    if (!this._mediaElement) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_10__.IllegalStateException("HTMLMediaElement must be attached before load()!");
-                    }
-                    if (this._transmuxer) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_10__.IllegalStateException("FlvPlayer.load() has been called, please call unload() first!");
-                    }
-                    if (this._hasPendingLoad) {
-                      return;
-                    }
-                    if (this._config.deferLoadAfterSourceOpen && this._mseSourceOpened === false) {
-                      this._hasPendingLoad = true;
-                      return;
-                    }
-                    if (this._mediaElement.readyState > 0) {
-                      this._requestSetTime = true;
-                      this._mediaElement.currentTime = 0;
-                    }
-                    this._transmuxer = new _core_transmuxer_js__WEBPACK_IMPORTED_MODULE_4__.default(this._mediaDataSource, this._config);
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.INIT_SEGMENT, function(type2, is) {
-                      _this._msectl.appendInitSegment(is);
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.MEDIA_SEGMENT, function(type2, ms) {
-                      _this._msectl.appendMediaSegment(ms);
-                      if (_this._config.lazyLoad && !_this._config.isLive) {
-                        var currentTime = _this._mediaElement.currentTime;
-                        if (ms.info.endDts >= (currentTime + _this._config.lazyLoadMaxDuration) * 1e3) {
-                          if (_this._progressChecker == null) {
-                            _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(_this.TAG, "Maximum buffering duration exceeded, suspend transmuxing task");
-                            _this._suspendTransmuxer();
-                          }
-                        }
-                      }
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.LOADING_COMPLETE, function() {
-                      _this._msectl.endOfStream();
-                      _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.LOADING_COMPLETE);
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.RECOVERED_EARLY_EOF, function() {
-                      _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.RECOVERED_EARLY_EOF);
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.IO_ERROR, function(detail, info) {
-                      _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.ERROR, _player_errors_js__WEBPACK_IMPORTED_MODULE_8__.ErrorTypes.NETWORK_ERROR, detail, info);
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.DEMUX_ERROR, function(detail, info) {
-                      _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.ERROR, _player_errors_js__WEBPACK_IMPORTED_MODULE_8__.ErrorTypes.MEDIA_ERROR, detail, { code: -1, msg: info });
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.MEDIA_INFO, function(mediaInfo) {
-                      _this._mediaInfo = mediaInfo;
-                      _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.MEDIA_INFO, Object.assign({}, mediaInfo));
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.METADATA_ARRIVED, function(metadata) {
-                      _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.METADATA_ARRIVED, metadata);
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.SCRIPTDATA_ARRIVED, function(data2) {
-                      _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.SCRIPTDATA_ARRIVED, data2);
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.STATISTICS_INFO, function(statInfo) {
-                      _this._statisticsInfo = _this._fillStatisticsInfo(statInfo);
-                      _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_3__.default.STATISTICS_INFO, Object.assign({}, _this._statisticsInfo));
-                    });
-                    this._transmuxer.on(_core_transmuxing_events_js__WEBPACK_IMPORTED_MODULE_5__.default.RECOMMEND_SEEKPOINT, function(milliseconds) {
-                      if (_this._mediaElement && !_this._config.accurateSeek) {
-                        _this._requestSetTime = true;
-                        _this._mediaElement.currentTime = milliseconds / 1e3;
-                      }
-                    });
-                    this._transmuxer.open();
-                  };
-                  FlvPlayer2.prototype.unload = function() {
-                    if (this._mediaElement) {
-                      this._mediaElement.pause();
-                    }
-                    if (this._msectl) {
-                      this._msectl.seek(0);
-                    }
-                    if (this._transmuxer) {
-                      this._transmuxer.close();
-                      this._transmuxer.destroy();
-                      this._transmuxer = null;
-                    }
-                  };
-                  FlvPlayer2.prototype.play = function() {
-                    return this._mediaElement.play();
-                  };
-                  FlvPlayer2.prototype.pause = function() {
-                    this._mediaElement.pause();
-                  };
-                  Object.defineProperty(FlvPlayer2.prototype, "type", {
-                    get: function() {
-                      return this._type;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FlvPlayer2.prototype, "buffered", {
-                    get: function() {
-                      return this._mediaElement.buffered;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FlvPlayer2.prototype, "duration", {
-                    get: function() {
-                      return this._mediaElement.duration;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FlvPlayer2.prototype, "volume", {
-                    get: function() {
-                      return this._mediaElement.volume;
-                    },
-                    set: function(value) {
-                      this._mediaElement.volume = value;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FlvPlayer2.prototype, "muted", {
-                    get: function() {
-                      return this._mediaElement.muted;
-                    },
-                    set: function(muted) {
-                      this._mediaElement.muted = muted;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FlvPlayer2.prototype, "currentTime", {
-                    get: function() {
-                      if (this._mediaElement) {
-                        return this._mediaElement.currentTime;
-                      }
-                      return 0;
-                    },
-                    set: function(seconds) {
-                      if (this._mediaElement) {
-                        this._internalSeek(seconds);
-                      } else {
-                        this._pendingSeekTime = seconds;
-                      }
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FlvPlayer2.prototype, "mediaInfo", {
-                    get: function() {
-                      return Object.assign({}, this._mediaInfo);
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(FlvPlayer2.prototype, "statisticsInfo", {
-                    get: function() {
-                      if (this._statisticsInfo == null) {
-                        this._statisticsInfo = {};
-                      }
-                      this._statisticsInfo = this._fillStatisticsInfo(this._statisticsInfo);
-                      return Object.assign({}, this._statisticsInfo);
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  FlvPlayer2.prototype._fillStatisticsInfo = function(statInfo) {
-                    statInfo.playerType = this._type;
-                    if (!(this._mediaElement instanceof HTMLVideoElement)) {
-                      return statInfo;
-                    }
-                    var hasQualityInfo = true;
-                    var decoded = 0;
-                    var dropped = 0;
-                    if (this._mediaElement.getVideoPlaybackQuality) {
-                      var quality = this._mediaElement.getVideoPlaybackQuality();
-                      decoded = quality.totalVideoFrames;
-                      dropped = quality.droppedVideoFrames;
-                    } else if (this._mediaElement.webkitDecodedFrameCount != void 0) {
-                      decoded = this._mediaElement.webkitDecodedFrameCount;
-                      dropped = this._mediaElement.webkitDroppedFrameCount;
-                    } else {
-                      hasQualityInfo = false;
-                    }
-                    if (hasQualityInfo) {
-                      statInfo.decodedFrames = decoded;
-                      statInfo.droppedFrames = dropped;
-                    }
-                    return statInfo;
-                  };
-                  FlvPlayer2.prototype._onmseUpdateEnd = function() {
-                    if (!this._config.lazyLoad || this._config.isLive) {
-                      return;
-                    }
-                    var buffered = this._mediaElement.buffered;
-                    var currentTime = this._mediaElement.currentTime;
-                    var currentRangeEnd = 0;
-                    for (var i2 = 0; i2 < buffered.length; i2++) {
-                      var start = buffered.start(i2);
-                      var end2 = buffered.end(i2);
-                      if (start <= currentTime && currentTime < end2) {
-                        currentRangeEnd = end2;
-                        break;
-                      }
-                    }
-                    if (currentRangeEnd >= currentTime + this._config.lazyLoadMaxDuration && this._progressChecker == null) {
-                      _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "Maximum buffering duration exceeded, suspend transmuxing task");
-                      this._suspendTransmuxer();
-                    }
-                  };
-                  FlvPlayer2.prototype._onmseBufferFull = function() {
-                    _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "MSE SourceBuffer is full, suspend transmuxing task");
-                    if (this._progressChecker == null) {
-                      this._suspendTransmuxer();
-                    }
-                  };
-                  FlvPlayer2.prototype._suspendTransmuxer = function() {
-                    if (this._transmuxer) {
-                      this._transmuxer.pause();
-                      if (this._progressChecker == null) {
-                        this._progressChecker = window.setInterval(this._checkProgressAndResume.bind(this), 1e3);
-                      }
-                    }
-                  };
-                  FlvPlayer2.prototype._checkProgressAndResume = function() {
-                    var currentTime = this._mediaElement.currentTime;
-                    var buffered = this._mediaElement.buffered;
-                    var needResume = false;
-                    for (var i2 = 0; i2 < buffered.length; i2++) {
-                      var from2 = buffered.start(i2);
-                      var to = buffered.end(i2);
-                      if (currentTime >= from2 && currentTime < to) {
-                        if (currentTime >= to - this._config.lazyLoadRecoverDuration) {
-                          needResume = true;
-                        }
-                        break;
-                      }
-                    }
-                    if (needResume) {
-                      window.clearInterval(this._progressChecker);
-                      this._progressChecker = null;
-                      if (needResume) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.v(this.TAG, "Continue loading from paused position");
-                        this._transmuxer.resume();
-                      }
-                    }
-                  };
-                  FlvPlayer2.prototype._isTimepointBuffered = function(seconds) {
-                    var buffered = this._mediaElement.buffered;
-                    for (var i2 = 0; i2 < buffered.length; i2++) {
-                      var from2 = buffered.start(i2);
-                      var to = buffered.end(i2);
-                      if (seconds >= from2 && seconds < to) {
-                        return true;
-                      }
-                    }
-                    return false;
-                  };
-                  FlvPlayer2.prototype._internalSeek = function(seconds) {
-                    var directSeek = this._isTimepointBuffered(seconds);
-                    var directSeekBegin = false;
-                    var directSeekBeginTime = 0;
-                    if (seconds < 1 && this._mediaElement.buffered.length > 0) {
-                      var videoBeginTime = this._mediaElement.buffered.start(0);
-                      if (videoBeginTime < 1 && seconds < videoBeginTime || _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.safari) {
-                        directSeekBegin = true;
-                        directSeekBeginTime = _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.safari ? 0.1 : videoBeginTime;
-                      }
-                    }
-                    if (directSeekBegin) {
-                      this._requestSetTime = true;
-                      this._mediaElement.currentTime = directSeekBeginTime;
-                    } else if (directSeek) {
-                      if (!this._alwaysSeekKeyframe) {
-                        this._requestSetTime = true;
-                        this._mediaElement.currentTime = seconds;
-                      } else {
-                        var idr = this._msectl.getNearestKeyframe(Math.floor(seconds * 1e3));
-                        this._requestSetTime = true;
-                        if (idr != null) {
-                          this._mediaElement.currentTime = idr.dts / 1e3;
-                        } else {
-                          this._mediaElement.currentTime = seconds;
-                        }
-                      }
-                      if (this._progressChecker != null) {
-                        this._checkProgressAndResume();
-                      }
-                    } else {
-                      if (this._progressChecker != null) {
-                        window.clearInterval(this._progressChecker);
-                        this._progressChecker = null;
-                      }
-                      this._msectl.seek(seconds);
-                      this._transmuxer.seek(Math.floor(seconds * 1e3));
-                      if (this._config.accurateSeek) {
-                        this._requestSetTime = true;
-                        this._mediaElement.currentTime = seconds;
-                      }
-                    }
-                  };
-                  FlvPlayer2.prototype._checkAndApplyUnbufferedSeekpoint = function() {
-                    if (this._seekpointRecord) {
-                      if (this._seekpointRecord.recordTime <= this._now() - 100) {
-                        var target = this._mediaElement.currentTime;
-                        this._seekpointRecord = null;
-                        if (!this._isTimepointBuffered(target)) {
-                          if (this._progressChecker != null) {
-                            window.clearTimeout(this._progressChecker);
-                            this._progressChecker = null;
-                          }
-                          this._msectl.seek(target);
-                          this._transmuxer.seek(Math.floor(target * 1e3));
-                          if (this._config.accurateSeek) {
-                            this._requestSetTime = true;
-                            this._mediaElement.currentTime = target;
-                          }
-                        }
-                      } else {
-                        window.setTimeout(this._checkAndApplyUnbufferedSeekpoint.bind(this), 50);
-                      }
-                    }
-                  };
-                  FlvPlayer2.prototype._checkAndResumeStuckPlayback = function(stalled) {
-                    var media = this._mediaElement;
-                    if (stalled || !this._receivedCanPlay || media.readyState < 2) {
-                      var buffered = media.buffered;
-                      if (buffered.length > 0 && media.currentTime < buffered.start(0)) {
-                        _utils_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.w(this.TAG, "Playback seems stuck at " + media.currentTime + ", seek to " + buffered.start(0));
-                        this._requestSetTime = true;
-                        this._mediaElement.currentTime = buffered.start(0);
-                        this._mediaElement.removeEventListener("progress", this.e.onvProgress);
-                      }
-                    } else {
-                      this._mediaElement.removeEventListener("progress", this.e.onvProgress);
-                    }
-                  };
-                  FlvPlayer2.prototype._onvLoadedMetadata = function(e2) {
-                    if (this._pendingSeekTime != null) {
-                      this._mediaElement.currentTime = this._pendingSeekTime;
-                      this._pendingSeekTime = null;
-                    }
-                  };
-                  FlvPlayer2.prototype._onvSeeking = function(e2) {
-                    var target = this._mediaElement.currentTime;
-                    var buffered = this._mediaElement.buffered;
-                    if (this._requestSetTime) {
-                      this._requestSetTime = false;
-                      return;
-                    }
-                    if (target < 1 && buffered.length > 0) {
-                      var videoBeginTime = buffered.start(0);
-                      if (videoBeginTime < 1 && target < videoBeginTime || _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.safari) {
-                        this._requestSetTime = true;
-                        this._mediaElement.currentTime = _utils_browser_js__WEBPACK_IMPORTED_MODULE_2__.default.safari ? 0.1 : videoBeginTime;
-                        return;
-                      }
-                    }
-                    if (this._isTimepointBuffered(target)) {
-                      if (this._alwaysSeekKeyframe) {
-                        var idr = this._msectl.getNearestKeyframe(Math.floor(target * 1e3));
-                        if (idr != null) {
-                          this._requestSetTime = true;
-                          this._mediaElement.currentTime = idr.dts / 1e3;
-                        }
-                      }
-                      if (this._progressChecker != null) {
-                        this._checkProgressAndResume();
-                      }
-                      return;
-                    }
-                    this._seekpointRecord = {
-                      seekPoint: target,
-                      recordTime: this._now()
-                    };
-                    window.setTimeout(this._checkAndApplyUnbufferedSeekpoint.bind(this), 50);
-                  };
-                  FlvPlayer2.prototype._onvCanPlay = function(e2) {
-                    this._receivedCanPlay = true;
-                    this._mediaElement.removeEventListener("canplay", this.e.onvCanPlay);
-                  };
-                  FlvPlayer2.prototype._onvStalled = function(e2) {
-                    this._checkAndResumeStuckPlayback(true);
-                  };
-                  FlvPlayer2.prototype._onvProgress = function(e2) {
-                    this._checkAndResumeStuckPlayback();
-                  };
-                  return FlvPlayer2;
-                }()
-              );
-              __webpack_exports__2["default"] = FlvPlayer;
-            }
-          ),
-          /***/
-          "./src/player/native-player.js": (
-            /*!*************************************!*\
-              !*** ./src/player/native-player.js ***!
-              \*************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! events */
-                "./node_modules/events/events.js"
-              );
-              var events__WEBPACK_IMPORTED_MODULE_0___default = /* @__PURE__ */ __webpack_require__2.n(events__WEBPACK_IMPORTED_MODULE_0__);
-              var _player_events_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ./player-events.js */
-                "./src/player/player-events.js"
-              );
-              var _config_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ../config.js */
-                "./src/config.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var NativePlayer = (
-                /** @class */
-                function() {
-                  function NativePlayer2(mediaDataSource, config) {
-                    this.TAG = "NativePlayer";
-                    this._type = "NativePlayer";
-                    this._emitter = new (events__WEBPACK_IMPORTED_MODULE_0___default())();
-                    this._config = (0, _config_js__WEBPACK_IMPORTED_MODULE_2__.createDefaultConfig)();
-                    if (typeof config === "object") {
-                      Object.assign(this._config, config);
-                    }
-                    if (mediaDataSource.type.toLowerCase() === "flv") {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_3__.InvalidArgumentException("NativePlayer does't support flv MediaDataSource input!");
-                    }
-                    if (mediaDataSource.hasOwnProperty("segments")) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_3__.InvalidArgumentException("NativePlayer(" + mediaDataSource.type + ") doesn't support multipart playback!");
-                    }
-                    this.e = {
-                      onvLoadedMetadata: this._onvLoadedMetadata.bind(this)
-                    };
-                    this._pendingSeekTime = null;
-                    this._statisticsReporter = null;
-                    this._mediaDataSource = mediaDataSource;
-                    this._mediaElement = null;
-                  }
-                  NativePlayer2.prototype.destroy = function() {
-                    if (this._mediaElement) {
-                      this.unload();
-                      this.detachMediaElement();
-                    }
-                    this.e = null;
-                    this._mediaDataSource = null;
-                    this._emitter.removeAllListeners();
-                    this._emitter = null;
-                  };
-                  NativePlayer2.prototype.on = function(event, listener) {
-                    var _this = this;
-                    if (event === _player_events_js__WEBPACK_IMPORTED_MODULE_1__.default.MEDIA_INFO) {
-                      if (this._mediaElement != null && this._mediaElement.readyState !== 0) {
-                        Promise.resolve().then(function() {
-                          _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_1__.default.MEDIA_INFO, _this.mediaInfo);
-                        });
-                      }
-                    } else if (event === _player_events_js__WEBPACK_IMPORTED_MODULE_1__.default.STATISTICS_INFO) {
-                      if (this._mediaElement != null && this._mediaElement.readyState !== 0) {
-                        Promise.resolve().then(function() {
-                          _this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_1__.default.STATISTICS_INFO, _this.statisticsInfo);
-                        });
-                      }
-                    }
-                    this._emitter.addListener(event, listener);
-                  };
-                  NativePlayer2.prototype.off = function(event, listener) {
-                    this._emitter.removeListener(event, listener);
-                  };
-                  NativePlayer2.prototype.attachMediaElement = function(mediaElement) {
-                    this._mediaElement = mediaElement;
-                    mediaElement.addEventListener("loadedmetadata", this.e.onvLoadedMetadata);
-                    if (this._pendingSeekTime != null) {
-                      try {
-                        mediaElement.currentTime = this._pendingSeekTime;
-                        this._pendingSeekTime = null;
-                      } catch (e2) {
-                      }
-                    }
-                  };
-                  NativePlayer2.prototype.detachMediaElement = function() {
-                    if (this._mediaElement) {
-                      this._mediaElement.src = "";
-                      this._mediaElement.removeAttribute("src");
-                      this._mediaElement.removeEventListener("loadedmetadata", this.e.onvLoadedMetadata);
-                      this._mediaElement = null;
-                    }
-                    if (this._statisticsReporter != null) {
-                      window.clearInterval(this._statisticsReporter);
-                      this._statisticsReporter = null;
-                    }
-                  };
-                  NativePlayer2.prototype.load = function() {
-                    if (!this._mediaElement) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_3__.IllegalStateException("HTMLMediaElement must be attached before load()!");
-                    }
-                    this._mediaElement.src = this._mediaDataSource.url;
-                    if (this._mediaElement.readyState > 0) {
-                      this._mediaElement.currentTime = 0;
-                    }
-                    this._mediaElement.preload = "auto";
-                    this._mediaElement.load();
-                    this._statisticsReporter = window.setInterval(this._reportStatisticsInfo.bind(this), this._config.statisticsInfoReportInterval);
-                  };
-                  NativePlayer2.prototype.unload = function() {
-                    if (this._mediaElement) {
-                      this._mediaElement.src = "";
-                      this._mediaElement.removeAttribute("src");
-                    }
-                    if (this._statisticsReporter != null) {
-                      window.clearInterval(this._statisticsReporter);
-                      this._statisticsReporter = null;
-                    }
-                  };
-                  NativePlayer2.prototype.play = function() {
-                    return this._mediaElement.play();
-                  };
-                  NativePlayer2.prototype.pause = function() {
-                    this._mediaElement.pause();
-                  };
-                  Object.defineProperty(NativePlayer2.prototype, "type", {
-                    get: function() {
-                      return this._type;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(NativePlayer2.prototype, "buffered", {
-                    get: function() {
-                      return this._mediaElement.buffered;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(NativePlayer2.prototype, "duration", {
-                    get: function() {
-                      return this._mediaElement.duration;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(NativePlayer2.prototype, "volume", {
-                    get: function() {
-                      return this._mediaElement.volume;
-                    },
-                    set: function(value) {
-                      this._mediaElement.volume = value;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(NativePlayer2.prototype, "muted", {
-                    get: function() {
-                      return this._mediaElement.muted;
-                    },
-                    set: function(muted) {
-                      this._mediaElement.muted = muted;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(NativePlayer2.prototype, "currentTime", {
-                    get: function() {
-                      if (this._mediaElement) {
-                        return this._mediaElement.currentTime;
-                      }
-                      return 0;
-                    },
-                    set: function(seconds) {
-                      if (this._mediaElement) {
-                        this._mediaElement.currentTime = seconds;
-                      } else {
-                        this._pendingSeekTime = seconds;
-                      }
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(NativePlayer2.prototype, "mediaInfo", {
-                    get: function() {
-                      var mediaPrefix = this._mediaElement instanceof HTMLAudioElement ? "audio/" : "video/";
-                      var info = {
-                        mimeType: mediaPrefix + this._mediaDataSource.type
-                      };
-                      if (this._mediaElement) {
-                        info.duration = Math.floor(this._mediaElement.duration * 1e3);
-                        if (this._mediaElement instanceof HTMLVideoElement) {
-                          info.width = this._mediaElement.videoWidth;
-                          info.height = this._mediaElement.videoHeight;
-                        }
-                      }
-                      return info;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(NativePlayer2.prototype, "statisticsInfo", {
-                    get: function() {
-                      var info = {
-                        playerType: this._type,
-                        url: this._mediaDataSource.url
-                      };
-                      if (!(this._mediaElement instanceof HTMLVideoElement)) {
-                        return info;
-                      }
-                      var hasQualityInfo = true;
-                      var decoded = 0;
-                      var dropped = 0;
-                      if (this._mediaElement.getVideoPlaybackQuality) {
-                        var quality = this._mediaElement.getVideoPlaybackQuality();
-                        decoded = quality.totalVideoFrames;
-                        dropped = quality.droppedVideoFrames;
-                      } else if (this._mediaElement.webkitDecodedFrameCount != void 0) {
-                        decoded = this._mediaElement.webkitDecodedFrameCount;
-                        dropped = this._mediaElement.webkitDroppedFrameCount;
-                      } else {
-                        hasQualityInfo = false;
-                      }
-                      if (hasQualityInfo) {
-                        info.decodedFrames = decoded;
-                        info.droppedFrames = dropped;
-                      }
-                      return info;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  NativePlayer2.prototype._onvLoadedMetadata = function(e2) {
-                    if (this._pendingSeekTime != null) {
-                      this._mediaElement.currentTime = this._pendingSeekTime;
-                      this._pendingSeekTime = null;
-                    }
-                    this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_1__.default.MEDIA_INFO, this.mediaInfo);
-                  };
-                  NativePlayer2.prototype._reportStatisticsInfo = function() {
-                    this._emitter.emit(_player_events_js__WEBPACK_IMPORTED_MODULE_1__.default.STATISTICS_INFO, this.statisticsInfo);
-                  };
-                  return NativePlayer2;
-                }()
-              );
-              __webpack_exports__2["default"] = NativePlayer;
-            }
-          ),
-          /***/
-          "./src/player/player-errors.js": (
-            /*!*************************************!*\
-              !*** ./src/player/player-errors.js ***!
-              \*************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              __webpack_require__2.d(__webpack_exports__2, {
-                /* harmony export */
-                "ErrorTypes": function() {
-                  return (
-                    /* binding */
-                    ErrorTypes
-                  );
-                },
-                /* harmony export */
-                "ErrorDetails": function() {
-                  return (
-                    /* binding */
-                    ErrorDetails
-                  );
-                }
-                /* harmony export */
-              });
-              var _io_loader_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../io/loader.js */
-                "./src/io/loader.js"
-              );
-              var _demux_demux_errors_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ../demux/demux-errors.js */
-                "./src/demux/demux-errors.js"
-              );
-              var ErrorTypes = {
-                NETWORK_ERROR: "NetworkError",
-                MEDIA_ERROR: "MediaError",
-                OTHER_ERROR: "OtherError"
-              };
-              var ErrorDetails = {
-                NETWORK_EXCEPTION: _io_loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderErrors.EXCEPTION,
-                NETWORK_STATUS_CODE_INVALID: _io_loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderErrors.HTTP_STATUS_CODE_INVALID,
-                NETWORK_TIMEOUT: _io_loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderErrors.CONNECTING_TIMEOUT,
-                NETWORK_UNRECOVERABLE_EARLY_EOF: _io_loader_js__WEBPACK_IMPORTED_MODULE_0__.LoaderErrors.UNRECOVERABLE_EARLY_EOF,
-                MEDIA_MSE_ERROR: "MediaMSEError",
-                MEDIA_FORMAT_ERROR: _demux_demux_errors_js__WEBPACK_IMPORTED_MODULE_1__.default.FORMAT_ERROR,
-                MEDIA_FORMAT_UNSUPPORTED: _demux_demux_errors_js__WEBPACK_IMPORTED_MODULE_1__.default.FORMAT_UNSUPPORTED,
-                MEDIA_CODEC_UNSUPPORTED: _demux_demux_errors_js__WEBPACK_IMPORTED_MODULE_1__.default.CODEC_UNSUPPORTED
-              };
-            }
-          ),
-          /***/
-          "./src/player/player-events.js": (
-            /*!*************************************!*\
-              !*** ./src/player/player-events.js ***!
-              \*************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var PlayerEvents = {
-                ERROR: "error",
-                LOADING_COMPLETE: "loading_complete",
-                RECOVERED_EARLY_EOF: "recovered_early_eof",
-                MEDIA_INFO: "media_info",
-                METADATA_ARRIVED: "metadata_arrived",
-                SCRIPTDATA_ARRIVED: "scriptdata_arrived",
-                STATISTICS_INFO: "statistics_info"
-              };
-              __webpack_exports__2["default"] = PlayerEvents;
-            }
-          ),
-          /***/
-          "./src/remux/aac-silent.js": (
-            /*!*********************************!*\
-              !*** ./src/remux/aac-silent.js ***!
-              \*********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var AAC = (
-                /** @class */
-                function() {
-                  function AAC2() {
-                  }
-                  AAC2.getSilentFrame = function(codec, channelCount) {
-                    if (codec === "mp4a.40.2") {
-                      if (channelCount === 1) {
-                        return new Uint8Array([0, 200, 0, 128, 35, 128]);
-                      } else if (channelCount === 2) {
-                        return new Uint8Array([33, 0, 73, 144, 2, 25, 0, 35, 128]);
-                      } else if (channelCount === 3) {
-                        return new Uint8Array([0, 200, 0, 128, 32, 132, 1, 38, 64, 8, 100, 0, 142]);
-                      } else if (channelCount === 4) {
-                        return new Uint8Array([0, 200, 0, 128, 32, 132, 1, 38, 64, 8, 100, 0, 128, 44, 128, 8, 2, 56]);
-                      } else if (channelCount === 5) {
-                        return new Uint8Array([0, 200, 0, 128, 32, 132, 1, 38, 64, 8, 100, 0, 130, 48, 4, 153, 0, 33, 144, 2, 56]);
-                      } else if (channelCount === 6) {
-                        return new Uint8Array([0, 200, 0, 128, 32, 132, 1, 38, 64, 8, 100, 0, 130, 48, 4, 153, 0, 33, 144, 2, 0, 178, 0, 32, 8, 224]);
-                      }
-                    } else {
-                      if (channelCount === 1) {
-                        return new Uint8Array([1, 64, 34, 128, 163, 78, 230, 128, 186, 8, 0, 0, 0, 28, 6, 241, 193, 10, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 94]);
-                      } else if (channelCount === 2) {
-                        return new Uint8Array([1, 64, 34, 128, 163, 94, 230, 128, 186, 8, 0, 0, 0, 0, 149, 0, 6, 241, 161, 10, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 94]);
-                      } else if (channelCount === 3) {
-                        return new Uint8Array([1, 64, 34, 128, 163, 94, 230, 128, 186, 8, 0, 0, 0, 0, 149, 0, 6, 241, 161, 10, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 94]);
-                      }
-                    }
-                    return null;
-                  };
-                  return AAC2;
-                }()
-              );
-              __webpack_exports__2["default"] = AAC;
-            }
-          ),
-          /***/
-          "./src/remux/mp4-generator.js": (
-            /*!************************************!*\
-              !*** ./src/remux/mp4-generator.js ***!
-              \************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var MP4 = (
-                /** @class */
-                function() {
-                  function MP42() {
-                  }
-                  MP42.init = function() {
-                    MP42.types = {
-                      avc1: [],
-                      avcC: [],
-                      btrt: [],
-                      dinf: [],
-                      dref: [],
-                      esds: [],
-                      ftyp: [],
-                      hdlr: [],
-                      mdat: [],
-                      mdhd: [],
-                      mdia: [],
-                      mfhd: [],
-                      minf: [],
-                      moof: [],
-                      moov: [],
-                      mp4a: [],
-                      mvex: [],
-                      mvhd: [],
-                      sdtp: [],
-                      stbl: [],
-                      stco: [],
-                      stsc: [],
-                      stsd: [],
-                      stsz: [],
-                      stts: [],
-                      tfdt: [],
-                      tfhd: [],
-                      traf: [],
-                      trak: [],
-                      trun: [],
-                      trex: [],
-                      tkhd: [],
-                      vmhd: [],
-                      smhd: [],
-                      ".mp3": []
-                    };
-                    for (var name_1 in MP42.types) {
-                      if (MP42.types.hasOwnProperty(name_1)) {
-                        MP42.types[name_1] = [
-                          name_1.charCodeAt(0),
-                          name_1.charCodeAt(1),
-                          name_1.charCodeAt(2),
-                          name_1.charCodeAt(3)
-                        ];
-                      }
-                    }
-                    var constants = MP42.constants = {};
-                    constants.FTYP = new Uint8Array([
-                      105,
-                      115,
-                      111,
-                      109,
-                      0,
-                      0,
-                      0,
-                      1,
-                      105,
-                      115,
-                      111,
-                      109,
-                      97,
-                      118,
-                      99,
-                      49
-                      // avc1
-                    ]);
-                    constants.STSD_PREFIX = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1
-                      // entry_count
-                    ]);
-                    constants.STTS = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0
-                      // entry_count
-                    ]);
-                    constants.STSC = constants.STCO = constants.STTS;
-                    constants.STSZ = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0
-                      // sample_count
-                    ]);
-                    constants.HDLR_VIDEO = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      118,
-                      105,
-                      100,
-                      101,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      86,
-                      105,
-                      100,
-                      101,
-                      111,
-                      72,
-                      97,
-                      110,
-                      100,
-                      108,
-                      101,
-                      114,
-                      0
-                      // name: VideoHandler
-                    ]);
-                    constants.HDLR_AUDIO = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      115,
-                      111,
-                      117,
-                      110,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      83,
-                      111,
-                      117,
-                      110,
-                      100,
-                      72,
-                      97,
-                      110,
-                      100,
-                      108,
-                      101,
-                      114,
-                      0
-                      // name: SoundHandler
-                    ]);
-                    constants.DREF = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      12,
-                      117,
-                      114,
-                      108,
-                      32,
-                      0,
-                      0,
-                      0,
-                      1
-                      // version(0) + flags
-                    ]);
-                    constants.SMHD = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0
-                      // balance(2) + reserved(2)
-                    ]);
-                    constants.VMHD = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0
-                    ]);
-                  };
-                  MP42.box = function(type2) {
-                    var size = 8;
-                    var result = null;
-                    var datas = Array.prototype.slice.call(arguments, 1);
-                    var arrayCount = datas.length;
-                    for (var i2 = 0; i2 < arrayCount; i2++) {
-                      size += datas[i2].byteLength;
-                    }
-                    result = new Uint8Array(size);
-                    result[0] = size >>> 24 & 255;
-                    result[1] = size >>> 16 & 255;
-                    result[2] = size >>> 8 & 255;
-                    result[3] = size & 255;
-                    result.set(type2, 4);
-                    var offset = 8;
-                    for (var i2 = 0; i2 < arrayCount; i2++) {
-                      result.set(datas[i2], offset);
-                      offset += datas[i2].byteLength;
-                    }
-                    return result;
-                  };
-                  MP42.generateInitSegment = function(meta) {
-                    var ftyp = MP42.box(MP42.types.ftyp, MP42.constants.FTYP);
-                    var moov = MP42.moov(meta);
-                    var result = new Uint8Array(ftyp.byteLength + moov.byteLength);
-                    result.set(ftyp, 0);
-                    result.set(moov, ftyp.byteLength);
-                    return result;
-                  };
-                  MP42.moov = function(meta) {
-                    var mvhd = MP42.mvhd(meta.timescale, meta.duration);
-                    var trak = MP42.trak(meta);
-                    var mvex = MP42.mvex(meta);
-                    return MP42.box(MP42.types.moov, mvhd, trak, mvex);
-                  };
-                  MP42.mvhd = function(timescale, duration) {
-                    return MP42.box(MP42.types.mvhd, new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      timescale >>> 24 & 255,
-                      timescale >>> 16 & 255,
-                      timescale >>> 8 & 255,
-                      timescale & 255,
-                      duration >>> 24 & 255,
-                      duration >>> 16 & 255,
-                      duration >>> 8 & 255,
-                      duration & 255,
-                      0,
-                      1,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      64,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      255,
-                      255,
-                      255,
-                      255
-                      // next_track_ID
-                    ]));
-                  };
-                  MP42.trak = function(meta) {
-                    return MP42.box(MP42.types.trak, MP42.tkhd(meta), MP42.mdia(meta));
-                  };
-                  MP42.tkhd = function(meta) {
-                    var trackId = meta.id, duration = meta.duration;
-                    var width = meta.presentWidth, height = meta.presentHeight;
-                    return MP42.box(MP42.types.tkhd, new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      7,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      trackId >>> 24 & 255,
-                      trackId >>> 16 & 255,
-                      trackId >>> 8 & 255,
-                      trackId & 255,
-                      0,
-                      0,
-                      0,
-                      0,
-                      duration >>> 24 & 255,
-                      duration >>> 16 & 255,
-                      duration >>> 8 & 255,
-                      duration & 255,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      64,
-                      0,
-                      0,
-                      0,
-                      width >>> 8 & 255,
-                      width & 255,
-                      0,
-                      0,
-                      height >>> 8 & 255,
-                      height & 255,
-                      0,
-                      0
-                    ]));
-                  };
-                  MP42.mdia = function(meta) {
-                    return MP42.box(MP42.types.mdia, MP42.mdhd(meta), MP42.hdlr(meta), MP42.minf(meta));
-                  };
-                  MP42.mdhd = function(meta) {
-                    var timescale = meta.timescale;
-                    var duration = meta.duration;
-                    return MP42.box(MP42.types.mdhd, new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      timescale >>> 24 & 255,
-                      timescale >>> 16 & 255,
-                      timescale >>> 8 & 255,
-                      timescale & 255,
-                      duration >>> 24 & 255,
-                      duration >>> 16 & 255,
-                      duration >>> 8 & 255,
-                      duration & 255,
-                      85,
-                      196,
-                      0,
-                      0
-                      // pre_defined = 0
-                    ]));
-                  };
-                  MP42.hdlr = function(meta) {
-                    var data2 = null;
-                    if (meta.type === "audio") {
-                      data2 = MP42.constants.HDLR_AUDIO;
-                    } else {
-                      data2 = MP42.constants.HDLR_VIDEO;
-                    }
-                    return MP42.box(MP42.types.hdlr, data2);
-                  };
-                  MP42.minf = function(meta) {
-                    var xmhd = null;
-                    if (meta.type === "audio") {
-                      xmhd = MP42.box(MP42.types.smhd, MP42.constants.SMHD);
-                    } else {
-                      xmhd = MP42.box(MP42.types.vmhd, MP42.constants.VMHD);
-                    }
-                    return MP42.box(MP42.types.minf, xmhd, MP42.dinf(), MP42.stbl(meta));
-                  };
-                  MP42.dinf = function() {
-                    var result = MP42.box(MP42.types.dinf, MP42.box(MP42.types.dref, MP42.constants.DREF));
-                    return result;
-                  };
-                  MP42.stbl = function(meta) {
-                    var result = MP42.box(
-                      MP42.types.stbl,
-                      // type: stbl
-                      MP42.stsd(meta),
-                      // Sample Description Table
-                      MP42.box(MP42.types.stts, MP42.constants.STTS),
-                      // Time-To-Sample
-                      MP42.box(MP42.types.stsc, MP42.constants.STSC),
-                      // Sample-To-Chunk
-                      MP42.box(MP42.types.stsz, MP42.constants.STSZ),
-                      // Sample size
-                      MP42.box(MP42.types.stco, MP42.constants.STCO)
-                      // Chunk offset
-                    );
-                    return result;
-                  };
-                  MP42.stsd = function(meta) {
-                    if (meta.type === "audio") {
-                      if (meta.codec === "mp3") {
-                        return MP42.box(MP42.types.stsd, MP42.constants.STSD_PREFIX, MP42.mp3(meta));
-                      }
-                      return MP42.box(MP42.types.stsd, MP42.constants.STSD_PREFIX, MP42.mp4a(meta));
-                    } else {
-                      return MP42.box(MP42.types.stsd, MP42.constants.STSD_PREFIX, MP42.avc1(meta));
-                    }
-                  };
-                  MP42.mp3 = function(meta) {
-                    var channelCount = meta.channelCount;
-                    var sampleRate = meta.audioSampleRate;
-                    var data2 = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      channelCount,
-                      0,
-                      16,
-                      0,
-                      0,
-                      0,
-                      0,
-                      sampleRate >>> 8 & 255,
-                      sampleRate & 255,
-                      0,
-                      0
-                    ]);
-                    return MP42.box(MP42.types[".mp3"], data2);
-                  };
-                  MP42.mp4a = function(meta) {
-                    var channelCount = meta.channelCount;
-                    var sampleRate = meta.audioSampleRate;
-                    var data2 = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      channelCount,
-                      0,
-                      16,
-                      0,
-                      0,
-                      0,
-                      0,
-                      sampleRate >>> 8 & 255,
-                      sampleRate & 255,
-                      0,
-                      0
-                    ]);
-                    return MP42.box(MP42.types.mp4a, data2, MP42.esds(meta));
-                  };
-                  MP42.esds = function(meta) {
-                    var config = meta.config || [];
-                    var configSize = config.length;
-                    var data2 = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      3,
-                      23 + configSize,
-                      0,
-                      1,
-                      0,
-                      4,
-                      15 + configSize,
-                      64,
-                      21,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      5
-                      // descriptor_type
-                    ].concat([
-                      configSize
-                    ]).concat(config).concat([
-                      6,
-                      1,
-                      2
-                      // GASpecificConfig
-                    ]));
-                    return MP42.box(MP42.types.esds, data2);
-                  };
-                  MP42.avc1 = function(meta) {
-                    var avcc = meta.avcc;
-                    var width = meta.codecWidth, height = meta.codecHeight;
-                    var data2 = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      width >>> 8 & 255,
-                      width & 255,
-                      height >>> 8 & 255,
-                      height & 255,
-                      0,
-                      72,
-                      0,
-                      0,
-                      0,
-                      72,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      10,
-                      120,
-                      113,
-                      113,
-                      47,
-                      102,
-                      108,
-                      118,
-                      46,
-                      106,
-                      115,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      24,
-                      255,
-                      255
-                      // pre_defined = -1
-                    ]);
-                    return MP42.box(MP42.types.avc1, data2, MP42.box(MP42.types.avcC, avcc));
-                  };
-                  MP42.mvex = function(meta) {
-                    return MP42.box(MP42.types.mvex, MP42.trex(meta));
-                  };
-                  MP42.trex = function(meta) {
-                    var trackId = meta.id;
-                    var data2 = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      trackId >>> 24 & 255,
-                      trackId >>> 16 & 255,
-                      trackId >>> 8 & 255,
-                      trackId & 255,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      0,
-                      1,
-                      0,
-                      1
-                      // default_sample_flags
-                    ]);
-                    return MP42.box(MP42.types.trex, data2);
-                  };
-                  MP42.moof = function(track, baseMediaDecodeTime) {
-                    return MP42.box(MP42.types.moof, MP42.mfhd(track.sequenceNumber), MP42.traf(track, baseMediaDecodeTime));
-                  };
-                  MP42.mfhd = function(sequenceNumber) {
-                    var data2 = new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      sequenceNumber >>> 24 & 255,
-                      sequenceNumber >>> 16 & 255,
-                      sequenceNumber >>> 8 & 255,
-                      sequenceNumber & 255
-                    ]);
-                    return MP42.box(MP42.types.mfhd, data2);
-                  };
-                  MP42.traf = function(track, baseMediaDecodeTime) {
-                    var trackId = track.id;
-                    var tfhd = MP42.box(MP42.types.tfhd, new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      trackId >>> 24 & 255,
-                      trackId >>> 16 & 255,
-                      trackId >>> 8 & 255,
-                      trackId & 255
-                    ]));
-                    var tfdt = MP42.box(MP42.types.tfdt, new Uint8Array([
-                      0,
-                      0,
-                      0,
-                      0,
-                      baseMediaDecodeTime >>> 24 & 255,
-                      baseMediaDecodeTime >>> 16 & 255,
-                      baseMediaDecodeTime >>> 8 & 255,
-                      baseMediaDecodeTime & 255
-                    ]));
-                    var sdtp = MP42.sdtp(track);
-                    var trun = MP42.trun(track, sdtp.byteLength + 16 + 16 + 8 + 16 + 8 + 8);
-                    return MP42.box(MP42.types.traf, tfhd, tfdt, trun, sdtp);
-                  };
-                  MP42.sdtp = function(track) {
-                    var samples = track.samples || [];
-                    var sampleCount = samples.length;
-                    var data2 = new Uint8Array(4 + sampleCount);
-                    for (var i2 = 0; i2 < sampleCount; i2++) {
-                      var flags = samples[i2].flags;
-                      data2[i2 + 4] = flags.isLeading << 6 | flags.dependsOn << 4 | flags.isDependedOn << 2 | flags.hasRedundancy;
-                    }
-                    return MP42.box(MP42.types.sdtp, data2);
-                  };
-                  MP42.trun = function(track, offset) {
-                    var samples = track.samples || [];
-                    var sampleCount = samples.length;
-                    var dataSize = 12 + 16 * sampleCount;
-                    var data2 = new Uint8Array(dataSize);
-                    offset += 8 + dataSize;
-                    data2.set([
-                      0,
-                      0,
-                      15,
-                      1,
-                      sampleCount >>> 24 & 255,
-                      sampleCount >>> 16 & 255,
-                      sampleCount >>> 8 & 255,
-                      sampleCount & 255,
-                      offset >>> 24 & 255,
-                      offset >>> 16 & 255,
-                      offset >>> 8 & 255,
-                      offset & 255
-                    ], 0);
-                    for (var i2 = 0; i2 < sampleCount; i2++) {
-                      var duration = samples[i2].duration;
-                      var size = samples[i2].size;
-                      var flags = samples[i2].flags;
-                      var cts = samples[i2].cts;
-                      data2.set([
-                        duration >>> 24 & 255,
-                        duration >>> 16 & 255,
-                        duration >>> 8 & 255,
-                        duration & 255,
-                        size >>> 24 & 255,
-                        size >>> 16 & 255,
-                        size >>> 8 & 255,
-                        size & 255,
-                        flags.isLeading << 2 | flags.dependsOn,
-                        flags.isDependedOn << 6 | flags.hasRedundancy << 4 | flags.isNonSync,
-                        0,
-                        0,
-                        cts >>> 24 & 255,
-                        cts >>> 16 & 255,
-                        cts >>> 8 & 255,
-                        cts & 255
-                      ], 12 + 16 * i2);
-                    }
-                    return MP42.box(MP42.types.trun, data2);
-                  };
-                  MP42.mdat = function(data2) {
-                    return MP42.box(MP42.types.mdat, data2);
-                  };
-                  return MP42;
-                }()
-              );
-              MP4.init();
-              __webpack_exports__2["default"] = MP4;
-            }
-          ),
-          /***/
-          "./src/remux/mp4-remuxer.js": (
-            /*!**********************************!*\
-              !*** ./src/remux/mp4-remuxer.js ***!
-              \**********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! ../utils/logger.js */
-                "./src/utils/logger.js"
-              );
-              var _mp4_generator_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ./mp4-generator.js */
-                "./src/remux/mp4-generator.js"
-              );
-              var _aac_silent_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__2(
-                /*! ./aac-silent.js */
-                "./src/remux/aac-silent.js"
-              );
-              var _utils_browser_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__2(
-                /*! ../utils/browser.js */
-                "./src/utils/browser.js"
-              );
-              var _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__2(
-                /*! ../core/media-segment-info.js */
-                "./src/core/media-segment-info.js"
-              );
-              var _utils_exception_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__2(
-                /*! ../utils/exception.js */
-                "./src/utils/exception.js"
-              );
-              var MP4Remuxer = (
-                /** @class */
-                function() {
-                  function MP4Remuxer2(config) {
-                    this.TAG = "MP4Remuxer";
-                    this._config = config;
-                    this._isLive = config.isLive === true ? true : false;
-                    this._dtsBase = -1;
-                    this._dtsBaseInited = false;
-                    this._audioDtsBase = Infinity;
-                    this._videoDtsBase = Infinity;
-                    this._audioNextDts = void 0;
-                    this._videoNextDts = void 0;
-                    this._audioStashedLastSample = null;
-                    this._videoStashedLastSample = null;
-                    this._audioMeta = null;
-                    this._videoMeta = null;
-                    this._audioSegmentInfoList = new _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.MediaSegmentInfoList("audio");
-                    this._videoSegmentInfoList = new _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.MediaSegmentInfoList("video");
-                    this._onInitSegment = null;
-                    this._onMediaSegment = null;
-                    this._forceFirstIDR = _utils_browser_js__WEBPACK_IMPORTED_MODULE_3__.default.chrome && (_utils_browser_js__WEBPACK_IMPORTED_MODULE_3__.default.version.major < 50 || _utils_browser_js__WEBPACK_IMPORTED_MODULE_3__.default.version.major === 50 && _utils_browser_js__WEBPACK_IMPORTED_MODULE_3__.default.version.build < 2661) ? true : false;
-                    this._fillSilentAfterSeek = _utils_browser_js__WEBPACK_IMPORTED_MODULE_3__.default.msedge || _utils_browser_js__WEBPACK_IMPORTED_MODULE_3__.default.msie;
-                    this._mp3UseMpegAudio = !_utils_browser_js__WEBPACK_IMPORTED_MODULE_3__.default.firefox;
-                    this._fillAudioTimestampGap = this._config.fixAudioTimestampGap;
-                  }
-                  MP4Remuxer2.prototype.destroy = function() {
-                    this._dtsBase = -1;
-                    this._dtsBaseInited = false;
-                    this._audioMeta = null;
-                    this._videoMeta = null;
-                    this._audioSegmentInfoList.clear();
-                    this._audioSegmentInfoList = null;
-                    this._videoSegmentInfoList.clear();
-                    this._videoSegmentInfoList = null;
-                    this._onInitSegment = null;
-                    this._onMediaSegment = null;
-                  };
-                  MP4Remuxer2.prototype.bindDataSource = function(producer) {
-                    producer.onDataAvailable = this.remux.bind(this);
-                    producer.onTrackMetadata = this._onTrackMetadataReceived.bind(this);
-                    return this;
-                  };
-                  Object.defineProperty(MP4Remuxer2.prototype, "onInitSegment", {
-                    /* prototype: function onInitSegment(type: string, initSegment: ArrayBuffer): void
-                       InitSegment: {
-                           type: string,
-                           data: ArrayBuffer,
-                           codec: string,
-                           container: string
-                       }
-                    */
-                    get: function() {
-                      return this._onInitSegment;
-                    },
-                    set: function(callback) {
-                      this._onInitSegment = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(MP4Remuxer2.prototype, "onMediaSegment", {
-                    /* prototype: function onMediaSegment(type: string, mediaSegment: MediaSegment): void
-                       MediaSegment: {
-                           type: string,
-                           data: ArrayBuffer,
-                           sampleCount: int32
-                           info: MediaSegmentInfo
-                       }
-                    */
-                    get: function() {
-                      return this._onMediaSegment;
-                    },
-                    set: function(callback) {
-                      this._onMediaSegment = callback;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  MP4Remuxer2.prototype.insertDiscontinuity = function() {
-                    this._audioNextDts = this._videoNextDts = void 0;
-                  };
-                  MP4Remuxer2.prototype.seek = function(originalDts) {
-                    this._audioStashedLastSample = null;
-                    this._videoStashedLastSample = null;
-                    this._videoSegmentInfoList.clear();
-                    this._audioSegmentInfoList.clear();
-                  };
-                  MP4Remuxer2.prototype.remux = function(audioTrack, videoTrack) {
-                    if (!this._onMediaSegment) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_5__.IllegalStateException("MP4Remuxer: onMediaSegment callback must be specificed!");
-                    }
-                    if (!this._dtsBaseInited) {
-                      this._calculateDtsBase(audioTrack, videoTrack);
-                    }
-                    this._remuxVideo(videoTrack);
-                    this._remuxAudio(audioTrack);
-                  };
-                  MP4Remuxer2.prototype._onTrackMetadataReceived = function(type2, metadata) {
-                    var metabox = null;
-                    var container2 = "mp4";
-                    var codec = metadata.codec;
-                    if (type2 === "audio") {
-                      this._audioMeta = metadata;
-                      if (metadata.codec === "mp3" && this._mp3UseMpegAudio) {
-                        container2 = "mpeg";
-                        codec = "";
-                        metabox = new Uint8Array();
-                      } else {
-                        metabox = _mp4_generator_js__WEBPACK_IMPORTED_MODULE_1__.default.generateInitSegment(metadata);
-                      }
-                    } else if (type2 === "video") {
-                      this._videoMeta = metadata;
-                      metabox = _mp4_generator_js__WEBPACK_IMPORTED_MODULE_1__.default.generateInitSegment(metadata);
-                    } else {
-                      return;
-                    }
-                    if (!this._onInitSegment) {
-                      throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_5__.IllegalStateException("MP4Remuxer: onInitSegment callback must be specified!");
-                    }
-                    this._onInitSegment(type2, {
-                      type: type2,
-                      data: metabox.buffer,
-                      codec,
-                      container: type2 + "/" + container2,
-                      mediaDuration: metadata.duration
-                      // in timescale 1000 (milliseconds)
-                    });
-                  };
-                  MP4Remuxer2.prototype._calculateDtsBase = function(audioTrack, videoTrack) {
-                    if (this._dtsBaseInited) {
-                      return;
-                    }
-                    if (audioTrack.samples && audioTrack.samples.length) {
-                      this._audioDtsBase = audioTrack.samples[0].dts;
-                    }
-                    if (videoTrack.samples && videoTrack.samples.length) {
-                      this._videoDtsBase = videoTrack.samples[0].dts;
-                    }
-                    this._dtsBase = Math.min(this._audioDtsBase, this._videoDtsBase);
-                    this._dtsBaseInited = true;
-                  };
-                  MP4Remuxer2.prototype.flushStashedSamples = function() {
-                    var videoSample = this._videoStashedLastSample;
-                    var audioSample = this._audioStashedLastSample;
-                    var videoTrack = {
-                      type: "video",
-                      id: 1,
-                      sequenceNumber: 0,
-                      samples: [],
-                      length: 0
-                    };
-                    if (videoSample != null) {
-                      videoTrack.samples.push(videoSample);
-                      videoTrack.length = videoSample.length;
-                    }
-                    var audioTrack = {
-                      type: "audio",
-                      id: 2,
-                      sequenceNumber: 0,
-                      samples: [],
-                      length: 0
-                    };
-                    if (audioSample != null) {
-                      audioTrack.samples.push(audioSample);
-                      audioTrack.length = audioSample.length;
-                    }
-                    this._videoStashedLastSample = null;
-                    this._audioStashedLastSample = null;
-                    this._remuxVideo(videoTrack, true);
-                    this._remuxAudio(audioTrack, true);
-                  };
-                  MP4Remuxer2.prototype._remuxAudio = function(audioTrack, force) {
-                    if (this._audioMeta == null) {
-                      return;
-                    }
-                    var track = audioTrack;
-                    var samples = track.samples;
-                    var dtsCorrection = void 0;
-                    var firstDts = -1, lastDts = -1;
-                    var refSampleDuration = this._audioMeta.refSampleDuration;
-                    var mpegRawTrack = this._audioMeta.codec === "mp3" && this._mp3UseMpegAudio;
-                    var firstSegmentAfterSeek = this._dtsBaseInited && this._audioNextDts === void 0;
-                    var insertPrefixSilentFrame = false;
-                    if (!samples || samples.length === 0) {
-                      return;
-                    }
-                    if (samples.length === 1 && !force) {
-                      return;
-                    }
-                    var offset = 0;
-                    var mdatbox = null;
-                    var mdatBytes = 0;
-                    if (mpegRawTrack) {
-                      offset = 0;
-                      mdatBytes = track.length;
-                    } else {
-                      offset = 8;
-                      mdatBytes = 8 + track.length;
-                    }
-                    var lastSample = null;
-                    if (samples.length > 1) {
-                      lastSample = samples.pop();
-                      mdatBytes -= lastSample.length;
-                    }
-                    if (this._audioStashedLastSample != null) {
-                      var sample = this._audioStashedLastSample;
-                      this._audioStashedLastSample = null;
-                      samples.unshift(sample);
-                      mdatBytes += sample.length;
-                    }
-                    if (lastSample != null) {
-                      this._audioStashedLastSample = lastSample;
-                    }
-                    var firstSampleOriginalDts = samples[0].dts - this._dtsBase;
-                    if (this._audioNextDts) {
-                      dtsCorrection = firstSampleOriginalDts - this._audioNextDts;
-                    } else {
-                      if (this._audioSegmentInfoList.isEmpty()) {
-                        dtsCorrection = 0;
-                        if (this._fillSilentAfterSeek && !this._videoSegmentInfoList.isEmpty()) {
-                          if (this._audioMeta.originalCodec !== "mp3") {
-                            insertPrefixSilentFrame = true;
-                          }
-                        }
-                      } else {
-                        var lastSample_1 = this._audioSegmentInfoList.getLastSampleBefore(firstSampleOriginalDts);
-                        if (lastSample_1 != null) {
-                          var distance = firstSampleOriginalDts - (lastSample_1.originalDts + lastSample_1.duration);
-                          if (distance <= 3) {
-                            distance = 0;
-                          }
-                          var expectedDts = lastSample_1.dts + lastSample_1.duration + distance;
-                          dtsCorrection = firstSampleOriginalDts - expectedDts;
-                        } else {
-                          dtsCorrection = 0;
-                        }
-                      }
-                    }
-                    if (insertPrefixSilentFrame) {
-                      var firstSampleDts = firstSampleOriginalDts - dtsCorrection;
-                      var videoSegment = this._videoSegmentInfoList.getLastSegmentBefore(firstSampleOriginalDts);
-                      if (videoSegment != null && videoSegment.beginDts < firstSampleDts) {
-                        var silentUnit = _aac_silent_js__WEBPACK_IMPORTED_MODULE_2__.default.getSilentFrame(this._audioMeta.originalCodec, this._audioMeta.channelCount);
-                        if (silentUnit) {
-                          var dts = videoSegment.beginDts;
-                          var silentFrameDuration = firstSampleDts - videoSegment.beginDts;
-                          _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.v(this.TAG, "InsertPrefixSilentAudio: dts: " + dts + ", duration: " + silentFrameDuration);
-                          samples.unshift({ unit: silentUnit, dts, pts: dts });
-                          mdatBytes += silentUnit.byteLength;
-                        }
-                      } else {
-                        insertPrefixSilentFrame = false;
-                      }
-                    }
-                    var mp4Samples = [];
-                    for (var i2 = 0; i2 < samples.length; i2++) {
-                      var sample = samples[i2];
-                      var unit = sample.unit;
-                      var originalDts = sample.dts - this._dtsBase;
-                      var dts = originalDts;
-                      var needFillSilentFrames = false;
-                      var silentFrames = null;
-                      var sampleDuration = 0;
-                      if (originalDts < -1e-3) {
-                        continue;
-                      }
-                      if (this._audioMeta.codec !== "mp3") {
-                        var curRefDts = originalDts;
-                        var maxAudioFramesDrift = 3;
-                        if (this._audioNextDts) {
-                          curRefDts = this._audioNextDts;
-                        }
-                        dtsCorrection = originalDts - curRefDts;
-                        if (dtsCorrection <= -maxAudioFramesDrift * refSampleDuration) {
-                          _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Dropping 1 audio frame (originalDts: " + originalDts + " ms ,curRefDts: " + curRefDts + " ms)  due to dtsCorrection: " + dtsCorrection + " ms overlap.");
-                          continue;
-                        } else if (dtsCorrection >= maxAudioFramesDrift * refSampleDuration && this._fillAudioTimestampGap && !_utils_browser_js__WEBPACK_IMPORTED_MODULE_3__.default.safari) {
-                          needFillSilentFrames = true;
-                          var frameCount = Math.floor(dtsCorrection / refSampleDuration);
-                          _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Large audio timestamp gap detected, may cause AV sync to drift. Silent frames will be generated to avoid unsync.\n" + ("originalDts: " + originalDts + " ms, curRefDts: " + curRefDts + " ms, ") + ("dtsCorrection: " + Math.round(dtsCorrection) + " ms, generate: " + frameCount + " frames"));
-                          dts = Math.floor(curRefDts);
-                          sampleDuration = Math.floor(curRefDts + refSampleDuration) - dts;
-                          var silentUnit = _aac_silent_js__WEBPACK_IMPORTED_MODULE_2__.default.getSilentFrame(this._audioMeta.originalCodec, this._audioMeta.channelCount);
-                          if (silentUnit == null) {
-                            _utils_logger_js__WEBPACK_IMPORTED_MODULE_0__.default.w(this.TAG, "Unable to generate silent frame for " + (this._audioMeta.originalCodec + " with " + this._audioMeta.channelCount + " channels, repeat last frame"));
-                            silentUnit = unit;
-                          }
-                          silentFrames = [];
-                          for (var j2 = 0; j2 < frameCount; j2++) {
-                            curRefDts = curRefDts + refSampleDuration;
-                            var intDts = Math.floor(curRefDts);
-                            var intDuration = Math.floor(curRefDts + refSampleDuration) - intDts;
-                            var frame2 = {
-                              dts: intDts,
-                              pts: intDts,
-                              cts: 0,
-                              unit: silentUnit,
-                              size: silentUnit.byteLength,
-                              duration: intDuration,
-                              originalDts,
-                              flags: {
-                                isLeading: 0,
-                                dependsOn: 1,
-                                isDependedOn: 0,
-                                hasRedundancy: 0
-                              }
-                            };
-                            silentFrames.push(frame2);
-                            mdatBytes += frame2.size;
-                          }
-                          this._audioNextDts = curRefDts + refSampleDuration;
-                        } else {
-                          dts = Math.floor(curRefDts);
-                          sampleDuration = Math.floor(curRefDts + refSampleDuration) - dts;
-                          this._audioNextDts = curRefDts + refSampleDuration;
-                        }
-                      } else {
-                        dts = originalDts - dtsCorrection;
-                        if (i2 !== samples.length - 1) {
-                          var nextDts = samples[i2 + 1].dts - this._dtsBase - dtsCorrection;
-                          sampleDuration = nextDts - dts;
-                        } else {
-                          if (lastSample != null) {
-                            var nextDts = lastSample.dts - this._dtsBase - dtsCorrection;
-                            sampleDuration = nextDts - dts;
-                          } else if (mp4Samples.length >= 1) {
-                            sampleDuration = mp4Samples[mp4Samples.length - 1].duration;
-                          } else {
-                            sampleDuration = Math.floor(refSampleDuration);
-                          }
-                        }
-                        this._audioNextDts = dts + sampleDuration;
-                      }
-                      if (firstDts === -1) {
-                        firstDts = dts;
-                      }
-                      mp4Samples.push({
-                        dts,
-                        pts: dts,
-                        cts: 0,
-                        unit: sample.unit,
-                        size: sample.unit.byteLength,
-                        duration: sampleDuration,
-                        originalDts,
-                        flags: {
-                          isLeading: 0,
-                          dependsOn: 1,
-                          isDependedOn: 0,
-                          hasRedundancy: 0
-                        }
-                      });
-                      if (needFillSilentFrames) {
-                        mp4Samples.push.apply(mp4Samples, silentFrames);
-                      }
-                    }
-                    if (mp4Samples.length === 0) {
-                      track.samples = [];
-                      track.length = 0;
-                      return;
-                    }
-                    if (mpegRawTrack) {
-                      mdatbox = new Uint8Array(mdatBytes);
-                    } else {
-                      mdatbox = new Uint8Array(mdatBytes);
-                      mdatbox[0] = mdatBytes >>> 24 & 255;
-                      mdatbox[1] = mdatBytes >>> 16 & 255;
-                      mdatbox[2] = mdatBytes >>> 8 & 255;
-                      mdatbox[3] = mdatBytes & 255;
-                      mdatbox.set(_mp4_generator_js__WEBPACK_IMPORTED_MODULE_1__.default.types.mdat, 4);
-                    }
-                    for (var i2 = 0; i2 < mp4Samples.length; i2++) {
-                      var unit = mp4Samples[i2].unit;
-                      mdatbox.set(unit, offset);
-                      offset += unit.byteLength;
-                    }
-                    var latest = mp4Samples[mp4Samples.length - 1];
-                    lastDts = latest.dts + latest.duration;
-                    var info = new _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.MediaSegmentInfo();
-                    info.beginDts = firstDts;
-                    info.endDts = lastDts;
-                    info.beginPts = firstDts;
-                    info.endPts = lastDts;
-                    info.originalBeginDts = mp4Samples[0].originalDts;
-                    info.originalEndDts = latest.originalDts + latest.duration;
-                    info.firstSample = new _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.SampleInfo(mp4Samples[0].dts, mp4Samples[0].pts, mp4Samples[0].duration, mp4Samples[0].originalDts, false);
-                    info.lastSample = new _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.SampleInfo(latest.dts, latest.pts, latest.duration, latest.originalDts, false);
-                    if (!this._isLive) {
-                      this._audioSegmentInfoList.append(info);
-                    }
-                    track.samples = mp4Samples;
-                    track.sequenceNumber++;
-                    var moofbox = null;
-                    if (mpegRawTrack) {
-                      moofbox = new Uint8Array();
-                    } else {
-                      moofbox = _mp4_generator_js__WEBPACK_IMPORTED_MODULE_1__.default.moof(track, firstDts);
-                    }
-                    track.samples = [];
-                    track.length = 0;
-                    var segment = {
-                      type: "audio",
-                      data: this._mergeBoxes(moofbox, mdatbox).buffer,
-                      sampleCount: mp4Samples.length,
-                      info
-                    };
-                    if (mpegRawTrack && firstSegmentAfterSeek) {
-                      segment.timestampOffset = firstDts;
-                    }
-                    this._onMediaSegment("audio", segment);
-                  };
-                  MP4Remuxer2.prototype._remuxVideo = function(videoTrack, force) {
-                    if (this._videoMeta == null) {
-                      return;
-                    }
-                    var track = videoTrack;
-                    var samples = track.samples;
-                    var dtsCorrection = void 0;
-                    var firstDts = -1, lastDts = -1;
-                    var firstPts = -1, lastPts = -1;
-                    if (!samples || samples.length === 0) {
-                      return;
-                    }
-                    if (samples.length === 1 && !force) {
-                      return;
-                    }
-                    var offset = 8;
-                    var mdatbox = null;
-                    var mdatBytes = 8 + videoTrack.length;
-                    var lastSample = null;
-                    if (samples.length > 1) {
-                      lastSample = samples.pop();
-                      mdatBytes -= lastSample.length;
-                    }
-                    if (this._videoStashedLastSample != null) {
-                      var sample = this._videoStashedLastSample;
-                      this._videoStashedLastSample = null;
-                      samples.unshift(sample);
-                      mdatBytes += sample.length;
-                    }
-                    if (lastSample != null) {
-                      this._videoStashedLastSample = lastSample;
-                    }
-                    var firstSampleOriginalDts = samples[0].dts - this._dtsBase;
-                    if (this._videoNextDts) {
-                      dtsCorrection = firstSampleOriginalDts - this._videoNextDts;
-                    } else {
-                      if (this._videoSegmentInfoList.isEmpty()) {
-                        dtsCorrection = 0;
-                      } else {
-                        var lastSample_2 = this._videoSegmentInfoList.getLastSampleBefore(firstSampleOriginalDts);
-                        if (lastSample_2 != null) {
-                          var distance = firstSampleOriginalDts - (lastSample_2.originalDts + lastSample_2.duration);
-                          if (distance <= 3) {
-                            distance = 0;
-                          }
-                          var expectedDts = lastSample_2.dts + lastSample_2.duration + distance;
-                          dtsCorrection = firstSampleOriginalDts - expectedDts;
-                        } else {
-                          dtsCorrection = 0;
-                        }
-                      }
-                    }
-                    var info = new _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.MediaSegmentInfo();
-                    var mp4Samples = [];
-                    for (var i2 = 0; i2 < samples.length; i2++) {
-                      var sample = samples[i2];
-                      var originalDts = sample.dts - this._dtsBase;
-                      var isKeyframe = sample.isKeyframe;
-                      var dts = originalDts - dtsCorrection;
-                      var cts = sample.cts;
-                      var pts = dts + cts;
-                      if (firstDts === -1) {
-                        firstDts = dts;
-                        firstPts = pts;
-                      }
-                      var sampleDuration = 0;
-                      if (i2 !== samples.length - 1) {
-                        var nextDts = samples[i2 + 1].dts - this._dtsBase - dtsCorrection;
-                        sampleDuration = nextDts - dts;
-                      } else {
-                        if (lastSample != null) {
-                          var nextDts = lastSample.dts - this._dtsBase - dtsCorrection;
-                          sampleDuration = nextDts - dts;
-                        } else if (mp4Samples.length >= 1) {
-                          sampleDuration = mp4Samples[mp4Samples.length - 1].duration;
-                        } else {
-                          sampleDuration = Math.floor(this._videoMeta.refSampleDuration);
-                        }
-                      }
-                      if (isKeyframe) {
-                        var syncPoint = new _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.SampleInfo(dts, pts, sampleDuration, sample.dts, true);
-                        syncPoint.fileposition = sample.fileposition;
-                        info.appendSyncPoint(syncPoint);
-                      }
-                      mp4Samples.push({
-                        dts,
-                        pts,
-                        cts,
-                        units: sample.units,
-                        size: sample.length,
-                        isKeyframe,
-                        duration: sampleDuration,
-                        originalDts,
-                        flags: {
-                          isLeading: 0,
-                          dependsOn: isKeyframe ? 2 : 1,
-                          isDependedOn: isKeyframe ? 1 : 0,
-                          hasRedundancy: 0,
-                          isNonSync: isKeyframe ? 0 : 1
-                        }
-                      });
-                    }
-                    mdatbox = new Uint8Array(mdatBytes);
-                    mdatbox[0] = mdatBytes >>> 24 & 255;
-                    mdatbox[1] = mdatBytes >>> 16 & 255;
-                    mdatbox[2] = mdatBytes >>> 8 & 255;
-                    mdatbox[3] = mdatBytes & 255;
-                    mdatbox.set(_mp4_generator_js__WEBPACK_IMPORTED_MODULE_1__.default.types.mdat, 4);
-                    for (var i2 = 0; i2 < mp4Samples.length; i2++) {
-                      var units = mp4Samples[i2].units;
-                      while (units.length) {
-                        var unit = units.shift();
-                        var data2 = unit.data;
-                        mdatbox.set(data2, offset);
-                        offset += data2.byteLength;
-                      }
-                    }
-                    var latest = mp4Samples[mp4Samples.length - 1];
-                    lastDts = latest.dts + latest.duration;
-                    lastPts = latest.pts + latest.duration;
-                    this._videoNextDts = lastDts;
-                    info.beginDts = firstDts;
-                    info.endDts = lastDts;
-                    info.beginPts = firstPts;
-                    info.endPts = lastPts;
-                    info.originalBeginDts = mp4Samples[0].originalDts;
-                    info.originalEndDts = latest.originalDts + latest.duration;
-                    info.firstSample = new _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.SampleInfo(mp4Samples[0].dts, mp4Samples[0].pts, mp4Samples[0].duration, mp4Samples[0].originalDts, mp4Samples[0].isKeyframe);
-                    info.lastSample = new _core_media_segment_info_js__WEBPACK_IMPORTED_MODULE_4__.SampleInfo(latest.dts, latest.pts, latest.duration, latest.originalDts, latest.isKeyframe);
-                    if (!this._isLive) {
-                      this._videoSegmentInfoList.append(info);
-                    }
-                    track.samples = mp4Samples;
-                    track.sequenceNumber++;
-                    if (this._forceFirstIDR) {
-                      var flags = mp4Samples[0].flags;
-                      flags.dependsOn = 2;
-                      flags.isNonSync = 0;
-                    }
-                    var moofbox = _mp4_generator_js__WEBPACK_IMPORTED_MODULE_1__.default.moof(track, firstDts);
-                    track.samples = [];
-                    track.length = 0;
-                    this._onMediaSegment("video", {
-                      type: "video",
-                      data: this._mergeBoxes(moofbox, mdatbox).buffer,
-                      sampleCount: mp4Samples.length,
-                      info
-                    });
-                  };
-                  MP4Remuxer2.prototype._mergeBoxes = function(moof, mdat) {
-                    var result = new Uint8Array(moof.byteLength + mdat.byteLength);
-                    result.set(moof, 0);
-                    result.set(mdat, moof.byteLength);
-                    return result;
-                  };
-                  return MP4Remuxer2;
-                }()
-              );
-              __webpack_exports__2["default"] = MP4Remuxer;
-            }
-          ),
-          /***/
-          "./src/utils/browser.js": (
-            /*!******************************!*\
-              !*** ./src/utils/browser.js ***!
-              \******************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var Browser = {};
-              function detect() {
-                var ua2 = self.navigator.userAgent.toLowerCase();
-                var match2 = /(edge)\/([\w.]+)/.exec(ua2) || /(opr)[\/]([\w.]+)/.exec(ua2) || /(chrome)[ \/]([\w.]+)/.exec(ua2) || /(iemobile)[\/]([\w.]+)/.exec(ua2) || /(version)(applewebkit)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec(ua2) || /(webkit)[ \/]([\w.]+).*(version)[ \/]([\w.]+).*(safari)[ \/]([\w.]+)/.exec(ua2) || /(webkit)[ \/]([\w.]+)/.exec(ua2) || /(opera)(?:.*version|)[ \/]([\w.]+)/.exec(ua2) || /(msie) ([\w.]+)/.exec(ua2) || ua2.indexOf("trident") >= 0 && /(rv)(?::| )([\w.]+)/.exec(ua2) || ua2.indexOf("compatible") < 0 && /(firefox)[ \/]([\w.]+)/.exec(ua2) || [];
-                var platform_match = /(ipad)/.exec(ua2) || /(ipod)/.exec(ua2) || /(windows phone)/.exec(ua2) || /(iphone)/.exec(ua2) || /(kindle)/.exec(ua2) || /(android)/.exec(ua2) || /(windows)/.exec(ua2) || /(mac)/.exec(ua2) || /(linux)/.exec(ua2) || /(cros)/.exec(ua2) || [];
-                var matched = {
-                  browser: match2[5] || match2[3] || match2[1] || "",
-                  version: match2[2] || match2[4] || "0",
-                  majorVersion: match2[4] || match2[2] || "0",
-                  platform: platform_match[0] || ""
-                };
-                var browser2 = {};
-                if (matched.browser) {
-                  browser2[matched.browser] = true;
-                  var versionArray = matched.majorVersion.split(".");
-                  browser2.version = {
-                    major: parseInt(matched.majorVersion, 10),
-                    string: matched.version
-                  };
-                  if (versionArray.length > 1) {
-                    browser2.version.minor = parseInt(versionArray[1], 10);
-                  }
-                  if (versionArray.length > 2) {
-                    browser2.version.build = parseInt(versionArray[2], 10);
-                  }
-                }
-                if (matched.platform) {
-                  browser2[matched.platform] = true;
-                }
-                if (browser2.chrome || browser2.opr || browser2.safari) {
-                  browser2.webkit = true;
-                }
-                if (browser2.rv || browser2.iemobile) {
-                  if (browser2.rv) {
-                    delete browser2.rv;
-                  }
-                  var msie = "msie";
-                  matched.browser = msie;
-                  browser2[msie] = true;
-                }
-                if (browser2.edge) {
-                  delete browser2.edge;
-                  var msedge = "msedge";
-                  matched.browser = msedge;
-                  browser2[msedge] = true;
-                }
-                if (browser2.opr) {
-                  var opera = "opera";
-                  matched.browser = opera;
-                  browser2[opera] = true;
-                }
-                if (browser2.safari && browser2.android) {
-                  var android = "android";
-                  matched.browser = android;
-                  browser2[android] = true;
-                }
-                browser2.name = matched.browser;
-                browser2.platform = matched.platform;
-                for (var key in Browser) {
-                  if (Browser.hasOwnProperty(key)) {
-                    delete Browser[key];
-                  }
-                }
-                Object.assign(Browser, browser2);
-              }
-              detect();
-              __webpack_exports__2["default"] = Browser;
-            }
-          ),
-          /***/
-          "./src/utils/exception.js": (
-            /*!********************************!*\
-              !*** ./src/utils/exception.js ***!
-              \********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              __webpack_require__2.d(__webpack_exports__2, {
-                /* harmony export */
-                "RuntimeException": function() {
-                  return (
-                    /* binding */
-                    RuntimeException
-                  );
-                },
-                /* harmony export */
-                "IllegalStateException": function() {
-                  return (
-                    /* binding */
-                    IllegalStateException
-                  );
-                },
-                /* harmony export */
-                "InvalidArgumentException": function() {
-                  return (
-                    /* binding */
-                    InvalidArgumentException
-                  );
-                },
-                /* harmony export */
-                "NotImplementedException": function() {
-                  return (
-                    /* binding */
-                    NotImplementedException
-                  );
-                }
-                /* harmony export */
-              });
-              var __extends2 = function() {
-                var extendStatics2 = function(d2, b2) {
-                  extendStatics2 = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d3, b3) {
-                    d3.__proto__ = b3;
-                  } || function(d3, b3) {
-                    for (var p in b3)
-                      if (Object.prototype.hasOwnProperty.call(b3, p))
-                        d3[p] = b3[p];
-                  };
-                  return extendStatics2(d2, b2);
-                };
-                return function(d2, b2) {
-                  if (typeof b2 !== "function" && b2 !== null)
-                    throw new TypeError("Class extends value " + String(b2) + " is not a constructor or null");
-                  extendStatics2(d2, b2);
-                  function __() {
-                    this.constructor = d2;
-                  }
-                  d2.prototype = b2 === null ? Object.create(b2) : (__.prototype = b2.prototype, new __());
-                };
-              }();
-              var RuntimeException = (
-                /** @class */
-                function() {
-                  function RuntimeException2(message) {
-                    this._message = message;
-                  }
-                  Object.defineProperty(RuntimeException2.prototype, "name", {
-                    get: function() {
-                      return "RuntimeException";
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(RuntimeException2.prototype, "message", {
-                    get: function() {
-                      return this._message;
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  RuntimeException2.prototype.toString = function() {
-                    return this.name + ": " + this.message;
-                  };
-                  return RuntimeException2;
-                }()
-              );
-              var IllegalStateException = (
-                /** @class */
-                function(_super) {
-                  __extends2(IllegalStateException2, _super);
-                  function IllegalStateException2(message) {
-                    return _super.call(this, message) || this;
-                  }
-                  Object.defineProperty(IllegalStateException2.prototype, "name", {
-                    get: function() {
-                      return "IllegalStateException";
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  return IllegalStateException2;
-                }(RuntimeException)
-              );
-              var InvalidArgumentException = (
-                /** @class */
-                function(_super) {
-                  __extends2(InvalidArgumentException2, _super);
-                  function InvalidArgumentException2(message) {
-                    return _super.call(this, message) || this;
-                  }
-                  Object.defineProperty(InvalidArgumentException2.prototype, "name", {
-                    get: function() {
-                      return "InvalidArgumentException";
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  return InvalidArgumentException2;
-                }(RuntimeException)
-              );
-              var NotImplementedException = (
-                /** @class */
-                function(_super) {
-                  __extends2(NotImplementedException2, _super);
-                  function NotImplementedException2(message) {
-                    return _super.call(this, message) || this;
-                  }
-                  Object.defineProperty(NotImplementedException2.prototype, "name", {
-                    get: function() {
-                      return "NotImplementedException";
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  return NotImplementedException2;
-                }(RuntimeException)
-              );
-            }
-          ),
-          /***/
-          "./src/utils/logger.js": (
-            /*!*****************************!*\
-              !*** ./src/utils/logger.js ***!
-              \*****************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! events */
-                "./node_modules/events/events.js"
-              );
-              var events__WEBPACK_IMPORTED_MODULE_0___default = /* @__PURE__ */ __webpack_require__2.n(events__WEBPACK_IMPORTED_MODULE_0__);
-              var Log = (
-                /** @class */
-                function() {
-                  function Log2() {
-                  }
-                  Log2.e = function(tag2, msg) {
-                    if (!tag2 || Log2.FORCE_GLOBAL_TAG)
-                      tag2 = Log2.GLOBAL_TAG;
-                    var str = "[" + tag2 + "] > " + msg;
-                    if (Log2.ENABLE_CALLBACK) {
-                      Log2.emitter.emit("log", "error", str);
-                    }
-                    if (!Log2.ENABLE_ERROR) {
-                      return;
-                    }
-                    if (console.error) {
-                      console.error(str);
-                    } else if (console.warn) {
-                      console.warn(str);
-                    } else {
-                      console.log(str);
-                    }
-                  };
-                  Log2.i = function(tag2, msg) {
-                    if (!tag2 || Log2.FORCE_GLOBAL_TAG)
-                      tag2 = Log2.GLOBAL_TAG;
-                    var str = "[" + tag2 + "] > " + msg;
-                    if (Log2.ENABLE_CALLBACK) {
-                      Log2.emitter.emit("log", "info", str);
-                    }
-                    if (!Log2.ENABLE_INFO) {
-                      return;
-                    }
-                    if (console.info) {
-                      console.info(str);
-                    } else {
-                      console.log(str);
-                    }
-                  };
-                  Log2.w = function(tag2, msg) {
-                    if (!tag2 || Log2.FORCE_GLOBAL_TAG)
-                      tag2 = Log2.GLOBAL_TAG;
-                    var str = "[" + tag2 + "] > " + msg;
-                    if (Log2.ENABLE_CALLBACK) {
-                      Log2.emitter.emit("log", "warn", str);
-                    }
-                    if (!Log2.ENABLE_WARN) {
-                      return;
-                    }
-                    if (console.warn) {
-                      console.warn(str);
-                    } else {
-                      console.log(str);
-                    }
-                  };
-                  Log2.d = function(tag2, msg) {
-                    if (!tag2 || Log2.FORCE_GLOBAL_TAG)
-                      tag2 = Log2.GLOBAL_TAG;
-                    var str = "[" + tag2 + "] > " + msg;
-                    if (Log2.ENABLE_CALLBACK) {
-                      Log2.emitter.emit("log", "debug", str);
-                    }
-                    if (!Log2.ENABLE_DEBUG) {
-                      return;
-                    }
-                    if (console.debug) {
-                      console.debug(str);
-                    } else {
-                      console.log(str);
-                    }
-                  };
-                  Log2.v = function(tag2, msg) {
-                    if (!tag2 || Log2.FORCE_GLOBAL_TAG)
-                      tag2 = Log2.GLOBAL_TAG;
-                    var str = "[" + tag2 + "] > " + msg;
-                    if (Log2.ENABLE_CALLBACK) {
-                      Log2.emitter.emit("log", "verbose", str);
-                    }
-                    if (!Log2.ENABLE_VERBOSE) {
-                      return;
-                    }
-                    console.log(str);
-                  };
-                  return Log2;
-                }()
-              );
-              Log.GLOBAL_TAG = "flv.js";
-              Log.FORCE_GLOBAL_TAG = false;
-              Log.ENABLE_ERROR = true;
-              Log.ENABLE_INFO = true;
-              Log.ENABLE_WARN = true;
-              Log.ENABLE_DEBUG = true;
-              Log.ENABLE_VERBOSE = true;
-              Log.ENABLE_CALLBACK = false;
-              Log.emitter = new (events__WEBPACK_IMPORTED_MODULE_0___default())();
-              __webpack_exports__2["default"] = Log;
-            }
-          ),
-          /***/
-          "./src/utils/logging-control.js": (
-            /*!**************************************!*\
-              !*** ./src/utils/logging-control.js ***!
-              \**************************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var events__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__2(
-                /*! events */
-                "./node_modules/events/events.js"
-              );
-              var events__WEBPACK_IMPORTED_MODULE_0___default = /* @__PURE__ */ __webpack_require__2.n(events__WEBPACK_IMPORTED_MODULE_0__);
-              var _logger_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__2(
-                /*! ./logger.js */
-                "./src/utils/logger.js"
-              );
-              var LoggingControl = (
-                /** @class */
-                function() {
-                  function LoggingControl2() {
-                  }
-                  Object.defineProperty(LoggingControl2, "forceGlobalTag", {
-                    get: function() {
-                      return _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.FORCE_GLOBAL_TAG;
-                    },
-                    set: function(enable) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.FORCE_GLOBAL_TAG = enable;
-                      LoggingControl2._notifyChange();
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(LoggingControl2, "globalTag", {
-                    get: function() {
-                      return _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.GLOBAL_TAG;
-                    },
-                    set: function(tag2) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.GLOBAL_TAG = tag2;
-                      LoggingControl2._notifyChange();
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(LoggingControl2, "enableAll", {
-                    get: function() {
-                      return _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_VERBOSE && _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_DEBUG && _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_INFO && _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_WARN && _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_ERROR;
-                    },
-                    set: function(enable) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_VERBOSE = enable;
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_DEBUG = enable;
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_INFO = enable;
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_WARN = enable;
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_ERROR = enable;
-                      LoggingControl2._notifyChange();
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(LoggingControl2, "enableDebug", {
-                    get: function() {
-                      return _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_DEBUG;
-                    },
-                    set: function(enable) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_DEBUG = enable;
-                      LoggingControl2._notifyChange();
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(LoggingControl2, "enableVerbose", {
-                    get: function() {
-                      return _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_VERBOSE;
-                    },
-                    set: function(enable) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_VERBOSE = enable;
-                      LoggingControl2._notifyChange();
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(LoggingControl2, "enableInfo", {
-                    get: function() {
-                      return _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_INFO;
-                    },
-                    set: function(enable) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_INFO = enable;
-                      LoggingControl2._notifyChange();
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(LoggingControl2, "enableWarn", {
-                    get: function() {
-                      return _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_WARN;
-                    },
-                    set: function(enable) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_WARN = enable;
-                      LoggingControl2._notifyChange();
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  Object.defineProperty(LoggingControl2, "enableError", {
-                    get: function() {
-                      return _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_ERROR;
-                    },
-                    set: function(enable) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_ERROR = enable;
-                      LoggingControl2._notifyChange();
-                    },
-                    enumerable: false,
-                    configurable: true
-                  });
-                  LoggingControl2.getConfig = function() {
-                    return {
-                      globalTag: _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.GLOBAL_TAG,
-                      forceGlobalTag: _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.FORCE_GLOBAL_TAG,
-                      enableVerbose: _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_VERBOSE,
-                      enableDebug: _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_DEBUG,
-                      enableInfo: _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_INFO,
-                      enableWarn: _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_WARN,
-                      enableError: _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_ERROR,
-                      enableCallback: _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_CALLBACK
-                    };
-                  };
-                  LoggingControl2.applyConfig = function(config) {
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.GLOBAL_TAG = config.globalTag;
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.FORCE_GLOBAL_TAG = config.forceGlobalTag;
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_VERBOSE = config.enableVerbose;
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_DEBUG = config.enableDebug;
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_INFO = config.enableInfo;
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_WARN = config.enableWarn;
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_ERROR = config.enableError;
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_CALLBACK = config.enableCallback;
-                  };
-                  LoggingControl2._notifyChange = function() {
-                    var emitter = LoggingControl2.emitter;
-                    if (emitter.listenerCount("change") > 0) {
-                      var config = LoggingControl2.getConfig();
-                      emitter.emit("change", config);
-                    }
-                  };
-                  LoggingControl2.registerListener = function(listener) {
-                    LoggingControl2.emitter.addListener("change", listener);
-                  };
-                  LoggingControl2.removeListener = function(listener) {
-                    LoggingControl2.emitter.removeListener("change", listener);
-                  };
-                  LoggingControl2.addLogListener = function(listener) {
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.emitter.addListener("log", listener);
-                    if (_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.emitter.listenerCount("log") > 0) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_CALLBACK = true;
-                      LoggingControl2._notifyChange();
-                    }
-                  };
-                  LoggingControl2.removeLogListener = function(listener) {
-                    _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.emitter.removeListener("log", listener);
-                    if (_logger_js__WEBPACK_IMPORTED_MODULE_1__.default.emitter.listenerCount("log") === 0) {
-                      _logger_js__WEBPACK_IMPORTED_MODULE_1__.default.ENABLE_CALLBACK = false;
-                      LoggingControl2._notifyChange();
-                    }
-                  };
-                  return LoggingControl2;
-                }()
-              );
-              LoggingControl.emitter = new (events__WEBPACK_IMPORTED_MODULE_0___default())();
-              __webpack_exports__2["default"] = LoggingControl;
-            }
-          ),
-          /***/
-          "./src/utils/polyfill.js": (
-            /*!*******************************!*\
-              !*** ./src/utils/polyfill.js ***!
-              \*******************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              var Polyfill = (
-                /** @class */
-                function() {
-                  function Polyfill2() {
-                  }
-                  Polyfill2.install = function() {
-                    Object.setPrototypeOf = Object.setPrototypeOf || function(obj, proto) {
-                      obj.__proto__ = proto;
-                      return obj;
-                    };
-                    Object.assign = Object.assign || function(target) {
-                      if (target === void 0 || target === null) {
-                        throw new TypeError("Cannot convert undefined or null to object");
-                      }
-                      var output2 = Object(target);
-                      for (var i2 = 1; i2 < arguments.length; i2++) {
-                        var source = arguments[i2];
-                        if (source !== void 0 && source !== null) {
-                          for (var key in source) {
-                            if (source.hasOwnProperty(key)) {
-                              output2[key] = source[key];
-                            }
-                          }
-                        }
-                      }
-                      return output2;
-                    };
-                    if (typeof self.Promise !== "function") {
-                      __webpack_require__2(
-                        /*! es6-promise */
-                        "./node_modules/es6-promise/dist/es6-promise.js"
-                      ).polyfill();
-                    }
-                  };
-                  return Polyfill2;
-                }()
-              );
-              Polyfill.install();
-              __webpack_exports__2["default"] = Polyfill;
-            }
-          ),
-          /***/
-          "./src/utils/utf8-conv.js": (
-            /*!********************************!*\
-              !*** ./src/utils/utf8-conv.js ***!
-              \********************************/
-            /***/
-            function(__unused_webpack_module, __webpack_exports__2, __webpack_require__2) {
-              __webpack_require__2.r(__webpack_exports__2);
-              function checkContinuation(uint8array, start, checkLength) {
-                var array = uint8array;
-                if (start + checkLength < array.length) {
-                  while (checkLength--) {
-                    if ((array[++start] & 192) !== 128)
-                      return false;
-                  }
-                  return true;
-                } else {
-                  return false;
-                }
-              }
-              function decodeUTF8(uint8array) {
-                var out = [];
-                var input = uint8array;
-                var i2 = 0;
-                var length2 = uint8array.length;
-                while (i2 < length2) {
-                  if (input[i2] < 128) {
-                    out.push(String.fromCharCode(input[i2]));
-                    ++i2;
-                    continue;
-                  } else if (input[i2] < 192)
-                    ;
-                  else if (input[i2] < 224) {
-                    if (checkContinuation(input, i2, 1)) {
-                      var ucs4 = (input[i2] & 31) << 6 | input[i2 + 1] & 63;
-                      if (ucs4 >= 128) {
-                        out.push(String.fromCharCode(ucs4 & 65535));
-                        i2 += 2;
-                        continue;
-                      }
-                    }
-                  } else if (input[i2] < 240) {
-                    if (checkContinuation(input, i2, 2)) {
-                      var ucs4 = (input[i2] & 15) << 12 | (input[i2 + 1] & 63) << 6 | input[i2 + 2] & 63;
-                      if (ucs4 >= 2048 && (ucs4 & 63488) !== 55296) {
-                        out.push(String.fromCharCode(ucs4 & 65535));
-                        i2 += 3;
-                        continue;
-                      }
-                    }
-                  } else if (input[i2] < 248) {
-                    if (checkContinuation(input, i2, 3)) {
-                      var ucs4 = (input[i2] & 7) << 18 | (input[i2 + 1] & 63) << 12 | (input[i2 + 2] & 63) << 6 | input[i2 + 3] & 63;
-                      if (ucs4 > 65536 && ucs4 < 1114112) {
-                        ucs4 -= 65536;
-                        out.push(String.fromCharCode(ucs4 >>> 10 | 55296));
-                        out.push(String.fromCharCode(ucs4 & 1023 | 56320));
-                        i2 += 4;
-                        continue;
-                      }
-                    }
-                  }
-                  out.push(String.fromCharCode(65533));
-                  ++i2;
-                }
-                return out.join("");
-              }
-              __webpack_exports__2["default"] = decodeUTF8;
-            }
-          )
-          /******/
-        };
-        var __webpack_module_cache__ = {};
-        function __webpack_require__(moduleId) {
-          var cachedModule = __webpack_module_cache__[moduleId];
-          if (cachedModule !== void 0) {
-            return cachedModule.exports;
-          }
-          var module2 = __webpack_module_cache__[moduleId] = {
-            /******/
-            // no module.id needed
-            /******/
-            // no module.loaded needed
-            /******/
-            exports: {}
-            /******/
-          };
-          __webpack_modules__[moduleId].call(module2.exports, module2, module2.exports, __webpack_require__);
-          return module2.exports;
-        }
-        __webpack_require__.m = __webpack_modules__;
-        !function() {
-          __webpack_require__.n = function(module2) {
-            var getter = module2 && module2.__esModule ? (
-              /******/
-              function() {
-                return module2["default"];
-              }
-            ) : (
-              /******/
-              function() {
-                return module2;
-              }
-            );
-            __webpack_require__.d(getter, { a: getter });
-            return getter;
-          };
-        }();
-        !function() {
-          __webpack_require__.d = function(exports2, definition) {
-            for (var key in definition) {
-              if (__webpack_require__.o(definition, key) && !__webpack_require__.o(exports2, key)) {
-                Object.defineProperty(exports2, key, { enumerable: true, get: definition[key] });
-              }
-            }
-          };
-        }();
-        !function() {
-          __webpack_require__.g = function() {
-            if (typeof globalThis === "object")
-              return globalThis;
-            try {
-              return this || new Function("return this")();
-            } catch (e2) {
-              if (typeof window === "object")
-                return window;
-            }
-          }();
-        }();
-        !function() {
-          __webpack_require__.o = function(obj, prop) {
-            return Object.prototype.hasOwnProperty.call(obj, prop);
-          };
-        }();
-        !function() {
-          __webpack_require__.r = function(exports2) {
-            if (typeof Symbol !== "undefined" && Symbol.toStringTag) {
-              Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
-            }
-            Object.defineProperty(exports2, "__esModule", { value: true });
-          };
-        }();
-        var __webpack_exports__ = __webpack_require__("./src/index.js");
-        return __webpack_exports__;
-      }()
-    );
-  });
-})(flv);
-var flvExports = flv.exports;
-const FlvJs = /* @__PURE__ */ getDefaultExportFromCjs(flvExports);
 const playVideo = (sentence) => {
   const userDataState = webgalStore.getState().userData;
   const mainVol = userDataState.optionData.volumeMain;
@@ -29992,23 +20543,10 @@ const playVideo = (sentence) => {
   if (blockingNext || loopValue || chooseContent !== "") {
     blockingNextFlag = true;
   }
-  let videoElement = null;
-  let flvPlayer = null;
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.videoContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("video", { className: styles$k.fullScreen_video, id: "playVideoElement" }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$h.videoContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("video", { className: styles$h.fullScreen_video, id: "playVideoElement", src: sentence.content, autoPlay: true }) }),
     document.getElementById("videoContainer")
   );
-  setTimeout(() => {
-    videoElement = document.getElementById("playVideoElement");
-    if (FlvJs.isSupported() && videoElement) {
-      flvPlayer = FlvJs.createPlayer({
-        type: sentence.content.endsWith(".mp4") ? "mp4" : "flv",
-        url: sentence.content
-      });
-      flvPlayer.attachMediaElement(videoElement);
-      flvPlayer.load();
-    }
-  }, 1);
   let isOver = false;
   const performObject = {
     performName: "none",
@@ -30027,20 +20565,19 @@ const playVideo = (sentence) => {
         WebGAL.gameplay.performController.unmountPerform(e2.performName);
       };
       setTimeout(() => {
-        if (flvPlayer !== null && videoElement !== null) {
-          flvPlayer.currentTime = 0;
-          flvPlayer.volume = bgmVol;
-          videoElement.loop = loopValue;
+        let VocalControl = document.getElementById("playVideoElement");
+        if (VocalControl !== null) {
+          VocalControl.currentTime = 0;
+          VocalControl.volume = bgmVol;
+          VocalControl.loop = loopValue;
           const endPerform = () => {
             for (const e2 of WebGAL.gameplay.performController.performList) {
               if (e2.performName === performInitName) {
                 if (chooseContent !== "" && !loopValue) {
                   const parsedResult = sceneParser(chooseContent, "temp.txt", "");
-                  if (flvPlayer) {
-                    const duration = flvPlayer.duration || 0;
-                    flvPlayer.currentTime = duration - 0.03;
-                    flvPlayer.pause();
-                  }
+                  const duration = VocalControl.duration;
+                  VocalControl.currentTime = duration - 0.03;
+                  VocalControl.pause();
                   const script = parsedResult.sentenceList[0];
                   const perform2 = choose(script, () => {
                     endCallback(e2);
@@ -30073,13 +20610,6 @@ const playVideo = (sentence) => {
               if (bgmElement22) {
                 vocalElement2.volume = vocalVol.toString();
               }
-              if (flvPlayer) {
-                flvPlayer.pause();
-                flvPlayer.unload();
-                flvPlayer.detachMediaElement();
-                flvPlayer.destroy();
-                flvPlayer = null;
-              }
               ReactDOM.render(/* @__PURE__ */ jsxRuntimeExports.jsx("div", {}), document.getElementById("videoContainer"));
             },
             blockingNext: () => blockingNextFlag,
@@ -30101,18 +20631,18 @@ const playVideo = (sentence) => {
           if (bgmElement2) {
             vocalElement.volume = vocalVol2.toString();
           }
-          flvPlayer.play();
+          VocalControl == null ? void 0 : VocalControl.play();
           if (chooseContent && loopValue) {
             const parsedResult = sceneParser(chooseContent, "temp.txt", "");
             const script = parsedResult.sentenceList[0];
             const perform2 = choose(script, endPerform);
             WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
           }
-          videoElement.onended = () => {
+          VocalControl.onended = () => {
             endPerform();
           };
         }
-      }, 100);
+      }, 1);
     })
   };
   return performObject;
@@ -30820,24 +21350,22 @@ const playVocal = (sentence) => {
     })
   };
 };
-function useTextDelay(type2) {
-  switch (type2) {
-    case playSpeed.slow:
-      return 80;
-    case playSpeed.normal:
-      return 35;
-    case playSpeed.fast:
-      return 3;
+function useTextDelay(num) {
+  if (num === 0) {
+    return 3;
+  } else if (num === 100) {
+    return 80;
+  } else {
+    return 77 * Number(num) / 100;
   }
 }
-function useTextAnimationDuration(type2) {
-  switch (type2) {
-    case playSpeed.slow:
-      return 800;
-    case playSpeed.normal:
-      return 350;
-    case playSpeed.fast:
-      return 200;
+function useTextAnimationDuration(num) {
+  if (num === 0) {
+    return 800;
+  } else if (num === 100) {
+    return 200;
+  } else {
+    return 800 - 600 * Number(num) / 100;
   }
 }
 const say = (sentence) => {
@@ -30897,7 +21425,7 @@ const say = (sentence) => {
     playVocal(sentence);
   }
   const performInitName = getRandomPerformName();
-  let endDelay = 750 - userDataState.optionData.textSpeed * 250;
+  let endDelay = 750 - userDataState.optionData.textSpeed / 100 * 2 * 250;
   if (isNotend) {
     endDelay = 0;
   }
@@ -33858,7 +24386,7 @@ function n(n2) {
         c2[2] && (r2.attrs[c2[2]] = c2[3].trim().substring(1, c2[3].length - 1));
   return r2;
 }
-var r = /<[a-zA-Z0-9\-\!\/](?:"[^"]*"|'[^']*'|[^'">])*>/g, i = /^\s*$/, s$2 = /* @__PURE__ */ Object.create(null);
+var r = /<[a-zA-Z0-9\-\!\/](?:"[^"]*"|'[^']*'|[^'">])*>/g, i = /^\s*$/, s$1 = /* @__PURE__ */ Object.create(null);
 function a(e2, t2) {
   switch (t2.type) {
     case "text":
@@ -33875,7 +24403,7 @@ function a(e2, t2) {
   }
 }
 var c = { parse: function(e2, t2) {
-  t2 || (t2 = {}), t2.components || (t2.components = s$2);
+  t2 || (t2 = {}), t2.components || (t2.components = s$1);
   var a2, c2 = [], o2 = [], l2 = -1, m2 = false;
   if (0 !== e2.indexOf("<")) {
     var u2 = e2.indexOf("<");
@@ -35866,7 +26394,7 @@ const fastLPreview = "_fastLPreview_15mmi_77";
 const slPreviewMain = "_slPreviewMain_15mmi_89";
 const imgContainer = "_imgContainer_15mmi_97";
 const textContainer = "_textContainer_15mmi_105";
-const styles$j = {
+const styles$g = {
   main,
   button: button$1,
   button_text: button_text$1,
@@ -35886,9 +26414,9 @@ const setButton$1 = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_auto");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$j.button_on;
+      autoIcon.className = styles$g.button_on;
     } else
-      autoIcon.className = styles$j.singleButton;
+      autoIcon.className = styles$g.singleButton;
   }
 };
 const stopAuto = () => {
@@ -35935,9 +26463,9 @@ const setButton = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_fast");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$j.button_on;
+      autoIcon.className = styles$g.button_on;
     } else
-      autoIcon.className = styles$j.singleButton;
+      autoIcon.className = styles$g.singleButton;
   }
 };
 const stopFast = () => {
@@ -35995,7 +26523,7 @@ const backlog_item_content = "_backlog_item_content_zwyao_113";
 const backlog_item_button_list = "_backlog_item_button_list_zwyao_137";
 const backlog_item_button_element = "_backlog_item_button_element_zwyao_144";
 const backlog_item_content_text = "_backlog_item_content_text_zwyao_157";
-const styles$i = {
+const styles$f = {
   Backlog_main,
   backlog_soft_in,
   Backlog_main_out,
@@ -36232,7 +26760,7 @@ function useMouseWheel() {
       return;
     const direction = ev.wheelDelta && (ev.wheelDelta > 0 ? "up" : "down") || ev.detail && (ev.detail < 0 ? "up" : "down") || "down";
     const ctrlKey = ev.ctrlKey;
-    const dom = document.querySelector(`.${styles$i.backlog_content}`);
+    const dom = document.querySelector(`.${styles$f.backlog_content}`);
     if (isGameActive() && direction === "up" && !ctrlKey) {
       setComponentVisibility("showBacklog", true);
       setComponentVisibility("showTextBox", false);
@@ -36450,7 +26978,7 @@ const Title = () => {
   const { playSeEnter, playSeClick } = useSoundEffect();
   const applyStyle2 = useApplyStyle("UI/Title/title.scss");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$n.Title_backup_background) }),
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$k.Title_backup_background) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -36470,21 +26998,21 @@ const Title = () => {
     GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: applyStyle2("Title_main", styles$n.Title_main),
+        className: applyStyle2("Title_main", styles$k.Title_main),
         style: {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$k.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
-            className: applyStyle2("Title_button", styles$n.Title_button),
+            className: applyStyle2("Title_button", styles$k.Title_button),
             onClick: () => {
               startGame();
               playSeClick();
             },
             onMouseEnter: playSeEnter,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$k.Title_button_text), children: t2("start.title") })
           }
         ) })
       }
@@ -36495,7 +27023,7 @@ const Logo_main = "_Logo_main_1bne2_1";
 const Logo_Back = "_Logo_Back_1bne2_32";
 const animationActive = "_animationActive_1bne2_46";
 const fadeout = "_fadeout_1bne2_1";
-const styles$h = {
+const styles$e = {
   Logo_main,
   "change-img-anim": "_change-img-anim_1bne2_1",
   Logo_Back,
@@ -36529,7 +27057,7 @@ const Logo = () => {
     currentLogoIndex.value !== -1 && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$h.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$h.animationActive : ""),
+        className: styles$e.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$e.animationActive : ""),
         style: {
           animationDuration: `${animationDuration}ms`
         }
@@ -36539,7 +27067,7 @@ const Logo = () => {
     currentLogoUrl !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$h.Logo_main,
+        className: styles$e.Logo_main,
         onClick: nextImg,
         style: { backgroundImage: `url("${currentLogoUrl}")`, animationDuration: `${animationDuration}ms` }
       },
@@ -51887,7 +42415,7 @@ var $defaultVertex = "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCo
 var $defaultFilterVertex = "attribute vec2 aVertexPosition;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nuniform vec4 inputSize;\nuniform vec4 outputFrame;\n\nvec4 filterVertexPosition( void )\n{\n    vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;\n\n    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);\n}\n\nvec2 filterTextureCoord( void )\n{\n    return aVertexPosition * (outputFrame.zw * inputSize.zw);\n}\n\nvoid main(void)\n{\n    gl_Position = filterVertexPosition();\n    vTextureCoord = filterTextureCoord();\n}\n";
 var defaultVertex$1 = $defaultVertex;
 var defaultFilterVertex = $defaultFilterVertex;
-var System$1 = (
+var System = (
   /** @class */
   function() {
     function System2(renderer) {
@@ -66152,7 +56680,7 @@ const PIXI = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty
   State,
   StateSystem,
   StencilSystem,
-  System: System$1,
+  System,
   get TARGETS() {
     return TARGETS;
   },
@@ -94576,7 +85104,7 @@ function getUserAnimation() {
 const Menu_main = "_Menu_main_1a7i6_1";
 const Menu_ShowSoftly = "_Menu_ShowSoftly_1a7i6_1";
 const Menu_TagContent = "_Menu_TagContent_1a7i6_10";
-const styles$g = {
+const styles$d = {
   Menu_main,
   Menu_ShowSoftly,
   Menu_TagContent
@@ -94585,7 +85113,7 @@ const MenuPanel_main = "_MenuPanel_main_1c9ky_1";
 const MenuPanel_button = "_MenuPanel_button_1c9ky_10";
 const MenuPanel_button_icon = "_MenuPanel_button_icon_1c9ky_38";
 const MenuPanel_button_hl = "_MenuPanel_button_hl_1c9ky_44";
-const styles$f = {
+const styles$c = {
   MenuPanel_main,
   MenuPanel_button,
   MenuPanel_button_icon,
@@ -94685,10 +85213,10 @@ var DEFAULT_ICON_CONFIGS = {
 function guid() {
   return "icon-" + ((1 + Math.random()) * 4294967296 | 0).toString(16).substring(1);
 }
-function IconConverter(id2, icon2, config) {
-  var fill = typeof icon2.fill === "string" ? [icon2.fill] : icon2.fill || [];
+function IconConverter(id2, icon, config) {
+  var fill = typeof icon.fill === "string" ? [icon.fill] : icon.fill || [];
   var colors = [];
-  var theme = icon2.theme || config.theme;
+  var theme = icon.theme || config.theme;
   switch (theme) {
     case "outline":
       colors.push(typeof fill[0] === "string" ? fill[0] : "currentColor");
@@ -94716,10 +85244,10 @@ function IconConverter(id2, icon2, config) {
       break;
   }
   return {
-    size: icon2.size || config.size,
-    strokeWidth: icon2.strokeWidth || config.strokeWidth,
-    strokeLinecap: icon2.strokeLinecap || config.strokeLinecap,
-    strokeLinejoin: icon2.strokeLinejoin || config.strokeLinejoin,
+    size: icon.size || config.size,
+    strokeWidth: icon.strokeWidth || config.strokeWidth,
+    strokeLinecap: icon.strokeLinecap || config.strokeLinecap,
+    strokeLinejoin: icon.strokeLinejoin || config.strokeLinejoin,
     colors,
     id: id2
   };
@@ -94978,20 +85506,6 @@ const Home = IconWrapper("home", false, function(props) {
     stroke: props.colors[0],
     strokeWidth: props.strokeWidth,
     strokeLinecap: props.strokeLinecap
-  }));
-});
-const Left = IconWrapper("left", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M31 36L19 24L31 12",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
   }));
 });
 const Lock = IconWrapper("lock", false, function(props) {
@@ -95349,7 +85863,7 @@ const MenuIconMap = (props) => {
 };
 const MenuPanelButton = (props) => {
   const { playSePageChange, playSeEnter } = useSoundEffect();
-  let buttonClassName = styles$f.MenuPanel_button;
+  let buttonClassName = styles$c.MenuPanel_button;
   if (props.hasOwnProperty("buttonOnClassName")) {
     buttonClassName = buttonClassName + props.buttonOnClassName;
   }
@@ -95363,7 +85877,7 @@ const MenuPanelButton = (props) => {
       onMouseEnter: playSeEnter,
       style: { ...props.style, color: props.tagColor },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
         props.tagName
       ]
     }
@@ -95378,20 +85892,24 @@ const backToTitle = () => {
   dispatch(setVisibility({ component: "showTitle", visibility: true }));
   setEbg(webgalStore.getState().GUI.titleBg);
 };
-const GlobalDialog_main = "_GlobalDialog_main_101j8_2";
-const showGlobalDialog = "_showGlobalDialog_101j8_1";
-const glabalDialog_container_inner = "_glabalDialog_container_inner_101j8_17";
-const glabalDialog_container = "_glabalDialog_container_101j8_17";
-const title$1 = "_title_101j8_36";
-const button_list = "_button_list_101j8_41";
-const button = "_button_101j8_41";
-const styles$e = {
+const GlobalDialog_main = "_GlobalDialog_main_1uknr_2";
+const showGlobalDialog = "_showGlobalDialog_1uknr_1";
+const glabalDialog_container_inner = "_glabalDialog_container_inner_1uknr_17";
+const glabalDialog_container = "_glabalDialog_container_1uknr_17";
+const title = "_title_1uknr_38";
+const button_list = "_button_list_1uknr_48";
+const button_confirm = "_button_confirm_1uknr_55";
+const button_cancel = "_button_cancel_1uknr_66";
+const button = "_button_1uknr_48";
+const styles$b = {
   GlobalDialog_main,
   showGlobalDialog,
   glabalDialog_container_inner,
   glabalDialog_container,
-  title: title$1,
+  title,
   button_list,
+  button_confirm,
+  button_cancel,
   button
 };
 function GlobalDialog() {
@@ -95411,11 +85929,11 @@ function showGlogalDialog(props) {
     props.rightFunc();
     hideGlobalDialog();
   };
-  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.button_list, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
+  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.title, children: props.title }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.button_list, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.button_confirm, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.button_cancel, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
     ] })
   ] }) }) });
   setTimeout(() => {
@@ -95443,16 +85961,16 @@ const MenuPanel = () => {
   const { playSeClick, playSeDialogOpen, playSePageChange } = useSoundEffect();
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
-  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$f.MenuPanel_button_hl}` : ``;
-  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$f.MenuPanel_button_hl}` : ``;
-  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$f.MenuPanel_button_hl}` : ``;
+  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$c.MenuPanel_button_hl}` : ``;
+  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$c.MenuPanel_button_hl}` : ``;
+  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$c.MenuPanel_button_hl}` : ``;
   const SaveTagColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadTagColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionTagColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
   const SaveIconColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadIconColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionIconColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.MenuPanel_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.MenuPanel_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       MenuPanelButton,
       {
@@ -95541,78 +86059,92 @@ const MenuPanel = () => {
     )
   ] });
 };
-const Save_Load_main = "_Save_Load_main_a3o8b_2";
-const Save_Load_top = "_Save_Load_top_a3o8b_9";
-const Elements_in$2 = "_Elements_in_a3o8b_1";
-const Save_Load_title = "_Save_Load_title_a3o8b_17";
-const Save_title_text = "_Save_title_text_a3o8b_35";
-const Load_title_text = "_Load_title_text_a3o8b_43";
-const Save_Load_top_buttonList = "_Save_Load_top_buttonList_a3o8b_51";
-const Save_Load_top_button = "_Save_Load_top_button_a3o8b_51";
-const Save_Load_top_button_text = "_Save_Load_top_button_text_a3o8b_69";
-const Save_Load_top_button_on = "_Save_Load_top_button_on_a3o8b_80";
-const Load_top_button_on = "_Load_top_button_on_a3o8b_93";
-const Load_top_button = "_Load_top_button_a3o8b_93";
-const Save_Load_content = "_Save_Load_content_a3o8b_106";
-const Save_Load_content_element = "_Save_Load_content_element_a3o8b_115";
-const Elements_in_transform = "_Elements_in_transform_a3o8b_1";
-const Save_Load_content_element_top = "_Save_Load_content_element_top_a3o8b_131";
-const Save_Load_content_element_top_index = "_Save_Load_content_element_top_index_a3o8b_138";
-const Load_content_elememt_top_index = "_Load_content_elememt_top_index_a3o8b_147";
-const Save_Load_content_element_top_date = "_Save_Load_content_element_top_date_a3o8b_151";
-const Load_content_element_top_date = "_Load_content_element_top_date_a3o8b_162";
-const Save_Load_content_text = "_Save_Load_content_text_a3o8b_166";
-const Save_Load_content_text_padding = "_Save_Load_content_text_padding_a3o8b_180";
-const Save_Load_content_speaker = "_Save_Load_content_speaker_a3o8b_184";
-const Load_content_speaker = "_Load_content_speaker_a3o8b_193";
-const Load_content_text = "_Load_content_text_a3o8b_197";
-const Save_Load_content_miniRen = "_Save_Load_content_miniRen_a3o8b_201";
-const Save_Load_content_miniRen_bg = "_Save_Load_content_miniRen_bg_a3o8b_208";
-const Save_Load_content_miniRen_figure = "_Save_Load_content_miniRen_figure_a3o8b_215";
-const Save_Load_content_miniRen_figLeft = "_Save_Load_content_miniRen_figLeft_a3o8b_223";
-const Save_Load_content_miniRen_figRight = "_Save_Load_content_miniRen_figRight_a3o8b_228";
-const styles$d = {
+const Save_Load_main = "_Save_Load_main_1fx8j_2";
+const Save_Load_top = "_Save_Load_top_1fx8j_13";
+const Elements_in = "_Elements_in_1fx8j_1";
+const Save_Load_title_save = "_Save_Load_title_save_1fx8j_21";
+const Save_back$1 = "_Save_back_1fx8j_34";
+const Save_title = "_Save_title_1fx8j_48";
+const Load_title = "_Load_title_1fx8j_61";
+const Save_Load_title = "_Save_Load_title_1fx8j_21";
+const Save_Load_top_buttonList = "_Save_Load_top_buttonList_1fx8j_92";
+const Save_Load_top_button = "_Save_Load_top_button_1fx8j_92";
+const Save_Load_top_button_on = "_Save_Load_top_button_on_1fx8j_120";
+const Load_top_button_on = "_Load_top_button_on_1fx8j_136";
+const Load_top_button = "_Load_top_button_1fx8j_136";
+const Save_Load_content = "_Save_Load_content_1fx8j_149";
+const Save_Load_content_element = "_Save_Load_content_element_1fx8j_163";
+const Elements_in_transform = "_Elements_in_transform_1fx8j_1";
+const Save_Load_border = "_Save_Load_border_1fx8j_178";
+const Save_Load_info_box = "_Save_Load_info_box_1fx8j_186";
+const Save_Load_content_miniRen = "_Save_Load_content_miniRen_1fx8j_189";
+const Save_Load_content_element_top = "_Save_Load_content_element_top_1fx8j_193";
+const Save_Load_content_element_top_index = "_Save_Load_content_element_top_index_1fx8j_200";
+const Load_content_elememt_top_index = "_Load_content_elememt_top_index_1fx8j_211";
+const Save_Load_content_element_top_date = "_Save_Load_content_element_top_date_1fx8j_222";
+const Load_content_element_top_date = "_Load_content_element_top_date_1fx8j_236";
+const Save_Load_content_text = "_Save_Load_content_text_1fx8j_240";
+const Save_Load_info = "_Save_Load_info_1fx8j_186";
+const Save_Load_content_text_padding = "_Save_Load_content_text_padding_1fx8j_265";
+const Save_Load_content_speaker = "_Save_Load_content_speaker_1fx8j_269";
+const Load_content_speaker = "_Load_content_speaker_1fx8j_278";
+const Load_content_text = "_Load_content_text_1fx8j_282";
+const Save_Load_content_space = "_Save_Load_content_space_1fx8j_298";
+const Save_Load_content_miniRen_bg = "_Save_Load_content_miniRen_bg_1fx8j_309";
+const Save_Load_content_miniRen_figure = "_Save_Load_content_miniRen_figure_1fx8j_316";
+const Save_Load_content_miniRen_figLeft = "_Save_Load_content_miniRen_figLeft_1fx8j_324";
+const Save_Load_content_miniRen_figRight = "_Save_Load_content_miniRen_figRight_1fx8j_329";
+const Btn_l = "_Btn_l_1fx8j_348";
+const Btn_r = "_Btn_r_1fx8j_358";
+const styles$a = {
   Save_Load_main,
   Save_Load_top,
-  Elements_in: Elements_in$2,
+  Elements_in,
+  Save_Load_title_save,
+  Save_back: Save_back$1,
+  Save_title,
+  Load_title,
   Save_Load_title,
-  Save_title_text,
-  Load_title_text,
   Save_Load_top_buttonList,
   Save_Load_top_button,
-  Save_Load_top_button_text,
   Save_Load_top_button_on,
   Load_top_button_on,
   Load_top_button,
   Save_Load_content,
   Save_Load_content_element,
   Elements_in_transform,
+  Save_Load_border,
+  Save_Load_info_box,
+  Save_Load_content_miniRen,
   Save_Load_content_element_top,
   Save_Load_content_element_top_index,
   Load_content_elememt_top_index,
   Save_Load_content_element_top_date,
   Load_content_element_top_date,
   Save_Load_content_text,
+  Save_Load_info,
   Save_Load_content_text_padding,
   Save_Load_content_speaker,
   Load_content_speaker,
   Load_content_text,
-  Save_Load_content_miniRen,
+  Save_Load_content_space,
   Save_Load_content_miniRen_bg,
   Save_Load_content_miniRen_figure,
   Save_Load_content_miniRen_figLeft,
-  Save_Load_content_miniRen_figRight
+  Save_Load_content_miniRen_figRight,
+  Btn_l,
+  Btn_r
 };
 const Save = () => {
-  const { playSePageChange, playSeEnter, playSeDialogOpen } = useSoundEffect();
+  const { playSeClick, playSePageChange, playSeEnter, playSeDialogOpen } = useSoundEffect();
   const userDataState = useSelector((state) => state.userData);
   const savesDataState = useSelector((state) => state.saveData);
   const dispatch = useDispatch();
   const page = [];
-  for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$d.Save_Load_top_button;
+  for (let i2 = 1; i2 <= 4; i2++) {
+    let classNameOfElement = styles$a.Save_Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$a.Save_Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -95624,7 +86156,7 @@ const Save = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_top_button_text })
       },
       "Save_element_page" + i2
     );
@@ -95632,8 +86164,8 @@ const Save = () => {
   }
   const tCommon = useTrans("common.");
   const showSaves = [];
-  const start = (userDataState.optionData.slPage - 1) * 10 + 1;
-  const end2 = start + 9;
+  const start = (userDataState.optionData.slPage - 1) * 6 + 1;
+  const end2 = start + 5;
   reactExports.useEffect(() => {
     getSavesFromStorage(start, end2);
   }, [start, end2]);
@@ -95641,19 +86173,16 @@ const Save = () => {
   for (let i2 = start; i2 <= end2; i2++) {
     animationIndex++;
     const saveData = savesDataState.saveData[i2];
-    let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", {});
+    let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_space });
     if (saveData) {
-      const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
+      saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date, children: saveData.saveTime })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_border }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$a.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_info, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_info_box, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_element_top_date, children: saveData.saveTime }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_element_top_date, children: saveData.nowStageState.showText })
+        ] }) })
       ] });
     }
     const saveElement = /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -95679,7 +86208,7 @@ const Save = () => {
           }
         },
         onMouseEnter: playSeEnter,
-        className: styles$d.Save_Load_content_element,
+        className: styles$a.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -95688,12 +86217,38 @@ const Save = () => {
     showSaves.push(saveElement);
   }
   const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_title_text, children: t2("saving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
+  const handleBtnClick = (dir) => {
+    const slPage = userDataState.optionData.slPage;
+    let index2 = slPage;
+    if (dir === "left") {
+      index2 = index2 > 1 ? index2 - 1 : 4;
+    } else {
+      index2 = index2 < 4 ? index2 + 1 : 1;
+    }
+    dispatch(setSlPage(index2));
+    setStorage();
+    playSePageChange();
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: styles$a.Save_back,
+          onClick: () => {
+            playSeClick();
+            dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
+          }
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_title })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_top_buttonList, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Btn_l, onClick: () => handleBtnClick("left") }),
+      page,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Btn_r, onClick: () => handleBtnClick("right") })
+    ] })
   ] });
 };
 const Load = () => {
@@ -95702,10 +86257,10 @@ const Load = () => {
   const saveDataState = useSelector((state) => state.saveData);
   const dispatch = useDispatch();
   const page = [];
-  for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$d.Save_Load_top_button + " " + styles$d.Load_top_button;
+  for (let i2 = 1; i2 <= 4; i2++) {
+    let classNameOfElement = styles$a.Save_Load_top_button + " " + styles$a.Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on + " " + styles$d.Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$a.Save_Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -95717,15 +86272,15 @@ const Load = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_top_button_text })
       },
       "Load_element_page" + i2
     );
     page.push(element);
   }
   const showSaves = [];
-  const start = (userDataState.optionData.slPage - 1) * 10 + 1;
-  const end2 = start + 9;
+  const start = (userDataState.optionData.slPage - 1) * 6 + 1;
+  const end2 = start + 5;
   reactExports.useEffect(() => {
     getSavesFromStorage(start, end2);
   }, [start, end2]);
@@ -95733,19 +86288,16 @@ const Load = () => {
   for (let i2 = start; i2 <= end2; i2++) {
     animationIndex++;
     const saveData = saveDataState.saveData[i2];
-    let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", {});
+    let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_space });
     if (saveData) {
-      const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
+      saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index + " " + styles$d.Load_content_elememt_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date + " " + styles$d.Load_content_element_top_date, children: saveData.saveTime })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker + " " + styles$d.Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_border }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$a.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_info, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_info_box, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_element_top_date, children: saveData.saveTime }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_element_top_date, children: saveData.nowStageState.showText })
+        ] }) })
       ] });
     }
     const saveElement = /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -95756,7 +86308,7 @@ const Load = () => {
           playSeClick();
         },
         onMouseEnter: playSeEnter,
-        className: styles$d.Save_Load_content_element,
+        className: styles$a.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -95764,328 +86316,291 @@ const Load = () => {
     );
     showSaves.push(saveElement);
   }
-  const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Load_title_text, children: t2("loadSaving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
-  ] });
-};
-const Options_main = "_Options_main_u5orq_2";
-const Options_top = "_Options_top_u5orq_9";
-const Options_title = "_Options_title_u5orq_16";
-const Option_title_text = "_Option_title_text_u5orq_25";
-const Elements_in$1 = "_Elements_in_u5orq_1";
-const Option_title_text_shadow = "_Option_title_text_shadow_u5orq_34";
-const Option_title_text_ts = "_Option_title_text_ts_u5orq_41";
-const Options_main_content = "_Options_main_content_u5orq_48";
-const Options_main_content_half = "_Options_main_content_half_u5orq_55";
-const About_title_text = "_About_title_text_u5orq_65";
-const About_text = "_About_text_u5orq_73";
-const Options_page_container = "_Options_page_container_u5orq_92";
-const Options_button_list = "_Options_button_list_u5orq_98";
-const Options_page_button = "_Options_page_button_u5orq_102";
-const Options_page_button_active = "_Options_page_button_active_u5orq_114";
-const styles$c = {
-  Options_main,
-  Options_top,
-  Options_title,
-  Option_title_text,
-  Elements_in: Elements_in$1,
-  Option_title_text_shadow,
-  Option_title_text_ts,
-  Options_main_content,
-  Options_main_content_half,
-  About_title_text,
-  About_text,
-  Options_page_container,
-  Options_button_list,
-  Options_page_button,
-  Options_page_button_active
-};
-const NormalOption$1 = "_NormalOption_ogzuv_1";
-const Elements_in = "_Elements_in_ogzuv_1";
-const NormalOption_title = "_NormalOption_title_ogzuv_10";
-const NormalOption_title_bef = "_NormalOption_title_bef_ogzuv_19";
-const NormalOption_title_sd = "_NormalOption_title_sd_ogzuv_29";
-const NormalOption_buttonList = "_NormalOption_buttonList_ogzuv_39";
-const styles$b = {
-  NormalOption: NormalOption$1,
-  Elements_in,
-  NormalOption_title,
-  NormalOption_title_bef,
-  NormalOption_title_sd,
-  NormalOption_buttonList
-};
-const NormalOption = (props) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.NormalOption, style: { width: props.full ? "100%" : "auto" }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_buttonList, style: { width: props.full ? "100%" : "auto" }, children: props.children })
-  ] });
-};
-const NormalButton$1 = "_NormalButton_1qk3b_1";
-const NormalButtonChecked = "_NormalButtonChecked_1qk3b_18";
-const styles$a = {
-  NormalButton: NormalButton$1,
-  NormalButtonChecked
-};
-const NormalButton = (props) => {
-  const len = props.textList.length;
-  const buttonList = [];
-  const { playSeEnter, playSeSwitch } = useSoundEffect();
-  for (let i2 = 0; i2 < len; i2++) {
-    if (i2 === props.currentChecked) {
-      const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: styles$a.NormalButton + " " + styles$a.NormalButtonChecked,
-          onClick: () => {
-            playSeSwitch();
-            props.functionList[i2]();
-          },
-          onMouseEnter: playSeEnter,
-          children: props.textList[i2]
-        },
-        props.textList[i2] + i2 + props
-      );
-      buttonList.push(t2);
+  useTrans("menu.");
+  const handleBtnClick = (dir) => {
+    const slPage = userDataState.optionData.slPage;
+    let index2 = slPage;
+    if (dir === "left") {
+      index2 = index2 > 1 ? index2 - 1 : 4;
     } else {
-      const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
+      index2 = index2 < 4 ? index2 + 1 : 1;
+    }
+    dispatch(setSlPage(index2));
+    setStorage();
+    playSePageChange();
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: styles$a.NormalButton,
+          className: styles$a.Save_back,
           onClick: () => {
-            playSeSwitch();
-            props.functionList[i2]();
-          },
-          onMouseEnter: playSeEnter,
-          children: props.textList[i2]
-        },
-        props.textList[i2] + i2
-      );
-      buttonList.push(t2);
-    }
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: buttonList });
-};
-function getLanguageName(lang2) {
-  return language[lang2];
-}
-function useLanguage() {
-  const { i18n } = useTranslation();
-  const userDataRef = useGenSyncRef((state) => state.userData);
-  const dispatch = useDispatch();
-  return (_lang, isSyncStorage = true) => {
-    var _a2;
-    const lang2 = _lang ?? ((_a2 = userDataRef.current) == null ? void 0 : _a2.optionData.language) ?? language.zhCn;
-    const languageName = getLanguageName(lang2);
-    i18n.changeLanguage(languageName);
-    dispatch(setOptionData({ key: "language", value: lang2 }));
-    logger.info("设置语言: " + languageName);
-    window == null ? void 0 : window.localStorage.setItem("lang", lang2.toString());
-    if (isSyncStorage) {
-      setStorage();
-    }
-  };
-}
-const backButton = "_backButton_qbk37_1";
-const about = "_about_qbk37_16";
-const icon = "_icon_qbk37_20";
-const title = "_title_qbk37_24";
-const text$1 = "_text_qbk37_34";
-const contributor = "_contributor_qbk37_43";
-const s$1 = {
-  backButton,
-  about,
-  icon,
-  title,
-  text: text$1,
-  contributor
-};
-function About(props) {
-  const t2 = useTrans("menu.options.pages.system.options.about.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: s$1.about, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: s$1.backButton, onClick: props.onClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Left, { className: s$1.icon, theme: "outline", size: "35", strokeWidth: 3, fill: "#333" }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: s$1.title, children: t2("subTitle") }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: s$1.title, children: t2("version") }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: s$1.text, children: __INFO.version })
-  ] });
-}
-function System() {
-  const userDataState = useSelector((state) => state.userData);
-  const userSavesState = useSelector((state) => state.saveData);
-  const dispatch = useDispatch();
-  const setLanguage = useLanguage();
-  const t2 = useTrans("menu.options.pages.system.options.");
-  const { playSeDialogOpen } = useSoundEffect();
-  function exportSaves() {
-    const gameData = {
-      userData: userDataState,
-      saves: userSavesState
-    };
-    const saves = JSON.stringify(gameData);
-    if (saves !== null) {
-      const blob = new Blob([saves], { type: "application/json" });
-      const blobUrl = URL.createObjectURL(blob);
-      const a2 = document.createElement("a");
-      a2.href = blobUrl;
-      a2.download = "saves.json";
-      a2.click();
-      a2.remove();
-    }
-  }
-  function importSavesEventHandler(ev) {
-    const file = ev.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (evR) => {
-      const saves = evR.target.result;
-      try {
-        const saveAsObj = JSON.parse(saves);
-        playSeDialogOpen();
-        showGlogalDialog({
-          title: t2("gameSave.dialogs.import.title"),
-          leftText: t2("$common.yes"),
-          rightText: t2("$common.no"),
-          leftFunc: async () => {
-            await localforage.setItem(WebGAL.gameKey, saveAsObj.userData).then(() => {
-              logger.info(t2("gameSave.dialogs.import.tip"));
-            });
-            getStorage();
-            webgalStore.dispatch(saveActions.replaceSaveGame(saveAsObj.saves.saveData));
-            webgalStore.dispatch(saveActions.setFastSave(saveAsObj.saves.quickSaveData));
-            dumpFastSaveToStorage();
-            dumpSavesToStorage(0, 200);
-          },
-          rightFunc: () => {
+            playSeClick();
+            dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
           }
-        });
-      } catch (e2) {
-        logger.error(t2("gameSave.dialogs.import.error"), e2);
-      }
-    };
-    reader.readAsText(file, "UTF-8");
-  }
-  function importSaves() {
-    const inputElement = document.createElement("input");
-    inputElement.type = "file";
-    inputElement.onchange = importSavesEventHandler;
-    inputElement.click();
-  }
-  const [showAbout, setShowAbout] = reactExports.useState(false);
-  function toggleAbout() {
-    setShowAbout(!showAbout);
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
-    showAbout && /* @__PURE__ */ jsxRuntimeExports.jsx(About, { onClose: toggleAbout }),
-    !showAbout && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("autoSpeed.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NormalButton,
-        {
-          textList: t2("autoSpeed.options.slow", "autoSpeed.options.medium", "autoSpeed.options.fast"),
-          functionList: [
-            () => {
-              dispatch(setOptionData({ key: "autoSpeed", value: playSpeed.slow }));
-              setStorage();
-            },
-            () => {
-              dispatch(setOptionData({ key: "autoSpeed", value: playSpeed.normal }));
-              setStorage();
-            },
-            () => {
-              dispatch(setOptionData({ key: "autoSpeed", value: playSpeed.fast }));
-              setStorage();
-            }
-          ],
-          currentChecked: userDataState.optionData.autoSpeed
         }
-      ) }, "option1"),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("language.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NormalButton,
-        {
-          currentChecked: userDataState.optionData.language,
-          textList: Object.values(languages),
-          functionList: Object.keys(languages).map(
-            (k2) => () => setLanguage(language[k2])
-          )
-        }
-      ) }, "option7"),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("resetData.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NormalButton,
-        {
-          textList: t2(
-            "resetData.options.clearGameSave",
-            "resetData.options.resetSettings",
-            "resetData.options.clearAll"
-          ),
-          functionList: [
-            () => {
-              playSeDialogOpen();
-              showGlogalDialog({
-                title: t2("resetData.dialogs.clearGameSave"),
-                leftText: t2("$common.yes"),
-                rightText: t2("$common.no"),
-                leftFunc: () => {
-                  dispatch(saveActions.resetSaves());
-                  dumpSavesToStorage(0, 200);
-                  dumpFastSaveToStorage();
-                },
-                rightFunc: () => {
-                }
-              });
-            },
-            () => {
-              playSeDialogOpen();
-              showGlogalDialog({
-                title: t2("resetData.dialogs.resetSettings"),
-                leftText: t2("$common.yes"),
-                rightText: t2("$common.no"),
-                leftFunc: () => {
-                  dispatch(resetOptionSet());
-                  dumpToStorageFast();
-                },
-                rightFunc: () => {
-                }
-              });
-            },
-            () => {
-              playSeDialogOpen();
-              showGlogalDialog({
-                title: t2("resetData.dialogs.clearAll"),
-                leftText: t2("$common.yes"),
-                rightText: t2("$common.no"),
-                leftFunc: () => {
-                  dispatch(resetAllData());
-                  dumpToStorageFast();
-                  dispatch(saveActions.resetSaves());
-                  dumpSavesToStorage(0, 200);
-                  dumpFastSaveToStorage();
-                },
-                rightFunc: () => {
-                }
-              });
-            }
-          ],
-          currentChecked: 3
-        }
-      ) }, "option2"),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("gameSave.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NormalButton,
-        {
-          textList: t2("gameSave.options.export", "gameSave.options.import"),
-          functionList: [exportSaves, importSaves],
-          currentChecked: 2
-        }
-      ) }, "option3")
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Load_title })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_top_buttonList, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Btn_l, onClick: () => handleBtnClick("left") }),
+      page,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Btn_r, onClick: () => handleBtnClick("right") })
     ] })
   ] });
-}
-const textPreviewMain = "_textPreviewMain_nolr3_1";
-const textbox = "_textbox_nolr3_8";
+};
+const Options_main = "_Options_main_1m0an_1";
+const Options_top = "_Options_top_1m0an_12";
+const Options_page_container = "_Options_page_container_1m0an_25";
+const Options_left = "_Options_left_1m0an_31";
+const title_base = "_title_base_1m0an_31";
+const Options_right = "_Options_right_1m0an_42";
+const title_voice = "_title_voice_1m0an_45";
+const Line = "_Line_1m0an_56";
+const Label = "_Label_1m0an_62";
+const Check_line = "_Check_line_1m0an_72";
+const Check_item = "_Check_item_1m0an_76";
+const Check_name = "_Check_name_1m0an_81";
+const Check_box = "_Check_box_1m0an_92";
+const Checked_box = "_Checked_box_1m0an_103";
+const Bar_line = "_Bar_line_1m0an_115";
+const Label_text_speed = "_Label_text_speed_1m0an_133";
+const Bar = "_Bar_1m0an_115";
+const Save_back = "_Save_back_1m0an_153";
 const styles$9 = {
-  textPreviewMain,
-  textbox
+  Options_main,
+  Options_top,
+  Options_page_container,
+  Options_left,
+  title_base,
+  Options_right,
+  title_voice,
+  Line,
+  Label,
+  Check_line,
+  Check_item,
+  Check_name,
+  Check_box,
+  Checked_box,
+  Bar_line,
+  Label_text_speed,
+  Bar,
+  Save_back
+};
+const slider = "";
+const OptionSlider = (props) => {
+  const { playSeEnter } = useSoundEffect();
+  reactExports.useEffect(() => {
+    setTimeout(() => {
+      const input = document.getElementById(props.uniqueID);
+      if (input !== null)
+        input.setAttribute("value", props.initValue.toString());
+      calcSlideBg();
+    }, 1);
+  }, []);
+  reactExports.useEffect(() => {
+    calcSlideBg();
+  }, [props.initValue]);
+  function calcSlideBg() {
+    const inputBg = document.getElementById(`${props.uniqueID}-bg`);
+    if (inputBg !== null) {
+      inputBg.style.width = Number(props.initValue.toString()) / 100 * 479 / 0.75 + "px";
+    }
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "Option_WebGAL_slider", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "input",
+      {
+        className: "Rang_input",
+        id: props.uniqueID,
+        type: "range",
+        onChange: props.onChange,
+        onFocus: playSeEnter,
+        onMouseEnter: playSeEnter
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "Slider_bg", id: `${props.uniqueID}-bg` }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "Slider_bg_under" })
+  ] });
+};
+const Options = () => {
+  reactExports.useEffect(getStorage, []);
+  const { playSeClick } = useSoundEffect();
+  const userDataState = useSelector((state) => state.userData);
+  const dispatch = useDispatch();
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Options_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: styles$9.Save_back,
+        onClick: () => {
+          playSeClick();
+          dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
+        }
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Options_top }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Options_page_container, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Options_left, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.title_base }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "画面模式" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Check_line, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Check_item, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Check_name, children: "全屏" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: styles$9.Check_box,
+                  onClick: () => {
+                    dispatch(setOptionData({ key: "fullScreen", value: fullScreenOption.on }));
+                    setStorage();
+                  },
+                  children: !userDataState.optionData.fullScreen ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Checked_box }) : null
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Check_item, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Check_name, children: "窗口" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: styles$9.Check_box,
+                  onClick: () => {
+                    dispatch(setOptionData({ key: "fullScreen", value: fullScreenOption.off }));
+                    setStorage();
+                  },
+                  children: userDataState.optionData.fullScreen ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Checked_box }) : null
+                }
+              )
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label_text_speed, children: "文本播放速度" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.textSpeed,
+              uniqueID: "文本播放速度",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "textSpeed", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Options_right, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.title_voice }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "全局音量" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.volumeMain,
+              uniqueID: "全局音量",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "volumeMain", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "背景音量" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.bgmVolume,
+              uniqueID: "背景音量",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "bgmVolume", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "音效" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.seVolume,
+              uniqueID: "音效",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "seVolume", value: Number(newValue) }));
+                dispatch(setOptionData({ key: "uiSeVolume", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "角色语音" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.vocalVolume,
+              uniqueID: "角色语音",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "vocalVolume", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] })
+      ] })
+    ] })
+  ] });
+};
+const Menu = () => {
+  const GUIState = useSelector((state) => state.GUI);
+  let currentTag;
+  switch (GUIState.currentMenuTag) {
+    case MenuPanelTag.Save:
+      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Save, {});
+      break;
+    case MenuPanelTag.Load:
+      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Load, {});
+      break;
+    case MenuPanelTag.Option:
+      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Options, {});
+      break;
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Menu_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Menu_TagContent, children: currentTag }),
+    !MenuPanelTag.Option ? /* @__PURE__ */ jsxRuntimeExports.jsx(MenuPanel, {}) : null
+  ] }) });
+};
+const MainStage_main = "_MainStage_main_9enex_1";
+const MainStage_main_container = "_MainStage_main_container_9enex_10";
+const MainStage_bgContainer = "_MainStage_bgContainer_9enex_17";
+const MainStage_showBgSoftly = "_MainStage_showBgSoftly_9enex_1";
+const MainStage_bgContainer_Settled = "_MainStage_bgContainer_Settled_9enex_27";
+const MainStage_oldBgContainer = "_MainStage_oldBgContainer_9enex_37";
+const MainStage_oldBgFadeout = "_MainStage_oldBgFadeout_9enex_1";
+const MainStage_oldBgContainer_Settled = "_MainStage_oldBgContainer_Settled_9enex_47";
+const pixiContainer = "_pixiContainer_9enex_72";
+const chooseContainer = "_chooseContainer_9enex_77";
+const styles$8 = {
+  MainStage_main,
+  MainStage_main_container,
+  MainStage_bgContainer,
+  MainStage_showBgSoftly,
+  MainStage_bgContainer_Settled,
+  MainStage_oldBgContainer,
+  MainStage_oldBgFadeout,
+  MainStage_oldBgContainer_Settled,
+  pixiContainer,
+  chooseContainer
 };
 function useFontFamily() {
   const fontFamily = useSelector((state) => state.userData.optionData.textboxFont);
@@ -96125,7 +86640,7 @@ const nameContainer = "_nameContainer_1cs17_134";
 const outerName = "_outerName_1cs17_140";
 const innerName = "_innerName_1cs17_151";
 const text = "_text_1cs17_158";
-const styles$8 = {
+const styles$7 = {
   TextBox_EventHandler: TextBox_EventHandler$1,
   TextBox_Container,
   showSoftly: showSoftly$1,
@@ -96169,7 +86684,7 @@ function IMSSTextbox(props) {
       const textElements = document.querySelectorAll(".Textelement_start");
       const textArray2 = [...textElements];
       textArray2.forEach((e2) => {
-        e2.className = applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled);
+        e2.className = applyStyle2("TextBox_textElement_Settled", styles$7.TextBox_textElement_Settled);
       });
     }
     WebGAL.events.textSettle.on(settleText);
@@ -96191,12 +86706,12 @@ function IMSSTextbox(props) {
           "span",
           {
             id: `${delay}`,
-            className: applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled),
+            className: applyStyle2("TextBox_textElement_Settled", styles$7.TextBox_textElement_Settled),
             style: { animationDelay: `${delay}ms`, animationDuration: `${textDuration}ms` },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
               e2,
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
-              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$7.outer), children: e2 }),
+              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$7.inner), children: e2 })
             ] })
           },
           currentDialogKey + index22
@@ -96207,12 +86722,12 @@ function IMSSTextbox(props) {
         {
           "data-text": e2,
           id: `${delay}`,
-          className: `${applyStyle2("TextBox_textElement_start", styles$8.TextBox_textElement_start)} Textelement_start`,
+          className: `${applyStyle2("TextBox_textElement_start", styles$7.TextBox_textElement_start)} Textelement_start`,
           style: { animationDelay: `${delay}ms`, position: "relative" },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
             e2,
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
-            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$7.outer), children: e2 }),
+            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$7.inner), children: e2 })
           ] })
         },
         currentDialogKey + index22
@@ -96231,12 +86746,11 @@ function IMSSTextbox(props) {
       `text-line-${index2}`
     );
   });
-  console.log(`${textboxOpacity / 100}`);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$8.TextBox_Container, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$7.TextBox_Container, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: applyStyle2("TextBox_main", styles$8.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$8.TextBox_Background),
+        className: applyStyle2("TextBox_main", styles$7.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$7.TextBox_Background),
         style: {
           opacity: `${textboxOpacity / 100}`,
           left: miniAvatar2 === "" ? 25 : void 0
@@ -96247,27 +86761,27 @@ function IMSSTextbox(props) {
       "div",
       {
         id: "textBoxMain",
-        className: applyStyle2("TextBox_main", styles$8.TextBox_main),
+        className: applyStyle2("TextBox_main", styles$7.TextBox_main),
         style: {
           fontFamily: font,
           left: miniAvatar2 === "" ? 25 : void 0
         },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$8.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$8.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$7.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$7.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
           showName !== "" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$8.TextBox_ShowName_Background),
+                className: applyStyle2("TextBox_showName", styles$7.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$7.TextBox_ShowName_Background),
                 style: {
                   opacity: `${textboxOpacity / 100}`,
                   fontSize: "200%"
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { opacity: 0 }, children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$7.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$7.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 }) })
               }
@@ -96275,15 +86789,15 @@ function IMSSTextbox(props) {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName),
+                className: applyStyle2("TextBox_showName", styles$7.TextBox_showName),
                 style: {
                   fontSize: "200%"
                 },
                 children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$7.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$7.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 })
               },
@@ -96293,7 +86807,7 @@ function IMSSTextbox(props) {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("text", styles$8.text),
+              className: applyStyle2("text", styles$7.text),
               style: {
                 fontSize,
                 flexFlow: "column",
@@ -96471,378 +86985,6 @@ function parseString(input) {
   }
   return result;
 }
-const TextPreview = (props) => {
-  const t2 = useTrans("menu.options.pages.display.options.");
-  const userDataState = useSelector((state) => state.userData);
-  const stageState = useSelector((state) => state.stage);
-  const previewBackground = stageState.bgName;
-  const textDelay = useTextDelay(userDataState.optionData.textSpeed);
-  const textDuration = useTextAnimationDuration(userDataState.optionData.textSpeed);
-  const textboxOpacity = userDataState.optionData.textboxOpacity;
-  const size = getTextSize(userDataState.optionData.textSize) + "%";
-  const font = useFontFamily();
-  const userAgent2 = navigator.userAgent;
-  const isFirefox2 = /firefox/i.test(userAgent2);
-  const isSafari2 = /^((?!chrome|android).)*safari/i.test(userAgent2);
-  const previewText = t2("textPreview.text");
-  const previewTextArray = compileSentence(previewText, 3);
-  const Textbox = IMSSTextbox;
-  const textboxProps = {
-    textArray: previewTextArray,
-    isText: true,
-    textDelay,
-    showName: t2("textPreview.title"),
-    currentConcatDialogPrev: "",
-    fontSize: size,
-    currentDialogKey: "",
-    isSafari: isSafari2,
-    isFirefox: isFirefox2,
-    miniAvatar: "",
-    textDuration,
-    font,
-    textSizeState: size,
-    lineLimit: 3,
-    isUseStroke: true,
-    textboxOpacity
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "div",
-    {
-      className: styles$9.textPreviewMain,
-      style: {
-        background: previewBackground ? `bottom / cover no-repeat url(${previewBackground})` : "rgba(0, 0, 0, 0.1)"
-      },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.textbox, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Textbox, { ...textboxProps }) }, `previewTextbox-${textDelay}`)
-    }
-  );
-};
-const slider = "";
-const OptionSlider = (props) => {
-  const { playSeEnter } = useSoundEffect();
-  reactExports.useEffect(() => {
-    setTimeout(() => {
-      const input = document.getElementById(props.uniqueID);
-      if (input !== null)
-        input.setAttribute("value", props.initValue.toString());
-    }, 1);
-  }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "Option_WebGAL_slider", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "input",
-    {
-      id: props.uniqueID,
-      type: "range",
-      onChange: props.onChange,
-      onFocus: playSeEnter,
-      onMouseEnter: playSeEnter
-    }
-  ) });
-};
-function Display() {
-  const userDataState = useSelector((state) => state.userData);
-  const dispatch = useDispatch();
-  const t2 = useTrans("menu.options.pages.display.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("fullScreen.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("fullScreen.options.on", "fullScreen.options.off"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "fullScreen", value: fullScreenOption.on }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "fullScreen", value: fullScreenOption.off }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.fullScreen
-      }
-    ) }, "fullScreen"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("textSpeed.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("textSpeed.options.slow", "textSpeed.options.medium", "textSpeed.options.fast"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "textSpeed", value: playSpeed.slow }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textSpeed", value: playSpeed.normal }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textSpeed", value: playSpeed.fast }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.textSpeed
-      }
-    ) }, "textSpeed"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("textSize.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("textSize.options.small", "textSize.options.medium", "textSize.options.large"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "textSize", value: textSize.small }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textSize", value: textSize.medium }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textSize", value: textSize.large }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.textSize
-      }
-    ) }, "textSize"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("textFont.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("textFont.options.siYuanSimSun", "textFont.options.SimHei", "textFont.options.lxgw"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "textboxFont", value: textFont.song }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textboxFont", value: textFont.hei }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textboxFont", value: textFont.lxgw }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.textboxFont
-      }
-    ) }, "textFont"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("textboxOpacity.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.textboxOpacity,
-        uniqueID: t2("textboxOpacity.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "textboxOpacity", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "textboxOpacity"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { full: true, title: t2("textPreview.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(TextPreview, {}) }, "textPreview")
-  ] });
-}
-function Sound() {
-  const userDataState = useSelector((state) => state.userData);
-  const dispatch = useDispatch();
-  const t2 = useTrans("menu.options.pages.sound.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("volumeMain.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.volumeMain,
-        uniqueID: t2("volumeMain.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "volumeMain", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option4"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("vocalVolume.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.vocalVolume,
-        uniqueID: t2("vocalVolume.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "vocalVolume", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option5"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("bgmVolume.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.bgmVolume,
-        uniqueID: t2("bgmVolume.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "bgmVolume", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option6"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("seVolume.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.seVolume,
-        uniqueID: t2("seVolume.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "seVolume", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option7"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("uiSeVolume.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.uiSeVolume,
-        uniqueID: t2("uiSeVolume.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "uiSeVolume", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option8"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("voiceOption.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("voiceStop.title", "voiceContinue.title"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "voiceInterruption", value: voiceOption.yes }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "voiceInterruption", value: voiceOption.no }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.voiceInterruption
-      }
-    ) }, "option9")
-  ] });
-}
-const Options = () => {
-  const { playSeEnter, playSeSwitch } = useSoundEffect();
-  const currentOptionPage = useValue(
-    0
-    /* System */
-  );
-  reactExports.useEffect(getStorage, []);
-  function getClassName(page) {
-    if (page === currentOptionPage.value) {
-      return styles$c.Options_page_button + " " + styles$c.Options_page_button_active;
-    } else
-      return styles$c.Options_page_button;
-  }
-  const t2 = useTrans("menu.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Option_title_text, children: t2("title") }) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_page_container, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_button_list, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            onClick: () => {
-              currentOptionPage.set(
-                0
-                /* System */
-              );
-              playSeSwitch();
-            },
-            className: getClassName(
-              0
-              /* System */
-            ),
-            onMouseEnter: playSeEnter,
-            children: t2("pages.system.title")
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            onClick: () => {
-              currentOptionPage.set(
-                1
-                /* Display */
-              );
-              playSeSwitch();
-            },
-            className: getClassName(
-              1
-              /* Display */
-            ),
-            onMouseEnter: playSeEnter,
-            children: t2("pages.display.title")
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            onClick: () => {
-              currentOptionPage.set(
-                2
-                /* Sound */
-              );
-              playSeSwitch();
-            },
-            className: getClassName(
-              2
-              /* Sound */
-            ),
-            onMouseEnter: playSeEnter,
-            children: t2("pages.sound.title")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content, children: [
-        currentOptionPage.value === 1 && /* @__PURE__ */ jsxRuntimeExports.jsx(Display, {}),
-        currentOptionPage.value === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(System, {}),
-        currentOptionPage.value === 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(Sound, {})
-      ] })
-    ] })
-  ] });
-};
-const Menu = () => {
-  const GUIState = useSelector((state) => state.GUI);
-  let currentTag;
-  switch (GUIState.currentMenuTag) {
-    case MenuPanelTag.Save:
-      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Save, {});
-      break;
-    case MenuPanelTag.Load:
-      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Load, {});
-      break;
-    case MenuPanelTag.Option:
-      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Options, {});
-      break;
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.Menu_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.Menu_TagContent, children: currentTag }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(MenuPanel, {})
-  ] }) });
-};
-const MainStage_main = "_MainStage_main_9enex_1";
-const MainStage_main_container = "_MainStage_main_container_9enex_10";
-const MainStage_bgContainer = "_MainStage_bgContainer_9enex_17";
-const MainStage_showBgSoftly = "_MainStage_showBgSoftly_9enex_1";
-const MainStage_bgContainer_Settled = "_MainStage_bgContainer_Settled_9enex_27";
-const MainStage_oldBgContainer = "_MainStage_oldBgContainer_9enex_37";
-const MainStage_oldBgFadeout = "_MainStage_oldBgFadeout_9enex_1";
-const MainStage_oldBgContainer_Settled = "_MainStage_oldBgContainer_Settled_9enex_47";
-const pixiContainer = "_pixiContainer_9enex_72";
-const chooseContainer = "_chooseContainer_9enex_77";
-const styles$7 = {
-  MainStage_main,
-  MainStage_main_container,
-  MainStage_bgContainer,
-  MainStage_showBgSoftly,
-  MainStage_bgContainer_Settled,
-  MainStage_oldBgContainer,
-  MainStage_oldBgFadeout,
-  MainStage_oldBgContainer_Settled,
-  pixiContainer,
-  chooseContainer
-};
 const AudioContainer = () => {
   var _a2;
   const stageStore = useSelector((webgalStore2) => webgalStore2.stage);
@@ -96946,7 +87088,7 @@ const FullScreenPerform = () => {
     stageHeight = "76%";
     top = "12%";
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$h.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
 };
 const TextBox_EventHandler = "_TextBox_EventHandler_449dq_2";
 const TextBox_main = "_TextBox_main_449dq_10";
@@ -97327,11 +87469,11 @@ const Stage = () => {
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
   useHotkey();
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$7.MainStage_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$8.MainStage_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(FullScreenPerform, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(MainStage, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$7.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$7.chooseContainer }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$8.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$8.chooseContainer }),
     GUIState.showTextBox && stageState.enableFilm === "" && !stageState.isDisableTextbox && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBox, {}),
     GUIState.showTextBox && stageState.enableFilm !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBoxFilm, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AudioContainer, {}),
@@ -97383,9 +87525,9 @@ const BottomControlPanel = () => {
   let fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "125%" }, children: t2("noSaving") }) });
   if (saveData[0]) {
     const data2 = saveData[0];
-    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.slPreviewMain, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.textContainer, children: [
+    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.slPreviewMain, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.textContainer, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data2.nowStageState.showName }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "75%", color: "rgb(55,60,56)" }, children: data2.nowStageState.showText })
       ] })
@@ -97393,11 +87535,11 @@ const BottomControlPanel = () => {
   }
   return (
     // <div className={styles.ToCenter}>
-    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
       GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", false);
@@ -97408,21 +87550,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewCloseOne,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.hide") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.hide") })
           ]
         }
       ),
       !GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", true);
@@ -97433,21 +87575,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewOpen,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.show") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.show") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showBacklog", true);
@@ -97459,21 +87601,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               AlignTextLeftOne,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.backlog") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.backlog") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             let VocalControl = document.getElementById("currentVocal");
@@ -97489,14 +87631,14 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               ReplayMusic,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.replay") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.replay") })
           ]
         }
       ),
@@ -97504,7 +87646,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_auto",
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             switchAuto();
@@ -97512,8 +87654,8 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.auto") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.auto") })
           ]
         }
       ),
@@ -97521,7 +87663,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_fast",
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             switchFast();
@@ -97532,21 +87674,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleRight,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.forward") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.forward") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton + " " + styles$j.fastsave,
+          className: styles$g.singleButton + " " + styles$g.fastsave,
           style: { fontSize },
           onClick: () => {
             saveGame(0);
@@ -97557,22 +87699,22 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleDown,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklySave") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastSPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.quicklySave") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.fastSlPreview + " " + styles$g.fastSPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton + " " + styles$j.fastload,
+          className: styles$g.singleButton + " " + styles$g.fastload,
           style: { fontSize },
           onClick: () => {
             loadGame(0);
@@ -97580,16 +87722,16 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklyLoad") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastLPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.quicklyLoad") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.fastSlPreview + " " + styles$g.fastLPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Save);
@@ -97598,15 +87740,15 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.save") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.save") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Load);
@@ -97618,21 +87760,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               FolderOpen,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.load") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.load") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Option);
@@ -97644,21 +87786,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               SettingTwo,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.options") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.options") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             playSeDialogOpen();
@@ -97675,22 +87817,22 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.title") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.title") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             switchControls();
             playSeClick();
           },
           onMouseEnter: playSeEnter,
-          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
+          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
         }
       )
     ] }) })
@@ -97724,11 +87866,11 @@ const Backlog = () => {
       const singleBacklogView = /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: styles$i.backlog_item,
+          className: styles$f.backlog_item,
           style: { animationDelay: `${20 * (WebGAL.backlogManager.getBacklog().length - i2)}ms` },
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_func_area, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_item_button_list, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.backlog_func_area, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.backlog_item_button_list, children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "div",
                   {
@@ -97739,7 +87881,7 @@ const Backlog = () => {
                       e2.stopPropagation();
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$i.backlog_item_button_element,
+                    className: styles$f.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(Return, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ),
@@ -97758,14 +87900,14 @@ const Backlog = () => {
                       }
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$i.backlog_item_button_element,
+                    className: styles$f.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(VolumeNotice, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ) : null
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content_name, children: backlogItem.currentStageState.showName })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.backlog_item_content_name, children: backlogItem.currentStageState.showName })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.backlog_item_content_text, children: showTextElementList }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$f.backlog_item_content_text, children: showTextElementList }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("audio", { id: "backlog_audio_play_element_" + i2, src: backlogItem.currentStageState.vocal })
           ]
         },
@@ -97800,15 +87942,15 @@ const Backlog = () => {
       "div",
       {
         className: `
-          ${GUIStore.showBacklog ? styles$i.Backlog_main : styles$i.Backlog_main_out}
-          ${indexHide ? styles$i.Backlog_main_out_IndexHide : ""}
+          ${GUIStore.showBacklog ? styles$f.Backlog_main : styles$f.Backlog_main_out}
+          ${indexHide ? styles$f.Backlog_main_out_IndexHide : ""}
           `,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.backlog_top, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               CloseSmall,
               {
-                className: styles$i.backlog_top_icon,
+                className: styles$f.backlog_top_icon,
                 onClick: () => {
                   playSeClick();
                   dispatch(setVisibility({ component: "showBacklog", visibility: false }));
@@ -97824,7 +87966,7 @@ const Backlog = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: styles$i.backlog_title,
+                className: styles$f.backlog_title,
                 onClick: () => {
                   logger.info("Rua! Testing");
                 },
@@ -97832,7 +87974,7 @@ const Backlog = () => {
               }
             )
           ] }),
-          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$i.backlog_content} ${isDisableScroll ? styles$i.Backlog_main_DisableScroll : ""}`, children: backlogList })
+          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$f.backlog_content} ${isDisableScroll ? styles$f.Backlog_main_DisableScroll : ""}`, children: backlogList })
         ]
       }
     )
@@ -98379,6 +88521,26 @@ function DevPanel() {
     ] }),
     !isOpenDevPanel.value && isShow && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => isOpenDevPanel.set(true), className: styles$2.devPanelOpener, children: "Open Dev Panel" })
   ] });
+}
+function getLanguageName(lang2) {
+  return language[lang2];
+}
+function useLanguage() {
+  const { i18n } = useTranslation();
+  const userDataRef = useGenSyncRef((state) => state.userData);
+  const dispatch = useDispatch();
+  return (_lang, isSyncStorage = true) => {
+    var _a2;
+    const lang2 = _lang ?? ((_a2 = userDataRef.current) == null ? void 0 : _a2.optionData.language) ?? language.zhCn;
+    const languageName = getLanguageName(lang2);
+    i18n.changeLanguage(languageName);
+    dispatch(setOptionData({ key: "language", value: lang2 }));
+    logger.info("设置语言: " + languageName);
+    window == null ? void 0 : window.localStorage.setItem("lang", lang2.toString());
+    if (isSyncStorage) {
+      setStorage();
+    }
+  };
 }
 const trans = "_trans_8uz61_2";
 const langWrapper = "_langWrapper_8uz61_10";
