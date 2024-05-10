@@ -6963,7 +6963,7 @@ const Title_buttonList = "_Title_buttonList_xpe81_8";
 const Title_button = "_Title_button_xpe81_8";
 const Title_button_text = "_Title_button_text_xpe81_41";
 const Title_backup_background = "_Title_backup_background_xpe81_48";
-const styles$n = {
+const styles$k = {
   Title_main,
   Title_buttonList,
   Title_button,
@@ -6990,7 +6990,7 @@ function t$5(n2) {
       return true;
     var t2 = Object.hasOwnProperty.call(r3, "constructor") && r3.constructor;
     return t2 === Object || "function" == typeof t2 && Function.toString.call(t2) === Z;
-  }(n2) || Array.isArray(n2) || !!n2[L] || !!(null === (r2 = n2.constructor) || void 0 === r2 ? void 0 : r2[L]) || s$3(n2) || v$3(n2));
+  }(n2) || Array.isArray(n2) || !!n2[L] || !!(null === (r2 = n2.constructor) || void 0 === r2 ? void 0 : r2[L]) || s$2(n2) || v$3(n2));
 }
 function i$1(n2, r2, t2) {
   void 0 === t2 && (t2 = false), 0 === o(n2) ? (t2 ? Object.keys : nn)(n2).forEach(function(e2) {
@@ -7001,7 +7001,7 @@ function i$1(n2, r2, t2) {
 }
 function o(n2) {
   var r2 = n2[Q];
-  return r2 ? r2.i > 3 ? r2.i - 4 : r2.i : Array.isArray(n2) ? 1 : s$3(n2) ? 2 : v$3(n2) ? 3 : 0;
+  return r2 ? r2.i > 3 ? r2.i - 4 : r2.i : Array.isArray(n2) ? 1 : s$2(n2) ? 2 : v$3(n2) ? 3 : 0;
 }
 function u$4(n2, r2) {
   return 2 === o(n2) ? n2.has(r2) : Object.prototype.hasOwnProperty.call(n2, r2);
@@ -7016,7 +7016,7 @@ function f$2(n2, r2, t2) {
 function c$3(n2, r2) {
   return n2 === r2 ? 0 !== n2 || 1 / n2 == 1 / r2 : n2 != n2 && r2 != r2;
 }
-function s$3(n2) {
+function s$2(n2) {
   return X && n2 instanceof Map;
 }
 function v$3(n2) {
@@ -7136,7 +7136,7 @@ function E(n2) {
   n2.o || (n2.o = l$3(n2.t));
 }
 function N(n2, r2, t2) {
-  var e2 = s$3(r2) ? b$2("MapSet").F(r2, t2) : v$3(r2) ? b$2("MapSet").T(r2, t2) : n2.O ? function(n3, r3) {
+  var e2 = s$2(r2) ? b$2("MapSet").F(r2, t2) : v$3(r2) ? b$2("MapSet").T(r2, t2) : n2.O ? function(n3, r3) {
     var t3 = Array.isArray(n3), e3 = { i: t3 ? 1 : 0, A: r3 ? r3.A : _(), P: false, I: false, R: {}, l: r3, t: n3, k: null, o: null, j: null, C: false }, i2 = e3, o2 = en$1;
     t3 && (i2 = [e3], o2 = on);
     var u2 = Proxy.revocable(i2, o2), a2 = u2.revoke, f2 = u2.proxy;
@@ -14272,8 +14272,8 @@ const initialOptionSet = {
   slPage: 1,
   volumeMain: 100,
   // 主音量
-  textSpeed: playSpeed.normal,
-  // 文字速度
+  textSpeed: 50,
+  // 文字速度  [0, 100] =>[3, 80]
   autoSpeed: playSpeed.normal,
   // 自动播放速度
   textSize: textSize.medium,
@@ -14547,13 +14547,8 @@ const assetSetter = (fileName, assetType) => {
 };
 const assetsPrefetcher = (assetList) => {
   for (const asset of assetList) {
-    let isInsert = true;
-    WebGAL.sceneManager.settledAssets.forEach((settledAssetUrl) => {
-      if (settledAssetUrl === asset.url) {
-        isInsert = false;
-      }
-    });
-    if (!isInsert) {
+    const hasPrefetch = WebGAL.sceneManager.settledAssets.includes(asset.url);
+    if (hasPrefetch) {
       logger.warn("该资源已在预加载列表中，无需重复加载");
     } else {
       const newLink = document.createElement("link");
@@ -19282,7 +19277,7 @@ const jmp = (labelName) => {
 const Choose_Main$1 = "_Choose_Main_cegqk_1";
 const Choose_item$1 = "_Choose_item_cegqk_13";
 const Choose_item_disabled = "_Choose_item_disabled_cegqk_29";
-const styles$m = {
+const styles$j = {
   Choose_Main: Choose_Main$1,
   Choose_item: Choose_item$1,
   Choose_item_disabled
@@ -19991,7 +19986,7 @@ const choose = (sentence, chooseCallback) => {
   const runtimeBuildList = (chooseListFull) => {
     return chooseListFull.filter((e2, i2) => whenChecker(e2.showCondition)).map((e2, i2) => {
       const enable = whenChecker(e2.enableCondition);
-      const className = enable ? styles$m.Choose_item : styles$m.Choose_item_disabled;
+      const className = enable ? styles$j.Choose_item : styles$j.Choose_item_disabled;
       const onClick = enable ? () => {
         playSeClick();
         chooseCallback == null ? void 0 : chooseCallback();
@@ -20017,7 +20012,7 @@ const choose = (sentence, chooseCallback) => {
     });
   };
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$m.Choose_Main, children: runtimeBuildList(chooseOptions) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.Choose_Main, children: runtimeBuildList(chooseOptions) }),
     document.getElementById("chooseContainer")
   );
   return {
@@ -20069,14 +20064,14 @@ const Choose_Main = "_Choose_Main_4xkm5_1";
 const Choose_item = "_Choose_item_4xkm5_13";
 const glabalDialog_container_inner$1 = "_glabalDialog_container_inner_4xkm5_28";
 const glabalDialog_container$1 = "_glabalDialog_container_4xkm5_28";
-const title$2 = "_title_4xkm5_47";
+const title$1 = "_title_4xkm5_47";
 const button$2 = "_button_4xkm5_59";
-const styles$l = {
+const styles$i = {
   Choose_Main,
   Choose_item,
   glabalDialog_container_inner: glabalDialog_container_inner$1,
   glabalDialog_container: glabalDialog_container$1,
-  title: title$2,
+  title: title$1,
   button: button$2
 };
 const getUserInput = (sentence) => {
@@ -20088,9 +20083,9 @@ const getUserInput = (sentence) => {
   const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
   const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
   const { playSeEnter, playSeClick } = useSEByWebgalStore();
-  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$l.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$l.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.title, children: title2 }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$l.Choose_item }),
+  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$i.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.title, children: title2 }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$i.Choose_item }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -20106,13 +20101,13 @@ const getUserInput = (sentence) => {
           WebGAL.gameplay.performController.unmountPerform("userInput");
           nextSentence();
         },
-        className: styles$l.button,
+        className: styles$i.button,
         children: buttonText
       }
     )
   ] }) });
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.Choose_Main, children: chooseElements }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.Choose_Main, children: chooseElements }),
     document.getElementById("chooseContainer")
   );
   return {
@@ -20141,7 +20136,7 @@ const pixelateEffect = "_pixelateEffect_7er8a_95";
 const pixelateAnimation = "_pixelateAnimation_7er8a_1";
 const revealAnimation = "_revealAnimation_7er8a_101";
 const videoContainer = "_videoContainer_7er8a_115";
-const styles$k = {
+const styles$h = {
   FullScreenPerform_main,
   FullScreenPerform_element,
   fullScreen_video,
@@ -20164,20 +20159,20 @@ const intro = (sentence) => {
   const animationClass = (type2, length2 = 0) => {
     switch (type2) {
       case "fadeIn":
-        return styles$k.fadeIn;
+        return styles$h.fadeIn;
       case "slideIn":
-        return styles$k.slideIn;
+        return styles$h.slideIn;
       case "typingEffect":
-        return `${styles$k.typingEffect} ${length2}`;
+        return `${styles$h.typingEffect} ${length2}`;
       case "pixelateEffect":
-        return styles$k.pixelateEffect;
+        return styles$h.pixelateEffect;
       case "revealAnimation":
-        return styles$k.revealAnimation;
+        return styles$h.revealAnimation;
       default:
-        return styles$k.fadeIn;
+        return styles$h.fadeIn;
     }
   };
-  let chosenAnimationClass = styles$k.fadeIn;
+  let chosenAnimationClass = styles$h.fadeIn;
   let delayTime = 1500;
   let isHold = false;
   for (const e2 of sentence.args) {
@@ -20410,7 +20405,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-bcbbbc4a.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-21a4faec.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -29995,7 +29990,7 @@ const playVideo = (sentence) => {
   let videoElement = null;
   let flvPlayer = null;
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.videoContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("video", { className: styles$k.fullScreen_video, id: "playVideoElement" }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$h.videoContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("video", { className: styles$h.fullScreen_video, id: "playVideoElement" }) }),
     document.getElementById("videoContainer")
   );
   setTimeout(() => {
@@ -30405,10 +30400,11 @@ const setTransition = (sentence) => {
     // 暂时不用，后面会交给自动清除
   };
 };
-const unlockBgm = (sentence) => {
+const unlockBgm$2 = (sentence) => {
   const url2 = sentence.content;
   let name = sentence.content;
   let series = "default";
+  console.log(sentence, "bgm-sentence");
   sentence.args.forEach((e2) => {
     if (e2.key === "name") {
       name = e2.value.toString();
@@ -30438,6 +30434,7 @@ const unlockCg = (sentence) => {
   const url2 = sentence.content;
   let name = sentence.content;
   let series = "default";
+  console.log(sentence, "cg-sentence");
   sentence.args.forEach((e2) => {
     if (e2.key === "name") {
       name = e2.value.toString();
@@ -30820,24 +30817,22 @@ const playVocal = (sentence) => {
     })
   };
 };
-function useTextDelay(type2) {
-  switch (type2) {
-    case playSpeed.slow:
-      return 80;
-    case playSpeed.normal:
-      return 35;
-    case playSpeed.fast:
-      return 3;
+function useTextDelay(num) {
+  if (num === 0) {
+    return 3;
+  } else if (num === 100) {
+    return 80;
+  } else {
+    return 77 * Number(num) / 100;
   }
 }
-function useTextAnimationDuration(type2) {
-  switch (type2) {
-    case playSpeed.slow:
-      return 800;
-    case playSpeed.normal:
-      return 350;
-    case playSpeed.fast:
-      return 200;
+function useTextAnimationDuration(num) {
+  if (num === 0) {
+    return 800;
+  } else if (num === 100) {
+    return 200;
+  } else {
+    return 800 - 600 * Number(num) / 100;
   }
 }
 const say = (sentence) => {
@@ -30897,7 +30892,7 @@ const say = (sentence) => {
     playVocal(sentence);
   }
   const performInitName = getRandomPerformName();
-  let endDelay = 750 - userDataState.optionData.textSpeed * 250;
+  let endDelay = 750 - userDataState.optionData.textSpeed / 100 * 2 * 250;
   if (isNotend) {
     endDelay = 0;
   }
@@ -33135,7 +33130,7 @@ const SCRIPT_TAG_MAP = defineScripts({
   setVar: ScriptConfig(commandType$1.setVar, setVar, { next: true }),
   showVars: ScriptConfig(commandType$1.showVars, showVars),
   unlockCg: ScriptConfig(commandType$1.unlockCg, unlockCg, { next: true }),
-  unlockBgm: ScriptConfig(commandType$1.unlockBgm, unlockBgm, { next: true }),
+  unlockBgm: ScriptConfig(commandType$1.unlockBgm, unlockBgm$2, { next: true }),
   say: ScriptConfig(commandType$1.say, say),
   filmMode: ScriptConfig(commandType$1.filmMode, filmMode, { next: true }),
   callScene: ScriptConfig(commandType$1.callScene, callSceneScript),
@@ -33858,7 +33853,7 @@ function n(n2) {
         c2[2] && (r2.attrs[c2[2]] = c2[3].trim().substring(1, c2[3].length - 1));
   return r2;
 }
-var r = /<[a-zA-Z0-9\-\!\/](?:"[^"]*"|'[^']*'|[^'">])*>/g, i = /^\s*$/, s$2 = /* @__PURE__ */ Object.create(null);
+var r = /<[a-zA-Z0-9\-\!\/](?:"[^"]*"|'[^']*'|[^'">])*>/g, i = /^\s*$/, s$1 = /* @__PURE__ */ Object.create(null);
 function a(e2, t2) {
   switch (t2.type) {
     case "text":
@@ -33875,7 +33870,7 @@ function a(e2, t2) {
   }
 }
 var c = { parse: function(e2, t2) {
-  t2 || (t2 = {}), t2.components || (t2.components = s$2);
+  t2 || (t2 = {}), t2.components || (t2.components = s$1);
   var a2, c2 = [], o2 = [], l2 = -1, m2 = false;
   if (0 !== e2.indexOf("<")) {
     var u2 = e2.indexOf("<");
@@ -35866,7 +35861,7 @@ const fastLPreview = "_fastLPreview_15mmi_77";
 const slPreviewMain = "_slPreviewMain_15mmi_89";
 const imgContainer = "_imgContainer_15mmi_97";
 const textContainer = "_textContainer_15mmi_105";
-const styles$j = {
+const styles$g = {
   main,
   button: button$1,
   button_text: button_text$1,
@@ -35886,9 +35881,9 @@ const setButton$1 = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_auto");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$j.button_on;
+      autoIcon.className = styles$g.button_on;
     } else
-      autoIcon.className = styles$j.singleButton;
+      autoIcon.className = styles$g.singleButton;
   }
 };
 const stopAuto = () => {
@@ -35935,9 +35930,9 @@ const setButton = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_fast");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$j.button_on;
+      autoIcon.className = styles$g.button_on;
     } else
-      autoIcon.className = styles$j.singleButton;
+      autoIcon.className = styles$g.singleButton;
   }
 };
 const stopFast = () => {
@@ -35995,7 +35990,7 @@ const backlog_item_content = "_backlog_item_content_zwyao_113";
 const backlog_item_button_list = "_backlog_item_button_list_zwyao_137";
 const backlog_item_button_element = "_backlog_item_button_element_zwyao_144";
 const backlog_item_content_text = "_backlog_item_content_text_zwyao_157";
-const styles$i = {
+const styles$f = {
   Backlog_main,
   backlog_soft_in,
   Backlog_main_out,
@@ -36232,7 +36227,7 @@ function useMouseWheel() {
       return;
     const direction = ev.wheelDelta && (ev.wheelDelta > 0 ? "up" : "down") || ev.detail && (ev.detail < 0 ? "up" : "down") || "down";
     const ctrlKey = ev.ctrlKey;
-    const dom = document.querySelector(`.${styles$i.backlog_content}`);
+    const dom = document.querySelector(`.${styles$f.backlog_content}`);
     if (isGameActive() && direction === "up" && !ctrlKey) {
       setComponentVisibility("showBacklog", true);
       setComponentVisibility("showTextBox", false);
@@ -36444,13 +36439,13 @@ const Title = () => {
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
   const fullScreen = userDataState.optionData.fullScreen;
-  const background = GUIState.titleBg;
-  const showBackground = background === "" ? "rgba(0,0,0,1)" : `url("${background}")`;
+  const background2 = GUIState.titleBg;
+  const showBackground = background2 === "" ? "rgba(0,0,0,1)" : `url("${background2}")`;
   const t2 = useTrans("title.");
   const { playSeEnter, playSeClick } = useSoundEffect();
   const applyStyle2 = useApplyStyle("UI/Title/title.scss");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$n.Title_backup_background) }),
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$k.Title_backup_background) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -36467,26 +36462,40 @@ const Title = () => {
         onMouseEnter: playSeEnter
       }
     ),
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx(
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: applyStyle2("Title_main", styles$n.Title_main),
+        className: applyStyle2("Title_main", styles$k.Title_main),
         style: {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: applyStyle2("Title_button", styles$n.Title_button),
-            onClick: () => {
-              startGame();
-              playSeClick();
-            },
-            onMouseEnter: playSeEnter,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
-          }
-        ) })
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$k.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$k.Title_button),
+              onClick: () => {
+                startGame();
+                playSeClick();
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$k.Title_button_text), children: t2("start.title") })
+            }
+          ) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$k.Title_button),
+              onClick: () => {
+                playSeClick();
+                dispatch(setVisibility({ component: "showExtra", visibility: true }));
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$k.Title_button_text), children: t2("extra.title") })
+            }
+          )
+        ]
       }
     )
   ] });
@@ -36495,7 +36504,7 @@ const Logo_main = "_Logo_main_1bne2_1";
 const Logo_Back = "_Logo_Back_1bne2_32";
 const animationActive = "_animationActive_1bne2_46";
 const fadeout = "_fadeout_1bne2_1";
-const styles$h = {
+const styles$e = {
   Logo_main,
   "change-img-anim": "_change-img-anim_1bne2_1",
   Logo_Back,
@@ -36529,7 +36538,7 @@ const Logo = () => {
     currentLogoIndex.value !== -1 && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$h.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$h.animationActive : ""),
+        className: styles$e.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$e.animationActive : ""),
         style: {
           animationDuration: `${animationDuration}ms`
         }
@@ -36539,7 +36548,7 @@ const Logo = () => {
     currentLogoUrl !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$h.Logo_main,
+        className: styles$e.Logo_main,
         onClick: nextImg,
         style: { backgroundImage: `url("${currentLogoUrl}")`, animationDuration: `${animationDuration}ms` }
       },
@@ -52945,7 +52954,7 @@ var $defaultVertex = "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCo
 var $defaultFilterVertex = "attribute vec2 aVertexPosition;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nuniform vec4 inputSize;\nuniform vec4 outputFrame;\n\nvec4 filterVertexPosition( void )\n{\n    vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;\n\n    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);\n}\n\nvec2 filterTextureCoord( void )\n{\n    return aVertexPosition * (outputFrame.zw * inputSize.zw);\n}\n\nvoid main(void)\n{\n    gl_Position = filterVertexPosition();\n    vTextureCoord = filterTextureCoord();\n}\n";
 var defaultVertex$1 = $defaultVertex;
 var defaultFilterVertex = $defaultFilterVertex;
-var System$1 = (
+var System = (
   /** @class */
   function() {
     function System2(renderer) {
@@ -67885,7 +67894,7 @@ const PIXI$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   State,
   StateSystem,
   StencilSystem,
-  System: System$1,
+  System,
   get TARGETS() {
     return TARGETS$4;
   },
@@ -101866,7 +101875,7 @@ function getUserAnimation() {
 const Menu_main = "_Menu_main_1a7i6_1";
 const Menu_ShowSoftly = "_Menu_ShowSoftly_1a7i6_1";
 const Menu_TagContent = "_Menu_TagContent_1a7i6_10";
-const styles$g = {
+const styles$d = {
   Menu_main,
   Menu_ShowSoftly,
   Menu_TagContent
@@ -101875,7 +101884,7 @@ const MenuPanel_main = "_MenuPanel_main_1c9ky_1";
 const MenuPanel_button = "_MenuPanel_button_1c9ky_10";
 const MenuPanel_button_icon = "_MenuPanel_button_icon_1c9ky_38";
 const MenuPanel_button_hl = "_MenuPanel_button_hl_1c9ky_44";
-const styles$f = {
+const styles$c = {
   MenuPanel_main,
   MenuPanel_button,
   MenuPanel_button_icon,
@@ -101975,10 +101984,10 @@ var DEFAULT_ICON_CONFIGS = {
 function guid() {
   return "icon-" + ((1 + Math.random()) * 4294967296 | 0).toString(16).substring(1);
 }
-function IconConverter(id2, icon2, config) {
-  var fill = typeof icon2.fill === "string" ? [icon2.fill] : icon2.fill || [];
+function IconConverter(id2, icon, config) {
+  var fill = typeof icon.fill === "string" ? [icon.fill] : icon.fill || [];
   var colors = [];
-  var theme = icon2.theme || config.theme;
+  var theme = icon.theme || config.theme;
   switch (theme) {
     case "outline":
       colors.push(typeof fill[0] === "string" ? fill[0] : "currentColor");
@@ -102006,10 +102015,10 @@ function IconConverter(id2, icon2, config) {
       break;
   }
   return {
-    size: icon2.size || config.size,
-    strokeWidth: icon2.strokeWidth || config.strokeWidth,
-    strokeLinecap: icon2.strokeLinecap || config.strokeLinecap,
-    strokeLinejoin: icon2.strokeLinejoin || config.strokeLinejoin,
+    size: icon.size || config.size,
+    strokeWidth: icon.strokeWidth || config.strokeWidth,
+    strokeLinecap: icon.strokeLinecap || config.strokeLinecap,
+    strokeLinejoin: icon.strokeLinejoin || config.strokeLinejoin,
     colors,
     id: id2
   };
@@ -102178,46 +102187,6 @@ const FolderOpen = IconWrapper("folder-open", true, function(props) {
     strokeLinejoin: props.strokeLinejoin
   }));
 });
-const GoEnd = IconWrapper("go-end", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M14 12L26 24L14 36",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M34 12V36",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }));
-});
-const GoStart = IconWrapper("go-start", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M34 36L22 24L34 12",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M14 12V36",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }));
-});
 const HamburgerButton = IconWrapper("hamburger-button", false, function(props) {
   return /* @__PURE__ */ React.createElement("svg", {
     width: props.size,
@@ -102268,20 +102237,6 @@ const Home = IconWrapper("home", false, function(props) {
     stroke: props.colors[0],
     strokeWidth: props.strokeWidth,
     strokeLinecap: props.strokeLinecap
-  }));
-});
-const Left = IconWrapper("left", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M31 36L19 24L31 12",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
   }));
 });
 const Lock = IconWrapper("lock", false, function(props) {
@@ -102337,44 +102292,6 @@ const Logout = IconWrapper("logout", true, function(props) {
     stroke: props.colors[0],
     strokeWidth: props.strokeWidth,
     strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }));
-});
-const MusicList = IconWrapper("music-list", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M24 19H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M24 10H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M8 38H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M8 28H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M8 10L16 15L8 20V10Z",
-    fill: props.colors[1],
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
     strokeLinejoin: props.strokeLinejoin
   }));
 });
@@ -102546,19 +102463,6 @@ const SettingTwo = IconWrapper("setting-two", false, function(props) {
     strokeLinejoin: props.strokeLinejoin
   }));
 });
-const SquareSmall = IconWrapper("square-small", false, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M34 12H14C12.8954 12 12 12.8954 12 14V34C12 35.1046 12.8954 36 14 36H34C35.1046 36 36 35.1046 36 34V14C36 12.8954 35.1046 12 34 12Z",
-    fill: props.colors[1],
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth
-  }));
-});
 const Unlock = IconWrapper("unlock", true, function(props) {
   return /* @__PURE__ */ React.createElement("svg", {
     width: props.size,
@@ -102639,7 +102543,7 @@ const MenuIconMap = (props) => {
 };
 const MenuPanelButton = (props) => {
   const { playSePageChange, playSeEnter } = useSoundEffect();
-  let buttonClassName = styles$f.MenuPanel_button;
+  let buttonClassName = styles$c.MenuPanel_button;
   if (props.hasOwnProperty("buttonOnClassName")) {
     buttonClassName = buttonClassName + props.buttonOnClassName;
   }
@@ -102653,7 +102557,7 @@ const MenuPanelButton = (props) => {
       onMouseEnter: playSeEnter,
       style: { ...props.style, color: props.tagColor },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
         props.tagName
       ]
     }
@@ -102668,20 +102572,24 @@ const backToTitle = () => {
   dispatch(setVisibility({ component: "showTitle", visibility: true }));
   setEbg(webgalStore.getState().GUI.titleBg);
 };
-const GlobalDialog_main = "_GlobalDialog_main_101j8_2";
-const showGlobalDialog = "_showGlobalDialog_101j8_1";
-const glabalDialog_container_inner = "_glabalDialog_container_inner_101j8_17";
-const glabalDialog_container = "_glabalDialog_container_101j8_17";
-const title$1 = "_title_101j8_36";
-const button_list = "_button_list_101j8_41";
-const button = "_button_101j8_41";
-const styles$e = {
+const GlobalDialog_main = "_GlobalDialog_main_1uknr_2";
+const showGlobalDialog = "_showGlobalDialog_1uknr_1";
+const glabalDialog_container_inner = "_glabalDialog_container_inner_1uknr_17";
+const glabalDialog_container = "_glabalDialog_container_1uknr_17";
+const title = "_title_1uknr_38";
+const button_list = "_button_list_1uknr_48";
+const button_confirm = "_button_confirm_1uknr_55";
+const button_cancel = "_button_cancel_1uknr_66";
+const button = "_button_1uknr_48";
+const styles$b = {
   GlobalDialog_main,
   showGlobalDialog,
   glabalDialog_container_inner,
   glabalDialog_container,
-  title: title$1,
+  title,
   button_list,
+  button_confirm,
+  button_cancel,
   button
 };
 function GlobalDialog() {
@@ -102701,11 +102609,11 @@ function showGlogalDialog(props) {
     props.rightFunc();
     hideGlobalDialog();
   };
-  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.button_list, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
+  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.title, children: props.title }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.button_list, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.button_confirm, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.button_cancel, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
     ] })
   ] }) }) });
   setTimeout(() => {
@@ -102733,16 +102641,16 @@ const MenuPanel = () => {
   const { playSeClick, playSeDialogOpen, playSePageChange } = useSoundEffect();
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
-  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$f.MenuPanel_button_hl}` : ``;
-  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$f.MenuPanel_button_hl}` : ``;
-  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$f.MenuPanel_button_hl}` : ``;
+  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$c.MenuPanel_button_hl}` : ``;
+  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$c.MenuPanel_button_hl}` : ``;
+  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$c.MenuPanel_button_hl}` : ``;
   const SaveTagColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadTagColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionTagColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
   const SaveIconColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadIconColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionIconColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.MenuPanel_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.MenuPanel_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       MenuPanelButton,
       {
@@ -102831,78 +102739,92 @@ const MenuPanel = () => {
     )
   ] });
 };
-const Save_Load_main = "_Save_Load_main_a3o8b_2";
-const Save_Load_top = "_Save_Load_top_a3o8b_9";
-const Elements_in$2 = "_Elements_in_a3o8b_1";
-const Save_Load_title = "_Save_Load_title_a3o8b_17";
-const Save_title_text = "_Save_title_text_a3o8b_35";
-const Load_title_text = "_Load_title_text_a3o8b_43";
-const Save_Load_top_buttonList = "_Save_Load_top_buttonList_a3o8b_51";
-const Save_Load_top_button = "_Save_Load_top_button_a3o8b_51";
-const Save_Load_top_button_text = "_Save_Load_top_button_text_a3o8b_69";
-const Save_Load_top_button_on = "_Save_Load_top_button_on_a3o8b_80";
-const Load_top_button_on = "_Load_top_button_on_a3o8b_93";
-const Load_top_button = "_Load_top_button_a3o8b_93";
-const Save_Load_content = "_Save_Load_content_a3o8b_106";
-const Save_Load_content_element = "_Save_Load_content_element_a3o8b_115";
-const Elements_in_transform = "_Elements_in_transform_a3o8b_1";
-const Save_Load_content_element_top = "_Save_Load_content_element_top_a3o8b_131";
-const Save_Load_content_element_top_index = "_Save_Load_content_element_top_index_a3o8b_138";
-const Load_content_elememt_top_index = "_Load_content_elememt_top_index_a3o8b_147";
-const Save_Load_content_element_top_date = "_Save_Load_content_element_top_date_a3o8b_151";
-const Load_content_element_top_date = "_Load_content_element_top_date_a3o8b_162";
-const Save_Load_content_text = "_Save_Load_content_text_a3o8b_166";
-const Save_Load_content_text_padding = "_Save_Load_content_text_padding_a3o8b_180";
-const Save_Load_content_speaker = "_Save_Load_content_speaker_a3o8b_184";
-const Load_content_speaker = "_Load_content_speaker_a3o8b_193";
-const Load_content_text = "_Load_content_text_a3o8b_197";
-const Save_Load_content_miniRen = "_Save_Load_content_miniRen_a3o8b_201";
-const Save_Load_content_miniRen_bg = "_Save_Load_content_miniRen_bg_a3o8b_208";
-const Save_Load_content_miniRen_figure = "_Save_Load_content_miniRen_figure_a3o8b_215";
-const Save_Load_content_miniRen_figLeft = "_Save_Load_content_miniRen_figLeft_a3o8b_223";
-const Save_Load_content_miniRen_figRight = "_Save_Load_content_miniRen_figRight_a3o8b_228";
-const styles$d = {
+const Save_Load_main = "_Save_Load_main_1fx8j_2";
+const Save_Load_top = "_Save_Load_top_1fx8j_13";
+const Elements_in = "_Elements_in_1fx8j_1";
+const Save_Load_title_save = "_Save_Load_title_save_1fx8j_21";
+const Save_back$1 = "_Save_back_1fx8j_34";
+const Save_title = "_Save_title_1fx8j_48";
+const Load_title = "_Load_title_1fx8j_61";
+const Save_Load_title = "_Save_Load_title_1fx8j_21";
+const Save_Load_top_buttonList = "_Save_Load_top_buttonList_1fx8j_92";
+const Save_Load_top_button = "_Save_Load_top_button_1fx8j_92";
+const Save_Load_top_button_on = "_Save_Load_top_button_on_1fx8j_120";
+const Load_top_button_on = "_Load_top_button_on_1fx8j_136";
+const Load_top_button = "_Load_top_button_1fx8j_136";
+const Save_Load_content = "_Save_Load_content_1fx8j_149";
+const Save_Load_content_element = "_Save_Load_content_element_1fx8j_163";
+const Elements_in_transform = "_Elements_in_transform_1fx8j_1";
+const Save_Load_border = "_Save_Load_border_1fx8j_178";
+const Save_Load_info_box = "_Save_Load_info_box_1fx8j_186";
+const Save_Load_content_miniRen = "_Save_Load_content_miniRen_1fx8j_189";
+const Save_Load_content_element_top = "_Save_Load_content_element_top_1fx8j_193";
+const Save_Load_content_element_top_index = "_Save_Load_content_element_top_index_1fx8j_200";
+const Load_content_elememt_top_index = "_Load_content_elememt_top_index_1fx8j_211";
+const Save_Load_content_element_top_date = "_Save_Load_content_element_top_date_1fx8j_222";
+const Load_content_element_top_date = "_Load_content_element_top_date_1fx8j_236";
+const Save_Load_content_text = "_Save_Load_content_text_1fx8j_240";
+const Save_Load_info = "_Save_Load_info_1fx8j_186";
+const Save_Load_content_text_padding = "_Save_Load_content_text_padding_1fx8j_265";
+const Save_Load_content_speaker = "_Save_Load_content_speaker_1fx8j_269";
+const Load_content_speaker = "_Load_content_speaker_1fx8j_278";
+const Load_content_text = "_Load_content_text_1fx8j_282";
+const Save_Load_content_space = "_Save_Load_content_space_1fx8j_298";
+const Save_Load_content_miniRen_bg = "_Save_Load_content_miniRen_bg_1fx8j_309";
+const Save_Load_content_miniRen_figure = "_Save_Load_content_miniRen_figure_1fx8j_316";
+const Save_Load_content_miniRen_figLeft = "_Save_Load_content_miniRen_figLeft_1fx8j_324";
+const Save_Load_content_miniRen_figRight = "_Save_Load_content_miniRen_figRight_1fx8j_329";
+const Btn_l = "_Btn_l_1fx8j_348";
+const Btn_r = "_Btn_r_1fx8j_358";
+const styles$a = {
   Save_Load_main,
   Save_Load_top,
-  Elements_in: Elements_in$2,
+  Elements_in,
+  Save_Load_title_save,
+  Save_back: Save_back$1,
+  Save_title,
+  Load_title,
   Save_Load_title,
-  Save_title_text,
-  Load_title_text,
   Save_Load_top_buttonList,
   Save_Load_top_button,
-  Save_Load_top_button_text,
   Save_Load_top_button_on,
   Load_top_button_on,
   Load_top_button,
   Save_Load_content,
   Save_Load_content_element,
   Elements_in_transform,
+  Save_Load_border,
+  Save_Load_info_box,
+  Save_Load_content_miniRen,
   Save_Load_content_element_top,
   Save_Load_content_element_top_index,
   Load_content_elememt_top_index,
   Save_Load_content_element_top_date,
   Load_content_element_top_date,
   Save_Load_content_text,
+  Save_Load_info,
   Save_Load_content_text_padding,
   Save_Load_content_speaker,
   Load_content_speaker,
   Load_content_text,
-  Save_Load_content_miniRen,
+  Save_Load_content_space,
   Save_Load_content_miniRen_bg,
   Save_Load_content_miniRen_figure,
   Save_Load_content_miniRen_figLeft,
-  Save_Load_content_miniRen_figRight
+  Save_Load_content_miniRen_figRight,
+  Btn_l,
+  Btn_r
 };
 const Save = () => {
-  const { playSePageChange, playSeEnter, playSeDialogOpen } = useSoundEffect();
+  const { playSeClick, playSePageChange, playSeEnter, playSeDialogOpen } = useSoundEffect();
   const userDataState = useSelector((state) => state.userData);
   const savesDataState = useSelector((state) => state.saveData);
   const dispatch = useDispatch();
   const page = [];
-  for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$d.Save_Load_top_button;
+  for (let i2 = 1; i2 <= 4; i2++) {
+    let classNameOfElement = styles$a.Save_Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$a.Save_Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -102914,7 +102836,7 @@ const Save = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_top_button_text })
       },
       "Save_element_page" + i2
     );
@@ -102922,8 +102844,8 @@ const Save = () => {
   }
   const tCommon = useTrans("common.");
   const showSaves = [];
-  const start = (userDataState.optionData.slPage - 1) * 10 + 1;
-  const end2 = start + 9;
+  const start = (userDataState.optionData.slPage - 1) * 6 + 1;
+  const end2 = start + 5;
   reactExports.useEffect(() => {
     getSavesFromStorage(start, end2);
   }, [start, end2]);
@@ -102931,19 +102853,16 @@ const Save = () => {
   for (let i2 = start; i2 <= end2; i2++) {
     animationIndex++;
     const saveData = savesDataState.saveData[i2];
-    let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", {});
+    let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_space });
     if (saveData) {
-      const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
+      saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date, children: saveData.saveTime })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_border }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$a.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_info, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_info_box, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_element_top_date, children: saveData.saveTime }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_element_top_date, children: saveData.nowStageState.showText })
+        ] }) })
       ] });
     }
     const saveElement = /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -102969,7 +102888,7 @@ const Save = () => {
           }
         },
         onMouseEnter: playSeEnter,
-        className: styles$d.Save_Load_content_element,
+        className: styles$a.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -102978,12 +102897,39 @@ const Save = () => {
     showSaves.push(saveElement);
   }
   const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_title_text, children: t2("saving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
+  const handleBtnClick = (dir) => {
+    const slPage = userDataState.optionData.slPage;
+    let index2 = slPage;
+    if (dir === "left") {
+      index2 = index2 > 1 ? index2 - 1 : 4;
+    } else {
+      index2 = index2 < 4 ? index2 + 1 : 1;
+    }
+    dispatch(setSlPage(index2));
+    setStorage();
+    playSePageChange();
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: styles$a.Save_back,
+          onClick: () => {
+            playSeClick();
+            dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
+          },
+          onMouseEnter: playSeEnter
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_title })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_top_buttonList, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Btn_l, onClick: () => handleBtnClick("left") }),
+      page,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Btn_r, onClick: () => handleBtnClick("right") })
+    ] })
   ] });
 };
 const Load = () => {
@@ -102992,10 +102938,10 @@ const Load = () => {
   const saveDataState = useSelector((state) => state.saveData);
   const dispatch = useDispatch();
   const page = [];
-  for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$d.Save_Load_top_button + " " + styles$d.Load_top_button;
+  for (let i2 = 1; i2 <= 4; i2++) {
+    let classNameOfElement = styles$a.Save_Load_top_button + " " + styles$a.Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on + " " + styles$d.Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$a.Save_Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -103007,15 +102953,15 @@ const Load = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_top_button_text })
       },
       "Load_element_page" + i2
     );
     page.push(element);
   }
   const showSaves = [];
-  const start = (userDataState.optionData.slPage - 1) * 10 + 1;
-  const end2 = start + 9;
+  const start = (userDataState.optionData.slPage - 1) * 6 + 1;
+  const end2 = start + 5;
   reactExports.useEffect(() => {
     getSavesFromStorage(start, end2);
   }, [start, end2]);
@@ -103023,19 +102969,16 @@ const Load = () => {
   for (let i2 = start; i2 <= end2; i2++) {
     animationIndex++;
     const saveData = saveDataState.saveData[i2];
-    let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", {});
+    let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_space });
     if (saveData) {
-      const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
+      saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index + " " + styles$d.Load_content_elememt_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date + " " + styles$d.Load_content_element_top_date, children: saveData.saveTime })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker + " " + styles$d.Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_border }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$a.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_info, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_info_box, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_element_top_date, children: saveData.saveTime }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content_element_top_date, children: saveData.nowStageState.showText })
+        ] }) })
       ] });
     }
     const saveElement = /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -103046,7 +102989,7 @@ const Load = () => {
           playSeClick();
         },
         onMouseEnter: playSeEnter,
-        className: styles$d.Save_Load_content_element,
+        className: styles$a.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -103054,328 +102997,293 @@ const Load = () => {
     );
     showSaves.push(saveElement);
   }
-  const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Load_title_text, children: t2("loadSaving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
-  ] });
-};
-const Options_main = "_Options_main_u5orq_2";
-const Options_top = "_Options_top_u5orq_9";
-const Options_title = "_Options_title_u5orq_16";
-const Option_title_text = "_Option_title_text_u5orq_25";
-const Elements_in$1 = "_Elements_in_u5orq_1";
-const Option_title_text_shadow = "_Option_title_text_shadow_u5orq_34";
-const Option_title_text_ts = "_Option_title_text_ts_u5orq_41";
-const Options_main_content = "_Options_main_content_u5orq_48";
-const Options_main_content_half = "_Options_main_content_half_u5orq_55";
-const About_title_text = "_About_title_text_u5orq_65";
-const About_text = "_About_text_u5orq_73";
-const Options_page_container = "_Options_page_container_u5orq_92";
-const Options_button_list = "_Options_button_list_u5orq_98";
-const Options_page_button = "_Options_page_button_u5orq_102";
-const Options_page_button_active = "_Options_page_button_active_u5orq_114";
-const styles$c = {
-  Options_main,
-  Options_top,
-  Options_title,
-  Option_title_text,
-  Elements_in: Elements_in$1,
-  Option_title_text_shadow,
-  Option_title_text_ts,
-  Options_main_content,
-  Options_main_content_half,
-  About_title_text,
-  About_text,
-  Options_page_container,
-  Options_button_list,
-  Options_page_button,
-  Options_page_button_active
-};
-const NormalOption$1 = "_NormalOption_ogzuv_1";
-const Elements_in = "_Elements_in_ogzuv_1";
-const NormalOption_title = "_NormalOption_title_ogzuv_10";
-const NormalOption_title_bef = "_NormalOption_title_bef_ogzuv_19";
-const NormalOption_title_sd = "_NormalOption_title_sd_ogzuv_29";
-const NormalOption_buttonList = "_NormalOption_buttonList_ogzuv_39";
-const styles$b = {
-  NormalOption: NormalOption$1,
-  Elements_in,
-  NormalOption_title,
-  NormalOption_title_bef,
-  NormalOption_title_sd,
-  NormalOption_buttonList
-};
-const NormalOption = (props) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.NormalOption, style: { width: props.full ? "100%" : "auto" }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_buttonList, style: { width: props.full ? "100%" : "auto" }, children: props.children })
-  ] });
-};
-const NormalButton$1 = "_NormalButton_1qk3b_1";
-const NormalButtonChecked = "_NormalButtonChecked_1qk3b_18";
-const styles$a = {
-  NormalButton: NormalButton$1,
-  NormalButtonChecked
-};
-const NormalButton = (props) => {
-  const len = props.textList.length;
-  const buttonList = [];
-  const { playSeEnter, playSeSwitch } = useSoundEffect();
-  for (let i2 = 0; i2 < len; i2++) {
-    if (i2 === props.currentChecked) {
-      const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className: styles$a.NormalButton + " " + styles$a.NormalButtonChecked,
-          onClick: () => {
-            playSeSwitch();
-            props.functionList[i2]();
-          },
-          onMouseEnter: playSeEnter,
-          children: props.textList[i2]
-        },
-        props.textList[i2] + i2 + props
-      );
-      buttonList.push(t2);
+  useTrans("menu.");
+  const handleBtnClick = (dir) => {
+    const slPage = userDataState.optionData.slPage;
+    let index2 = slPage;
+    if (dir === "left") {
+      index2 = index2 > 1 ? index2 - 1 : 4;
     } else {
-      const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
+      index2 = index2 < 4 ? index2 + 1 : 1;
+    }
+    dispatch(setSlPage(index2));
+    setStorage();
+    playSePageChange();
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: styles$a.NormalButton,
+          className: styles$a.Save_back,
           onClick: () => {
-            playSeSwitch();
-            props.functionList[i2]();
+            playSeClick();
+            dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
           },
-          onMouseEnter: playSeEnter,
-          children: props.textList[i2]
-        },
-        props.textList[i2] + i2
-      );
-      buttonList.push(t2);
-    }
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: buttonList });
-};
-function getLanguageName(lang2) {
-  return language[lang2];
-}
-function useLanguage() {
-  const { i18n } = useTranslation();
-  const userDataRef = useGenSyncRef((state) => state.userData);
-  const dispatch = useDispatch();
-  return (_lang, isSyncStorage = true) => {
-    var _a2;
-    const lang2 = _lang ?? ((_a2 = userDataRef.current) == null ? void 0 : _a2.optionData.language) ?? language.zhCn;
-    const languageName = getLanguageName(lang2);
-    i18n.changeLanguage(languageName);
-    dispatch(setOptionData({ key: "language", value: lang2 }));
-    logger.info("设置语言: " + languageName);
-    window == null ? void 0 : window.localStorage.setItem("lang", lang2.toString());
-    if (isSyncStorage) {
-      setStorage();
-    }
-  };
-}
-const backButton = "_backButton_qbk37_1";
-const about = "_about_qbk37_16";
-const icon = "_icon_qbk37_20";
-const title = "_title_qbk37_24";
-const text$1 = "_text_qbk37_34";
-const contributor = "_contributor_qbk37_43";
-const s$1 = {
-  backButton,
-  about,
-  icon,
-  title,
-  text: text$1,
-  contributor
-};
-function About(props) {
-  const t2 = useTrans("menu.options.pages.system.options.about.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: s$1.about, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: s$1.backButton, onClick: props.onClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Left, { className: s$1.icon, theme: "outline", size: "35", strokeWidth: 3, fill: "#333" }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: s$1.title, children: t2("subTitle") }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: s$1.title, children: t2("version") }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: s$1.text, children: __INFO.version })
-  ] });
-}
-function System() {
-  const userDataState = useSelector((state) => state.userData);
-  const userSavesState = useSelector((state) => state.saveData);
-  const dispatch = useDispatch();
-  const setLanguage = useLanguage();
-  const t2 = useTrans("menu.options.pages.system.options.");
-  const { playSeDialogOpen } = useSoundEffect();
-  function exportSaves() {
-    const gameData = {
-      userData: userDataState,
-      saves: userSavesState
-    };
-    const saves = JSON.stringify(gameData);
-    if (saves !== null) {
-      const blob = new Blob([saves], { type: "application/json" });
-      const blobUrl = URL.createObjectURL(blob);
-      const a2 = document.createElement("a");
-      a2.href = blobUrl;
-      a2.download = "saves.json";
-      a2.click();
-      a2.remove();
-    }
-  }
-  function importSavesEventHandler(ev) {
-    const file = ev.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (evR) => {
-      const saves = evR.target.result;
-      try {
-        const saveAsObj = JSON.parse(saves);
-        playSeDialogOpen();
-        showGlogalDialog({
-          title: t2("gameSave.dialogs.import.title"),
-          leftText: t2("$common.yes"),
-          rightText: t2("$common.no"),
-          leftFunc: async () => {
-            await localforage.setItem(WebGAL.gameKey, saveAsObj.userData).then(() => {
-              logger.info(t2("gameSave.dialogs.import.tip"));
-            });
-            getStorage();
-            webgalStore.dispatch(saveActions.replaceSaveGame(saveAsObj.saves.saveData));
-            webgalStore.dispatch(saveActions.setFastSave(saveAsObj.saves.quickSaveData));
-            dumpFastSaveToStorage();
-            dumpSavesToStorage(0, 200);
-          },
-          rightFunc: () => {
-          }
-        });
-      } catch (e2) {
-        logger.error(t2("gameSave.dialogs.import.error"), e2);
-      }
-    };
-    reader.readAsText(file, "UTF-8");
-  }
-  function importSaves() {
-    const inputElement = document.createElement("input");
-    inputElement.type = "file";
-    inputElement.onchange = importSavesEventHandler;
-    inputElement.click();
-  }
-  const [showAbout, setShowAbout] = reactExports.useState(false);
-  function toggleAbout() {
-    setShowAbout(!showAbout);
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
-    showAbout && /* @__PURE__ */ jsxRuntimeExports.jsx(About, { onClose: toggleAbout }),
-    !showAbout && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("autoSpeed.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NormalButton,
-        {
-          textList: t2("autoSpeed.options.slow", "autoSpeed.options.medium", "autoSpeed.options.fast"),
-          functionList: [
-            () => {
-              dispatch(setOptionData({ key: "autoSpeed", value: playSpeed.slow }));
-              setStorage();
-            },
-            () => {
-              dispatch(setOptionData({ key: "autoSpeed", value: playSpeed.normal }));
-              setStorage();
-            },
-            () => {
-              dispatch(setOptionData({ key: "autoSpeed", value: playSpeed.fast }));
-              setStorage();
-            }
-          ],
-          currentChecked: userDataState.optionData.autoSpeed
+          onMouseEnter: playSeEnter
         }
-      ) }, "option1"),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("language.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NormalButton,
-        {
-          currentChecked: userDataState.optionData.language,
-          textList: Object.values(languages),
-          functionList: Object.keys(languages).map(
-            (k2) => () => setLanguage(language[k2])
-          )
-        }
-      ) }, "option7"),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("resetData.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NormalButton,
-        {
-          textList: t2(
-            "resetData.options.clearGameSave",
-            "resetData.options.resetSettings",
-            "resetData.options.clearAll"
-          ),
-          functionList: [
-            () => {
-              playSeDialogOpen();
-              showGlogalDialog({
-                title: t2("resetData.dialogs.clearGameSave"),
-                leftText: t2("$common.yes"),
-                rightText: t2("$common.no"),
-                leftFunc: () => {
-                  dispatch(saveActions.resetSaves());
-                  dumpSavesToStorage(0, 200);
-                  dumpFastSaveToStorage();
-                },
-                rightFunc: () => {
-                }
-              });
-            },
-            () => {
-              playSeDialogOpen();
-              showGlogalDialog({
-                title: t2("resetData.dialogs.resetSettings"),
-                leftText: t2("$common.yes"),
-                rightText: t2("$common.no"),
-                leftFunc: () => {
-                  dispatch(resetOptionSet());
-                  dumpToStorageFast();
-                },
-                rightFunc: () => {
-                }
-              });
-            },
-            () => {
-              playSeDialogOpen();
-              showGlogalDialog({
-                title: t2("resetData.dialogs.clearAll"),
-                leftText: t2("$common.yes"),
-                rightText: t2("$common.no"),
-                leftFunc: () => {
-                  dispatch(resetAllData());
-                  dumpToStorageFast();
-                  dispatch(saveActions.resetSaves());
-                  dumpSavesToStorage(0, 200);
-                  dumpFastSaveToStorage();
-                },
-                rightFunc: () => {
-                }
-              });
-            }
-          ],
-          currentChecked: 3
-        }
-      ) }, "option2"),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("gameSave.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        NormalButton,
-        {
-          textList: t2("gameSave.options.export", "gameSave.options.import"),
-          functionList: [exportSaves, importSaves],
-          currentChecked: 2
-        }
-      ) }, "option3")
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Load_title })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.Save_Load_top_buttonList, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Btn_l, onClick: () => handleBtnClick("left") }),
+      page,
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.Btn_r, onClick: () => handleBtnClick("right") })
     ] })
   ] });
-}
-const textPreviewMain = "_textPreviewMain_nolr3_1";
-const textbox = "_textbox_nolr3_8";
+};
+const Options_main = "_Options_main_1m0an_1";
+const Options_top = "_Options_top_1m0an_12";
+const Options_page_container = "_Options_page_container_1m0an_25";
+const Options_left = "_Options_left_1m0an_31";
+const title_base = "_title_base_1m0an_31";
+const Options_right = "_Options_right_1m0an_42";
+const title_voice = "_title_voice_1m0an_45";
+const Line = "_Line_1m0an_56";
+const Label = "_Label_1m0an_62";
+const Check_line = "_Check_line_1m0an_72";
+const Check_item = "_Check_item_1m0an_76";
+const Check_name = "_Check_name_1m0an_81";
+const Check_box = "_Check_box_1m0an_92";
+const Checked_box = "_Checked_box_1m0an_103";
+const Bar_line = "_Bar_line_1m0an_115";
+const Label_text_speed = "_Label_text_speed_1m0an_133";
+const Bar = "_Bar_1m0an_115";
+const Save_back = "_Save_back_1m0an_153";
 const styles$9 = {
-  textPreviewMain,
-  textbox
+  Options_main,
+  Options_top,
+  Options_page_container,
+  Options_left,
+  title_base,
+  Options_right,
+  title_voice,
+  Line,
+  Label,
+  Check_line,
+  Check_item,
+  Check_name,
+  Check_box,
+  Checked_box,
+  Bar_line,
+  Label_text_speed,
+  Bar,
+  Save_back
+};
+const slider = "";
+const OptionSlider = (props) => {
+  const { playSeEnter } = useSoundEffect();
+  reactExports.useEffect(() => {
+    setTimeout(() => {
+      const input = document.getElementById(props.uniqueID);
+      if (input !== null)
+        input.setAttribute("value", props.initValue.toString());
+      calcSlideBg();
+    }, 1);
+  }, []);
+  reactExports.useEffect(() => {
+    calcSlideBg();
+  }, [props.initValue]);
+  function calcSlideBg() {
+    const inputBg = document.getElementById(`${props.uniqueID}-bg`);
+    if (inputBg !== null) {
+      inputBg.style.width = Number(props.initValue.toString()) / 100 * 479 / 0.75 + "px";
+    }
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "Option_WebGAL_slider", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "input",
+      {
+        className: "Rang_input",
+        id: props.uniqueID,
+        type: "range",
+        onChange: props.onChange,
+        onFocus: playSeEnter,
+        onMouseEnter: playSeEnter
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "Slider_bg", id: `${props.uniqueID}-bg` }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "Slider_bg_under" })
+  ] });
+};
+const Options = () => {
+  reactExports.useEffect(getStorage, []);
+  const { playSeClick, playSeEnter } = useSoundEffect();
+  const userDataState = useSelector((state) => state.userData);
+  const dispatch = useDispatch();
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Options_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: styles$9.Save_back,
+        onClick: () => {
+          playSeClick();
+          dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
+        },
+        onMouseEnter: playSeEnter
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Options_top }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Options_page_container, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Options_left, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.title_base }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "画面模式" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Check_line, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Check_item, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Check_name, children: "全屏" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: styles$9.Check_box,
+                  onClick: () => {
+                    dispatch(setOptionData({ key: "fullScreen", value: fullScreenOption.on }));
+                    setStorage();
+                  },
+                  children: !userDataState.optionData.fullScreen ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Checked_box }) : null
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Check_item, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Check_name, children: "窗口" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "div",
+                {
+                  className: styles$9.Check_box,
+                  onClick: () => {
+                    dispatch(setOptionData({ key: "fullScreen", value: fullScreenOption.off }));
+                    setStorage();
+                  },
+                  children: userDataState.optionData.fullScreen ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Checked_box }) : null
+                }
+              )
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label_text_speed, children: "文本播放速度" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.textSpeed,
+              uniqueID: "文本播放速度",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "textSpeed", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Options_right, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.title_voice }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "全局音量" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.volumeMain,
+              uniqueID: "全局音量",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "volumeMain", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "背景音量" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.bgmVolume,
+              uniqueID: "背景音量",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "bgmVolume", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "音效" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.seVolume,
+              uniqueID: "音效",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "seVolume", value: Number(newValue) }));
+                dispatch(setOptionData({ key: "uiSeVolume", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.Bar_line, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.Label, children: "角色语音" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            OptionSlider,
+            {
+              initValue: userDataState.optionData.vocalVolume,
+              uniqueID: "角色语音",
+              onChange: (event) => {
+                const newValue = event.target.value;
+                dispatch(setOptionData({ key: "vocalVolume", value: Number(newValue) }));
+                setStorage();
+              }
+            }
+          )
+        ] })
+      ] })
+    ] })
+  ] });
+};
+const Menu = () => {
+  const GUIState = useSelector((state) => state.GUI);
+  let currentTag;
+  switch (GUIState.currentMenuTag) {
+    case MenuPanelTag.Save:
+      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Save, {});
+      break;
+    case MenuPanelTag.Load:
+      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Load, {});
+      break;
+    case MenuPanelTag.Option:
+      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Options, {});
+      break;
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Menu_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Menu_TagContent, children: currentTag }),
+    !MenuPanelTag.Option ? /* @__PURE__ */ jsxRuntimeExports.jsx(MenuPanel, {}) : null
+  ] }) });
+};
+const MainStage_main = "_MainStage_main_9enex_1";
+const MainStage_main_container = "_MainStage_main_container_9enex_10";
+const MainStage_bgContainer = "_MainStage_bgContainer_9enex_17";
+const MainStage_showBgSoftly = "_MainStage_showBgSoftly_9enex_1";
+const MainStage_bgContainer_Settled = "_MainStage_bgContainer_Settled_9enex_27";
+const MainStage_oldBgContainer = "_MainStage_oldBgContainer_9enex_37";
+const MainStage_oldBgFadeout = "_MainStage_oldBgFadeout_9enex_1";
+const MainStage_oldBgContainer_Settled = "_MainStage_oldBgContainer_Settled_9enex_47";
+const pixiContainer = "_pixiContainer_9enex_72";
+const chooseContainer = "_chooseContainer_9enex_77";
+const styles$8 = {
+  MainStage_main,
+  MainStage_main_container,
+  MainStage_bgContainer,
+  MainStage_showBgSoftly,
+  MainStage_bgContainer_Settled,
+  MainStage_oldBgContainer,
+  MainStage_oldBgFadeout,
+  MainStage_oldBgContainer_Settled,
+  pixiContainer,
+  chooseContainer
 };
 function useFontFamily() {
   const fontFamily = useSelector((state) => state.userData.optionData.textboxFont);
@@ -103415,7 +103323,7 @@ const nameContainer = "_nameContainer_1cs17_134";
 const outerName = "_outerName_1cs17_140";
 const innerName = "_innerName_1cs17_151";
 const text = "_text_1cs17_158";
-const styles$8 = {
+const styles$7 = {
   TextBox_EventHandler: TextBox_EventHandler$1,
   TextBox_Container,
   showSoftly: showSoftly$1,
@@ -103459,7 +103367,7 @@ function IMSSTextbox(props) {
       const textElements = document.querySelectorAll(".Textelement_start");
       const textArray2 = [...textElements];
       textArray2.forEach((e2) => {
-        e2.className = applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled);
+        e2.className = applyStyle2("TextBox_textElement_Settled", styles$7.TextBox_textElement_Settled);
       });
     }
     WebGAL.events.textSettle.on(settleText);
@@ -103481,12 +103389,12 @@ function IMSSTextbox(props) {
           "span",
           {
             id: `${delay}`,
-            className: applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled),
+            className: applyStyle2("TextBox_textElement_Settled", styles$7.TextBox_textElement_Settled),
             style: { animationDelay: `${delay}ms`, animationDuration: `${textDuration}ms` },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
               e2,
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
-              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$7.outer), children: e2 }),
+              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$7.inner), children: e2 })
             ] })
           },
           currentDialogKey + index22
@@ -103497,12 +103405,12 @@ function IMSSTextbox(props) {
         {
           "data-text": e2,
           id: `${delay}`,
-          className: `${applyStyle2("TextBox_textElement_start", styles$8.TextBox_textElement_start)} Textelement_start`,
+          className: `${applyStyle2("TextBox_textElement_start", styles$7.TextBox_textElement_start)} Textelement_start`,
           style: { animationDelay: `${delay}ms`, position: "relative" },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
             e2,
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
-            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$7.outer), children: e2 }),
+            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$7.inner), children: e2 })
           ] })
         },
         currentDialogKey + index22
@@ -103521,12 +103429,11 @@ function IMSSTextbox(props) {
       `text-line-${index2}`
     );
   });
-  console.log(`${textboxOpacity / 100}`);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$8.TextBox_Container, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$7.TextBox_Container, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: applyStyle2("TextBox_main", styles$8.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$8.TextBox_Background),
+        className: applyStyle2("TextBox_main", styles$7.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$7.TextBox_Background),
         style: {
           opacity: `${textboxOpacity / 100}`,
           left: miniAvatar2 === "" ? 25 : void 0
@@ -103537,27 +103444,27 @@ function IMSSTextbox(props) {
       "div",
       {
         id: "textBoxMain",
-        className: applyStyle2("TextBox_main", styles$8.TextBox_main),
+        className: applyStyle2("TextBox_main", styles$7.TextBox_main),
         style: {
           fontFamily: font,
           left: miniAvatar2 === "" ? 25 : void 0
         },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$8.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$8.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$7.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$7.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
           showName !== "" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$8.TextBox_ShowName_Background),
+                className: applyStyle2("TextBox_showName", styles$7.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$7.TextBox_ShowName_Background),
                 style: {
                   opacity: `${textboxOpacity / 100}`,
                   fontSize: "200%"
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { opacity: 0 }, children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$7.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$7.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 }) })
               }
@@ -103565,15 +103472,15 @@ function IMSSTextbox(props) {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName),
+                className: applyStyle2("TextBox_showName", styles$7.TextBox_showName),
                 style: {
                   fontSize: "200%"
                 },
                 children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$7.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$7.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 })
               },
@@ -103583,7 +103490,7 @@ function IMSSTextbox(props) {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("text", styles$8.text),
+              className: applyStyle2("text", styles$7.text),
               style: {
                 fontSize,
                 flexFlow: "column",
@@ -103761,378 +103668,6 @@ function parseString(input) {
   }
   return result;
 }
-const TextPreview = (props) => {
-  const t2 = useTrans("menu.options.pages.display.options.");
-  const userDataState = useSelector((state) => state.userData);
-  const stageState = useSelector((state) => state.stage);
-  const previewBackground = stageState.bgName;
-  const textDelay = useTextDelay(userDataState.optionData.textSpeed);
-  const textDuration = useTextAnimationDuration(userDataState.optionData.textSpeed);
-  const textboxOpacity = userDataState.optionData.textboxOpacity;
-  const size = getTextSize(userDataState.optionData.textSize) + "%";
-  const font = useFontFamily();
-  const userAgent2 = navigator.userAgent;
-  const isFirefox2 = /firefox/i.test(userAgent2);
-  const isSafari2 = /^((?!chrome|android).)*safari/i.test(userAgent2);
-  const previewText = t2("textPreview.text");
-  const previewTextArray = compileSentence(previewText, 3);
-  const Textbox = IMSSTextbox;
-  const textboxProps = {
-    textArray: previewTextArray,
-    isText: true,
-    textDelay,
-    showName: t2("textPreview.title"),
-    currentConcatDialogPrev: "",
-    fontSize: size,
-    currentDialogKey: "",
-    isSafari: isSafari2,
-    isFirefox: isFirefox2,
-    miniAvatar: "",
-    textDuration,
-    font,
-    textSizeState: size,
-    lineLimit: 3,
-    isUseStroke: true,
-    textboxOpacity
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "div",
-    {
-      className: styles$9.textPreviewMain,
-      style: {
-        background: previewBackground ? `bottom / cover no-repeat url(${previewBackground})` : "rgba(0, 0, 0, 0.1)"
-      },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.textbox, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Textbox, { ...textboxProps }) }, `previewTextbox-${textDelay}`)
-    }
-  );
-};
-const slider = "";
-const OptionSlider = (props) => {
-  const { playSeEnter } = useSoundEffect();
-  reactExports.useEffect(() => {
-    setTimeout(() => {
-      const input = document.getElementById(props.uniqueID);
-      if (input !== null)
-        input.setAttribute("value", props.initValue.toString());
-    }, 1);
-  }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "Option_WebGAL_slider", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-    "input",
-    {
-      id: props.uniqueID,
-      type: "range",
-      onChange: props.onChange,
-      onFocus: playSeEnter,
-      onMouseEnter: playSeEnter
-    }
-  ) });
-};
-function Display() {
-  const userDataState = useSelector((state) => state.userData);
-  const dispatch = useDispatch();
-  const t2 = useTrans("menu.options.pages.display.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("fullScreen.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("fullScreen.options.on", "fullScreen.options.off"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "fullScreen", value: fullScreenOption.on }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "fullScreen", value: fullScreenOption.off }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.fullScreen
-      }
-    ) }, "fullScreen"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("textSpeed.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("textSpeed.options.slow", "textSpeed.options.medium", "textSpeed.options.fast"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "textSpeed", value: playSpeed.slow }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textSpeed", value: playSpeed.normal }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textSpeed", value: playSpeed.fast }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.textSpeed
-      }
-    ) }, "textSpeed"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("textSize.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("textSize.options.small", "textSize.options.medium", "textSize.options.large"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "textSize", value: textSize.small }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textSize", value: textSize.medium }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textSize", value: textSize.large }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.textSize
-      }
-    ) }, "textSize"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("textFont.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("textFont.options.siYuanSimSun", "textFont.options.SimHei", "textFont.options.lxgw"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "textboxFont", value: textFont.song }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textboxFont", value: textFont.hei }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "textboxFont", value: textFont.lxgw }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.textboxFont
-      }
-    ) }, "textFont"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("textboxOpacity.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.textboxOpacity,
-        uniqueID: t2("textboxOpacity.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "textboxOpacity", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "textboxOpacity"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { full: true, title: t2("textPreview.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(TextPreview, {}) }, "textPreview")
-  ] });
-}
-function Sound() {
-  const userDataState = useSelector((state) => state.userData);
-  const dispatch = useDispatch();
-  const t2 = useTrans("menu.options.pages.sound.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("volumeMain.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.volumeMain,
-        uniqueID: t2("volumeMain.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "volumeMain", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option4"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("vocalVolume.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.vocalVolume,
-        uniqueID: t2("vocalVolume.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "vocalVolume", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option5"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("bgmVolume.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.bgmVolume,
-        uniqueID: t2("bgmVolume.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "bgmVolume", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option6"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("seVolume.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.seVolume,
-        uniqueID: t2("seVolume.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "seVolume", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option7"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("uiSeVolume.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      OptionSlider,
-      {
-        initValue: userDataState.optionData.uiSeVolume,
-        uniqueID: t2("uiSeVolume.title"),
-        onChange: (event) => {
-          const newValue = event.target.value;
-          dispatch(setOptionData({ key: "uiSeVolume", value: Number(newValue) }));
-          setStorage();
-        }
-      }
-    ) }, "option8"),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("voiceOption.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-      NormalButton,
-      {
-        textList: t2("voiceStop.title", "voiceContinue.title"),
-        functionList: [
-          () => {
-            dispatch(setOptionData({ key: "voiceInterruption", value: voiceOption.yes }));
-            setStorage();
-          },
-          () => {
-            dispatch(setOptionData({ key: "voiceInterruption", value: voiceOption.no }));
-            setStorage();
-          }
-        ],
-        currentChecked: userDataState.optionData.voiceInterruption
-      }
-    ) }, "option9")
-  ] });
-}
-const Options = () => {
-  const { playSeEnter, playSeSwitch } = useSoundEffect();
-  const currentOptionPage = useValue(
-    0
-    /* System */
-  );
-  reactExports.useEffect(getStorage, []);
-  function getClassName(page) {
-    if (page === currentOptionPage.value) {
-      return styles$c.Options_page_button + " " + styles$c.Options_page_button_active;
-    } else
-      return styles$c.Options_page_button;
-  }
-  const t2 = useTrans("menu.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Option_title_text, children: t2("title") }) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_page_container, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_button_list, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            onClick: () => {
-              currentOptionPage.set(
-                0
-                /* System */
-              );
-              playSeSwitch();
-            },
-            className: getClassName(
-              0
-              /* System */
-            ),
-            onMouseEnter: playSeEnter,
-            children: t2("pages.system.title")
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            onClick: () => {
-              currentOptionPage.set(
-                1
-                /* Display */
-              );
-              playSeSwitch();
-            },
-            className: getClassName(
-              1
-              /* Display */
-            ),
-            onMouseEnter: playSeEnter,
-            children: t2("pages.display.title")
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            onClick: () => {
-              currentOptionPage.set(
-                2
-                /* Sound */
-              );
-              playSeSwitch();
-            },
-            className: getClassName(
-              2
-              /* Sound */
-            ),
-            onMouseEnter: playSeEnter,
-            children: t2("pages.sound.title")
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content, children: [
-        currentOptionPage.value === 1 && /* @__PURE__ */ jsxRuntimeExports.jsx(Display, {}),
-        currentOptionPage.value === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(System, {}),
-        currentOptionPage.value === 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(Sound, {})
-      ] })
-    ] })
-  ] });
-};
-const Menu = () => {
-  const GUIState = useSelector((state) => state.GUI);
-  let currentTag;
-  switch (GUIState.currentMenuTag) {
-    case MenuPanelTag.Save:
-      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Save, {});
-      break;
-    case MenuPanelTag.Load:
-      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Load, {});
-      break;
-    case MenuPanelTag.Option:
-      currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Options, {});
-      break;
-  }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.Menu_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.Menu_TagContent, children: currentTag }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(MenuPanel, {})
-  ] }) });
-};
-const MainStage_main = "_MainStage_main_9enex_1";
-const MainStage_main_container = "_MainStage_main_container_9enex_10";
-const MainStage_bgContainer = "_MainStage_bgContainer_9enex_17";
-const MainStage_showBgSoftly = "_MainStage_showBgSoftly_9enex_1";
-const MainStage_bgContainer_Settled = "_MainStage_bgContainer_Settled_9enex_27";
-const MainStage_oldBgContainer = "_MainStage_oldBgContainer_9enex_37";
-const MainStage_oldBgFadeout = "_MainStage_oldBgFadeout_9enex_1";
-const MainStage_oldBgContainer_Settled = "_MainStage_oldBgContainer_Settled_9enex_47";
-const pixiContainer = "_pixiContainer_9enex_72";
-const chooseContainer = "_chooseContainer_9enex_77";
-const styles$7 = {
-  MainStage_main,
-  MainStage_main_container,
-  MainStage_bgContainer,
-  MainStage_showBgSoftly,
-  MainStage_bgContainer_Settled,
-  MainStage_oldBgContainer,
-  MainStage_oldBgFadeout,
-  MainStage_oldBgContainer_Settled,
-  pixiContainer,
-  chooseContainer
-};
 const AudioContainer = () => {
   var _a2;
   const stageStore = useSelector((webgalStore2) => webgalStore2.stage);
@@ -104236,7 +103771,7 @@ const FullScreenPerform = () => {
     stageHeight = "76%";
     top = "12%";
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$h.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
 };
 const TextBox_EventHandler = "_TextBox_EventHandler_449dq_2";
 const TextBox_main = "_TextBox_main_449dq_10";
@@ -104642,11 +104177,11 @@ const Stage = () => {
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
   useHotkey();
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$7.MainStage_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$8.MainStage_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(FullScreenPerform, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(MainStage, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$7.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$7.chooseContainer }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$8.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$8.chooseContainer }),
     GUIState.showTextBox && stageState.enableFilm === "" && !stageState.isDisableTextbox && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBox, {}),
     GUIState.showTextBox && stageState.enableFilm !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBoxFilm, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AudioContainer, {}),
@@ -104698,9 +104233,9 @@ const BottomControlPanel = () => {
   let fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "125%" }, children: t2("noSaving") }) });
   if (saveData[0]) {
     const data2 = saveData[0];
-    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.slPreviewMain, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.textContainer, children: [
+    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.slPreviewMain, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.textContainer, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data2.nowStageState.showName }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "75%", color: "rgb(55,60,56)" }, children: data2.nowStageState.showText })
       ] })
@@ -104708,11 +104243,11 @@ const BottomControlPanel = () => {
   }
   return (
     // <div className={styles.ToCenter}>
-    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
       GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", false);
@@ -104723,21 +104258,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewCloseOne,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.hide") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.hide") })
           ]
         }
       ),
       !GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", true);
@@ -104748,21 +104283,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewOpen,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.show") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.show") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showBacklog", true);
@@ -104774,21 +104309,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               AlignTextLeftOne,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.backlog") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.backlog") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             let VocalControl = document.getElementById("currentVocal");
@@ -104804,14 +104339,14 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               ReplayMusic,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.replay") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.replay") })
           ]
         }
       ),
@@ -104819,7 +104354,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_auto",
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             switchAuto();
@@ -104827,8 +104362,8 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.auto") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.auto") })
           ]
         }
       ),
@@ -104836,7 +104371,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_fast",
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             switchFast();
@@ -104847,21 +104382,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleRight,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.forward") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.forward") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton + " " + styles$j.fastsave,
+          className: styles$g.singleButton + " " + styles$g.fastsave,
           style: { fontSize },
           onClick: () => {
             saveGame(0);
@@ -104872,22 +104407,22 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleDown,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklySave") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastSPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.quicklySave") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.fastSlPreview + " " + styles$g.fastSPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton + " " + styles$j.fastload,
+          className: styles$g.singleButton + " " + styles$g.fastload,
           style: { fontSize },
           onClick: () => {
             loadGame(0);
@@ -104895,16 +104430,16 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklyLoad") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastLPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.quicklyLoad") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.fastSlPreview + " " + styles$g.fastLPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Save);
@@ -104913,15 +104448,15 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.save") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.save") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Load);
@@ -104933,21 +104468,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               FolderOpen,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.load") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.load") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Option);
@@ -104959,21 +104494,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               SettingTwo,
               {
-                className: styles$j.button,
+                className: styles$g.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.options") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.options") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             playSeDialogOpen();
@@ -104990,22 +104525,22 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.title") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$g.button_text, children: t2("buttons.title") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$g.singleButton,
           style: { fontSize },
           onClick: () => {
             switchControls();
             playSeClick();
           },
           onMouseEnter: playSeEnter,
-          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
+          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$g.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
         }
       )
     ] }) })
@@ -105039,11 +104574,11 @@ const Backlog = () => {
       const singleBacklogView = /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: styles$i.backlog_item,
+          className: styles$f.backlog_item,
           style: { animationDelay: `${20 * (WebGAL.backlogManager.getBacklog().length - i2)}ms` },
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_func_area, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_item_button_list, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.backlog_func_area, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.backlog_item_button_list, children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "div",
                   {
@@ -105054,7 +104589,7 @@ const Backlog = () => {
                       e2.stopPropagation();
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$i.backlog_item_button_element,
+                    className: styles$f.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(Return, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ),
@@ -105073,14 +104608,14 @@ const Backlog = () => {
                       }
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$i.backlog_item_button_element,
+                    className: styles$f.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(VolumeNotice, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ) : null
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content_name, children: backlogItem.currentStageState.showName })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.backlog_item_content_name, children: backlogItem.currentStageState.showName })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.backlog_item_content_text, children: showTextElementList }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$f.backlog_item_content_text, children: showTextElementList }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("audio", { id: "backlog_audio_play_element_" + i2, src: backlogItem.currentStageState.vocal })
           ]
         },
@@ -105115,15 +104650,15 @@ const Backlog = () => {
       "div",
       {
         className: `
-          ${GUIStore.showBacklog ? styles$i.Backlog_main : styles$i.Backlog_main_out}
-          ${indexHide ? styles$i.Backlog_main_out_IndexHide : ""}
+          ${GUIStore.showBacklog ? styles$f.Backlog_main : styles$f.Backlog_main_out}
+          ${indexHide ? styles$f.Backlog_main_out_IndexHide : ""}
           `,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.backlog_top, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               CloseSmall,
               {
-                className: styles$i.backlog_top_icon,
+                className: styles$f.backlog_top_icon,
                 onClick: () => {
                   playSeClick();
                   dispatch(setVisibility({ component: "showBacklog", visibility: false }));
@@ -105139,7 +104674,7 @@ const Backlog = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: styles$i.backlog_title,
+                className: styles$f.backlog_title,
                 onClick: () => {
                   logger.info("Rua! Testing");
                 },
@@ -105147,7 +104682,7 @@ const Backlog = () => {
               }
             )
           ] }),
-          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$i.backlog_content} ${isDisableScroll ? styles$i.Backlog_main_DisableScroll : ""}`, children: backlogList })
+          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$f.backlog_content} ${isDisableScroll ? styles$f.Backlog_main_DisableScroll : ""}`, children: backlogList })
         ]
       }
     )
@@ -105173,47 +104708,76 @@ function mergeStringsAndKeepObjects(arr) {
   }
   return result;
 }
-const extra = "_extra_1tymt_2";
-const extra_top = "_extra_top_1tymt_14";
-const extra_top_icon = "_extra_top_icon_1tymt_20";
-const extra_icon_softin = "_extra_icon_softin_1tymt_1";
-const extra_title = "_extra_title_1tymt_40";
-const mainContainer = "_mainContainer_1tymt_51";
-const bgmContainer = "_bgmContainer_1tymt_59";
-const bgmListContainer = "_bgmListContainer_1tymt_76";
-const bgmPlayerMain = "_bgmPlayerMain_1tymt_91";
-const bgmControlButton = "_bgmControlButton_1tymt_95";
-const bgmName = "_bgmName_1tymt_110";
-const bgmElement = "_bgmElement_1tymt_118";
-const bgmElement_active = "_bgmElement_active_1tymt_148";
-const cgMain = "_cgMain_1tymt_153";
-const cgContainer = "_cgContainer_1tymt_158";
-const cgElement = "_cgElement_1tymt_170";
-const cgShowDiv = "_cgShowDiv_1tymt_185";
-const cgShowDivWarpper = "_cgShowDivWarpper_1tymt_194";
-const cgNav = "_cgNav_1tymt_203";
-const cgNav_active = "_cgNav_active_1tymt_222";
-const showFullContainer = "_showFullContainer_1tymt_232";
-const showFullCgMain = "_showFullCgMain_1tymt_245";
-const fullCgIn = "_fullCgIn_1tymt_1";
-const bgmElement_In = "_bgmElement_In_1tymt_1";
+const extra = "_extra_18mgc_2";
+const extra_top = "_extra_top_18mgc_13";
+const mainContainer = "_mainContainer_18mgc_26";
+const mainTab = "_mainTab_18mgc_32";
+const mainTab_bg = "_mainTab_bg_18mgc_42";
+const mainTab_item1 = "_mainTab_item1_18mgc_50";
+const mainTab_item2 = "_mainTab_item2_18mgc_58";
+const mainTab_bgmunselect = "_mainTab_bgmunselect_18mgc_66";
+const mainTab_unselect = "_mainTab_unselect_18mgc_70";
+const mainTab_choose = "_mainTab_choose_18mgc_75";
+const mainTab_choose_bgm = "_mainTab_choose_bgm_18mgc_80";
+const mainTab_choose_cg = "_mainTab_choose_cg_18mgc_86";
+const bgmContainer = "_bgmContainer_18mgc_91";
+const bgmListContainer = "_bgmListContainer_18mgc_96";
+const bgmElement = "_bgmElement_18mgc_103";
+const bgmStar = "_bgmStar_18mgc_112";
+const bgmName = "_bgmName_18mgc_116";
+const bgm_item_name = "_bgm_item_name_18mgc_127";
+const bgmNameActive = "_bgmNameActive_18mgc_135";
+const soundunselect$1 = "_soundunselect_18mgc_139";
+const soundChoose$1 = "_soundChoose_18mgc_144";
+const unlockBgm$1 = "_unlockBgm_18mgc_148";
+const footer = "_footer_18mgc_152";
+const footerButton = "_footerButton_18mgc_162";
+const footer_page_container = "_footer_page_container_18mgc_167";
+const footerPageIcon = "_footerPageIcon_18mgc_172";
+const cgMain = "_cgMain_18mgc_184";
+const cgContainer = "_cgContainer_18mgc_189";
+const cgElement = "_cgElement_18mgc_195";
+const cgUnLock$1 = "_cgUnLock_18mgc_201";
+const cgShowDiv = "_cgShowDiv_18mgc_210";
+const cgShowDivWarpper = "_cgShowDivWarpper_18mgc_219";
+const cgNav = "_cgNav_18mgc_228";
+const cgNav_active = "_cgNav_active_18mgc_247";
+const showFullContainer = "_showFullContainer_18mgc_257";
+const showFullCgMain = "_showFullCgMain_18mgc_270";
+const fullCgIn = "_fullCgIn_18mgc_1";
+const extra_icon_softin = "_extra_icon_softin_18mgc_1";
+const bgmElement_In = "_bgmElement_In_18mgc_1";
 const styles$4 = {
   extra,
   extra_top,
-  extra_top_icon,
-  extra_icon_softin,
-  extra_title,
   mainContainer,
+  mainTab,
+  mainTab_bg,
+  mainTab_item1,
+  mainTab_item2,
+  mainTab_bgmunselect,
+  mainTab_unselect,
+  mainTab_choose,
+  mainTab_choose_bgm,
+  mainTab_choose_cg,
   bgmContainer,
   bgmListContainer,
-  bgmPlayerMain,
-  bgmControlButton,
-  bgmName,
   bgmElement,
-  bgmElement_active,
+  bgmStar,
+  bgmName,
+  bgm_item_name,
+  bgmNameActive,
+  soundunselect: soundunselect$1,
+  soundChoose: soundChoose$1,
+  unlockBgm: unlockBgm$1,
+  footer,
+  footerButton,
+  footer_page_container,
+  footerPageIcon,
   cgMain,
   cgContainer,
   cgElement,
+  cgUnLock: cgUnLock$1,
   cgShowDiv,
   cgShowDivWarpper,
   cgNav,
@@ -105221,23 +104785,29 @@ const styles$4 = {
   showFullContainer,
   showFullCgMain,
   fullCgIn,
+  extra_icon_softin,
   bgmElement_In
 };
+const bgmstar = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAD4AAAA+CAMAAABEH1h2AAAAflBMVEUAAADFxYvQxJDMw5DMwZLMwpLMwJDMwJLMwZTMwJDNwZLMwJHMwJLMwZLMv5LMwJLLwZLMwJLMwJLMwJLNwJLMwZLMvpDNwJLMwJLMwJLMwZLMwJLMwJLMwJLMwZLMwJLMwJLMwJLMwJLMwJHMwJLMwJLMwZLNwJLMv5HMwJL9jgmXAAAAKXRSTlMABAYJDREVGh0hJS0pMkM7NbNLP0fNN3RaUrqpk3to+PTmgGxg7ZmJnBmmzPgAAAJySURBVEjH7dfXjtswEAVQyips6t1Fct8N//8HMyPSkgM4phQhWCTYefGDceZSLKZM3pfjvP/+m/8tvtms4q67inveKu77qzilqzgXq1YtioiD9SfY2ZA4hrVzhlqMYdHblrjwqVsswEhg0fsrcbF0gyUakEeajnhYQwfj7RoxKnL4ID7U2GCW1hgYyTISQA0dpgFYs1EDI1XlUCjsYPwcjdEBqvOdUs4ZozgC8NZ41C5qxjlNlSpYGArOKIV8q8dw1AFoIYNeqYamkcQGg8fhW8IxmzIeyojulcpEkUAD7XW8PRx1LcuTUqdtUsYJenz+Id4WHlAuoroQEA7xaZ4Pfkb8I1zINBGNGuoz2aIPObPFO45+chh6KJqj5sfPIi6LVMfbOXjfC+K9Giu7pVKGdm7Kj/r9XT3VKevy0H/FHJgKPWbKZdH2zSGrzupFnavs43K9lalggedq5fzCo7jtu9/xe7X7cWlueR0+81cV1Nf96Zked5etDOynzez3wKf5ftK7PpFm48K+tS1cAAsH+7w7Gn3Ic73wj31j23RMREksL0aX7fZp3W3pw64L0yKW2TDyuDW7zr7uwM2el3VRb08wa7dYa8FRD3NuOTLmxCUig/CoNCduzpF5xKNPWaNUB+e9HrUZ+/t47UXIC6VKMf7aTBNnix88Z+x8FyJEPGrgFq8fHxowt6o8zhHDyM3QnVm3BHpKsh1hA7briWsPDfCSQovYro0f7xmfdBeCdrqjllywHrleCdDFV6xpQNobQWow6gUNNiQuyYRBz/fYgUQpWfxuYgqFEPhh8PKiFPiXvZR63le+kG82//B/mf+a/wR0OTfz4PRu3gAAAABJRU5ErkJggg==";
+const soundunselect = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAMAAACfvvDEAAAAZlBMVEUAAACjn5KkoJKjn5KhoZajn5Kkn5KjoJKjn5Kjn5Kjn5KjoJKinpOonZOjn5Kjn5KjoJKjoJOkoJKkno+koJKkn5Kkn5Kjn5KhoZSjn5KjoJKin5Kjn5Oin5Gjn5Oln5GiopOjn5K6nrBdAAAAIXRSTlMAxUbtCGWxy2rO2NMyDvKKW0pBIryTelAX5LRgp6U+JSENB1e1AAAA6UlEQVQ4y83U6arDIBAF4EnU3miz3yTd7tJ5/5dsKZRRj4ZSaOn5OXwyHAUJo3/bdheOmuNImO8tMxfh2S/mE8BR8TU2hsVfDCu+pYjghuJ0LHIN6iOLDCB2EQkQuogUiF1AJmHHKJsQ7mfrttYxSu1CePBAKGnhiSQ/nJc0aE+qjMS0D0v1XtmUQ3nPrl6TtT+xz8r17Z96S5KXvbt7WPYr8t8tPl2yUh+YjU/PvTn1RqG87TOJLw4llUmqNyBzlDqQWVqBzNJRiQQKvUQChV4ihVY608sSUEr3msPRwPOeUnSa6mhkGroAExRZGmoaLpUAAAAASUVORK5CYII=";
+const soundChoose = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAABFCAMAAAA1muuoAAAAYFBMVEUAAADNwJLMwJLMwJLMwJLMwZLMwJLMwJPDw5XMwJLMwJHMwJLMzJnMwJLMwJLMwZLNwZLMwJLMwZLMwJLNwZLMwZHMv5LMwJHKwpLExJbMwJLNwJLMwJLMvpDMwJLMwJInZxg4AAAAH3RSTlMAxbntzmOyRghpIokK2dO8WvKwQJV6TCsVBOGpohvnvS6PHgAAAQNJREFUWMPt1ssOgjAURdFiASlQKALi+/z/X6oDc7UVk15MJNI9ZLByKCGpCIVCC07V9WA96s9MCkAnXkpwHDhUgVuxRQHKXypT3ItsautP5RXIeqLW/lQrQdY0SgFkTaMKkMWn6NTJIop36mQxqdwkiVESjrXvfameBMvKtCdlMGqJXW2ET3rE4tR80ZLLtvJVvXoUFdOsFk9d5rNrrmf/N9Zc/8fjJys5e1m7w6i176AzP6yLdRXrd1YExBnvSuK+4+aGlQxMvTv7lLmslY7FX5ZXjsVfVqZkcTGqcCz+awpF1vRlrXTvqxvgsBW8L0C7aJkRnLJT09grToMIhUKhX3YFGE9S+on0vvMAAAAASUVORK5CYII=";
+const unlockBgm = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAc4AAABDCAMAAAAiYRUwAAAAclBMVEUAAACTj5eRj5eSj5eQj5aRj5KbkpuSj5iTj5iTj5mSj5eSj5eWlqCPj5eZkZ6djJ2Uj5uZkJ+Wkp6XkJ2YkJ+YkJ+YkJ+WkJyYkZ+Xj56ZkZ+YkJ+YkJ+YkJ+YkJ+XkJ+XkJ+YkJ+Yj6GYkJ+Sj5eYkJ8gswvRAAAAJHRSTlMAQIC/MBAF72DPn98IIBYMkSoerOaghm5II3r8uFbyxWVRN9cnCwkTAAADIElEQVR42u3d626qQBSG4YXMyEFEQM6elbn/W9zIYbehNju6Zg+6sp6k/devad9g49Ao/NMSGCGckxTOSQrnJIVzksI5SQm4JyUbzkmJDIDREXJOSpINMDpiCYyOawiMjjIBRocbA6OjFsDoiCxgdGxLYHTsL8DouJ2BkRHsamBkJCoCRkap9sDIqFW6hBcJ66E1PGP9eETAM6T1mPkR+GVEmhnZK3WFF9nNQwt4xuLxiP3cj988Zn4EfhmxjIyEO6VyzkklZ62USjknkZzBUbVqZM7VooPM2Y+scDn9bsRuBqgRXE67G/G/ShgY2aq7XYzLaUMHmXPYxOW0JpvGR75+C5NNAyO56qUV5/z4nMlWjY4XzvnZOeP8qL7ZX5ac8yNzBmF8yE9qKs0KK0H8E/XPnLgrHuFvidlHJiXQI8tOsJFhEl9Lt462p5v63dHbZ3lxsESVyE2w7HDO98k5GpJWsbAu5zq77dQP6T4qDuW1LRm2KduWfHW+bc6pqjip73ZZGQCKqyPnutGRczWuzD7iP5ETOXJI1V9ZBa9a9CIHk9MdVlaYnNYwYjejuUbWw4jfjKz/PxJ6anCG1zVTQsd5YYF5eBxtNY7gzgsdEyNBOtbUmNMHDTk9qaGEIzSN4Eu4RkaEutuCxpwRaMhpS8CXWAk9I/gSjmtoJGtr7hItOf3hrjMqpzfeMEaV6EakphFUieI+sjY2Eo8XJ58efOLzkx9uSpWck0zOXB03nJNMzoM6AeckkzNWGeekk3Ojcs5JJyekBeDYrVX74QJCNIxEgOAOI/bsI6L9es9rPwnTI6cDoPmOADS3cQFNOP6bjEjPkzOMbEt8zf4oDH9DxsWHaBr/LUak159Umh7JLPT3HI+g8HeSIh336Gw5/4hw+hNC4yP5FV2z5+JrIq8KF3F+r3dEOIjze9TIOeachHJeKtDSU8uDrQ8o7hBi/hHhIGpiRqwQ0D37P534nhEAvqct32HknmIlzI+IkJ+oEHqiUknAWwOPTEk5x0jIL4BKCb/aNCn8WvCk8Ds1kMI1SeGcpHBOUjgnKZyTFM75Qf4AsGo7XPaqQ1gAAAAASUVORK5CYII=";
+const footerLeft = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAAA5CAMAAADTGTPKAAAAkFBMVEUAAADMwJLKxJbMv5POwJHMwJLNwpXMv5HMwJLNwZLMwJLMwZHMwJLMwJLNwJLMwJLMwZLMwZLMwZLMwJLLv5LLwpHMwJLMwJLMwZLMwJLMv5LLwZDMwJLNwJLMwJLNwZLMwJLNv5LNwJLMwJLMwZLMwJLNwZPMwJLMwZLNwJPKv5LMwJLMwJLMw5PNwJHMwJIEJMHMAAAAL3RSTlMA9gdSDJkWNd2tpSn64raIvLCOXD8h8NfIkk4S0YN6bWdJO8J2ci/qzGFEn1gdG0pHNjAAAAJiSURBVFjDzdnnjqMwFAXgC6b33iGk15nz/m+3FGWjSUBa7UwGfz8RFgf5Xtmy6Zs2B+JHEBI/cp7CyC3xw2uIH4JM3FCwJW4wJCLxwgDWxInSAnTihIvOB3GhFNAxiAs6BhviwBkjm4OGUnHn0NIOCQY8lE0kALykWeErR6GlxD6eJUul2Ql4sZVoCesMr05LtLd48zDBk+i3SWvZxpSAOqqzoY5SiPRuorrSj5hUFdS5CBAu/Yv7Yx69L494YLWvYYZzo16IXkidPWD7TRHTz/pU2U7e2phj621Mgx1GO+ow9KxUd8PIlOg7JMXcrMNdbmy1BHOE1MnP6t/ZyHGXU6ewcGfZlWME5/UmLv8hlqJeWNjualc2fG+bVdpRwDT75OnXoN6fi+igTOwlRjp1NhaeWYldZZ7jG3JQN81u1Z5DxiLxqTDDfeNedWe7rYYY8zIjaFZMjV//8PYYKNzuq8U8IbHTzOti5XuR5ondFF3Yqpb9TJtPlqSe0TCTHkwNI214Wjy+q2W6HLhu4DbtrbhEqvlRSv/Rax9qsc8dDbNSI/wbSDmhd1KGkcKQI5PbKKYfZRa1k2LOyT3QyAfg0+AIpDn7pDeJWe0lmOZHNLjiSj0pg3yhN1OYbGPSVaLemgbMLek3iEzHFE2lB4l+jRkkeGVFtAzFnUpzoIWYDl4ptJTWwhO5pMUctK8VvKEllRUeqpKWJaW4syVaWnnEyIppeRFGK+KBjF5FXJAEgJ8TRhdASpyIuamYngfrk3jR4kTcUBEQNxSciRuixktj93SV+FHzsC7d7Tm5xhiYEv2cPyYvp3C52LxYAAAAAElFTkSuQmCC";
+const footerRight = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAAA5CAMAAADTGTPKAAAAkFBMVEUAAADMwJLKxJbMv5POwJHMwJLNwpXMv5HMwJLNwZLMwJLMwZHMwJLMwJLNwJLMwJLMwZLMwZLMwZLMwJLLv5LLwpHMwJLMwJLMwZLMwJLMv5LLwZDMwJLNwJLMwJLNwZLMwJLNv5LNwJLMwJLMwZLMwJLNwZPMwJLMwZLNwJPKv5LMwJLMwJLMw5PNwJHMwJIEJMHMAAAAL3RSTlMA9gdSDJkWNd2tpSn64raIvLCOXD8h8NfIkk4S0YN6bWdJO8J2ci/qzGFEn1gdG0pHNjAAAAJoSURBVFjDzdkJbqNAEAXQD82+75sB431P3f92g0GJJ7GJZpTY3e8A1KdKrZaq8YsUG+K4bCCOtIE4dBPiWBgyhHEgDcKISIcw9tRBFG8OBRDFnIhSCCInIh9iWFBPUiCEmq5UiGBOowT8pQ6NdjPwprj0LlfA16ymm5pvb5YG/c3YgpuZSl84HXjR6J5ng5OtQ/d8DXwkj9Jk0Qu7o+BGN+gRk8l4hZnPMFiMyU70kKuyp4/rqFIxduZEJwySkB7LgoaleJI3VuZEOwyuCUKMtv6epuReU9n4VWnSqYVEPemCnjZW339Mwo6tnCYZXrmp9Av+m6zMLraeHKtz1/qR70eqWRgSvauG0sZ7FRs3NmutIM9oimQUodrM2XFpa/J3CTalaoVBkbuZRN+Zo3eWbgXO94ct1dm8jayCviPt6tXKM09+u4l1+XOYhLH40M3XbdtEfSwvKGo3c+grZ4meSTcm/qZtk+qwaaKTGezdyRhGXayC0FL9Zt3F7Kj/w7FTZulycYgsr3adW5phTCW9Kz9+Rz+UXi7RlMxYWeU6XvQjUn648Uhi38zHSAy9NY3WGKSd6dIUd6Wumf6G35VWbegSbdCL6SrG1dmjCUbYsK2MZ5GTcre5fv4okXREr6rpoZ0512U8m1xp6C09Hb1o4jJYKHg1JaAHgrOM15P3dK9YgAdlRXekNfjQMvoqTMGL5t3dFjxZn0aUgIPHabItePuYlAh7Pdml0QECWNJAkL20RT2J/0JkcCGBdnowiRxBGjNsGC2IQs6IQRgrkR4yVAniaMV5OgA6MTbSo7iEOOII4tgu8TN/AMxtp3DmOxv5AAAAAElFTkSuQmCC";
+const footerChecked = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAArCAMAAADWg4HyAAAAclBMVEUAAADWzKvRzajQzKXNzajQzKfSzaXRzajNzajRzajRzKfQzKjRzafPzKfRzajRzKfRzKfPy6fQzKfQzKfQzKfRzKfQzafQzKfQzKfQzajRzafQzKfQzKbQzKfRzKfRzKjQzKfQzKjQzKfPzajQzKbQzKfKnt8iAAAAJXRSTlMABwwRFCkXJR4bRjMvOkIhNz/2wuDNuaGUXVDo2NGbbe2MfHWHGkVkRAAAAYNJREFUOMvl1NlywjAMBdDSeN8dICFhh+b/f7ESTTsgmw6vner5jOZ6kd7+fC3megG+/xTlpWwaxoRgjDW/apRMaKViVEoLoglFGSW/lYxKg0ZcpyidTd6nZB2XSiCuUqEktz4HgxW8dYAZ4Dp1KZtrt2rb0/owBu94xM7lsZiWzodhP83Vboy3XJV4caMpXKa7WhoPMSBFkSByG64gKMbGZds8rqbH2gRIwagViifTT6ROo3d4vHsLEeBgxy212FhqCPEQV0ubD1Ri4kRCYFw42bK025rFuPvStsbzKAprX7aQN3SlXVUyNHi9m9J25QXjszk/7Ar7kd18ZyRwOFO6g7jzW5AQ3qyJvWRb+TyNgMZ5eHy5PiRsW/1oKQz3v+eA30xj2+oHzqZvv7MeA9D5r5eTieMWxnO3Xi/7o8mJUDLG3H0NZwg5WU4oWQ8KZ97CxOPIRy2eLwg4oFZRSlwlKBnSp+uswdWjFa4olCQAbY0cqmnKbfZ8qZIVXK95Vf+v+gRbzDtbBqUnoAAAAABJRU5ErkJggg==";
+const footerUncheck = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAY1BMVEUAAAA5LkQ5LUQ5LUQ6KUo5LkQ5LUM5LkM4LUQ4LkQ5L0Q5LkQ5LkQ4LUM4LkQ4LkQ5LkU5LUQ5L0Q4LkM5L0M5LUU6MEMxMUU5LkQ5LkQ5LUM6L0M5LUQ6LUQ5Kkc9MUk5LkTxS/uBAAAAIHRSTlMA97x3B/zw37Vm29DKo5R6b1lHPTMsGg3o5K6fbE8kFfzPmmYAAACSSURBVDjL7dLJDoMgFIVhBhkcqq1D7dz7/k/ZRRNDuAd0a+K//gKBHHG0lyb99L7tixU2Kvpnuyw9G1pqrmmnKaz6ptxgiMJUCtYUdcHuTXENhidi4fdUHOK7JYcaQrMV3jksIfQcThCWzDkBm28x7JjBRzo2IPzlchSpikfgbJ8dpF2m8xHZ5pdyUtbtII520g8R5CRcqW296gAAAABJRU5ErkJggg==";
 function ExtraBgm() {
   const { playSeClick, playSeEnter } = useSoundEffect();
+  const [page, setPage] = reactExports.useState(1);
+  const [list, setList] = reactExports.useState([]);
   const currentBgmSrc = useSelector((state) => state.GUI.titleBgm);
   const extraState = useSelector((state) => state.userData.appreciationData);
   const initName = "Title_BGM";
-  const isShowBgmList = useValue(false);
   let foundCurrentBgmName = initName;
-  let foundCurrentBgmIndex = -1;
-  const iconSize = 39;
-  const bgmPlayerHeight = isShowBgmList.value ? "80%" : "10%";
   const bgmListLen = extraState.bgm.length;
   extraState.bgm.forEach((e2, i2) => {
     if (e2.url === currentBgmSrc) {
       foundCurrentBgmName = e2.name;
-      foundCurrentBgmIndex = i2;
     }
   });
   const currentPlayingBgmName = useValue("");
@@ -105245,116 +104815,84 @@ function ExtraBgm() {
     currentPlayingBgmName.set(foundCurrentBgmName);
   }
   const dispatch = useDispatch();
-  function setBgmByIndex(index2) {
-    const e2 = extraState.bgm[index2];
-    currentPlayingBgmName.set(e2.name);
-    dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
-  }
-  const showBgmList = extraState.bgm.map((e2, i2) => {
-    let className = styles$4.bgmElement;
-    if (e2.name === currentPlayingBgmName.value) {
-      className = className + " " + styles$4.bgmElement_active;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        onClick: () => {
-          playSeClick();
-          currentPlayingBgmName.set(e2.name);
-          dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
-        },
-        className,
-        style: {
-          animationDelay: `${i2 * 150}ms`
-        },
-        onMouseEnter: playSeEnter,
-        children: e2.name
-      },
-      e2.name
-    );
-  });
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmContainer, style: { maxHeight: bgmPlayerHeight }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmPlayerMain, children: [
+  reactExports.useEffect(() => {
+    setList(extraState.bgm.slice((page - 1) * 8, page * 8) || []);
+  }, [extraState.bgm, page]);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmContainer, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmListContainer, children: [
+      list.map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            onClick: () => {
+              playSeClick();
+              currentPlayingBgmName.set(e2.name);
+              dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
+            },
+            className: styles$4.bgmElement,
+            onMouseEnter: playSeEnter,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: bgmstar, alt: "", className: styles$4.bgmStar }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `${styles$4.bgmName} ${e2.name === currentPlayingBgmName.value ? styles$4.bgmNameActive : ""}`, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.bgm_item_name, children: e2.name }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "img",
+                  {
+                    src: e2.name === currentPlayingBgmName.value ? soundChoose : soundunselect,
+                    alt: "",
+                    className: e2.name === currentPlayingBgmName.value ? styles$4.soundChoose : styles$4.soundunselect
+                  }
+                )
+              ] })
+            ]
+          },
+          e2.name
+        );
+      }),
+      Array.from({ length: 8 - list.length }).map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.bgmElement, style: { cursor: "default" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: unlockBgm, alt: "", className: styles$4.unlockBgm }) });
+      })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.footer, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
+        "img",
         {
+          src: footerLeft,
+          alt: "",
+          className: styles$4.footerButton,
           onClick: () => {
             playSeClick();
-            if (foundCurrentBgmIndex <= 0) {
-              setBgmByIndex(bgmListLen - 1);
-            } else {
-              setBgmByIndex(foundCurrentBgmIndex - 1);
+            if (page > 1) {
+              setPage(page - 1);
             }
           },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoStart, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
+          onMouseEnter: playSeEnter
         }
       ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.footer_page_container, children: Array.from({ length: Math.ceil(bgmListLen / 8) }).map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: i2 + 1 === page ? footerChecked : footerUncheck, alt: "", className: styles$4.footerPageIcon });
+      }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
+        "img",
         {
+          src: footerRight,
+          alt: "",
+          className: styles$4.footerButton,
           onClick: () => {
             playSeClick();
-            const bgmControl = document.getElementById("currentBgm");
-            bgmControl == null ? void 0 : bgmControl.play().then();
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            if (foundCurrentBgmIndex >= bgmListLen - 1) {
-              setBgmByIndex(0);
-            } else {
-              setBgmByIndex(foundCurrentBgmIndex + 1);
+            if (page === Math.ceil(bgmListLen / 8)) {
+              return;
             }
+            setPage(page + 1);
           },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoEnd, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            const bgmControl = document.getElementById("currentBgm");
-            bgmControl.pause();
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(SquareSmall, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.bgmName, children: foundCurrentBgmName }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            isShowBgmList.set(!isShowBgmList.value);
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          style: { marginLeft: "auto" },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(MusicList, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
+          onMouseEnter: playSeEnter
         }
       )
-    ] }),
-    isShowBgmList.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmListContainer, children: [
-      " ",
-      showBgmList
     ] })
   ] });
 }
 const extraCG_animation_List = "";
+const cgUnLock = "" + new URL("cg-unLock-627ed56c.png", import.meta.url).href;
 function ExtraCgElement(props) {
   const showFull = useValue(false);
   const { playSeEnter, playSeClick } = useSoundEffect();
@@ -105382,7 +104920,7 @@ function ExtraCgElement(props) {
         ) })
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
         onClick: () => {
@@ -105390,109 +104928,169 @@ function ExtraCgElement(props) {
           playSeClick();
         },
         onMouseEnter: playSeEnter,
-        style: {
-          // transform: `rotate(${deg}deg)`,
-          animation: `cg_softIn_${props.transformDeg} 1.5s ease-out ${100 + props.index * 100}ms forwards `
-        },
         className: styles$4.cgElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            style: {
-              backgroundImage: `url('${props.imgUrl}')`,
-              backgroundSize: `cover`,
-              backgroundPosition: "center",
-              width: "100%",
-              height: "100%"
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: cgUnLock, alt: "", style: { width: "100%" } }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              style: {
+                background: `url('${props.imgUrl}') no-repeat center center`,
+                backgroundSize: `cover`
+              },
+              className: styles$4.cgUnLock
             }
-          }
-        )
+          )
+        ]
       },
       props.name
     )
   ] });
 }
+const cgLock = "" + new URL("cg-lock-8b96b0a0.png", import.meta.url).href;
 function ExtraCg() {
-  const cgPerPage = 8;
   const extraState = useSelector((state) => state.userData.appreciationData);
-  const pageNumber = Math.ceil(extraState.cg.length / cgPerPage);
-  const currentPage = useValue(1);
   const { playSeEnter, playSeClick } = useSoundEffect();
-  const showCgList = [];
-  const len = extraState.cg.length;
-  for (let i2 = (currentPage.value - 1) * cgPerPage; i2 < Math.min(len, (currentPage.value - 1) * cgPerPage + cgPerPage); i2++) {
-    const index2 = i2 - (currentPage.value - 1) * cgPerPage;
-    const deg = Random(-5, 5);
-    const temp2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ExtraCgElement,
-      {
-        name: extraState.cg[i2].name,
-        imgUrl: extraState.cg[i2].url,
-        transformDeg: deg,
-        index: index2
-      },
-      index2.toString() + extraState.cg[i2].url
-    );
-    showCgList.push(temp2);
-  }
-  const showNav = [];
-  for (let i2 = 1; i2 <= pageNumber; i2++) {
-    let className = styles$4.cgNav;
-    if (currentPage.value === i2) {
-      className = className + " " + styles$4.cgNav_active;
-    }
-    const temp2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        onClick: () => {
-          currentPage.set(i2);
-          playSeClick();
-        },
-        onMouseEnter: playSeEnter,
-        className,
-        children: i2
-      },
-      "nav" + i2
-    );
-    showNav.push(temp2);
-  }
+  const [page, setPage] = reactExports.useState(1);
+  const [list, setList] = reactExports.useState([]);
+  const cgLen = extraState.cg.length;
+  reactExports.useEffect(() => {
+    setList(extraState.cg.slice((page - 1) * 6, page * 6) || []);
+  }, [extraState.cg, page]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.cgMain, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDivWarpper, children: showNav }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgContainer, children: showCgList })
-  ] });
-}
-function Random(min, max2) {
-  return Math.round(Math.random() * (max2 - min)) + min;
-}
-function Extra() {
-  const { playSeClick } = useSoundEffect();
-  const showExtra = useSelector((state) => state.GUI.showExtra);
-  const dispatch = useDispatch();
-  const t2 = useTrans("extra.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: showExtra && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra_top, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.cgContainer, children: [
+      list.map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraCgElement, { name: e2.name, imgUrl: e2.url }, i2.toString() + e2.url);
+      }),
+      Array.from({ length: 6 - list.length }).map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgElement, style: { cursor: "default" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: cgLock, alt: "", style: { width: "100%" } }) }, i2);
+      })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.footer, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
-        CloseSmall,
+        "img",
         {
-          className: styles$4.extra_top_icon,
+          src: footerLeft,
+          alt: "",
+          className: styles$4.footerButton,
           onClick: () => {
-            dispatch(setVisibility({ component: "showExtra", visibility: false }));
             playSeClick();
+            if (page > 1) {
+              setPage(page - 1);
+            }
           },
-          onMouseEnter: playSeClick,
-          theme: "outline",
-          size: "4em",
-          fill: "#fff",
-          strokeWidth: 3
+          onMouseEnter: playSeEnter
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.extra_title, children: t2("title") })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.mainContainer, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraCg, {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraBgm, {})
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.footer_page_container, children: Array.from({ length: Math.ceil(cgLen / 6) }).map((e2, i2) => {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            src: i2 + 1 === page ? footerChecked : footerUncheck,
+            alt: "",
+            className: styles$4.footerPageIcon
+          },
+          i2
+        );
+      }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "img",
+        {
+          src: footerRight,
+          alt: "",
+          className: styles$4.footerButton,
+          onClick: () => {
+            playSeClick();
+            if (page === Math.ceil(cgLen / 6)) {
+              return;
+            }
+            setPage(page + 1);
+          },
+          onMouseEnter: playSeEnter
+        }
+      )
     ] })
-  ] }) });
+  ] });
+}
+const background = "" + new URL("background-a6a3d990.png", import.meta.url).href;
+const backTitle = "" + new URL("back-title-ffa27ce6.png", import.meta.url).href;
+const cgbgmBg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABbwAAABKCAMAAABHC2LfAAAAVFBMVEXPzqcAAADQzabPy6Tb0KvPyarT06bJya7OzqjRy6bRzKfQzajQzKfQzKfQzKfQzKfQzKfQzKfQzafQzKfRzafRzKfQzKjQzKfQzKfQzKfQzKfQzKePoBq8AAAAHHRSTlMZABURBw4LCR4cWJdVUCuPiDJEOEolPpN+dGFq/OF72AAACuRJREFUeNrsnQuXkzAQhSHJUlvr+63//3+KtbtA85iEmSwTuN/Q1dpzLO6pl+vlJna9HG4lJ5ohzFMWVhJjrNFGB8BmmM6IYct5ymKIcQrjFk9W01eFI95uOd4vJIh+n4YIdTXa1KYr4lw2ANSkI15NfGIDmJXYYjiifopCqDU9cgg678czz6bMbQ8ibtu8jDVSit4lhgZGGuwO+m9JgVqb56OuCy/X6+lBK7Wkenf9K7H4l4TjMPuWnvIYNsU/h9N48Ehe+RxonVM9BjkiWhiUyaByTs9p5ud+KsbJsZC0fkto8XZRqM9FzBSPxzSP0Gb07PHG41ua91l8yuILwXeCzzl8jfNuDddSLpfrBdy4Xq6b8E6GrwV8JvhO8SXNpxTvSb6leLPk7JER54TM/f3rOBmmvug60kdnrXi7IUJmVkGHAnEdLhPefGnNEVBKIa8TF4/fUf5E+UXwk+RjCR9y+LHg7U75weaDOB/5/CzjVxZ/ovxOcXkgcVEiLx/E9aHoQkCI/lzqfXKkPgSh7y6NL958XO8KqFErsR4mFnbz6DjcPwhnQZ4/aW8AkOfMocvAvHzpTBYyty2HcXg3LGl82ywXestn3oSck6REna3vk8x7SY4F5Zhxgkz3gmWHwIj/+aqxef9JkMTpWjmefPg3JgfpkLx/PWSrgs6nvx8pyjx4btuEjxGlyx29ZZPzclK1xkqckzNylhzG78edvcDqXdlimKq+Ssj7+UHH2GrbJlEtVy/eJjSSdLmDpiDYESztNosh2aAqSIh1Q4t0HiZXvk91et58TAZHct4AlMFb82BJ1In3owg25Lxn57qU7l65eJvq1ruDeoMDwlqtRhtvBbHJAt/Aemxww9LNH1Hj/cz9SdvO2+QB5w1Ahczbd1iP6BPvJVqdd/iSEk+8VYu30ZR5Q73BfuA4b0bmzcpN6jtv59vhcoQ3pnpZ3b8L543MGwAWhpN5Wxp14u2cvszbzR7Rd5/rdlvOO9YqNjmgbQKAZGqSb7zV3bDUmXkvcWHjfT/hvThvWesN9QaHQyzzbqQqONJnZN6M4IQj3i7880m4W8y8VfW8OwB2g0bnXfOGpUrn7V0dvETHawpWFu9y9W7Cd8N5gx1hVntva9VYb1ewxJLOvBn6zY5NpveOqbmbTPjtQM8bbRNwSExTznt4NefNDE34sYnvvJ3r5domw1GddwfATlCZeT/VXWGprOftpsf9a8x5N5p5w3kD8J/9Z95D1aog4bwZVluqbZJy3jcq7m3SZtkE2g2OB8N5Z1lvdeKdvbfJ7UVSyeXFO+K8Na2wtNbqqpvgfiU4Ik3tbSKdeYczEkYDhbu3SbxtghWWSeC8weFgrrCkjbfGtsn8BfnIW75tcj9JNc67WLz19Lwh3mA/SGbeSsW7aEfvyQM7Rv7Njk2iPe+R7XveNgTaJgCk0dQVLLfe22befs87x3lXrwq65cN/T/4KS5+DrrCEeoPd0JbzHoQz77Dz5mk2v20SDr3X/S9oGsSb4byReQNQIfM21XvePtzMey58Eeft6Tch5OLi7b+jL+ZVxZtGmfPGvlTgiIjt5x1Ee9sk7LyZDpzfNvHVesTpybzVWW/csQTHQ8p5N3LDMrSNiTcMy8133pOG+1quJvP+J95omwBQhiLnbR+cdwPiXeC8aeVmi7f/HpTznsY1Jd56nHcHwE6Qct4R/dYRm3ib79GZt2zbhMZPTYIpihLnba1VlXmjbQKOCCfzbs9598Vtk9fuebuo854p9g6ct8kEbRMAKq+wNA3sbXKTPDrzZig244ZlwIS7Zc27WeeNvU0AGFG0L5WamndeVXBd24QQczHnTbdN+l1l3iYLZN4ARDC1M2/5JZb8tklZ5i23qyBtu9OZt2vWedc13h2cNzggws5bvXirbJt4MXvced/ZwQpLtE0AYGLq7ioo3Tbh5ibFPW/xLWFpCXfq2yboeQOwOaYt573jtokje9569jZRl3mjbQIOiJDzFu0KDpVik76s500j3zZx8x/dTvY2gfMGf9s7E+XGQSCIBml8rnPfyf//5ypZZ4mFYEAz2COpH/Ieta5aOxW3Ok0DQJ/xvttS5j3+HDSKO29ymm0THtZ528m8zTlvZN5gcTC+m2FqJ+l0v2SdYhnKOIPWCst0zxvOG84bANttk/UZnbejiI4KkOxtQlPIvNsIE2ibQL3BXNBbYWn/KB0XRA6M8xaYb1FsMuy8ZZl3yBn3Nqld9EZuApaI3Hnrr7Fc12+b+EExJ0xnbJuQf8ScN80r80bPGwAjuwrGMBCbnEz1FWXeZVVvufNO9bwnnXmb2dsE6g3mg2S+Uui89Rfp8Aqe7bzpzAcQO6ZtMla9LcQmcN4AdBhy3ll6rR+byNfH/yLpvKnW8ng+OAlP0gwWGPnLvnijbQLAlSHnnXeUjq29TRwR77ylvlu/5338yw8zcN5NFnDeANTJvPmmtwXxdv7Ky7wli3T0M2+v5mbaJtasNzJvsERkzpu33gYmLPvwzrsQac+bb5uEucnExBuZNwCGnHeeYtvpeX/hcjNvCnYa4dHveXtM7ecN5w3A5THpvAV1E3XnTY5BV7wp7bxtnGHZKtDkgl0FAVBdHz+2blJ5Q28+83Y0qudNjkXeNinKvP3bsr7Csr7xRtsELBCTbZOVULvlzpskSyz1e95H6cYZlsi8AfihEbVNuK6JNfE+NgWZzFuANDah3MzbTUu8rWTeEG8wH0w6b0ttE3bSUi7e3ulzzttn3tNapIO2CQAdZtomXrHPtqH3RpJ5f+PYIZi0lG4Jy2fefnRMZ8ISKywBuFqE867VNnFFzps41daPTWgamXc7CDJvAJIsIvNe1d3PuyjzJuW2CZ+asM67w2XGJoTMG+oN5opF571itFtxR29ipFTClSuH2My76iqdLOk2Z72h3WB5NM2kMm9Bz/sLl723iRdx7cybE279tom+eH9j0nkzQL3BjMjR6pD6bRN95+0ie8KGkOORi3dcqCnmvLGfdxo4b7AkmvEzlm01572uFps4vnESiCmdaVfBZHLTt9tuWhOWVjJviDeYD+MTb0uZN7E4vucdonQYQ336P0cQA6v2/o8saxb/JH0GXsJGiv9SUPBPYPJsKrIuJZ4yRGzsoEwO6mZERdmP6Mn7yf3EeDYk4kTS3AXhxfvXG/ZKQZTzbRGdTPQjIOZcPbuAbchzmpss7nN45HhJ85DBU4rrURwOh+5RwB7847A/XIhrDZ6yeeB5YXhMc5/kJsHz1yPJ9pRdQBDwhLQBR836Fq9heDdPtDmqKfVxkTFSvGk9fK/OjioiMuxJCHGR7OZLa45+cgJ58OxDPmJ8RnlneWO4K+GW57XHn7nyKuVWnTs5b0W8Z/IZ4yPFvkf8lsTfP9L3h8I7QU/we6Lfk3pG7nODHEbcKU0g3hoQE4WUl7tXg/eKdXbM3cSibWGafTV+UnHXXcpsu6tjtwWgCjsBZfl4bijeFpCct6y7xWDdo3TqZt40irimM6HdSkgLxDT/f2u0Bz/fPPo1G6SZEKlX26qxYhi7AZVMpEPcuRC1TcLRY1orLAdo1JjHIp0dO45P4tD/35lncK/Z3JgLktMY2mIutjGVv9gY+9xnWA6+AP59JFFS6TaL0QI7yCjlmTpbsFh2mrBy/0OvIy7VeJFVZ6S8zLW62JCItxw6uU4gESM6UCs/BAlLOzBWLWIXAFSIf+QSZH7SN3mQBE4Ha/IXW6Y/yXCycasAAAAASUVORK5CYII=";
+const cgunselect = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAeCAMAAACrM+hrAAAAeFBMVEUAAADMwJPNwJLNwJHNwJPMwJLMwJLMwJLMwJLMwJLNwJLNwJLMwpHRy4zNwZLMwJLMwJLMwJLMwJLMwZLMwZLNwJHNwJPNwJPNwZHMw5LKxJHMwJHLwJPMwJLMwJLMwJLNwZLMwJLNwJLMv5LNv5LMwJHLwZPMv5MdsQU2AAAAKHRSTlMARDQ+OWi3SFlVvp4jBq6CdY1OfCAxYFwaEQwpF5jEp5PMo4dwbGNQ9TcTaAAAAalJREFUOMt91dmSgjAQBdBLWEQJskiELILoLP//h0M6Dxpmes6TldzOLSupAm+MyPOmqqomH8WEv0xbotsS9/x3ZCqXdT21vfDSvLs1qUHEtsW6zk0vyJh3S9O/yi/rNl5GJ/Z4J2+U2JUKBGkxz3Mhwfua/0scTp4C7zKfTvP873zRgtdSw5XZdefCc2BlBTHMdnP2OvAqmr8wu8OZHMFKQiJhtsfH8ngsiwCrXcjA/YOKDGA9AjBuAVi2Ik9mW94DsLL7dv79/sEd0AVgHTryyV1C4z2fYCVPkoPoJCIwXAKw0oZc981kwtAGYKWhYdwvE4XpIwDLtuSIWEkSIA/Amj5Jub8cYoHjF9Hg1H9XCGKBbCQOrP5KakTC4gFwR2LBsiXZVYzlWJZj4u/528vAqnuqUIiE3hSAPpAaLNl7CSI9oV6beBK8jCqm+IWTDJ5IvRqsWviKLEokRIV9mW1UvR8bXj+Vr6DE/iUGWvk7Ne/TWrv4q+Y7zO4hvX3ftFVKSW1o2EzS6BoxZ32JM7RujBBbHBHjBimtklK613RE+8TgzFQ7HSL4Abc9JxSAIwMnAAAAAElFTkSuQmCC";
+const bgmunselect = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAAAeCAMAAAD6p9sIAAAAflBMVEUAAADMwJLMwJLNv5HNwY7MwZLMwJLMwJLNwJHMwJLMwJLMwJLMwJHMwJLNwJLNwJLMwJLMwJLNwJLNwJPNwJLMwJPMwJLMv5LMwZLMwJLMwJLMwZLMwJPMwJLLxJLMwJPMwJLMwJLMwZLMwJLMwJLTxYvNwJLLv5LMwJLNwJEtfdFsAAAAKnRSTlMAVpg1C2JQSj4jXIMvfEKJdWieOXBGzSmzrse4H2sPwr2PGaIVBqaok2QTFA55AAADWElEQVRIx5TT3Y6CMBAF4ENBECs/ZVEElyhioL7/C247E6Q1Gzb7XZ525iRNin9r8r6vDKlUHEb4p1J4pvP5JoZDg9/l8nY+X8o8JEqJqQzxps7kgpV/IlALLYwUYFHSdkYbgHj2F7sshCutI2cpS/Ahupu0s3XJjjywykzdrWvTz5miM8aN93t1rMWHpGMa6ZF4S4abdX34bZUN54027LS+kQS+OeN8+LUuvRPptQnKjtiqG448OcHzdTf51eQDVEFSuK4MDkWJwJZDgYInT3AVBTgusJPkG64Lw+rJSbxdJ3G8kAork+XgWGIfkCdcLcOq5+SJLYEEZEtyd1YsGyWyiTRwfE/TPE/TAatqtipsCjKgmYl2HmYOgIlkKCvi1b2qcaxGGeGtGUmGTbE9z0ayx0KJCFjma0FSrBpKAm9RRXZ/1JV2uiIFwCJtpzgs0Wvi1OWF1jJ+wnXQWhgJNiU1jFqQryUUdhVn9fIR9ilr4rIP9g986AfyV10PIx1IBpZRyFm/fIQ4J8nLyr9S+FRBTiDpyfO+fFLu5RBWyF+aI/XTZxnsuA7CUNSRPSlBDGrFRGwoC5Qs3v//4ANbcQBVPZVacX0T38gJDdhfJoESW4LfJcLNFcrDwJmYrGOQ2SYxP3nxlB+RfmB5Mgk6HCd439oVysBANoz6jB3crrWu3w1RLCx/zDgtrErNEO+pSKgAA8fCqC0swCRxvwDq6U+WRFlgfTEFBpY3k7X/+91CzVcXEEMIRduteosyEfJfEEWEdfy/U/Afo6dPEmqFAUJGj8WrTtVb01rwLxKlLdvx3jIHDBRrW4hdbwoJtU4uUZ3O/KFTlAr+XIFl/Ri36HkqXgVjmckl4t1O45EV9DJktUNYmbmdqGbsvy7l660Sbz9KSYUrPj6Yqd0m6gaKxHKfQn1qR1LSZ+SKj76y7xkGwt7wJyjk9xaAoCNPoTYExbWK16U4EZxh8vT8+kbpNWLNDTbPfGxHsr1piSkQAzO0Iww1QThggJpo4pddJfVhovHm1JVjNojIUL8TsrKpVwtbqHR6Dg3M2i727mrtmjNJX/zKWT9UyhZbqzRdmSZxrXqQrA5ElzIoZXwFwS5wZghOYoA/vDjhG2cubQgblJwLTTUanXBDwn/0OFvkNnjBEwAAAABJRU5ErkJggg==";
+const tabchoose = "" + new URL("tab-choose-88991de2.png", import.meta.url).href;
+const cgchoose = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAeCAMAAACrM+hrAAAAdVBMVEUAAABcU4ddVIddVIZdVIVdU4VdVIZdVIZdVIZdVIZdVIZdVIVeUodeVIZdVIdcVIZdVIZdVIZdVIZdU4ZdVIVfVIddVIZdVIZdVIZdVIZdVIZdVIZdVIZdVIZdVIZcVodcU4ZdUoddVYZdU4ZgV4ddVIdbVIbMp1AiAAAAJ3RSTlMAU3hxhDV/WMG7bF8NKGVD1M3HozoUp6yykU62n4xIGZcuHpwHaSOk4p9mAAABm0lEQVQ4y33R0ZKiMBCF4RMgsIQEXE1Gh2Fggwzv/4ibNFMlsWi+O+2fY6nYMUKpW6BUJ3HIdKEYhluhlJAaia64Xi6DkqTJhqExOCjqrJNEqeGeydexvoTHp6SngbSoJfZMpkH05yUowNuKu2auH3+DJ8hJ8eCfjyaQk0Iy5/walSAnxY25yiuxYE1/SMWci+0MXrYVzHfUdR2vT/AedXRnrrYmJViegq9v5tx8kQasaity7id4kAosdV4Ud3IyUJ4X5QcRSPCFEQmD7EZOBrZieCu0IQ7Z8ByC/mTgSd4K1xOD/B85GWgOizknFuMnGcH6LQQSbiQr5DdpwPJb8fM20JEVriAtWMtWKCTWgnRAUxLwqqNiLkkH+IxMYM1bYY7etPED8qgDT1AxHv8LgGtV0C5gaSqUxs70QySNtZEFzzWx6JKBlsjtRdUEK96s7rVAhd0PNMSDLLYK/IIXN8n9y0XGwurdZNQ7/NKyF6L3jgo3e+8mpLQfhRB2dkvc06sQo0wbvXpru3601huHI3o21lpjYebJhKHoPyK+KOI+tz21AAAAAElFTkSuQmCC";
+const bgmchoose = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAG4AAAAeCAMAAAD6p9sIAAAAclBMVEUAAABdVIZdVIZdVohdVIZdU4ZdVIZdVIZdVIZdVIZdU4ZdU4ZdVIZdVIZdVIddVIVdVIVdU4ZdVIddVIddVIZdVYddVYZdU4ZdU4VdVIZdVIZdVIZdVIZdVIZdVIVdU4ZcVYVdVIddVIVdU4ddVoZdVIbJwJ13AAAAJnRSTlMApcsUu5WAbGDFmo9VtnpyNNagZ1opDImFwKvRdkSwLSNPSD0cOPRgD30AAAMqSURBVEjHlZaNcqowEIWPphgUBBQIVEF+ff9XvGFXQpJ67fRzpk2+3eyRGUTxZ56xTHaaRMr2ib9CRzcel8t+F4Ql3qKG4HK5PGRGtDK5PuQMg7wQX0b4lSuSK1FuE7/oSIifyP1yZHZcK+2hzAAPdbxc7porBknYM2p+j/4Vlre71jX+T35nzvAY7swJZUYoWJyodpzdtOMiI3yKO532+/v+fvcv73zYE+/jSi5Gjvte1Lf6HJfxyYfrp/3LB0hPRA+bPWOrHZkUH+MCBHxycHwQ4EjouIBw446MZUY2PT4RBsi472ZZ7Uae+B1hDIn5l7ibmfIpLgKib2K0dKOPsY3WcgeLnp38Yerf47ovYrdZsXyo2FaIeOHENaROyhrEXSE+UlQAKm5tjU1vCjh/nTUVVb247ryQw6I6E+1vcXSauK5S3VIALKt1kBU33HRzLmBzMl0f42po6gfRrvKxjGJXr8WhY55hVMuhh8eD+SUuPvDThwjABCTZHXDghYyJ8LAQjyVcbsxLT7GDMHGJ/dSfuHdHh1gla82an5FKM1jsvC5GlITy4sqrZreLaBPxvyuRoOGFM2giVVnuynhx5UCYqxsaEM2JmJYW+guwadaHmDuoZfk0ombRw+GZErOJS0H0AVEDSCNFik26PcQcGrYCzNrVwaEfCdM1SjB5RDwhopENCwnJCy9uZFuY98370YtrCRPX5mBERSSIq1eRRY6cF15cX7/KL8q6qjUDHNqa6O04JuZKW8dgeB8iPBB+HNvQiGTbb0ze2cnUhdZObZ1XJMQMh5ltsU1modw47+y09Y/egIYoUPDCi5vYZkYo2aRadO6dqZ19Zz7jrT8lzA3P2xixdzMzhVZS5mozvVwI3TjvZ1U2wNC67ZIYMOSEGzezLG1XkupslXHb2zi1VLKtlejffpuLYlGFf/tQoy2zkBB40Y3YmPQEZXbjQpuhLQgBg8rIPBU8BPV2m++osTWia7Gh9AgYWkLHxYQolX6JsptGvZuyHu8Q2RDHQzYLmqeyOG47AUM5wSKLlXWSUFCCAL0Uu0+ovpumSUxq7kQvvJpydjN+xP0DnbtY2rsPD5gAAAAASUVORK5CYII=";
+function Extra() {
+  const { playSeClick, playSeEnter } = useSoundEffect();
+  const showExtra = useSelector((state) => state.GUI.showExtra);
+  const dispatch = useDispatch();
+  const [checked, setCheked] = reactExports.useState("bgm");
+  reactExports.useEffect(() => {
+    const bgmControl = document.getElementById("currentBgm");
+    bgmControl.pause();
+  }, []);
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: showExtra && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      className: styles$4.extra,
+      style: {
+        background: `url(${background}) no-repeat center center`,
+        backgroundSize: "cover"
+      },
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: styles$4.extra_top,
+            onClick: () => {
+              dispatch(setVisibility({ component: "showExtra", visibility: false }));
+              playSeClick();
+            },
+            onMouseEnter: playSeEnter,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: backTitle, alt: "", style: { width: "100%", objectFit: "cover" } })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.mainContainer, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.mainTab, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: cgbgmBg, alt: "", className: styles$4.mainTab_bg }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.mainTab_item1, children: checked === "bgm" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabchoose, alt: "", className: styles$4.mainTab_choose }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: bgmchoose, alt: "", className: styles$4.mainTab_choose_bgm })
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: bgmunselect,
+                alt: "",
+                className: `${styles$4.mainTab_unselect} ${styles$4.mainTab_bgmunselect}`,
+                onClick: () => {
+                  setCheked("bgm");
+                  playSeClick();
+                },
+                onMouseEnter: playSeEnter
+              }
+            ) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.mainTab_item2, children: checked === "cg" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tabchoose, alt: "", className: styles$4.mainTab_choose }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: cgchoose, alt: "", className: styles$4.mainTab_choose_cg })
+            ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: cgunselect,
+                alt: "",
+                className: styles$4.mainTab_unselect,
+                onClick: () => {
+                  setCheked("cg");
+                  playSeClick();
+                },
+                onMouseEnter: playSeEnter
+              }
+            ) })
+          ] }),
+          checked === "bgm" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraBgm, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraCg, {})
+        ] })
+      ]
+    }
+  ) });
 }
 const tag = "_tag_yghix_2";
 const container = "_container_yghix_17";
@@ -105694,6 +105292,26 @@ function DevPanel() {
     ] }),
     !isOpenDevPanel.value && isShow && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => isOpenDevPanel.set(true), className: styles$2.devPanelOpener, children: "Open Dev Panel" })
   ] });
+}
+function getLanguageName(lang2) {
+  return language[lang2];
+}
+function useLanguage() {
+  const { i18n } = useTranslation();
+  const userDataRef = useGenSyncRef((state) => state.userData);
+  const dispatch = useDispatch();
+  return (_lang, isSyncStorage = true) => {
+    var _a2;
+    const lang2 = _lang ?? ((_a2 = userDataRef.current) == null ? void 0 : _a2.optionData.language) ?? language.zhCn;
+    const languageName = getLanguageName(lang2);
+    i18n.changeLanguage(languageName);
+    dispatch(setOptionData({ key: "language", value: lang2 }));
+    logger.info("设置语言: " + languageName);
+    window == null ? void 0 : window.localStorage.setItem("lang", lang2.toString());
+    if (isSyncStorage) {
+      setStorage();
+    }
+  };
 }
 const trans = "_trans_8uz61_2";
 const langWrapper = "_langWrapper_8uz61_10";
