@@ -19286,9 +19286,9 @@ const jmp = (labelName) => {
   WebGAL.sceneManager.sceneData.currentSentenceId = result;
   setTimeout(nextSentence, 1);
 };
-const Choose_Main$1 = "_Choose_Main_3t1f8_1";
-const Choose_item$1 = "_Choose_item_3t1f8_14";
-const Choose_item_disabled = "_Choose_item_disabled_3t1f8_38";
+const Choose_Main$1 = "_Choose_Main_6h4rf_1";
+const Choose_item$1 = "_Choose_item_6h4rf_15";
+const Choose_item_disabled = "_Choose_item_disabled_6h4rf_39";
 const styles$k = {
   Choose_Main: Choose_Main$1,
   Choose_item: Choose_item$1,
@@ -20417,7 +20417,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-0371b237.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-8d958682.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -35832,23 +35832,23 @@ function useUpdated(callback) {
     callback();
   });
 }
-const main = "_main_18f1c_1";
-const button$2 = "_button_18f1c_16";
-const button_text$1 = "_button_text_18f1c_23";
-const button_on = "_button_on_18f1c_31";
-const singleButton$1 = "_singleButton_18f1c_41";
-const autoButton = "_autoButton_18f1c_54";
-const fastForwardButton = "_fastForwardButton_18f1c_71";
-const flashbackButton = "_flashbackButton_18f1c_87";
-const fastSlPreview = "_fastSlPreview_18f1c_105";
-const fastSlEnter = "_fastSlEnter_18f1c_1";
-const fastsave = "_fastsave_18f1c_119";
-const fastSPreview = "_fastSPreview_18f1c_119";
-const fastload = "_fastload_18f1c_123";
-const fastLPreview = "_fastLPreview_18f1c_123";
-const slPreviewMain = "_slPreviewMain_18f1c_135";
-const imgContainer = "_imgContainer_18f1c_143";
-const textContainer = "_textContainer_18f1c_151";
+const main = "_main_1x2ym_1";
+const button$2 = "_button_1x2ym_16";
+const button_text$1 = "_button_text_1x2ym_23";
+const button_on = "_button_on_1x2ym_31";
+const singleButton$1 = "_singleButton_1x2ym_41";
+const autoButton = "_autoButton_1x2ym_54";
+const fastForwardButton = "_fastForwardButton_1x2ym_71";
+const flashbackButton = "_flashbackButton_1x2ym_87";
+const fastSlPreview = "_fastSlPreview_1x2ym_105";
+const fastSlEnter = "_fastSlEnter_1x2ym_1";
+const fastsave = "_fastsave_1x2ym_119";
+const fastSPreview = "_fastSPreview_1x2ym_119";
+const fastload = "_fastload_1x2ym_123";
+const fastLPreview = "_fastLPreview_1x2ym_123";
+const slPreviewMain = "_slPreviewMain_1x2ym_135";
+const imgContainer = "_imgContainer_1x2ym_143";
+const textContainer = "_textContainer_1x2ym_151";
 const styles$h = {
   main,
   button: button$2,
@@ -103019,27 +103019,27 @@ function getTextSize(size) {
       return 205;
   }
 }
-const TextBox_EventHandler$1 = "_TextBox_EventHandler_mud18_1";
-const TextBox_Container = "_TextBox_Container_mud18_9";
-const showSoftly$1 = "_showSoftly_mud18_1";
-const TextBox_main$1 = "_TextBox_main_mud18_17";
-const TextBox_avatarDialogue_bg = "_TextBox_avatarDialogue_bg_mud18_40";
-const TextBox_dialogue_bg = "_TextBox_dialogue_bg_mud18_45";
-const TextBox_Background = "_TextBox_Background_mud18_50";
-const TextBox_textElement_start$1 = "_TextBox_textElement_start_mud18_62";
-const TextDelayShow$1 = "_TextDelayShow_mud18_1";
-const outer = "_outer_mud18_68";
-const inner = "_inner_mud18_80";
-const zhanwei = "_zhanwei_mud18_89";
-const TextBox_textElement_Settled$1 = "_TextBox_textElement_Settled_mud18_94";
-const TextBox_showName$1 = "_TextBox_showName_mud18_99";
-const outerName = "_outerName_mud18_112";
-const TextBox_ShowName_Background = "_TextBox_ShowName_Background_mud18_116";
-const miniAvatarContainer$1 = "_miniAvatarContainer_mud18_128";
-const miniAvatarImg$1 = "_miniAvatarImg_mud18_138";
-const nameContainer = "_nameContainer_mud18_146";
-const innerName = "_innerName_mud18_159";
-const text = "_text_mud18_166";
+const TextBox_EventHandler$1 = "_TextBox_EventHandler_bok8c_1";
+const TextBox_Container = "_TextBox_Container_bok8c_9";
+const showSoftly$1 = "_showSoftly_bok8c_1";
+const TextBox_main$1 = "_TextBox_main_bok8c_22";
+const TextBox_avatarDialogue_bg = "_TextBox_avatarDialogue_bg_bok8c_46";
+const TextBox_dialogue_bg = "_TextBox_dialogue_bg_bok8c_51";
+const TextBox_Background = "_TextBox_Background_bok8c_56";
+const TextBox_textElement_start$1 = "_TextBox_textElement_start_bok8c_68";
+const TextDelayShow$1 = "_TextDelayShow_bok8c_1";
+const outer = "_outer_bok8c_74";
+const inner = "_inner_bok8c_83";
+const zhanwei = "_zhanwei_bok8c_92";
+const TextBox_textElement_Settled$1 = "_TextBox_textElement_Settled_bok8c_97";
+const TextBox_showName$1 = "_TextBox_showName_bok8c_102";
+const outerName = "_outerName_bok8c_115";
+const TextBox_ShowName_Background = "_TextBox_ShowName_Background_bok8c_119";
+const miniAvatarContainer$1 = "_miniAvatarContainer_bok8c_131";
+const miniAvatarImg$1 = "_miniAvatarImg_bok8c_141";
+const nameContainer = "_nameContainer_bok8c_149";
+const innerName = "_innerName_bok8c_162";
+const text = "_text_bok8c_169";
 const styles$8 = {
   TextBox_EventHandler: TextBox_EventHandler$1,
   TextBox_Container,
