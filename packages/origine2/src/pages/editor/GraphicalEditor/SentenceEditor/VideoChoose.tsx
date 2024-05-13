@@ -176,14 +176,13 @@ export default function Choose(props: any) {
         <input type="number" value={options[i].style.x}
           onChange={(ev) => {
             setStyle(i, 'x', ev.target.value);
-            submit();
           }}
           onBlur={submit}
           className={styles.sayInput}
           placeholder="X"
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
-        <span style={{ marginLeft: '6px' }}>按钮位置X</span>
+        <span style={{ marginLeft: '6px' }}>按钮位置Y</span>
         <input type="number" value={options[i].style.y}
           onChange={(ev) => {
             setStyle(i, 'y', ev.target.value);
