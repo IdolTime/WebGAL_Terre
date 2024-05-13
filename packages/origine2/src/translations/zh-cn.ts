@@ -121,7 +121,8 @@ export const zhCn = {
           scene: '场景',
           tex: '纹理',
           video: '视频',
-          vocal: '语音'
+          vocal: '语音',
+          ui: 'UI',
         }
       },
 
