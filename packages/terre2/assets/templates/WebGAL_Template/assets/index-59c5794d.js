@@ -19976,7 +19976,6 @@ class ChooseOption {
     const mainPart = parts.length > 1 ? parts[1] : parts[0];
     const mainPartNodes = mainPart.split(":");
     const text2 = mainPartNodes[0].replace(/\${[^{}]*}/, "");
-    console.log(999999, script, mainPart, mainPartNodes[0], text2);
     const option = new ChooseOption(text2, mainPartNodes[1]);
     const styleRegex = /\$\{(.*?)\}/;
     const styleMatch = mainPart.match(styleRegex);
@@ -20454,7 +20453,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-07548a2e.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-9007d4e0.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -30072,7 +30071,7 @@ const playVideo = (sentence) => {
       };
       setTimeout(() => {
         if (flvPlayer !== null && videoElement !== null) {
-          flvPlayer.currentTime = 0;
+          flvPlayer.currentTime = 0.03;
           flvPlayer.volume = bgmVol;
           videoElement.loop = loopValue;
           const endPerform = () => {
