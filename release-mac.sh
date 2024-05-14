@@ -31,7 +31,7 @@ cd packages/WebGAL-electron
 yarn install --frozen-lockfile
 yarn run build-universal
 mkdir ../../release/assets/templates/WebGAL_Electron_Template
-cp -rf build/mac-universal/WebGAL.app/* ../../release/assets/templates/WebGAL_Electron_Template/
+cp -rf build/mac-universal/IdolTime.app/* ../../release/assets/templates/WebGAL_Electron_Template/
 cd ../../
 
 # 克隆 WebGAL Android 模板

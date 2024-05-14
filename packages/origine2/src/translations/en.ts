@@ -119,7 +119,8 @@ export const en = {
           scene: 'Scene',
           tex: 'Tex',
           video: 'Video',
-          vocal: 'Vocal'
+          vocal: 'Vocal',
+          ui: 'UI',
         }
       },
       gameConfigs: {
