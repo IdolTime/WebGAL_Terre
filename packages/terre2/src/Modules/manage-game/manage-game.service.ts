@@ -161,7 +161,7 @@ export class ManageGameService {
         // 修改 manifest.json
         await this.webgalFs.replaceTextFile(
           `${electronExportDir}/resources/app/public/manifest.json`,
-          ['WebGAL DEMO', 'WebGAL'],
+          ['IdolTime Demo', 'IdolTime'],
           [gameConfig.Description, gameConfig.Game_name],
         );
         // 删掉 Service Worker
