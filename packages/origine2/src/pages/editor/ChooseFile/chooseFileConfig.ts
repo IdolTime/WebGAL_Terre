@@ -11,6 +11,7 @@ dirnameToDisplayNameMap.set('scene', () => t(tPrefix + 'scene'));
 dirnameToDisplayNameMap.set('tex', () => t(tPrefix + 'tex'));
 dirnameToDisplayNameMap.set('video', () => t(tPrefix + 'video'));
 dirnameToDisplayNameMap.set('vocal', () => t(tPrefix + 'vocal'));
+dirnameToDisplayNameMap.set('ui', () => t(tPrefix + 'ui'));
 
 export const dirNameToExtNameMap = new Map();
 
@@ -22,3 +23,4 @@ dirNameToExtNameMap.set('scene', ['.txt']);
 dirNameToExtNameMap.set('tex', ['.png', '.webp']);
 dirNameToExtNameMap.set('video', ['.mp4', '.flv']);
 dirNameToExtNameMap.set('vocal', ['.mp3', '.ogg', '.wav']);
+dirNameToExtNameMap.set('ui', ['.jpg', '.png', '.webp']);

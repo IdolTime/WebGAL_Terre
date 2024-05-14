@@ -14524,6 +14524,7 @@ var fileType$1 = /* @__PURE__ */ ((fileType2) => {
   fileType2[fileType2["tex"] = 4] = "tex";
   fileType2[fileType2["vocal"] = 5] = "vocal";
   fileType2[fileType2["video"] = 6] = "video";
+  fileType2[fileType2["ui"] = 7] = "ui";
   return fileType2;
 })(fileType$1 || {});
 const assetSetter = (fileName, assetType) => {
@@ -14549,6 +14550,9 @@ const assetSetter = (fileName, assetType) => {
         break;
       case 6:
         returnFilePath = `./game/video/${fileName}`;
+        break;
+      case 7:
+        returnFilePath = `./game/ui/${fileName}`;
         break;
       default:
         returnFilePath = ``;
@@ -19286,12 +19290,14 @@ const jmp = (labelName) => {
   WebGAL.sceneManager.sceneData.currentSentenceId = result;
   setTimeout(nextSentence, 1);
 };
-const Choose_Main$1 = "_Choose_Main_6h4rf_1";
-const Choose_item$1 = "_Choose_item_6h4rf_15";
-const Choose_item_disabled = "_Choose_item_disabled_6h4rf_39";
+const Choose_Main$1 = "_Choose_Main_2pw9b_1";
+const Choose_item$1 = "_Choose_item_2pw9b_15";
+const Choose_item_image = "_Choose_item_image_2pw9b_40";
+const Choose_item_disabled = "_Choose_item_disabled_2pw9b_55";
 const styles$k = {
   Choose_Main: Choose_Main$1,
   Choose_item: Choose_item$1,
+  Choose_item_image,
   Choose_item_disabled
 };
 const page_flip_1 = "" + new URL("page-flip-1-7df32409.mp3", import.meta.url).href;
@@ -19962,20 +19968,36 @@ class ChooseOption {
     __publicField(this, "jumpToScene");
     __publicField(this, "showCondition");
     __publicField(this, "enableCondition");
+    __publicField(this, "style");
     this.text = text2;
     this.jump = jump;
     this.jumpToScene = jump.match(/\./) !== null;
   }
   /**
    * 格式：
-   * (showConditionVar>1)[enableConditionVar>2]->text:jump
+   * (showConditionVar>1)[enableConditionVar>2]->${x=1,y=1,scale=1,image=./assets/baidu.png,fontSize:24,fontColor:#fff}text:jump
    */
   static parse(script) {
     const parts = script.split("->");
     const conditonPart = parts.length > 1 ? parts[0] : null;
     const mainPart = parts.length > 1 ? parts[1] : parts[0];
     const mainPartNodes = mainPart.split(":");
-    const option = new ChooseOption(mainPartNodes[0], mainPartNodes[1]);
+    const text2 = mainPartNodes[0].replace(/\${[^{}]*}/, "");
+    const option = new ChooseOption(text2, mainPartNodes[1]);
+    const styleRegex = /\$\{(.*?)\}/;
+    const styleMatch = mainPart.match(styleRegex);
+    if (styleMatch) {
+      const styleStr = styleMatch[1];
+      const styleProps = styleStr.split(",");
+      const style = {};
+      styleProps.forEach((prop) => {
+        const [key, value] = prop.split("=");
+        if (key && value) {
+          style[key.trim()] = isNaN(Number(value.trim())) ? value.trim() : Number(value.trim());
+        }
+      });
+      option.style = style;
+    }
     if (conditonPart !== null) {
       const showConditionPart = conditonPart.match(/\((.*)\)/);
       if (showConditionPart) {
@@ -19997,8 +20019,9 @@ const choose = (sentence, chooseCallback) => {
   const { playSeEnter, playSeClick } = useSEByWebgalStore();
   const runtimeBuildList = (chooseListFull) => {
     return chooseListFull.filter((e2, i2) => whenChecker(e2.showCondition)).map((e2, i2) => {
+      var _a2;
       const enable = whenChecker(e2.enableCondition);
-      const className = enable ? styles$k.Choose_item : styles$k.Choose_item_disabled;
+      let className = enable ? styles$k.Choose_item : styles$k.Choose_item_disabled;
       const onClick = enable ? () => {
         playSeClick();
         chooseCallback == null ? void 0 : chooseCallback();
@@ -20010,17 +20033,37 @@ const choose = (sentence, chooseCallback) => {
         WebGAL.gameplay.performController.unmountPerform("choose");
       } : () => {
       };
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          className,
-          style: { fontFamily: font },
-          onClick,
-          onMouseEnter: playSeEnter,
-          children: e2.text
-        },
-        e2.jump + i2
-      );
+      const styleObj = {
+        fontFamily: font
+      };
+      if (e2.style) {
+        if (typeof e2.style.x === "number") {
+          styleObj.position = "absolute";
+          styleObj["left"] = e2.style.x + "px";
+        }
+        if (typeof e2.style.y === "number") {
+          styleObj.position = "absolute";
+          styleObj["top"] = e2.style.y + "px";
+        }
+        if (typeof e2.style.scale === "number") {
+          styleObj["transform"] = "scale(" + e2.style.scale + ")";
+        }
+        if (typeof e2.style.fontSize === "number") {
+          styleObj["fontSize"] = e2.style.fontSize + "px";
+        }
+        if (typeof e2.style.fontColor === "string" && e2.style.fontColor[0] === "#") {
+          styleObj["color"] = e2.style.fontColor;
+        }
+      }
+      if ((_a2 = e2.style) == null ? void 0 : _a2.image) {
+        className = styles$k.Choose_item_image;
+        const imgUrl = assetSetter(e2.style.image, fileType$1.ui);
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: imgUrl, alt: e2.text }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: e2.text })
+        ] }, e2.jump + i2);
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: e2.text }, e2.jump + i2);
     });
   };
   ReactDOM.render(
@@ -20417,7 +20460,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-8d958682.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-2ac43696.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -30035,7 +30078,7 @@ const playVideo = (sentence) => {
       };
       setTimeout(() => {
         if (flvPlayer !== null && videoElement !== null) {
-          flvPlayer.currentTime = 0;
+          flvPlayer.currentTime = 0.03;
           flvPlayer.volume = bgmVol;
           videoElement.loop = loopValue;
           const endPerform = () => {

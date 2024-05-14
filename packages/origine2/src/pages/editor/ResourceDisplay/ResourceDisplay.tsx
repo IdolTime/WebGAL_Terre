@@ -16,58 +16,61 @@ export interface IResourceDisplayProps {
   isHidden?: boolean;
 }
 
-function getComponent(resourceType: ResourceType, resourceUrl: string) {
+function ResourceComponent({ resourceType, resourceUrl }: IResourceDisplayProps) {
   const url = processResourceUrl(resourceUrl);
   const flvPlayerRef = useRef<FlvJs.Player | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (resourceType === ResourceType.Video) {
-      const videoElement = document.getElementById("videoElement") as HTMLVideoElement;
-      
-      if (FlvJs.isSupported() && videoElement) {
+      if (FlvJs.isSupported() && videoRef.current) {
         flvPlayerRef.current = FlvJs.createPlayer({
           type: url.endsWith('.flv') ? 'flv' : 'mp4',
           url: url
         });
-        flvPlayerRef.current.attachMediaElement(videoElement);
+        flvPlayerRef.current.attachMediaElement(videoRef.current);
         flvPlayerRef.current.load();
         // flvPlayerRef.current.play();
-      } else {
-        videoElement.src = url;
+      } else if (videoRef.current) {
+        videoRef.current.src = url;
       }
     }
+    return () => {
+      flvPlayerRef.current?.unload();
+      flvPlayerRef.current?.detachMediaElement();
+      flvPlayerRef.current?.destroy();
+      flvPlayerRef.current = null;
+    };
   }, []);
 
   switch (resourceType) {
   case ResourceType.Image:
-    return () => <img className={styles.asset} src={url} alt="Resource"/>;
+    return <img className={styles.asset} src={url} alt="Resource"/>;
   case ResourceType.Video:
-    return () => (
-      <video id="videoElement" className={styles.asset} controls>
-        <source src={url} type="video/mp4"/>
+    return (
+      <video ref={videoRef} className={styles.asset} controls>
+        <source src={url}/>
           Your browser does not support the video tag.
       </video>
     );
   case ResourceType.Audio:
-    return () => (
+    return (
       <audio controls>
         <source src={url} type="audio/mpeg"/>
           Your browser does not support the audio tag.
       </audio>
     );
   case ResourceType.Animation:
-    return () => <JsonResourceDisplay url={url} />;
+    return <JsonResourceDisplay url={url} />;
   default:
-    return () => <div>Invalid resource type</div>;
+    return <div>Invalid resource type</div>;
   }
 }
 
-const ResourceDisplay: React.FC<IResourceDisplayProps> = ({resourceType, resourceUrl, isHidden = false}) => {
-  const Component = getComponent(resourceType, resourceUrl);
-
+const ResourceDisplay = ({resourceType, resourceUrl, isHidden = false}: IResourceDisplayProps) => {
   return (
-    <div className={`${styles.resourceDisplay} ${isHidden ? styles.hidden : ""}`}>
-      <Component/>
+    <div key={Math.random()} className={`${styles.resourceDisplay} ${isHidden ? styles.hidden : ""}`}>
+      <ResourceComponent resourceType={resourceType} resourceUrl={resourceUrl} />
     </div>
   );
 };
