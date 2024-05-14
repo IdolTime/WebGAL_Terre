@@ -52,6 +52,7 @@ export default function Choose(props: ISentenceEditorProps) {
 
     newList[index][0] = updatedScript;
     chooseItems.set(newList);
+    submit();
   };
 
   const parse = (script: string) => {
