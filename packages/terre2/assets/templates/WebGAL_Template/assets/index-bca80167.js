@@ -20032,11 +20032,11 @@ const choose = (sentence, chooseCallback) => {
       if (e2.style) {
         if (typeof e2.style.x === "number") {
           styleObj.position = "absolute";
-          styleObj["left"] = e2.style.x + "px";
+          styleObj["left"] = e2.style.x * 1.33333 + "px";
         }
         if (typeof e2.style.y === "number") {
           styleObj.position = "absolute";
-          styleObj["top"] = e2.style.y + "px";
+          styleObj["top"] = e2.style.y * 1.33333 + "px";
         }
         if (typeof e2.style.scale === "number") {
           styleObj["transform"] = "scale(" + e2.style.scale + ")";
@@ -20453,7 +20453,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-9007d4e0.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-496a4dc8.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -30031,7 +30031,7 @@ const playVideo = (sentence) => {
     }
   });
   let blockingNext = getSentenceArgByKey(sentence, "skipOff");
-  let blockingNextFlag = false;
+  let blockingNextFlag = true;
   if (blockingNext || loopValue || chooseContent !== "") {
     blockingNextFlag = true;
   }
@@ -30100,7 +30100,6 @@ const playVideo = (sentence) => {
             console.log("skip");
             endPerform();
           };
-          WebGAL.events.fullscreenDbClick.on(skipVideo);
           const perform = {
             performName: performInitName,
             duration: 1e3 * 60 * 60,

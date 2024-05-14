@@ -17,7 +17,7 @@ import './assets/font-family.css';
 
 function App() {
   useEffect(() => {
-    logger.info("Welcome to WebGAL live editor!");
+    logger.info("Welcome to IdolTime live editor!");
 
     // 防止多次注册，语言在初次进入的时候注册
     monaco.languages.register({id: "webgal"});

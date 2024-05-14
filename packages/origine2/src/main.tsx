@@ -60,7 +60,7 @@ function initTranslation() {
         escapeValue: false, // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
       },
     })
-    .then(() => console.log('WebGAL i18n Ready!'));
+    .then(() => console.log('IdolTime i18n Ready!'));
 }
 
 initTranslation();
