@@ -30,7 +30,7 @@ InstallDir "$PROGRAMFILES\${NAME}"
 ; �汾��Ϣ
 VIAddVersionKey ProductName "${NAME} Installer" ; product name
 VIAddVersionKey ProductVersion "${VERSION}" ; product version
-VIAddVersionKey Comments "${NAME} is WebGal's web graphics editor." ; description
+VIAddVersionKey Comments "${NAME} is IdolTime's web graphics editor." ; description
 VIAddVersionKey LegalCopyright "${COPYRIGHT}" ; copyright
 VIAddVersionKey FileVersion "${VERSION}" ; file version
 VIAddVersionKey FileDescription "${NAME} Installer" ; file description
