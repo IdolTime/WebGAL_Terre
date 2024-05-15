@@ -1,3 +1,4 @@
+import React from 'react';
 import { ISentenceEditorProps } from "./index";
 import styles from "./sentenceEditor.module.scss";
 import { useValue } from "../../../../hooks/useValue";
@@ -5,163 +6,164 @@ import { cloneDeep } from "lodash";
 import ChooseFile from "../../ChooseFile/ChooseFile";
 import useTrans from "@/hooks/useTrans";
 import { Button } from "@fluentui/react-components";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-export default function Choose(props: any) {
+interface IOptions {
+  text: string;
+  jump: string;
+  showCondition: string;
+  enableCondition: string;
+  style: {
+    x?: number;
+    y?: number;
+    scale?: number;
+    fontSize?: number;
+    fontColor?: string;
+    image?: string;
+  },
+}
+
+const parse = (script: string) => {
+  const parts = script.split('->');
+  const conditonPart = parts.length > 1 ? parts[0] : null;
+  const mainPart = parts.length > 1 ? parts[1] : parts[0];
+  const mainPartNodes = mainPart.split(':');
+
+  const text = mainPartNodes[0].replace(/\${[^{}]*}/, '');
+  const option: IOptions = {
+    text,
+    jump: mainPartNodes[1],
+    style: {
+      x: undefined,
+      y: undefined,
+      scale: undefined,
+      fontSize: undefined,
+      fontColor: undefined,
+      image: undefined
+    },
+    showCondition: '',
+    enableCondition: ''
+  };
+
+  // Extract style information
+  const styleRegex = /\$\{(.*?)\}/;
+  const styleMatch = mainPart.match(styleRegex);
+  if (styleMatch) {
+    const styleStr = styleMatch[1];
+    const styleProps = styleStr.split(',');
+    const style: any = {}; // Change to specific type if possible
+
+    // Parse each style property
+    styleProps.forEach((prop) => {
+      const [key, value] = prop.split('=');
+      if (key && value) {
+        style[key.trim()] = isNaN(Number(value.trim())) ? value.trim() : Number(value.trim());
+      }
+    });
+
+    option.style = style;
+  }
+
+  if (conditonPart !== null) {
+    const showConditionPart = conditonPart.match(/\((.*)\)/);
+    if (showConditionPart) {
+      option.showCondition = showConditionPart[1];
+    }
+    const enableConditionPart = conditonPart.match(/\[(.*)\]/);
+    if (enableConditionPart) {
+      option.enableCondition = enableConditionPart[1];
+    }
+  }
+  return option;
+};
+
+export default React.memo((props: any) => {
   const t = useTrans('editor.graphical.sentences.choose.');
-  const chooseItems = useValue(props.chooseValue.split("|").map((e: any) => e.split(":")));
+  const [options, setOptions] = useState<IOptions[]>(props.chooseValue.split('|').map(parse));
 
-  const setStyle = (index: number, key: string, value?: number | string) => {
-    const styleRegex = /\$\{(.*?)\}/;
-    const mainPart = chooseItems.value[index][0];
-    const styleMatch = mainPart.match(styleRegex);
-    const mainPartRegex = /(?:->|\})?\s*([^\s]+)$/;
-    const mainPartMatch = mainPart.match(mainPartRegex);
-    const text = mainPartMatch ? mainPartMatch[1] : ' ';
-    const newList = cloneDeep(chooseItems.value);
-    let updatedScript = '';
-  
-    if (styleMatch) {
-      const styleStr = styleMatch[1];
-      const styleProps = styleStr.split(',');
-      const style: Record<string, number | string> = {};
-  
-      styleProps.forEach((prop: any) => {
-        const [k, v] = prop.split('=');
-        if (k && v) {
-          style[k.trim()] = isNaN(Number(v.trim())) ? v.trim() : Number(v.trim());
-        }
-      });
-  
-      // Update the style property
-      if (value !== undefined) {
-        style[key] = value;
-      } else {
-        delete style[key];
-      }
-  
-      // Reconstruct the script string with updated style
-      const updatedStyleStr = Object.keys(style).map(k => `${k}=${style[k]}`).join(',');
-      updatedScript = mainPart.replace(styleRegex, `\${${updatedStyleStr}}`);
+  useEffect(() => {
+    const value = props.chooseValue.split('|');
+    const newOption = value.map((item: string) => parse(item));
+    setOptions(newOption);
+  }, [props.chooseValue]);
+
+  const setStyle = (index: number, key: 'x' | 'y' | 'scale' | 'fontSize' | 'fontColor' | 'image', value?: number | string) => {
+    const newList = [...options];
+    if (value === undefined) {
+      delete newList[index].style[key];
     } else {
-      // If there is no style, add a new style
-      const styleStr = `\${${key}=${value}}`;
-      const splited = mainPart.split(text);
-      updatedScript = splited[0] + styleStr + text.trim();
+      newList[index].style[key] = value as any;
     }
-
-    newList[index][0] = updatedScript;
-    chooseItems.set(newList);
-    submit();
+    setOptions(newList);
   };
 
-  const parse = (script: string) => {
-    const parts = script.split('->');
-    const conditonPart = parts.length > 1 ? parts[0] : null;
-    const mainPart = parts.length > 1 ? parts[1] : parts[0];
-    const mainPartNodes = mainPart.split(':');
+  const submit = (options: any) => {
+    const optionStr = options.map((item: any) => {
+      let showCondition = '';
+      let enableCondition = '';
+      let styleContent = '';
+      let arrow = '';
 
-    const text = mainPartNodes[0].replace(/\${[^{}]*}/, '');
-    const option = {
-      text,
-      jump: mainPartNodes[1],
-      style: {
-        x: undefined,
-        y: undefined,
-        scale: undefined,
-        fontSize: undefined,
-        fontColor: undefined,
-        image: undefined
-      } satisfies {
-        x?: number;
-        y?: number;
-        scale?: number;
-        fontSize?: number;
-        fontColor?: string;
-        image?: string;
-      },
-      showCondition: '',
-      enableCondition: ''
-    };
+      if (item.showCondition) {
+        showCondition = `(${item.showCondition})`;
+        arrow = '->';
+      }
 
-    // Extract style information
-    const styleRegex = /\$\{(.*?)\}/;
-    const styleMatch = mainPart.match(styleRegex);
-    if (styleMatch) {
-      const styleStr = styleMatch[1];
-      const styleProps = styleStr.split(',');
-      const style: any = {}; // Change to specific type if possible
+      if (item.enableCondition) {
+        enableCondition = `[${item.enableCondition}]`;
+        arrow = '->';
+      }
 
-      // Parse each style property
-      styleProps.forEach((prop) => {
-        const [key, value] = prop.split('=');
-        if (key && value) {
-          style[key.trim()] = isNaN(Number(value.trim())) ? value.trim() : Number(value.trim());
+      Object.keys((item.style)).forEach((key) => {
+        let newKey = key as 'x' | 'y' | 'scale' | 'fontSize' | 'fontColor' | 'image';
+        if (item.style[newKey] !== undefined) {
+          styleContent += `${key}=${item.style[newKey]},`;
         }
       });
 
-      option.style = style;
-    }
+      const style = styleContent ? `\${${styleContent}}` : '';
 
-    if (conditonPart !== null) {
-      const showConditionPart = conditonPart.match(/\((.*)\)/);
-      if (showConditionPart) {
-        option.showCondition = showConditionPart[1];
-      }
-      const enableConditionPart = conditonPart.match(/\[(.*)\]/);
-      if (enableConditionPart) {
-        option.enableCondition = enableConditionPart[1];
-      }
-    }
-    return option;
+      return showCondition + enableCondition + arrow + style + (item.text || '') + ':' + (item.jump || '');
+    });
+
+    props.onSubmit(optionStr.join('|'));
   };
 
-  const options = useMemo(() => {
-    return chooseItems.value.map((item: any) => parse(item.join(':')));
-  }, [chooseItems]);
-
-  const submit = () => {
-    const chooseItemsStr = chooseItems.value.map((e: any) => e.join(":"));
-    const submitStr = chooseItemsStr.join("|");
-    props.onSubmit(submitStr);
-  };
-
-
-  const chooseList = chooseItems.value.map((item: any, i: number) => {
+  const chooseList = options.map((item: any, i: number) => {
     return <div style={{ display: "flex", flexDirection: "column", width:'100%', justifyContent: "center",padding:'0 0 4px 0' }} key={i}>
       <div style={{  display: "flex", alignItems: "center", marginBottom: "8px" }}>
         <Button
           onClick={()=>{
-            const newList = cloneDeep(chooseItems.value);
+            const newList = cloneDeep(options);
             newList.splice(i,1);
-            chooseItems.set(newList);
-            submit();
+            setOptions(newList);
+            submit(newList);
           }}
         >
           {t('delete')}
         </Button>
         <span style={{ marginLeft: '6px' }}>选项名称</span>
-        <input value={options[i].text}
+        <input value={item.text}
           onChange={(ev) => {
             const newValue = ev.target.value;
-            const newList = cloneDeep(chooseItems.value);
-            newList[i][0] = newValue;
-            chooseItems.set(newList);
+            const newList = cloneDeep(options);
+            newList[i].text = newValue;
+            setOptions(newList);
           }}
-          onBlur={submit}
+          onBlur={() => submit(options)}
           className={styles.sayInput}
           placeholder={t('option.name')}
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
-        <span style={{ marginRight: '6px' }}>跳转 {options[i].jump}</span>
+        <span style={{ marginRight: '6px' }}>跳转 {item.jump}</span>
         <ChooseFile sourceBase="scene" onChange={(newFile) => {
           const newValue = newFile?.name ?? "";
-          const newList = cloneDeep(chooseItems.value);
-          newList[i][1] = newValue;
-          chooseItems.set(newList);
-          submit();
+          const newList = cloneDeep(options);
+          newList[i].jump = newValue;
+          setOptions(newList);
+          submit(options);
         }} extName={[".txt"]} />
-        <span style={{ margin: '0 6px 0 6px' }}>按钮样式 {options[i].style.image}</span>
+        <span style={{ margin: '0 6px 0 6px' }}>按钮样式 {item.style.image}</span>
         <ChooseFile sourceBase="ui" onChange={(newFile) => {
           const newValue = newFile?.name ?? "";
 
@@ -170,35 +172,36 @@ export default function Choose(props: any) {
           } else {
             setStyle(i, 'image', undefined);
           }
+          submit(options);
         }} extName={[".jpg", ".png", "webp"]} />
       </div>
       <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px", marginBottom: "8px"}}>
         <span style={{ marginLeft: '6px' }}>按钮位置X</span>
-        <input type="number" value={options[i].style.x}
+        <input type="number" value={item.style.x}
           onChange={(ev) => {
             setStyle(i, 'x', ev.target.value);
           }}
-          onBlur={submit}
+          onBlur={() => submit(options)}
           className={styles.sayInput}
           placeholder="X"
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
         <span style={{ marginLeft: '6px' }}>按钮位置Y</span>
-        <input type="number" value={options[i].style.y}
+        <input type="number" value={item.style.y}
           onChange={(ev) => {
             setStyle(i, 'y', ev.target.value);
           }}
-          onBlur={submit}
+          onBlur={() => submit(options)}
           className={styles.sayInput}
           placeholder="Y"
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
         <span style={{ marginLeft: '6px' }}>缩放</span>
-        <input type="number" value={options[i].style.scale}
+        <input type="number" value={item.style.scale}
           onChange={(ev) => {
             setStyle(i, 'scale', ev.target.value);
           }}
-          onBlur={submit}
+          onBlur={() => submit(options)}
           className={styles.sayInput}
           placeholder="缩放"
           style={{ width: "10%", margin: "0 6px 0 6px" }}
@@ -206,21 +209,21 @@ export default function Choose(props: any) {
       </div>
       <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px"}}>
         <span style={{ marginLeft: '6px' }}>文字大小</span>
-        <input type="number" value={options[i].style.fontSize}
+        <input type="number" value={item.style.fontSize}
           onChange={(ev) => {
             setStyle(i, 'fontSize', ev.target.value);
           }}
-          onBlur={submit}
+          onBlur={() => submit(options)}
           className={styles.sayInput}
           placeholder="文字大小"
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
         <span style={{ marginLeft: '6px' }}>文字颜色</span>
-        <input type="color" value={options[i].style.fontColor || '#8E354A'}
+        <input type="color" value={item.style.fontColor || '#8E354A'}
           onChange={(ev) => {
             setStyle(i, 'fontColor', ev.target.value);
           }}
-          onBlur={submit}
+          onBlur={() => submit(options)}
           className={styles.sayInput}
           placeholder="文字大小"
           style={{ width: "10%", margin: "0 6px 0 6px" }}
@@ -228,16 +231,26 @@ export default function Choose(props: any) {
       </div>
     </div>;
   });
+
   return <div className={styles.sentenceEditorContent} style={{ width: '100%' }}>
     {chooseList}
     <Button
       onClick={() => {
-        const newList = cloneDeep(chooseItems.value);
-        newList.push(t('option.option', 'option.chooseFile'));
-        chooseItems.set(newList);
-        submit();
+        const newList = cloneDeep(options);
+        const trans = t('option.option', 'option.chooseFile');
+        newList.push({
+          text: trans[0],
+          jump: trans[1],
+          style: {},
+          showCondition: '',
+          enableCondition: ''
+        });
+        setOptions(newList);
+        submit(newList);
       }}>
       {t('add')}
     </Button>
   </div>;
-}
+}, (prevProps, nextProps) => {
+  return prevProps.chooseValue === nextProps.chooseValue;
+});

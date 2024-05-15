@@ -20033,13 +20033,23 @@ const choose = (sentence, chooseCallback) => {
         if (typeof e2.style.x === "number") {
           styleObj.position = "absolute";
           styleObj["left"] = e2.style.x * 1.33333 + "px";
+          styleObj["transform"] = "translateX(-50%)";
         }
         if (typeof e2.style.y === "number") {
           styleObj.position = "absolute";
           styleObj["top"] = e2.style.y * 1.33333 + "px";
+          if (styleObj["transform"]) {
+            styleObj["transform"] += " translateY(-50%)";
+          } else {
+            styleObj["transform"] = "translateY(-50%)";
+          }
         }
         if (typeof e2.style.scale === "number") {
-          styleObj["transform"] = "scale(" + e2.style.scale + ")";
+          if (styleObj["transform"]) {
+            styleObj["transform"] += " scale(" + e2.style.scale + ")";
+          } else {
+            styleObj["transform"] = "scale(" + e2.style.scale + ")";
+          }
         }
         if (typeof e2.style.fontSize === "number") {
           styleObj["fontSize"] = e2.style.fontSize + "px";
@@ -20453,7 +20463,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-496a4dc8.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-75615da6.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
