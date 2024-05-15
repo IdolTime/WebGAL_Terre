@@ -20460,7 +20460,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-405abd30.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-c8279337.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -101068,6 +101068,7 @@ var APNGLoader = (
     APNGLoader2.parse = function(url2, buffer) {
       var upngObj = UPNG.decode(buffer);
       var width = upngObj.width, height = upngObj.height, frames = upngObj.frames;
+      console.log(3333, upngObj);
       var rgba2 = UPNG.toRGBA8(upngObj);
       var framesImageData = [];
       rgba2.forEach(function(item, index2) {
@@ -101456,11 +101457,13 @@ class PixiStage {
       setTimeout(() => {
         var _a3, _b3;
         const texture = (_b3 = (_a3 = loader.resources) == null ? void 0 : _a3[url2]) == null ? void 0 : _b3.texture;
+        let delays = [];
         if (texture && this.getStageObjByUuid(figureUuid)) {
           const resource = loader.resources[url2];
           const explosionTextures = [];
           if (isApng) {
             const { frameDelay, frameTextureKeys, frameCount } = resource;
+            delays = frameDelay;
             frameTextureKeys.forEach((item, index2) => {
               explosionTextures.push(Texture.from(item));
             });
@@ -101493,16 +101496,22 @@ class PixiStage {
             }
             if (isApng) {
               const sprite = figureSprite;
-              sprite.animationSpeed = 0.25;
-              sprite.play();
-              sprite.loop = false;
-              sprite.onFrameChange = (frame2) => {
-                if (frame2 === sprite.totalFrames - 1) {
-                  sprite.destroy();
-                  const newTextures = [...textures].reverse();
-                  showAndPlay(newTextures);
-                }
+              let currentFrame = 0;
+              let direction = 1;
+              const updateFrame = () => {
+                sprite.gotoAndStop(currentFrame);
+                setTimeout(() => {
+                  if (currentFrame === textures.length - 1) {
+                    direction = -1;
+                  }
+                  if (currentFrame === 0) {
+                    direction = 1;
+                  }
+                  currentFrame += direction;
+                  updateFrame();
+                }, delays[currentFrame] / 2);
               };
+              updateFrame();
             }
             thisFigureContainer.pivot.set(0, this.stageHeight / 2);
             thisFigureContainer.addChild(figureSprite);
