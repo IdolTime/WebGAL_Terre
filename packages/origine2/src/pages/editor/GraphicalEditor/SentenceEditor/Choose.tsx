@@ -170,6 +170,7 @@ export default function Choose(props: ISentenceEditorProps) {
           } else {
             setStyle(i, 'image', undefined);
           }
+          submit();
         }} extName={[".jpg", ".png", "webp"]} />
       </div>
       <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px", marginBottom: "8px"}}>
