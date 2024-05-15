@@ -52,7 +52,6 @@ export default function Choose(props: any) {
 
     newList[index][0] = updatedScript;
     chooseItems.set(newList);
-    submit();
   };
 
   const parse = (script: string) => {
@@ -170,6 +169,7 @@ export default function Choose(props: any) {
           } else {
             setStyle(i, 'image', undefined);
           }
+          submit();
         }} extName={[".jpg", ".png", "webp"]} />
       </div>
       <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px", marginBottom: "8px"}}>

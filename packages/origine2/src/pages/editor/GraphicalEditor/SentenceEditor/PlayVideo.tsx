@@ -99,12 +99,6 @@ export default function PlayVideo(props: ISentenceEditorProps) {
           extName={[".mp4", ".webm", ".ogg", ".flv"]} />
         </>
       </CommonOptions>
-      <CommonOptions key="2" title={t('video.option')}>
-        <TerreToggle title="" onChange={(newValue) => {
-          isSkipOff.set(newValue);
-          submit();
-        }} onText={t('video.skipOff')} offText={t('video.skipOn')} isChecked={isSkipOff.value} />
-      </CommonOptions>
       <CommonOptions key="3" title='循环播放视频'>
         <TerreToggle title="" onChange={(newValue) => {
           isLoop.set(newValue);
