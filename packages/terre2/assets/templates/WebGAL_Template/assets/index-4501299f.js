@@ -101518,7 +101518,7 @@ class PixiStage {
                   }
                   currentFrame += direction;
                   updateFrame();
-                }, delays[currentFrame] / 2);
+                }, delays[currentFrame]);
               };
               updateFrame();
             }
