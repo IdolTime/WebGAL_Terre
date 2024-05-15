@@ -20040,13 +20040,23 @@ const choose = (sentence, chooseCallback) => {
         if (typeof e2.style.x === "number") {
           styleObj.position = "absolute";
           styleObj["left"] = e2.style.x * 1.33333 + "px";
+          styleObj["transform"] = "translateX(-50%)";
         }
         if (typeof e2.style.y === "number") {
           styleObj.position = "absolute";
           styleObj["top"] = e2.style.y * 1.33333 + "px";
+          if (styleObj["transform"]) {
+            styleObj["transform"] += " translateY(-50%)";
+          } else {
+            styleObj["transform"] = "translateY(-50%)";
+          }
         }
         if (typeof e2.style.scale === "number") {
-          styleObj["transform"] = "scale(" + e2.style.scale + ")";
+          if (styleObj["transform"]) {
+            styleObj["transform"] += " scale(" + e2.style.scale + ")";
+          } else {
+            styleObj["transform"] = "scale(" + e2.style.scale + ")";
+          }
         }
         if (typeof e2.style.fontSize === "number") {
           styleObj["fontSize"] = e2.style.fontSize + "px";
@@ -20460,7 +20470,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-405abd30.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-45c37f5e.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -101456,11 +101466,13 @@ class PixiStage {
       setTimeout(() => {
         var _a3, _b3;
         const texture = (_b3 = (_a3 = loader.resources) == null ? void 0 : _a3[url2]) == null ? void 0 : _b3.texture;
+        let delays = [];
         if (texture && this.getStageObjByUuid(figureUuid)) {
           const resource = loader.resources[url2];
           const explosionTextures = [];
           if (isApng) {
             const { frameDelay, frameTextureKeys, frameCount } = resource;
+            delays = frameDelay;
             frameTextureKeys.forEach((item, index2) => {
               explosionTextures.push(Texture.from(item));
             });
@@ -101493,16 +101505,22 @@ class PixiStage {
             }
             if (isApng) {
               const sprite = figureSprite;
-              sprite.animationSpeed = 0.25;
-              sprite.play();
-              sprite.loop = false;
-              sprite.onFrameChange = (frame2) => {
-                if (frame2 === sprite.totalFrames - 1) {
-                  sprite.destroy();
-                  const newTextures = [...textures].reverse();
-                  showAndPlay(newTextures);
-                }
+              let currentFrame = 0;
+              let direction = 1;
+              const updateFrame = () => {
+                sprite.gotoAndStop(currentFrame);
+                setTimeout(() => {
+                  if (currentFrame === textures.length - 1) {
+                    direction = -1;
+                  }
+                  if (currentFrame === 0) {
+                    direction = 1;
+                  }
+                  currentFrame += direction;
+                  updateFrame();
+                }, delays[currentFrame] / 2);
               };
+              updateFrame();
             }
             thisFigureContainer.pivot.set(0, this.stageHeight / 2);
             thisFigureContainer.addChild(figureSprite);
