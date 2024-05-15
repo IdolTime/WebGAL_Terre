@@ -7,7 +7,7 @@ import useTrans from "@/hooks/useTrans";
 import TerreToggle from "../../../../components/terreToggle/TerreToggle";
 import VideoChoose from './VideoChoose';
 import { getArgByKey } from "../utils/getArgByKey";
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 export default function PlayVideo(props: ISentenceEditorProps) {
   const t = useTrans('editor.graphical.sentences.video.options.');
@@ -15,7 +15,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
   const isSkipOff = useValue(!!getArgByKey(props.sentence, "skipOff"));
   const isLoop = useValue(!!getArgByKey(props.sentence, "loop"));
   const isChoose = useValue(!!getArgByKey(props.sentence, "choose"));
-  const [chooseValue, setChooseValue] = useState(props.sentence.args.filter(ele => ele.key === 'choose')[0]?.value ||'选项:选择场景文件|选项:选择场景文件');
+  const chooseValueRef = useRef((props.sentence.args.filter(ele => ele.key === 'choose')[0]?.value as string) ||'选项:选择场景文件|选项:选择场景文件');
 
   const initComanRef: any = [];
   if (isSkipOff.value) {
@@ -25,9 +25,13 @@ export default function PlayVideo(props: ISentenceEditorProps) {
     initComanRef.push('-loop=true');
   }
   if (isChoose.value) {
-    initComanRef.push(`-choose=${chooseValue}`);
+    initComanRef.push(`-choose=${chooseValueRef.current}`);
   }
   const commandRef = useRef<any>(initComanRef);
+
+  useEffect(() => {
+    chooseValueRef.current = (props.sentence.args.filter(ele => ele.key === 'choose')[0]?.value as string) ||'选项:选择场景文件|选项:选择场景文件';
+  }, [props.sentence]);
 
   // 启用视频跳过
   const submit = () => {
@@ -57,16 +61,16 @@ export default function PlayVideo(props: ISentenceEditorProps) {
   const submitCoose = useCallback(() => {
     let res: any = [];
     if (isChoose.value) {
-      res = [...commandRef.current, `-choose=${chooseValue}`];
+      res = [...commandRef.current, `-choose=${chooseValueRef.current}`];
     } else {
-      res = commandRef.current.filter((item: string) => item !== `-choose=${chooseValue}`);
+      res = commandRef.current.filter((item: string) => item !== `-choose=${chooseValueRef.current}`);
     }
     commandRef.current = res;
     dispacthProps(res);
   }, [isChoose]);
 
   const onChoose = (val: string) => {
-    const idx = commandRef.current.findIndex((item: string) => item === `-choose=${chooseValue}`);
+    const idx = commandRef.current.findIndex((item: string) => item === `-choose=${chooseValueRef.current}`);
     const res = commandRef.current.map((ele: any, i: number) => {
       if (i === idx) {
         return `-choose=${val}`;
@@ -74,7 +78,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
       return ele;
     });
     commandRef.current = res;
-    setChooseValue(val);
+    chooseValueRef.current = val;
     dispacthProps(res);
   };
 
@@ -113,6 +117,6 @@ export default function PlayVideo(props: ISentenceEditorProps) {
       </CommonOptions>
     </div>
     {isChoose.value &&
-      <VideoChoose chooseValue={chooseValue} onSubmit={onChoose} />}
+      <VideoChoose chooseValue={chooseValueRef.current} onSubmit={onChoose} />}
   </div>;
 }
