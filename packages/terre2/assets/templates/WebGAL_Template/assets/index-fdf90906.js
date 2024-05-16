@@ -20470,7 +20470,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-45c37f5e.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-717ede88.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -101471,10 +101471,10 @@ class PixiStage {
           const resource = loader.resources[url2];
           const explosionTextures = [];
           if (isApng) {
-            const { frameDelay, frameTextureKeys, frameCount } = resource;
+            const { frameDelay, textures, frameCount } = resource;
             delays = frameDelay;
-            frameTextureKeys.forEach((item, index2) => {
-              explosionTextures.push(Texture.from(item));
+            Object.values(textures || []).forEach((v2) => {
+              explosionTextures.push(v2);
             });
           }
           const showAndPlay = (textures) => {
