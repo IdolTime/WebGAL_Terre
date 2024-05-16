@@ -11,9 +11,21 @@ interface WhenARGProps {
   value: string;
   setValue: (value: string) => void;
   submit: () => void;
+  style?: React.CSSProperties;
+  tips?: string;
 }
 
-const WhenARG: React.FC<WhenARGProps> = ({ name, setName, operator, setOperator, value, setValue, submit }) => {
+const WhenARG: React.FC<WhenARGProps> = ({
+  style,
+  name,
+  setName,
+  operator,
+  setOperator,
+  value,
+  setValue,
+  submit,
+  tips,
+}) => {
   const handleOperatorChange = (event: SelectionEvents, data: OptionOnSelectData) => {
     console.log(data.optionValue);
     setOperator(data.optionValue ? data.optionValue : '');
@@ -23,7 +35,7 @@ const WhenARG: React.FC<WhenARGProps> = ({ name, setName, operator, setOperator,
   const operatorOptions = ['>', '<', '>=', '<=', '==', '!='];
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={style}>
       <p>条件：当数值</p>
       <input
         style={{ width: '100px' }}
@@ -55,6 +67,7 @@ const WhenARG: React.FC<WhenARGProps> = ({ name, setName, operator, setOperator,
         }}
         onBlur={submit}
       />
+      <span style={{ marginLeft: '10px' }}>{tips}</span>
     </div>
   );
 };
