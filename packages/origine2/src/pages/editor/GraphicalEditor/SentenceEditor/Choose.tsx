@@ -1,11 +1,9 @@
-import { ISentenceEditorProps } from "./index";
 import styles from "./sentenceEditor.module.scss";
-import { useValue } from "../../../../hooks/useValue";
 import { cloneDeep } from "lodash";
 import ChooseFile from "../../ChooseFile/ChooseFile";
 import useTrans from "@/hooks/useTrans";
 import { Button } from "@fluentui/react-components";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import WhenARG from '../components/WhenARG';
 import { getWhenARGExpression } from '@/utils/utils';
 
@@ -85,12 +83,12 @@ const parse = (script: string) => {
     }
   }
 
-  const valExpArr = getWhenARGExpression(option.showCondition);
+  const valExpArr = getWhenARGExpression(showCondition);
   option.showCondition.name = valExpArr[0] ?? '';
   option.showCondition.operator = valExpArr[1] ?? '>';
   option.showCondition.value = valExpArr[2] ?? '';
 
-  const valExpArr2 = getWhenARGExpression(option.enableCondition);
+  const valExpArr2 = getWhenARGExpression(enableCondition);
   option.enableCondition.name = valExpArr2[0] ?? '';
   option.enableCondition.operator = valExpArr2[1] ?? '>';
   option.enableCondition.value = valExpArr2[2] ?? '';
@@ -98,15 +96,16 @@ const parse = (script: string) => {
   return option;
 };
 
-export default function Choose(props: ISentenceEditorProps) {
+export default function Choose(props: any) {
   const t = useTrans('editor.graphical.sentences.choose.');
+  const content = props.chooseValue ? props.chooseValue : props.sentence.content;
   const [options, setOptions] = useState<IOptions[]>(props.sentence.content.split('|').map(parse));
 
   useEffect(() => {
-    const value = props.sentence.content.split('|');
+    const value = content.split('|');
     const newOption = value.map((item: string) => parse(item));
     setOptions(newOption);
-  }, [props.sentence.content]);
+  }, [content]);
 
   const setStyle = (index: number, key: 'x' | 'y' | 'scale' | 'fontSize' | 'fontColor' | 'image', value?: number | string) => {
     const newList = [...options];
@@ -124,7 +123,7 @@ export default function Choose(props: ISentenceEditorProps) {
     if (condition === 'show') {
       newList[index].showCondition = variable;
     } else {
-      newList[index].showCondition = variable;
+      newList[index].enableCondition = variable;
     }
     setOptions(newList);
   };
@@ -136,13 +135,13 @@ export default function Choose(props: ISentenceEditorProps) {
       let styleContent = '';
       let arrow = '';
 
-      if (item.showCondition) {
-        showCondition = `(${item.showCondition})`;
+      if (item.showCondition.name || item.showCondition.value) {
+        showCondition = `(${item.showCondition.name}${item.showCondition.operator}${item.showCondition.value})`;
         arrow = '->';
       }
 
-      if (item.enableCondition) {
-        enableCondition = `[${item.enableCondition}]`;
+      if (item.enableCondition.name || item.enableCondition.value) {
+        enableCondition = `[${item.enableCondition.name}${item.enableCondition.operator}${item.enableCondition.value}]`;
         arrow = '->';
       }
 
@@ -158,7 +157,11 @@ export default function Choose(props: ISentenceEditorProps) {
       return showCondition + enableCondition + arrow + style + (item.text || '') + ':' + (item.jump || '');
     });
 
-    props.onSubmit(`choose:${optionStr.join('|')};`);
+    if (props.chooseValue) {
+      props.onSubmit(optionStr.join('|'));
+    } else {
+      props.onSubmit(`choose:${optionStr.join('|')};`);
+    }
   };
 
   const chooseList = options.map((item: any, i: number) => {
@@ -193,7 +196,7 @@ export default function Choose(props: ISentenceEditorProps) {
           const newList = cloneDeep(options);
           newList[i].jump = newValue;
           setOptions(newList);
-          submit(options);
+          submit(newList);
         }} extName={[".txt"]} />
         <span style={{ margin: '0 6px 0 6px' }}>按钮样式 {item.style.image}</span>
         <ChooseFile sourceBase="ui" onChange={(newFile) => {
@@ -263,42 +266,54 @@ export default function Choose(props: ISentenceEditorProps) {
       </div>
       <WhenARG
         style={{ paddingLeft: '102px' }}
-        name={options[i].showVariable.name!.value}
+        name={options[i].showCondition.name ?? ''}
         setName={(value) => {
-            options[i].showVariable.name!.set(value);
-            setCondition(i, 'show', options[i].showVariable);
+          setCondition(i, 'show', {
+            ...options[i].showCondition,
+            name: value
+          });
         }}
-        operator={options[i].showVariable.operator!.value}
+        operator={options[i].showCondition.operator ?? '>'}
         setOperator={(value) => {
-            options[i].showVariable.operator!.set(value);
-            setCondition(i, 'show', options[i].showVariable);
+          setCondition(i, 'show', {
+            ...options[i].showCondition,
+            operator: value,
+          });
         }}
-        value={options[i].showVariable.value!.value}
+        value={options[i].showCondition.value ?? ''}
         setValue={(value) => {
-            options[i].showVariable.value!.set(value);
-            setCondition(i, 'show', options[i].showVariable);
+          setCondition(i, 'show', {
+            ...options[i].showCondition,
+            value,
+          });
         }}
-        submit={() => submit()}
+        submit={() => submit(options)}
         tips="隐藏"
       />
       <WhenARG
         style={{ paddingLeft: '102px' }}
-        name={options[i].enableVariable.name!.value}
+        name={options[i].enableCondition.name ?? ''}
         setName={(value) => {
-            options[i].enableVariable.name!.set(value);
-            setCondition(i, 'enable', options[i].enableVariable);
+          setCondition(i, 'enable', {
+            ...options[i].enableCondition,
+            name: value
+          });
         }}
-        operator={options[i].enableVariable.operator!.value}
+        operator={options[i].enableCondition.operator ?? '>'}
         setOperator={(value) => {
-            options[i].enableVariable.operator!.set(value);
-            setCondition(i, 'enable', options[i].enableVariable);
+          setCondition(i, 'enable', {
+            ...options[i].enableCondition,
+            operator: value,
+          });
         }}
-        value={options[i].enableVariable.value!.value}
+        value={options[i].enableCondition.value ?? ''}
         setValue={(value) => {
-            options[i].enableVariable.value!.set(value);
-            setCondition(i, 'enable', options[i].enableVariable);
+          setCondition(i, 'enable', {
+            ...options[i].enableCondition,
+            value,
+          });
         }}
-        submit={() => submit()}
+        submit={() => submit(options)}
         tips="禁用"
       />
     </div>;

@@ -5,9 +5,9 @@ import ChooseFile from "../../ChooseFile/ChooseFile";
 import { useValue } from "../../../../hooks/useValue";
 import useTrans from "@/hooks/useTrans";
 import TerreToggle from "../../../../components/terreToggle/TerreToggle";
-import VideoChoose from './VideoChoose';
 import { getArgByKey } from "../utils/getArgByKey";
 import { useState, useCallback, useRef, useEffect } from 'react';
+import Choose from "./Choose";
 
 export default function PlayVideo(props: ISentenceEditorProps) {
   const t = useTrans('editor.graphical.sentences.video.options.');
@@ -117,6 +117,6 @@ export default function PlayVideo(props: ISentenceEditorProps) {
       </CommonOptions>
     </div>
     {isChoose.value &&
-      <VideoChoose chooseValue={chooseValueRef.current} onSubmit={onChoose} />}
+      <Choose chooseValue={chooseValueRef.current} onSubmit={onChoose} />}
   </div>;
 }
