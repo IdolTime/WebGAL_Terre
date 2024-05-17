@@ -6,12 +6,14 @@ import ChooseFile from "../../ChooseFile/ChooseFile";
 import useTrans from "@/hooks/useTrans";
 import { Button } from "@fluentui/react-components";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import WhenARG from '../components/WhenARG';
+import { getWhenARGExpression } from '@/utils/utils';
 
 interface IOptions {
   text: string;
   jump: string;
-  showCondition: string;
-  enableCondition: string;
+  showCondition: Variable;
+  enableCondition: Variable;
   style: {
     x?: number;
     y?: number;
@@ -20,6 +22,12 @@ interface IOptions {
     fontColor?: string;
     image?: string;
   },
+}
+
+interface Variable {
+  name?: string;
+  value?: string;
+  operator?: string;
 }
 
 const parse = (script: string) => {
@@ -40,8 +48,8 @@ const parse = (script: string) => {
       fontColor: undefined,
       image: undefined
     },
-    showCondition: '',
-    enableCondition: ''
+    showCondition: {},
+    enableCondition: {}
   };
 
   // Extract style information
@@ -63,16 +71,30 @@ const parse = (script: string) => {
     option.style = style;
   }
 
+  let showCondition = '';
+  let enableCondition = '';
+
   if (conditonPart !== null) {
     const showConditionPart = conditonPart.match(/\((.*)\)/);
     if (showConditionPart) {
-      option.showCondition = showConditionPart[1];
+      showCondition = showConditionPart[1];
     }
     const enableConditionPart = conditonPart.match(/\[(.*)\]/);
     if (enableConditionPart) {
-      option.enableCondition = enableConditionPart[1];
+      enableCondition = enableConditionPart[1];
     }
   }
+
+  const valExpArr = getWhenARGExpression(option.showCondition);
+  option.showCondition.name = valExpArr[0] ?? '';
+  option.showCondition.operator = valExpArr[1] ?? '>';
+  option.showCondition.value = valExpArr[2] ?? '';
+
+  const valExpArr2 = getWhenARGExpression(option.enableCondition);
+  option.enableCondition.name = valExpArr2[0] ?? '';
+  option.enableCondition.operator = valExpArr2[1] ?? '>';
+  option.enableCondition.value = valExpArr2[2] ?? '';
+
   return option;
 };
 
@@ -92,6 +114,17 @@ export default function Choose(props: ISentenceEditorProps) {
       delete newList[index].style[key];
     } else {
       newList[index].style[key] = value as any;
+    }
+    setOptions(newList);
+  };
+
+  const setCondition = (index: number, condition: 'show' | 'enable', variable: Variable) => {
+    const newList = [...options];
+
+    if (condition === 'show') {
+      newList[index].showCondition = variable;
+    } else {
+      newList[index].showCondition = variable;
     }
     setOptions(newList);
   };
@@ -228,6 +261,46 @@ export default function Choose(props: ISentenceEditorProps) {
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
       </div>
+      <WhenARG
+        style={{ paddingLeft: '102px' }}
+        name={options[i].showVariable.name!.value}
+        setName={(value) => {
+            options[i].showVariable.name!.set(value);
+            setCondition(i, 'show', options[i].showVariable);
+        }}
+        operator={options[i].showVariable.operator!.value}
+        setOperator={(value) => {
+            options[i].showVariable.operator!.set(value);
+            setCondition(i, 'show', options[i].showVariable);
+        }}
+        value={options[i].showVariable.value!.value}
+        setValue={(value) => {
+            options[i].showVariable.value!.set(value);
+            setCondition(i, 'show', options[i].showVariable);
+        }}
+        submit={() => submit()}
+        tips="隐藏"
+      />
+      <WhenARG
+        style={{ paddingLeft: '102px' }}
+        name={options[i].enableVariable.name!.value}
+        setName={(value) => {
+            options[i].enableVariable.name!.set(value);
+            setCondition(i, 'enable', options[i].enableVariable);
+        }}
+        operator={options[i].enableVariable.operator!.value}
+        setOperator={(value) => {
+            options[i].enableVariable.operator!.set(value);
+            setCondition(i, 'enable', options[i].enableVariable);
+        }}
+        value={options[i].enableVariable.value!.value}
+        setValue={(value) => {
+            options[i].enableVariable.value!.set(value);
+            setCondition(i, 'enable', options[i].enableVariable);
+        }}
+        submit={() => submit()}
+        tips="禁用"
+      />
     </div>;
   });
   return <div className={styles.sentenceEditorContent}>
@@ -240,8 +313,8 @@ export default function Choose(props: ISentenceEditorProps) {
           text: trans[0],
           jump: trans[1],
           style: {},
-          showCondition: '',
-          enableCondition: ''
+          showCondition: {},
+          enableCondition: {}
         });
         setOptions(newList);
         submit(newList);
