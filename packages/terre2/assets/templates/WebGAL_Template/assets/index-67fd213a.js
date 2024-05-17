@@ -14567,14 +14567,18 @@ const assetsPrefetcher = (assetList) => {
     if (hasPrefetch) {
       logger.warn("该资源已在预加载列表中，无需重复加载");
     } else {
-      const newLink = document.createElement("link");
-      newLink.setAttribute("rel", "prefetch");
-      newLink.setAttribute("href", asset.url);
-      const head = document.getElementsByTagName("head");
-      if (head.length) {
-        head[0].appendChild(newLink);
+      if (asset.url.endsWith(".mp4") || asset.url.endsWith(".flv")) {
+        WebGAL.videoManager.preloadVideo(asset.url);
+      } else {
+        const newLink = document.createElement("link");
+        newLink.setAttribute("rel", "prefetch");
+        newLink.setAttribute("href", asset.url);
+        const head = document.getElementsByTagName("head");
+        if (head.length) {
+          head[0].appendChild(newLink);
+        }
+        WebGAL.sceneManager.settledAssets.push(asset.url);
       }
-      WebGAL.sceneManager.settledAssets.push(asset.url);
     }
   }
 };
@@ -14905,7 +14909,7 @@ const subSceneScanner = (command, content) => {
   if (command === commandType.changeScene || command === commandType.callScene) {
     subSceneList.push(content);
   }
-  if (command === commandType.choose) {
+  if (command === commandType.choose || command === commandType.video) {
     const chooseList = content.split("|");
     const chooseValue = chooseList.map((e2) => e2.split(":")[1] ?? "");
     chooseValue.forEach((e2) => {
@@ -19255,6 +19259,13 @@ const changeScene = (sceneUrl, sceneName) => {
   sceneFetcher(sceneUrl).then((rawScene) => {
     WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, sceneName, sceneUrl);
     WebGAL.sceneManager.sceneData.currentSentenceId = 0;
+    const currentSceneVideos = [];
+    WebGAL.sceneManager.sceneData.currentScene.assetsList.forEach((x) => {
+      if (x.url.endsWith(".mp4") || x.url.endsWith(".flv")) {
+        currentSceneVideos.push(x.url);
+      }
+    });
+    WebGAL.videoManager.destoryExcept(currentSceneVideos);
     const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
     WebGAL.sceneManager.settledScenes.push(sceneUrl);
     const subSceneListUniq = uniqWith$1(subSceneList);
@@ -19985,7 +19996,7 @@ class ChooseOption {
     const text2 = mainPartNodes[0].replace(/\${[^{}]*}/, "");
     const option = new ChooseOption(text2, mainPartNodes[1]);
     const styleRegex = /\$\{(.*?)\}/;
-    const styleMatch = mainPart.match(styleRegex);
+    const styleMatch = conditonPart ? conditonPart.match(styleRegex) : mainPart.match(styleRegex);
     if (styleMatch) {
       const styleStr = styleMatch[1];
       const styleProps = styleStr.split(",");
@@ -20470,7 +20481,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-717ede88.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-9a097e00.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -20582,6 +20593,3498 @@ const playEffect = (sentence) => {
     })
   };
 };
+const playVideo = (sentence) => {
+  const userDataState = webgalStore.getState().userData;
+  const mainVol = userDataState.optionData.volumeMain;
+  const vocalVol = mainVol * 0.01 * userDataState.optionData.vocalVolume * 0.01;
+  const bgmVol = mainVol * 0.01 * userDataState.optionData.bgmVolume * 0.01;
+  const performInitName = getRandomPerformName();
+  let chooseContent = "";
+  let loopValue = false;
+  sentence.args.forEach((e2) => {
+    if (e2.key === "choose") {
+      chooseContent = "choose:" + e2.value;
+    }
+    if (e2.key === "loop") {
+      loopValue = e2.value === true;
+    }
+  });
+  let blockingNext = getSentenceArgByKey(sentence, "skipOff");
+  let blockingNextFlag = false;
+  if (blockingNext || loopValue || chooseContent !== "") {
+    blockingNextFlag = true;
+  }
+  WebGAL.videoManager.showVideo(sentence.content);
+  let isOver = false;
+  const performObject = {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => blockingNextFlag,
+    blockingAuto: () => true,
+    stopTimeout: void 0,
+    // 暂时不用，后面会交给自动清除
+    arrangePerformPromise: new Promise((resolve2) => {
+      const endCallback = (e2) => {
+        isOver = true;
+        e2.stopFunction();
+        WebGAL.gameplay.performController.unmountPerform(e2.performName);
+      };
+      setTimeout(() => {
+        const url2 = sentence.content;
+        WebGAL.videoManager.seek(url2, 0.03);
+        WebGAL.videoManager.setVolume(url2, bgmVol);
+        WebGAL.videoManager.setLoop(url2, loopValue);
+        const sceneList = chooseContent ? chooseContent.slice(7).split("|").map((x) => "game/scene/" + x.split(":")[1]) : [];
+        if (sceneList.length) {
+          scenePrefetcher(sceneList);
+        }
+        const endPerform = () => {
+          for (const e2 of WebGAL.gameplay.performController.performList) {
+            if (e2.performName === performInitName) {
+              if (chooseContent !== "" && !loopValue) {
+                const parsedResult = sceneParser(chooseContent, "temp.txt", "");
+                const duration = WebGAL.videoManager.getDuration(url2);
+                WebGAL.videoManager.seek(url2, (duration || 0) - 0.03);
+                WebGAL.videoManager.pauseVideo(url2);
+                const script = parsedResult.sentenceList[0];
+                const perform2 = choose(script, () => {
+                  endCallback(e2);
+                });
+                WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
+              } else {
+                endCallback(e2);
+                nextSentence();
+              }
+            }
+          }
+        };
+        const skipVideo = () => {
+          console.log("skip");
+          endPerform();
+        };
+        WebGAL.events.fullscreenDbClick.on(skipVideo);
+        const perform = {
+          performName: performInitName,
+          duration: 1e3 * 60 * 60,
+          isOver: false,
+          isHoldOn: false,
+          stopFunction: () => {
+            WebGAL.events.fullscreenDbClick.off(skipVideo);
+            const bgmElement22 = document.getElementById("currentBgm");
+            if (bgmElement22) {
+              bgmElement22.volume = bgmVol.toString();
+            }
+            const vocalElement2 = document.getElementById("currentVocal");
+            if (bgmElement22) {
+              vocalElement2.volume = vocalVol.toString();
+            }
+            WebGAL.videoManager.destory(url2);
+          },
+          blockingNext: () => blockingNextFlag,
+          blockingAuto: () => {
+            return !isOver;
+          },
+          stopTimeout: void 0,
+          // 暂时不用，后面会交给自动清除
+          goNextWhenOver: true
+        };
+        resolve2(perform);
+        const vocalVol2 = 0;
+        const bgmVol2 = 0;
+        const bgmElement2 = document.getElementById("currentBgm");
+        if (bgmElement2) {
+          bgmElement2.volume = bgmVol2.toString();
+        }
+        const vocalElement = document.getElementById("currentVocal");
+        if (bgmElement2) {
+          vocalElement.volume = vocalVol2.toString();
+        }
+        WebGAL.videoManager.playVideo(url2);
+        if (chooseContent && loopValue) {
+          const parsedResult = sceneParser(chooseContent, "temp.txt", "");
+          const script = parsedResult.sentenceList[0];
+          const perform2 = choose(script, endPerform);
+          WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
+        }
+        WebGAL.videoManager.onEnded(url2, () => {
+          if (loopValue) {
+            WebGAL.videoManager.seek(url2, 0.03);
+            WebGAL.videoManager.playVideo(url2);
+          } else {
+            endPerform();
+          }
+        });
+      }, 100);
+    })
+  };
+  return performObject;
+};
+const setAnimation = (sentence) => {
+  var _a2;
+  webgalStore.getState().stage.currentDialogKey;
+  const animationName = sentence.content;
+  const animationDuration = getAnimateDuration$1(animationName);
+  const target = (((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "default_id").toString();
+  const key = `${target}-${animationName}-${animationDuration}`;
+  let stopFunction;
+  setTimeout(() => {
+    var _a3, _b2;
+    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
+    const animationObj = getAnimationObject$2(animationName, target, animationDuration);
+    if (animationObj) {
+      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
+      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj, key, target);
+    }
+  }, 0);
+  stopFunction = () => {
+    setTimeout(() => {
+      var _a3;
+      webgalStore.getState().stage.currentDialogKey;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
+    }, 0);
+  };
+  return {
+    performName: key,
+    duration: animationDuration,
+    isHoldOn: false,
+    stopFunction,
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function generateTestblurAnimationObj(targetKey, duration) {
+  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
+  function setStartState() {
+    if (target) {
+      target.pixiContainer.alpha = 0;
+      target.pixiContainer.blur = 0;
+    }
+  }
+  function setEndState() {
+    if (target) {
+      target.pixiContainer.alpha = 1;
+      target.pixiContainer.blur = 5;
+    }
+  }
+  function tickerFunc(delta) {
+    if (target) {
+      const container2 = target.pixiContainer;
+      const baseDuration = WebGAL.gameplay.pixiStage.frameDuration;
+      const currentAddOplityDelta = duration / baseDuration * delta;
+      const increasement = 1 / currentAddOplityDelta;
+      const decreasement = 5 / currentAddOplityDelta;
+      if (container2.alpha < 1) {
+        container2.alpha += increasement;
+      }
+      if (container2.blur < 5) {
+        container2.blur += decreasement;
+      }
+    }
+  }
+  return {
+    setStartState,
+    setEndState,
+    tickerFunc
+  };
+}
+const webgalAnimations = [
+  { name: "universalSoftIn", animationGenerateFunc: generateUniversalSoftInAnimationObj },
+  { name: "universalSoftOff", animationGenerateFunc: generateUniversalSoftOffAnimationObj },
+  { name: "testblur", animationGenerateFunc: generateTestblurAnimationObj }
+];
+const setComplexAnimation = (sentence) => {
+  var _a2, _b2, _c2;
+  webgalStore.getState().stage.currentDialogKey;
+  const animationName = sentence.content;
+  const animationDuration = getSentenceArgByKey(sentence, "duration") ?? 0;
+  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
+  const key = `${target}-${animationName}-${animationDuration}`;
+  const animationFunction = getAnimationObject$1(animationName);
+  let stopFunction = () => {
+  };
+  if (animationFunction) {
+    logger.debug(`动画${animationName}作用在${target}`, animationDuration);
+    const animationObj = animationFunction(target, animationDuration);
+    (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.stopPresetAnimationOnTarget(target);
+    (_c2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _c2.registerAnimation(animationObj, key, target);
+    stopFunction = () => {
+      var _a3;
+      webgalStore.getState().stage.currentDialogKey;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
+    };
+  }
+  return {
+    performName: key,
+    duration: animationDuration,
+    isHoldOn: false,
+    stopFunction,
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function getAnimationObject$1(animationName) {
+  const result = webgalAnimations.find((e2) => e2.name === animationName);
+  logger.debug("装载动画", result);
+  if (result) {
+    return result.animationGenerateFunc;
+  }
+  return null;
+}
+const setFilter = (sentence) => {
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const setTempAnimation = (sentence) => {
+  var _a2;
+  webgalStore.getState().stage.currentDialogKey;
+  const animationName = (Math.random() * 10).toString(16);
+  const animationString = sentence.content;
+  let animationObj;
+  try {
+    animationObj = JSON.parse(animationString);
+  } catch (e2) {
+    animationObj = [];
+  }
+  const newAnimation = { name: animationName, effects: animationObj };
+  WebGAL.animationManager.addAnimation(newAnimation);
+  const animationDuration = getAnimateDuration$1(animationName);
+  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
+  const key = `${target}-${animationName}-${animationDuration}`;
+  let stopFunction = () => {
+  };
+  setTimeout(() => {
+    var _a3, _b2;
+    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
+    const animationObj2 = getAnimationObject$2(animationName, target, animationDuration);
+    if (animationObj2) {
+      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
+      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj2, key, target);
+    }
+  }, 0);
+  stopFunction = () => {
+    setTimeout(() => {
+      var _a3;
+      webgalStore.getState().stage.currentDialogKey;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
+    }, 0);
+  };
+  return {
+    performName: key,
+    duration: animationDuration,
+    isHoldOn: false,
+    stopFunction,
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function setTextbox(sentence) {
+  if (sentence.content === "hide") {
+    webgalStore.dispatch(setStage({ key: "isDisableTextbox", value: true }));
+  } else {
+    webgalStore.dispatch(setStage({ key: "isDisableTextbox", value: false }));
+  }
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+}
+const setTransform = (sentence) => {
+  var _a2;
+  webgalStore.getState().stage.currentDialogKey;
+  const animationName = (Math.random() * 10).toString(16);
+  const animationString = sentence.content;
+  let animationObj;
+  const duration = getSentenceArgByKey(sentence, "duration");
+  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
+  try {
+    const frame2 = JSON.parse(animationString);
+    animationObj = generateTransformAnimationObj(target, frame2, duration);
+  } catch (e2) {
+    animationObj = [];
+  }
+  const newAnimation = { name: animationName, effects: animationObj };
+  WebGAL.animationManager.addAnimation(newAnimation);
+  const animationDuration = getAnimateDuration(animationName);
+  const key = `${target}-${animationName}-${animationDuration}`;
+  let stopFunction = () => {
+  };
+  setTimeout(() => {
+    var _a3, _b2;
+    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
+    const animationObj2 = getAnimationObject(animationName, target, animationDuration);
+    if (animationObj2) {
+      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
+      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj2, key, target);
+    }
+  }, 0);
+  stopFunction = () => {
+    setTimeout(() => {
+      var _a3;
+      webgalStore.getState().stage.currentDialogKey;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
+    }, 0);
+  };
+  return {
+    performName: key,
+    duration: animationDuration,
+    isHoldOn: false,
+    stopFunction,
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function getAnimationObject(animationName, target, duration) {
+  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
+  if (effect) {
+    const mappedEffects = effect.effects.map((effect2) => {
+      const newEffect = cloneDeep$1({ ...baseTransform, duration: 0 });
+      Object.assign(newEffect, effect2);
+      newEffect.duration = effect2.duration;
+      return newEffect;
+    });
+    logger.debug("装载自定义动画", mappedEffects);
+    return generateTimelineObj(mappedEffects, target, duration);
+  }
+  return null;
+}
+function getAnimateDuration(animationName) {
+  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
+  if (effect) {
+    let duration = 0;
+    effect.effects.forEach((e2) => {
+      duration += e2.duration;
+    });
+    return duration;
+  }
+  return 0;
+}
+const setTransition = (sentence) => {
+  let key = "0";
+  for (const e2 of sentence.args) {
+    if (e2.key === "target") {
+      key = e2.value.toString();
+    }
+  }
+  if (getSentenceArgByKey(sentence, "enter")) {
+    WebGAL.animationManager.nextEnterAnimationName.set(key, getSentenceArgByKey(sentence, "enter").toString());
+  }
+  if (getSentenceArgByKey(sentence, "exit")) {
+    WebGAL.animationManager.nextExitAnimationName.set(key + "-off", getSentenceArgByKey(sentence, "exit").toString());
+  }
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => false,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const unlockBgm$2 = (sentence) => {
+  const url2 = sentence.content;
+  let name = sentence.content;
+  let series = "default";
+  console.log(sentence, "bgm-sentence");
+  sentence.args.forEach((e2) => {
+    if (e2.key === "name") {
+      name = e2.value.toString();
+    }
+    if (e2.key === "series") {
+      series = e2.value.toString();
+    }
+  });
+  logger.info(`解锁BGM：${name}，路径：${url2}，所属系列：${series}`);
+  webgalStore.dispatch(unlockBgmInUserData({ name, url: url2, series }));
+  const userDataState = webgalStore.getState().userData;
+  localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
+  });
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const unlockCg = (sentence) => {
+  const url2 = sentence.content;
+  let name = sentence.content;
+  let series = "default";
+  console.log(sentence, "cg-sentence");
+  sentence.args.forEach((e2) => {
+    if (e2.key === "name") {
+      name = e2.value.toString();
+    }
+    if (e2.key === "series") {
+      series = e2.value.toString();
+    }
+  });
+  logger.info(`解锁CG：${name}，路径：${url2}，所属系列：${series}`);
+  webgalStore.dispatch(unlockCgInUserData({ name, url: url2, series }));
+  const userDataState = webgalStore.getState().userData;
+  localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
+  });
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const resetStage = (resetBacklog, resetSceneAndVar = true, resetVideo = true) => {
+  if (resetBacklog) {
+    WebGAL.backlogManager.makeBacklogEmpty();
+  }
+  if (resetVideo) {
+    WebGAL.videoManager.destoryAll();
+  }
+  if (resetSceneAndVar) {
+    WebGAL.sceneManager.resetScene();
+  }
+  WebGAL.gameplay.performController.removeAllPerform();
+  WebGAL.gameplay.resetGamePlay();
+  const initSceneDataCopy = cloneDeep$1(initState$3);
+  const currentVars = webgalStore.getState().stage.GameVar;
+  webgalStore.dispatch(resetStageState(initSceneDataCopy));
+  if (!resetSceneAndVar) {
+    webgalStore.dispatch(setStage({ key: "GameVar", value: currentVars }));
+  }
+};
+const initState$1 = {
+  saveData: [],
+  quickSaveData: null
+};
+const saveDataSlice = createSlice({
+  name: "saveData",
+  initialState: cloneDeep$1(initState$1),
+  reducers: {
+    setFastSave: (state, action) => {
+      state.quickSaveData = action.payload;
+    },
+    resetFastSave: (state) => {
+      state.quickSaveData = null;
+    },
+    resetSaves: (state) => {
+      state.quickSaveData = null;
+      state.saveData = [];
+    },
+    saveGame: (state, action) => {
+      state.saveData[action.payload.index] = action.payload.saveData;
+    },
+    replaceSaveGame: (state, action) => {
+      state.saveData = action.payload;
+    }
+  }
+});
+const saveActions = saveDataSlice.actions;
+const savesReducer = saveDataSlice.reducer;
+const end = (sentence) => {
+  resetStage(true);
+  const dispatch = webgalStore.dispatch;
+  const sceneUrl = assetSetter("start.txt", fileType$1.scene);
+  setTimeout(() => {
+    WebGAL.sceneManager.resetScene();
+  }, 5);
+  dispatch(saveActions.resetFastSave());
+  dumpToStorageFast();
+  sceneFetcher(sceneUrl).then((rawScene) => {
+    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, "start.txt", sceneUrl);
+  });
+  dispatch(setVisibility({ component: "showTitle", visibility: true }));
+  playBgm(webgalStore.getState().GUI.titleBgm);
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const jumpLabel = (sentence) => {
+  jmp(sentence.content);
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const pixiInit = (sentence) => {
+  WebGAL.gameplay.performController.performList.forEach((e2) => {
+    if (e2.performName.match(/PixiPerform/)) {
+      logger.warn("pixi 被脚本重新初始化", e2.performName);
+      for (let i2 = 0; i2 < WebGAL.gameplay.performController.performList.length; i2++) {
+        const e22 = WebGAL.gameplay.performController.performList[i2];
+        if (e22.performName === e2.performName) {
+          e22.stopFunction();
+          clearTimeout(e22.stopTimeout);
+          WebGAL.gameplay.performController.performList.splice(i2, 1);
+          i2--;
+        }
+      }
+      webgalStore.dispatch(stageActions.removeAllPixiPerforms());
+    }
+  });
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const audioContextWrapper = {
+  audioContext: new AudioContext(),
+  source: null,
+  analyser: void 0,
+  dataArray: void 0,
+  audioLevelInterval: setInterval(() => {
+  }, 0),
+  // dummy interval
+  blinkTimerID: setTimeout(() => {
+  }, 0),
+  // dummy timeout
+  maxAudioLevel: 0
+};
+const updateThresholds = (audioLevel) => {
+  audioContextWrapper.maxAudioLevel = Math.max(audioLevel, audioContextWrapper.maxAudioLevel);
+  return {
+    OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.75,
+    HALF_OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.5
+  };
+};
+const performBlinkAnimation = (params) => {
+  let isBlinking = false;
+  function blink() {
+    var _a2;
+    if (isBlinking || params.animationEndTime && Date.now() > params.animationEndTime)
+      return;
+    isBlinking = true;
+    (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.performBlinkAnimation(params.key, params.animationItem, "closed", params.pos);
+    audioContextWrapper.blinkTimerID = setTimeout(() => {
+      var _a3;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.performBlinkAnimation(params.key, params.animationItem, "open", params.pos);
+      isBlinking = false;
+      const nextBlinkTime = Math.random() * 300 + 3500;
+      audioContextWrapper.blinkTimerID = setTimeout(blink, nextBlinkTime);
+    }, 200);
+  }
+  blink();
+};
+const getAudioLevel = (analyser, dataArray, bufferLength) => {
+  analyser.getByteFrequencyData(dataArray);
+  let sum = 0;
+  for (let i2 = 0; i2 < bufferLength; i2++) {
+    sum += dataArray[i2];
+  }
+  return sum / bufferLength;
+};
+const performMouthAnimation = (params) => {
+  var _a2, _b2;
+  const { audioLevel, OPEN_THRESHOLD, HALF_OPEN_THRESHOLD, currentMouthValue, lerpSpeed, key, animationItem, pos } = params;
+  let targetValue;
+  if (audioLevel > OPEN_THRESHOLD) {
+    targetValue = 1;
+  } else if (audioLevel > HALF_OPEN_THRESHOLD) {
+    targetValue = 0.5;
+  } else {
+    targetValue = 0;
+  }
+  const mouthValue = currentMouthValue + (targetValue - currentMouthValue) * lerpSpeed;
+  (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.setModelMouthY(key, audioLevel);
+  let mouthState;
+  if (mouthValue > 0.75) {
+    mouthState = "open";
+  } else if (mouthValue > 0.25) {
+    mouthState = "half_open";
+  } else {
+    mouthState = "closed";
+  }
+  if (animationItem !== void 0) {
+    (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.performMouthSyncAnimation(key, animationItem, mouthState, pos);
+  }
+};
+class Matcher {
+  constructor(subject) {
+    __publicField(this, "subject");
+    __publicField(this, "result");
+    __publicField(this, "isEnd", false);
+    this.subject = subject;
+  }
+  with(pattern, fn2) {
+    if (!this.isEnd && this.subject === pattern) {
+      this.result = fn2();
+      this.isEnd = true;
+    }
+    return this;
+  }
+  endsWith(pattern, fn2) {
+    if (!this.isEnd && this.subject === pattern) {
+      this.result = fn2();
+      this.isEnd = true;
+    }
+    return this.evaluate();
+  }
+  default(fn2) {
+    if (!this.isEnd)
+      this.result = fn2();
+    return this.evaluate();
+  }
+  evaluate() {
+    return this.result;
+  }
+}
+function match$1(subject) {
+  return new Matcher(subject);
+}
+const playVocal = (sentence) => {
+  logger.debug("play vocal");
+  const performInitName = "vocal-play";
+  const url2 = getSentenceArgByKey(sentence, "vocal");
+  const volume = getSentenceArgByKey(sentence, "volume");
+  let currentStageState;
+  currentStageState = webgalStore.getState().stage;
+  let pos = "";
+  let key = "";
+  const freeFigure = currentStageState.freeFigure;
+  const figureAssociatedAnimation = currentStageState.figureAssociatedAnimation;
+  let bufferLength = 0;
+  let currentMouthValue = 0;
+  const lerpSpeed = 1;
+  let VocalControl = document.getElementById("currentVocal");
+  WebGAL.gameplay.performController.unmountPerform("vocal-play", true);
+  if (VocalControl !== null) {
+    VocalControl.currentTime = 0;
+    VocalControl.pause();
+  }
+  for (const e2 of sentence.args) {
+    if (e2.value === true) {
+      match$1(e2.key).with("left", () => {
+        pos = "left";
+      }).with("right", () => {
+        pos = "right";
+      }).endsWith("center", () => {
+        pos = "center";
+      });
+    }
+    if (e2.key === "figureId") {
+      key = `${e2.value.toString()}`;
+    }
+  }
+  webgalStore.dispatch(setStage({ key: "playVocal", value: url2 }));
+  webgalStore.dispatch(setStage({ key: "vocal", value: url2 }));
+  let isOver = false;
+  return {
+    arrangePerformPromise: new Promise((resolve2) => {
+      setTimeout(() => {
+        let VocalControl2 = document.getElementById("currentVocal");
+        typeof volume === "number" && volume >= 0 && volume <= 100 ? webgalStore.dispatch(setStage({ key: "vocalVolume", value: volume })) : webgalStore.dispatch(setStage({ key: "vocalVolume", value: 100 }));
+        if (VocalControl2 !== null) {
+          VocalControl2.currentTime = 0;
+          const perform = {
+            performName: performInitName,
+            duration: 1e3 * 60 * 60,
+            isOver: false,
+            isHoldOn: false,
+            stopFunction: () => {
+              clearInterval(audioContextWrapper.audioLevelInterval);
+              VocalControl2.pause();
+              key = key ? key : `fig-${pos}`;
+              const animationItem2 = figureAssociatedAnimation.find((tid) => tid.targetId === key);
+              performMouthAnimation({
+                audioLevel: 0,
+                OPEN_THRESHOLD: 1,
+                HALF_OPEN_THRESHOLD: 1,
+                currentMouthValue,
+                lerpSpeed,
+                key,
+                animationItem: animationItem2,
+                pos
+              });
+              clearTimeout(audioContextWrapper.blinkTimerID);
+            },
+            blockingNext: () => false,
+            blockingAuto: () => {
+              return !isOver;
+            },
+            skipNextCollect: true,
+            stopTimeout: void 0
+            // 暂时不用，后面会交给自动清除
+          };
+          WebGAL.gameplay.performController.arrangeNewPerform(perform, sentence, false);
+          key = key ? key : `fig-${pos}`;
+          const animationItem = figureAssociatedAnimation.find((tid) => tid.targetId === key);
+          if (animationItem) {
+            const foundFigure = freeFigure.find((figure) => figure.key === key);
+            if (foundFigure) {
+              pos = foundFigure.basePosition;
+            }
+            if (!audioContextWrapper.audioContext) {
+              let audioContext;
+              audioContext = new AudioContext();
+              audioContextWrapper.analyser = audioContext.createAnalyser();
+              audioContextWrapper.analyser.fftSize = 256;
+              audioContextWrapper.dataArray = new Uint8Array(audioContextWrapper.analyser.frequencyBinCount);
+            }
+            if (!audioContextWrapper.analyser) {
+              audioContextWrapper.analyser = audioContextWrapper.audioContext.createAnalyser();
+              audioContextWrapper.analyser.fftSize = 256;
+            }
+            bufferLength = audioContextWrapper.analyser.frequencyBinCount;
+            audioContextWrapper.dataArray = new Uint8Array(bufferLength);
+            let vocalControl = document.getElementById("currentVocal");
+            if (!audioContextWrapper.source) {
+              audioContextWrapper.source = audioContextWrapper.audioContext.createMediaElementSource(vocalControl);
+              audioContextWrapper.source.connect(audioContextWrapper.analyser);
+            }
+            audioContextWrapper.analyser.connect(audioContextWrapper.audioContext.destination);
+            audioContextWrapper.audioLevelInterval = setInterval(() => {
+              const audioLevel = getAudioLevel(
+                audioContextWrapper.analyser,
+                audioContextWrapper.dataArray,
+                bufferLength
+              );
+              const { OPEN_THRESHOLD, HALF_OPEN_THRESHOLD } = updateThresholds(audioLevel);
+              performMouthAnimation({
+                audioLevel,
+                OPEN_THRESHOLD,
+                HALF_OPEN_THRESHOLD,
+                currentMouthValue,
+                lerpSpeed,
+                key,
+                animationItem,
+                pos
+              });
+            }, 50);
+            let animationEndTime;
+            animationEndTime = Date.now() + 1e4;
+            performBlinkAnimation({ key, animationItem, pos, animationEndTime });
+            setTimeout(() => {
+              clearTimeout(audioContextWrapper.blinkTimerID);
+            }, 1e4);
+          }
+          VocalControl2 == null ? void 0 : VocalControl2.play();
+          VocalControl2.onended = () => {
+            for (const e2 of WebGAL.gameplay.performController.performList) {
+              if (e2.performName === performInitName) {
+                isOver = true;
+                e2.stopFunction();
+                WebGAL.gameplay.performController.unmountPerform(e2.performName);
+              }
+            }
+          };
+        }
+      }, 1);
+    })
+  };
+};
+function useTextDelay(num) {
+  if (num === 0) {
+    return 3;
+  } else if (num === 100) {
+    return 80;
+  } else {
+    return 77 * Number(num) / 100;
+  }
+}
+function useTextAnimationDuration(num) {
+  if (num === 0) {
+    return 800;
+  } else if (num === 100) {
+    return 200;
+  } else {
+    return 800 - 600 * Number(num) / 100;
+  }
+}
+const say = (sentence) => {
+  const stageState = webgalStore.getState().stage;
+  const userDataState = webgalStore.getState().userData;
+  const dispatch = webgalStore.dispatch;
+  let dialogKey = Math.random().toString();
+  let dialogToShow = sentence.content;
+  const isConcat = getSentenceArgByKey(sentence, "concat");
+  const isNotend = getSentenceArgByKey(sentence, "notend");
+  const speaker = getSentenceArgByKey(sentence, "speaker");
+  const clear2 = getSentenceArgByKey(sentence, "clear");
+  const vocal = getSentenceArgByKey(sentence, "vocal");
+  if (isConcat) {
+    dialogKey = stageState.currentDialogKey;
+    dialogToShow = stageState.showText + dialogToShow;
+    dispatch(setStage({ key: "currentConcatDialogPrev", value: stageState.showText }));
+  } else {
+    dispatch(setStage({ key: "currentConcatDialogPrev", value: "" }));
+  }
+  dispatch(setStage({ key: "showText", value: dialogToShow }));
+  dispatch(setStage({ key: "vocal", value: "" }));
+  if (!(userDataState.optionData.voiceInterruption === voiceOption.no && vocal === null)) {
+    dispatch(setStage({ key: "playVocal", value: "" }));
+    WebGAL.gameplay.performController.unmountPerform("vocal-play", true);
+  }
+  dispatch(setStage({ key: "currentDialogKey", value: dialogKey }));
+  const textDelay = useTextDelay(userDataState.optionData.textSpeed);
+  const sentenceDelay = textDelay * sentence.content.length;
+  for (const e2 of sentence.args) {
+    if (e2.key === "fontSize") {
+      switch (e2.value) {
+        case "default":
+          dispatch(setStage({ key: "showTextSize", value: -1 }));
+          break;
+        case "small":
+          dispatch(setStage({ key: "showTextSize", value: textSize.small }));
+          break;
+        case "medium":
+          dispatch(setStage({ key: "showTextSize", value: textSize.medium }));
+          break;
+        case "large":
+          dispatch(setStage({ key: "showTextSize", value: textSize.large }));
+          break;
+      }
+    }
+  }
+  let showName = stageState.showName;
+  if (speaker !== null) {
+    showName = speaker;
+  }
+  if (clear2) {
+    showName = "";
+  }
+  dispatch(setStage({ key: "showName", value: showName }));
+  if (vocal) {
+    playVocal(sentence);
+  }
+  const performInitName = getRandomPerformName();
+  let endDelay = 750 - userDataState.optionData.textSpeed / 100 * 2 * 250;
+  if (isNotend) {
+    endDelay = 0;
+  }
+  return {
+    performName: performInitName,
+    duration: sentenceDelay + endDelay,
+    isHoldOn: false,
+    stopFunction: () => {
+      WebGAL.events.textSettle.emit();
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0,
+    // 暂时不用，后面会交给自动清除
+    goNextWhenOver: isNotend
+  };
+};
+var parse$5 = {};
+var window$1 = { document: {} };
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var lowercase = function(string) {
+  return isString$1(string) ? string.toLowerCase() : string;
+};
+var isArray$5 = Array.isArray;
+var manualLowercase = function(s2) {
+  return isString$1(s2) ? s2.replace(/[A-Z]/g, function(ch2) {
+    return String.fromCharCode(ch2.charCodeAt(0) | 32);
+  }) : s2;
+};
+if ("i" !== "I".toLowerCase()) {
+  lowercase = manualLowercase;
+}
+var jqLite, toString2 = Object.prototype.toString, getPrototypeOf = Object.getPrototypeOf, ngMinErr = minErr("ng");
+window$1.angular || (window$1.angular = {});
+window$1.document.documentMode;
+function isArrayLike(obj) {
+  if (obj == null || isWindow(obj))
+    return false;
+  if (isArray$5(obj) || isString$1(obj) || jqLite)
+    return true;
+  var length2 = "length" in Object(obj) && obj.length;
+  return isNumber$1(length2) && (length2 >= 0 && (length2 - 1 in obj || obj instanceof Array) || typeof obj.item === "function");
+}
+function forEach3(obj, iterator, context2) {
+  var key, length2;
+  if (obj) {
+    if (isFunction(obj)) {
+      for (key in obj) {
+        if (key !== "prototype" && key !== "length" && key !== "name" && obj.hasOwnProperty(key)) {
+          iterator.call(context2, obj[key], key, obj);
+        }
+      }
+    } else if (isArray$5(obj) || isArrayLike(obj)) {
+      var isPrimitive = typeof obj !== "object";
+      for (key = 0, length2 = obj.length; key < length2; key++) {
+        if (isPrimitive || key in obj) {
+          iterator.call(context2, obj[key], key, obj);
+        }
+      }
+    } else if (obj.forEach && obj.forEach !== forEach3) {
+      obj.forEach(iterator, context2, obj);
+    } else if (isBlankObject(obj)) {
+      for (key in obj) {
+        iterator.call(context2, obj[key], key, obj);
+      }
+    } else if (typeof obj.hasOwnProperty === "function") {
+      for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          iterator.call(context2, obj[key], key, obj);
+        }
+      }
+    } else {
+      for (key in obj) {
+        if (hasOwnProperty.call(obj, key)) {
+          iterator.call(context2, obj[key], key, obj);
+        }
+      }
+    }
+  }
+  return obj;
+}
+function setHashKey(obj, h2) {
+  if (h2) {
+    obj.$$hashKey = h2;
+  } else {
+    delete obj.$$hashKey;
+  }
+}
+function noop$2() {
+}
+noop$2.$inject = [];
+function isUndefined(value) {
+  return typeof value === "undefined";
+}
+function isDefined(value) {
+  return typeof value !== "undefined";
+}
+function isObject$3(value) {
+  return value !== null && typeof value === "object";
+}
+function isBlankObject(value) {
+  return value !== null && typeof value === "object" && !getPrototypeOf(value);
+}
+function isString$1(value) {
+  return typeof value === "string";
+}
+function isNumber$1(value) {
+  return typeof value === "number";
+}
+function isFunction(value) {
+  return typeof value === "function";
+}
+function isWindow(obj) {
+  return obj && obj.window === obj;
+}
+function isScope(obj) {
+  return obj && obj.$evalAsync && obj.$watch;
+}
+var TYPED_ARRAY_REGEXP = /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array\]$/;
+function isTypedArray(value) {
+  return value && isNumber$1(value.length) && TYPED_ARRAY_REGEXP.test(toString2.call(value));
+}
+function isArrayBuffer(obj) {
+  return toString2.call(obj) === "[object ArrayBuffer]";
+}
+function copy$2(source, destination) {
+  var stackSource = [];
+  var stackDest = [];
+  if (destination) {
+    if (isTypedArray(destination) || isArrayBuffer(destination)) {
+      throw ngMinErr(
+        "cpta",
+        "Can't copy! TypedArray destination cannot be mutated."
+      );
+    }
+    if (source === destination) {
+      throw ngMinErr(
+        "cpi",
+        "Can't copy! Source and destination are identical."
+      );
+    }
+    if (isArray$5(destination)) {
+      destination.length = 0;
+    } else {
+      forEach3(destination, function(value, key) {
+        if (key !== "$$hashKey") {
+          delete destination[key];
+        }
+      });
+    }
+    stackSource.push(source);
+    stackDest.push(destination);
+    return copyRecurse(source, destination);
+  }
+  return copyElement(source);
+  function copyRecurse(source2, destination2) {
+    var h2 = destination2.$$hashKey;
+    var key;
+    if (isArray$5(source2)) {
+      for (var i2 = 0, ii2 = source2.length; i2 < ii2; i2++) {
+        destination2.push(copyElement(source2[i2]));
+      }
+    } else if (isBlankObject(source2)) {
+      for (key in source2) {
+        destination2[key] = copyElement(source2[key]);
+      }
+    } else if (source2 && typeof source2.hasOwnProperty === "function") {
+      for (key in source2) {
+        if (source2.hasOwnProperty(key)) {
+          destination2[key] = copyElement(source2[key]);
+        }
+      }
+    } else {
+      for (key in source2) {
+        if (hasOwnProperty.call(source2, key)) {
+          destination2[key] = copyElement(source2[key]);
+        }
+      }
+    }
+    setHashKey(destination2, h2);
+    return destination2;
+  }
+  function copyElement(source2) {
+    if (!isObject$3(source2)) {
+      return source2;
+    }
+    var index2 = stackSource.indexOf(source2);
+    if (index2 !== -1) {
+      return stackDest[index2];
+    }
+    if (isWindow(source2) || isScope(source2)) {
+      throw ngMinErr(
+        "cpws",
+        "Can't copy! Making copies of Window or Scope instances is not supported."
+      );
+    }
+    var needsRecurse = false;
+    var destination2 = copyType(source2);
+    if (destination2 === void 0) {
+      destination2 = isArray$5(source2) ? [] : Object.create(getPrototypeOf(source2));
+      needsRecurse = true;
+    }
+    stackSource.push(source2);
+    stackDest.push(destination2);
+    return needsRecurse ? copyRecurse(source2, destination2) : destination2;
+  }
+  function copyType(source2) {
+    switch (toString2.call(source2)) {
+      case "[object Int8Array]":
+      case "[object Int16Array]":
+      case "[object Int32Array]":
+      case "[object Float32Array]":
+      case "[object Float64Array]":
+      case "[object Uint8Array]":
+      case "[object Uint8ClampedArray]":
+      case "[object Uint16Array]":
+      case "[object Uint32Array]":
+        return new source2.constructor(
+          copyElement(source2.buffer),
+          source2.byteOffset,
+          source2.length
+        );
+      case "[object ArrayBuffer]":
+        if (!source2.slice) {
+          var copied = new ArrayBuffer(source2.byteLength);
+          new Uint8Array(copied).set(new Uint8Array(source2));
+          return copied;
+        }
+        return source2.slice(0);
+      case "[object Boolean]":
+      case "[object Number]":
+      case "[object String]":
+      case "[object Date]":
+        return new source2.constructor(source2.valueOf());
+      case "[object RegExp]":
+        var re2 = new RegExp(
+          source2.source,
+          source2.toString().match(/[^\/]*$/)[0]
+        );
+        re2.lastIndex = source2.lastIndex;
+        return re2;
+      case "[object Blob]":
+        return new source2.constructor([source2], { type: source2.type });
+    }
+    if (isFunction(source2.cloneNode)) {
+      return source2.cloneNode(true);
+    }
+  }
+}
+function toJsonReplacer(key, value) {
+  var val = value;
+  if (typeof key === "string" && key.charAt(0) === "$" && key.charAt(1) === "$") {
+    val = void 0;
+  } else if (isWindow(value)) {
+    val = "$WINDOW";
+  } else if (value && window$1.document === value) {
+    val = "$DOCUMENT";
+  } else if (isScope(value)) {
+    val = "$SCOPE";
+  }
+  return val;
+}
+function allowAutoBootstrap(document2) {
+  if (!document2.currentScript) {
+    return true;
+  }
+  var src = document2.currentScript.getAttribute("src");
+  var link = document2.createElement("a");
+  link.href = src;
+  var scriptProtocol = link.protocol;
+  var docLoadProtocol = document2.location.protocol;
+  if ((scriptProtocol === "resource:" || scriptProtocol === "chrome-extension:") && docLoadProtocol !== scriptProtocol) {
+    return false;
+  }
+  return true;
+}
+allowAutoBootstrap(window$1.document);
+function createMap() {
+  return /* @__PURE__ */ Object.create(null);
+}
+function serializeObject(obj) {
+  var seen2 = [];
+  return JSON.stringify(obj, function(key, val) {
+    val = toJsonReplacer(key, val);
+    if (isObject$3(val)) {
+      if (seen2.indexOf(val) >= 0)
+        return "...";
+      seen2.push(val);
+    }
+    return val;
+  });
+}
+function toDebugString(obj) {
+  if (typeof obj === "function") {
+    return obj.toString().replace(/ \{[\s\S]*$/, "");
+  } else if (isUndefined(obj)) {
+    return "undefined";
+  } else if (typeof obj !== "string") {
+    return serializeObject(obj);
+  }
+  return obj;
+}
+function minErr(module, ErrorConstructor) {
+  ErrorConstructor = ErrorConstructor || Error;
+  return function() {
+    var SKIP_INDEXES = 2;
+    var templateArgs = arguments, code = templateArgs[0], message = "[" + (module ? module + ":" : "") + code + "] ", template = templateArgs[1], paramPrefix, i2;
+    message += template.replace(/\{\d+\}/g, function(match2) {
+      var index2 = +match2.slice(1, -1), shiftedIndex = index2 + SKIP_INDEXES;
+      if (shiftedIndex < templateArgs.length) {
+        return toDebugString(templateArgs[shiftedIndex]);
+      }
+      return match2;
+    });
+    message += '\nhttp://errors.angularjs.org/"NG_VERSION_FULL"/' + (module ? module + "/" : "") + code;
+    for (i2 = SKIP_INDEXES, paramPrefix = "?"; i2 < templateArgs.length; i2++, paramPrefix = "&") {
+      message += paramPrefix + "p" + (i2 - SKIP_INDEXES) + "=" + encodeURIComponent(toDebugString(templateArgs[i2]));
+    }
+    return new ErrorConstructor(message);
+  };
+}
+var $parseMinErr = minErr("$parse");
+({}).constructor.prototype.valueOf;
+function getStringValue(name) {
+  return name + "";
+}
+var OPERATORS = createMap();
+forEach3(
+  "+ - * / % === !== == != < > <= >= && || ! = |".split(" "),
+  function(operator) {
+    OPERATORS[operator] = true;
+  }
+);
+var ESCAPE = {
+  n: "\n",
+  f: "\f",
+  r: "\r",
+  t: "	",
+  v: "\v",
+  "'": "'",
+  '"': '"'
+};
+var Lexer$1 = function Lexer(options) {
+  this.options = options;
+};
+Lexer$1.prototype = {
+  constructor: Lexer$1,
+  lex: function(text2) {
+    this.text = text2;
+    this.index = 0;
+    this.tokens = [];
+    while (this.index < this.text.length) {
+      var ch2 = this.text.charAt(this.index);
+      if (ch2 === '"' || ch2 === "'") {
+        this.readString(ch2);
+      } else if (this.isNumber(ch2) || ch2 === "." && this.isNumber(this.peek())) {
+        this.readNumber();
+      } else if (this.isIdentifierStart(this.peekMultichar())) {
+        this.readIdent();
+      } else if (this.is(ch2, "(){}[].,;:?")) {
+        this.tokens.push({ index: this.index, text: ch2 });
+        this.index++;
+      } else if (this.isWhitespace(ch2)) {
+        this.index++;
+      } else {
+        var ch22 = ch2 + this.peek();
+        var ch3 = ch22 + this.peek(2);
+        var op1 = OPERATORS[ch2];
+        var op2 = OPERATORS[ch22];
+        var op3 = OPERATORS[ch3];
+        if (op1 || op2 || op3) {
+          var token2 = op3 ? ch3 : op2 ? ch22 : ch2;
+          this.tokens.push({ index: this.index, text: token2, operator: true });
+          this.index += token2.length;
+        } else {
+          this.throwError(
+            "Unexpected next character ",
+            this.index,
+            this.index + 1
+          );
+        }
+      }
+    }
+    return this.tokens;
+  },
+  is: function(ch2, chars2) {
+    return chars2.indexOf(ch2) !== -1;
+  },
+  peek: function(i2) {
+    var num = i2 || 1;
+    return this.index + num < this.text.length ? this.text.charAt(this.index + num) : false;
+  },
+  isNumber: function(ch2) {
+    return "0" <= ch2 && ch2 <= "9" && typeof ch2 === "string";
+  },
+  isWhitespace: function(ch2) {
+    return ch2 === " " || ch2 === "\r" || ch2 === "	" || ch2 === "\n" || ch2 === "\v" || ch2 === " ";
+  },
+  isIdentifierStart: function(ch2) {
+    return this.options.isIdentifierStart ? this.options.isIdentifierStart(ch2, this.codePointAt(ch2)) : this.isValidIdentifierStart(ch2);
+  },
+  isValidIdentifierStart: function(ch2) {
+    return "a" <= ch2 && ch2 <= "z" || "A" <= ch2 && ch2 <= "Z" || "_" === ch2 || ch2 === "$";
+  },
+  isIdentifierContinue: function(ch2) {
+    return this.options.isIdentifierContinue ? this.options.isIdentifierContinue(ch2, this.codePointAt(ch2)) : this.isValidIdentifierContinue(ch2);
+  },
+  isValidIdentifierContinue: function(ch2, cp) {
+    return this.isValidIdentifierStart(ch2, cp) || this.isNumber(ch2);
+  },
+  codePointAt: function(ch2) {
+    if (ch2.length === 1)
+      return ch2.charCodeAt(0);
+    return (ch2.charCodeAt(0) << 10) + ch2.charCodeAt(1) - 56613888;
+  },
+  peekMultichar: function() {
+    var ch2 = this.text.charAt(this.index);
+    var peek2 = this.peek();
+    if (!peek2) {
+      return ch2;
+    }
+    var cp1 = ch2.charCodeAt(0);
+    var cp2 = peek2.charCodeAt(0);
+    if (cp1 >= 55296 && cp1 <= 56319 && cp2 >= 56320 && cp2 <= 57343) {
+      return ch2 + peek2;
+    }
+    return ch2;
+  },
+  isExpOperator: function(ch2) {
+    return ch2 === "-" || ch2 === "+" || this.isNumber(ch2);
+  },
+  throwError: function(error2, start, end2) {
+    end2 = end2 || this.index;
+    var colStr = isDefined(start) ? "s " + start + "-" + this.index + " [" + this.text.substring(start, end2) + "]" : " " + end2;
+    throw $parseMinErr(
+      "lexerr",
+      "Lexer Error: {0} at column{1} in expression [{2}].",
+      error2,
+      colStr,
+      this.text
+    );
+  },
+  readNumber: function() {
+    var number2 = "";
+    var start = this.index;
+    while (this.index < this.text.length) {
+      var ch2 = lowercase(this.text.charAt(this.index));
+      if (ch2 === "." || this.isNumber(ch2)) {
+        number2 += ch2;
+      } else {
+        var peekCh = this.peek();
+        if (ch2 === "e" && this.isExpOperator(peekCh)) {
+          number2 += ch2;
+        } else if (this.isExpOperator(ch2) && peekCh && this.isNumber(peekCh) && number2.charAt(number2.length - 1) === "e") {
+          number2 += ch2;
+        } else if (this.isExpOperator(ch2) && (!peekCh || !this.isNumber(peekCh)) && number2.charAt(number2.length - 1) === "e") {
+          this.throwError("Invalid exponent");
+        } else {
+          break;
+        }
+      }
+      this.index++;
+    }
+    this.tokens.push({
+      index: start,
+      text: number2,
+      constant: true,
+      value: Number(number2)
+    });
+  },
+  readIdent: function() {
+    var start = this.index;
+    this.index += this.peekMultichar().length;
+    while (this.index < this.text.length) {
+      var ch2 = this.peekMultichar();
+      if (!this.isIdentifierContinue(ch2)) {
+        break;
+      }
+      this.index += ch2.length;
+    }
+    this.tokens.push({
+      index: start,
+      text: this.text.slice(start, this.index),
+      identifier: true
+    });
+  },
+  readString: function(quote2) {
+    var start = this.index;
+    this.index++;
+    var string = "";
+    var rawString = quote2;
+    var escape2 = false;
+    while (this.index < this.text.length) {
+      var ch2 = this.text.charAt(this.index);
+      rawString += ch2;
+      if (escape2) {
+        if (ch2 === "u") {
+          var hex2 = this.text.substring(this.index + 1, this.index + 5);
+          if (!hex2.match(/[\da-f]{4}/i)) {
+            this.throwError("Invalid unicode escape [\\u" + hex2 + "]");
+          }
+          this.index += 4;
+          string += String.fromCharCode(parseInt(hex2, 16));
+        } else {
+          var rep = ESCAPE[ch2];
+          string = string + (rep || ch2);
+        }
+        escape2 = false;
+      } else if (ch2 === "\\") {
+        escape2 = true;
+      } else if (ch2 === quote2) {
+        this.index++;
+        this.tokens.push({
+          index: start,
+          text: rawString,
+          constant: true,
+          value: string
+        });
+        return;
+      } else {
+        string += ch2;
+      }
+      this.index++;
+    }
+    this.throwError("Unterminated quote", start);
+  }
+};
+var AST = function AST2(lexer, options) {
+  this.lexer = lexer;
+  this.options = options;
+};
+AST.Program = "Program";
+AST.ExpressionStatement = "ExpressionStatement";
+AST.AssignmentExpression = "AssignmentExpression";
+AST.ConditionalExpression = "ConditionalExpression";
+AST.LogicalExpression = "LogicalExpression";
+AST.BinaryExpression = "BinaryExpression";
+AST.UnaryExpression = "UnaryExpression";
+AST.CallExpression = "CallExpression";
+AST.MemberExpression = "MemberExpression";
+AST.Identifier = "Identifier";
+AST.Literal = "Literal";
+AST.ArrayExpression = "ArrayExpression";
+AST.Property = "Property";
+AST.ObjectExpression = "ObjectExpression";
+AST.ThisExpression = "ThisExpression";
+AST.LocalsExpression = "LocalsExpression";
+AST.NGValueParameter = "NGValueParameter";
+AST.prototype = {
+  ast: function(text2) {
+    this.text = text2;
+    this.tokens = this.lexer.lex(text2);
+    var value = this.program();
+    if (this.tokens.length !== 0) {
+      this.throwError("is an unexpected token", this.tokens[0]);
+    }
+    return value;
+  },
+  program: function() {
+    var body = [];
+    while (true) {
+      if (this.tokens.length > 0 && !this.peek("}", ")", ";", "]"))
+        body.push(this.expressionStatement());
+      if (!this.expect(";")) {
+        return { type: AST.Program, body };
+      }
+    }
+  },
+  expressionStatement: function() {
+    return { type: AST.ExpressionStatement, expression: this.filterChain() };
+  },
+  filterChain: function() {
+    var left = this.expression();
+    while (this.expect("|")) {
+      left = this.filter(left);
+    }
+    return left;
+  },
+  expression: function() {
+    return this.assignment();
+  },
+  assignment: function() {
+    var result = this.ternary();
+    if (this.expect("=")) {
+      if (!isAssignable(result)) {
+        throw $parseMinErr("lval", "Trying to assign a value to a non l-value");
+      }
+      result = {
+        type: AST.AssignmentExpression,
+        left: result,
+        right: this.assignment(),
+        operator: "="
+      };
+    }
+    return result;
+  },
+  ternary: function() {
+    var test2 = this.logicalOR();
+    var alternate;
+    var consequent;
+    if (this.expect("?")) {
+      alternate = this.expression();
+      if (this.consume(":")) {
+        consequent = this.expression();
+        return {
+          type: AST.ConditionalExpression,
+          test: test2,
+          alternate,
+          consequent
+        };
+      }
+    }
+    return test2;
+  },
+  logicalOR: function() {
+    var left = this.logicalAND();
+    while (this.expect("||")) {
+      left = {
+        type: AST.LogicalExpression,
+        operator: "||",
+        left,
+        right: this.logicalAND()
+      };
+    }
+    return left;
+  },
+  logicalAND: function() {
+    var left = this.equality();
+    while (this.expect("&&")) {
+      left = {
+        type: AST.LogicalExpression,
+        operator: "&&",
+        left,
+        right: this.equality()
+      };
+    }
+    return left;
+  },
+  equality: function() {
+    var left = this.relational();
+    var token2;
+    while (token2 = this.expect("==", "!=", "===", "!==")) {
+      left = {
+        type: AST.BinaryExpression,
+        operator: token2.text,
+        left,
+        right: this.relational()
+      };
+    }
+    return left;
+  },
+  relational: function() {
+    var left = this.additive();
+    var token2;
+    while (token2 = this.expect("<", ">", "<=", ">=")) {
+      left = {
+        type: AST.BinaryExpression,
+        operator: token2.text,
+        left,
+        right: this.additive()
+      };
+    }
+    return left;
+  },
+  additive: function() {
+    var left = this.multiplicative();
+    var token2;
+    while (token2 = this.expect("+", "-")) {
+      left = {
+        type: AST.BinaryExpression,
+        operator: token2.text,
+        left,
+        right: this.multiplicative()
+      };
+    }
+    return left;
+  },
+  multiplicative: function() {
+    var left = this.unary();
+    var token2;
+    while (token2 = this.expect("*", "/", "%")) {
+      left = {
+        type: AST.BinaryExpression,
+        operator: token2.text,
+        left,
+        right: this.unary()
+      };
+    }
+    return left;
+  },
+  unary: function() {
+    var token2;
+    if (token2 = this.expect("+", "-", "!")) {
+      return {
+        type: AST.UnaryExpression,
+        operator: token2.text,
+        prefix: true,
+        argument: this.unary()
+      };
+    } else {
+      return this.primary();
+    }
+  },
+  primary: function() {
+    var primary;
+    if (this.expect("(")) {
+      primary = this.filterChain();
+      this.consume(")");
+    } else if (this.expect("[")) {
+      primary = this.arrayDeclaration();
+    } else if (this.expect("{")) {
+      primary = this.object();
+    } else if (this.selfReferential.hasOwnProperty(this.peek().text)) {
+      primary = copy$2(this.selfReferential[this.consume().text]);
+    } else if (this.options.literals.hasOwnProperty(this.peek().text)) {
+      primary = {
+        type: AST.Literal,
+        value: this.options.literals[this.consume().text]
+      };
+    } else if (this.peek().identifier) {
+      primary = this.identifier();
+    } else if (this.peek().constant) {
+      primary = this.constant();
+    } else {
+      this.throwError("not a primary expression", this.peek());
+    }
+    var next2;
+    while (next2 = this.expect("(", "[", ".")) {
+      if (next2.text === "(") {
+        primary = {
+          type: AST.CallExpression,
+          callee: primary,
+          arguments: this.parseArguments()
+        };
+        this.consume(")");
+      } else if (next2.text === "[") {
+        primary = {
+          type: AST.MemberExpression,
+          object: primary,
+          property: this.expression(),
+          computed: true
+        };
+        this.consume("]");
+      } else if (next2.text === ".") {
+        primary = {
+          type: AST.MemberExpression,
+          object: primary,
+          property: this.identifier(),
+          computed: false
+        };
+      } else {
+        this.throwError("IMPOSSIBLE");
+      }
+    }
+    return primary;
+  },
+  filter: function(baseExpression) {
+    var args = [baseExpression];
+    var result = {
+      type: AST.CallExpression,
+      callee: this.identifier(),
+      arguments: args,
+      filter: true
+    };
+    while (this.expect(":")) {
+      args.push(this.expression());
+    }
+    return result;
+  },
+  parseArguments: function() {
+    var args = [];
+    if (this.peekToken().text !== ")") {
+      do {
+        args.push(this.filterChain());
+      } while (this.expect(","));
+    }
+    return args;
+  },
+  identifier: function() {
+    var token2 = this.consume();
+    if (!token2.identifier) {
+      this.throwError("is not a valid identifier", token2);
+    }
+    return { type: AST.Identifier, name: token2.text };
+  },
+  constant: function() {
+    return { type: AST.Literal, value: this.consume().value };
+  },
+  arrayDeclaration: function() {
+    var elements = [];
+    if (this.peekToken().text !== "]") {
+      do {
+        if (this.peek("]")) {
+          break;
+        }
+        elements.push(this.expression());
+      } while (this.expect(","));
+    }
+    this.consume("]");
+    return { type: AST.ArrayExpression, elements };
+  },
+  object: function() {
+    var properties = [], property2;
+    if (this.peekToken().text !== "}") {
+      do {
+        if (this.peek("}")) {
+          break;
+        }
+        property2 = { type: AST.Property, kind: "init" };
+        if (this.peek().constant) {
+          property2.key = this.constant();
+          property2.computed = false;
+          this.consume(":");
+          property2.value = this.expression();
+        } else if (this.peek().identifier) {
+          property2.key = this.identifier();
+          property2.computed = false;
+          if (this.peek(":")) {
+            this.consume(":");
+            property2.value = this.expression();
+          } else {
+            property2.value = property2.key;
+          }
+        } else if (this.peek("[")) {
+          this.consume("[");
+          property2.key = this.expression();
+          this.consume("]");
+          property2.computed = true;
+          this.consume(":");
+          property2.value = this.expression();
+        } else {
+          this.throwError("invalid key", this.peek());
+        }
+        properties.push(property2);
+      } while (this.expect(","));
+    }
+    this.consume("}");
+    return { type: AST.ObjectExpression, properties };
+  },
+  throwError: function(msg, token2) {
+    throw $parseMinErr(
+      "syntax",
+      "Syntax Error: Token '{0}' {1} at column {2} of the expression [{3}] starting at [{4}].",
+      token2.text,
+      msg,
+      token2.index + 1,
+      this.text,
+      this.text.substring(token2.index)
+    );
+  },
+  consume: function(e1) {
+    if (this.tokens.length === 0) {
+      throw $parseMinErr(
+        "ueoe",
+        "Unexpected end of expression: {0}",
+        this.text
+      );
+    }
+    var token2 = this.expect(e1);
+    if (!token2) {
+      this.throwError("is unexpected, expecting [" + e1 + "]", this.peek());
+    }
+    return token2;
+  },
+  peekToken: function() {
+    if (this.tokens.length === 0) {
+      throw $parseMinErr(
+        "ueoe",
+        "Unexpected end of expression: {0}",
+        this.text
+      );
+    }
+    return this.tokens[0];
+  },
+  peek: function(e1, e2, e3, e4) {
+    return this.peekAhead(0, e1, e2, e3, e4);
+  },
+  peekAhead: function(i2, e1, e2, e3, e4) {
+    if (this.tokens.length > i2) {
+      var token2 = this.tokens[i2];
+      var t2 = token2.text;
+      if (t2 === e1 || t2 === e2 || t2 === e3 || t2 === e4 || !e1 && !e2 && !e3 && !e4) {
+        return token2;
+      }
+    }
+    return false;
+  },
+  expect: function(e1, e2, e3, e4) {
+    var token2 = this.peek(e1, e2, e3, e4);
+    if (token2) {
+      this.tokens.shift();
+      return token2;
+    }
+    return false;
+  },
+  selfReferential: {
+    this: { type: AST.ThisExpression },
+    $locals: { type: AST.LocalsExpression }
+  }
+};
+function ifDefined(v2, d2) {
+  return typeof v2 !== "undefined" ? v2 : d2;
+}
+function plusFn(l2, r2) {
+  if (typeof l2 === "undefined")
+    return r2;
+  if (typeof r2 === "undefined")
+    return l2;
+  return l2 + r2;
+}
+function isStateless($filter, filterName) {
+  var fn2 = $filter(filterName);
+  if (!fn2) {
+    throw new Error("Filter '" + filterName + "' is not defined");
+  }
+  return !fn2.$stateful;
+}
+function findConstantAndWatchExpressions(ast, $filter) {
+  var allConstants;
+  var argsToWatch;
+  var isStatelessFilter;
+  switch (ast.type) {
+    case AST.Program:
+      allConstants = true;
+      forEach3(ast.body, function(expr) {
+        findConstantAndWatchExpressions(expr.expression, $filter);
+        allConstants = allConstants && expr.expression.constant;
+      });
+      ast.constant = allConstants;
+      break;
+    case AST.Literal:
+      ast.constant = true;
+      ast.toWatch = [];
+      break;
+    case AST.UnaryExpression:
+      findConstantAndWatchExpressions(ast.argument, $filter);
+      ast.constant = ast.argument.constant;
+      ast.toWatch = ast.argument.toWatch;
+      break;
+    case AST.BinaryExpression:
+      findConstantAndWatchExpressions(ast.left, $filter);
+      findConstantAndWatchExpressions(ast.right, $filter);
+      ast.constant = ast.left.constant && ast.right.constant;
+      ast.toWatch = ast.left.toWatch.concat(ast.right.toWatch);
+      break;
+    case AST.LogicalExpression:
+      findConstantAndWatchExpressions(ast.left, $filter);
+      findConstantAndWatchExpressions(ast.right, $filter);
+      ast.constant = ast.left.constant && ast.right.constant;
+      ast.toWatch = ast.constant ? [] : [ast];
+      break;
+    case AST.ConditionalExpression:
+      findConstantAndWatchExpressions(ast.test, $filter);
+      findConstantAndWatchExpressions(ast.alternate, $filter);
+      findConstantAndWatchExpressions(ast.consequent, $filter);
+      ast.constant = ast.test.constant && ast.alternate.constant && ast.consequent.constant;
+      ast.toWatch = ast.constant ? [] : [ast];
+      break;
+    case AST.Identifier:
+      ast.constant = false;
+      ast.toWatch = [ast];
+      break;
+    case AST.MemberExpression:
+      findConstantAndWatchExpressions(ast.object, $filter);
+      if (ast.computed) {
+        findConstantAndWatchExpressions(ast.property, $filter);
+      }
+      ast.constant = ast.object.constant && (!ast.computed || ast.property.constant);
+      ast.toWatch = [ast];
+      break;
+    case AST.CallExpression:
+      isStatelessFilter = ast.filter ? isStateless($filter, ast.callee.name) : false;
+      allConstants = isStatelessFilter;
+      argsToWatch = [];
+      forEach3(ast.arguments, function(expr) {
+        findConstantAndWatchExpressions(expr, $filter);
+        allConstants = allConstants && expr.constant;
+        if (!expr.constant) {
+          argsToWatch.push.apply(argsToWatch, expr.toWatch);
+        }
+      });
+      ast.constant = allConstants;
+      ast.toWatch = isStatelessFilter ? argsToWatch : [ast];
+      break;
+    case AST.AssignmentExpression:
+      findConstantAndWatchExpressions(ast.left, $filter);
+      findConstantAndWatchExpressions(ast.right, $filter);
+      ast.constant = ast.left.constant && ast.right.constant;
+      ast.toWatch = [ast];
+      break;
+    case AST.ArrayExpression:
+      allConstants = true;
+      argsToWatch = [];
+      forEach3(ast.elements, function(expr) {
+        findConstantAndWatchExpressions(expr, $filter);
+        allConstants = allConstants && expr.constant;
+        if (!expr.constant) {
+          argsToWatch.push.apply(argsToWatch, expr.toWatch);
+        }
+      });
+      ast.constant = allConstants;
+      ast.toWatch = argsToWatch;
+      break;
+    case AST.ObjectExpression:
+      allConstants = true;
+      argsToWatch = [];
+      forEach3(ast.properties, function(property2) {
+        findConstantAndWatchExpressions(property2.value, $filter);
+        allConstants = allConstants && property2.value.constant && !property2.computed;
+        if (!property2.value.constant) {
+          argsToWatch.push.apply(argsToWatch, property2.value.toWatch);
+        }
+      });
+      ast.constant = allConstants;
+      ast.toWatch = argsToWatch;
+      break;
+    case AST.ThisExpression:
+      ast.constant = false;
+      ast.toWatch = [];
+      break;
+    case AST.LocalsExpression:
+      ast.constant = false;
+      ast.toWatch = [];
+      break;
+  }
+}
+function getInputs(body) {
+  if (body.length !== 1)
+    return;
+  var lastExpression = body[0].expression;
+  var candidate = lastExpression.toWatch;
+  if (candidate.length !== 1)
+    return candidate;
+  return candidate[0] !== lastExpression ? candidate : void 0;
+}
+function isAssignable(ast) {
+  return ast.type === AST.Identifier || ast.type === AST.MemberExpression;
+}
+function assignableAST(ast) {
+  if (ast.body.length === 1 && isAssignable(ast.body[0].expression)) {
+    return {
+      type: AST.AssignmentExpression,
+      left: ast.body[0].expression,
+      right: { type: AST.NGValueParameter },
+      operator: "="
+    };
+  }
+}
+function isLiteral(ast) {
+  return ast.body.length === 0 || ast.body.length === 1 && (ast.body[0].expression.type === AST.Literal || ast.body[0].expression.type === AST.ArrayExpression || ast.body[0].expression.type === AST.ObjectExpression);
+}
+function isConstant(ast) {
+  return ast.constant;
+}
+function ASTCompiler(astBuilder, $filter) {
+  this.astBuilder = astBuilder;
+  this.$filter = $filter;
+}
+ASTCompiler.prototype = {
+  compile: function(expression) {
+    var self2 = this;
+    var ast = this.astBuilder.ast(expression);
+    this.state = {
+      nextId: 0,
+      filters: {},
+      fn: { vars: [], body: [], own: {} },
+      assign: { vars: [], body: [], own: {} },
+      inputs: []
+    };
+    findConstantAndWatchExpressions(ast, self2.$filter);
+    var extra2 = "";
+    var assignable;
+    this.stage = "assign";
+    if (assignable = assignableAST(ast)) {
+      this.state.computing = "assign";
+      var result = this.nextId();
+      this.recurse(assignable, result);
+      this.return_(result);
+      extra2 = "fn.assign=" + this.generateFunction("assign", "s,v,l");
+    }
+    var toWatch = getInputs(ast.body);
+    self2.stage = "inputs";
+    forEach3(toWatch, function(watch, key) {
+      var fnKey = "fn" + key;
+      self2.state[fnKey] = { vars: [], body: [], own: {} };
+      self2.state.computing = fnKey;
+      var intoId = self2.nextId();
+      self2.recurse(watch, intoId);
+      self2.return_(intoId);
+      self2.state.inputs.push(fnKey);
+      watch.watchId = key;
+    });
+    this.state.computing = "fn";
+    this.stage = "main";
+    this.recurse(ast);
+    var fnString = (
+      // The build and minification steps remove the string "use strict" from the code, but this is done using a regex.
+      // This is a workaround for this until we do a better job at only removing the prefix only when we should.
+      '"' + this.USE + " " + this.STRICT + '";\n' + this.filterPrefix() + "var fn=" + this.generateFunction("fn", "s,l,a,i") + extra2 + this.watchFns() + "return fn;"
+    );
+    var fn2 = new Function(
+      "$filter",
+      "getStringValue",
+      "ifDefined",
+      "plus",
+      fnString
+    )(this.$filter, getStringValue, ifDefined, plusFn);
+    this.state = this.stage = void 0;
+    fn2.ast = ast;
+    fn2.literal = isLiteral(ast);
+    fn2.constant = isConstant(ast);
+    return fn2;
+  },
+  USE: "use",
+  STRICT: "strict",
+  watchFns: function() {
+    var result = [];
+    var fns = this.state.inputs;
+    var self2 = this;
+    forEach3(fns, function(name) {
+      result.push("var " + name + "=" + self2.generateFunction(name, "s"));
+    });
+    if (fns.length) {
+      result.push("fn.inputs=[" + fns.join(",") + "];");
+    }
+    return result.join("");
+  },
+  generateFunction: function(name, params) {
+    return "function(" + params + "){" + this.varsPrefix(name) + this.body(name) + "};";
+  },
+  filterPrefix: function() {
+    var parts = [];
+    var self2 = this;
+    forEach3(this.state.filters, function(id2, filter2) {
+      parts.push(id2 + "=$filter(" + self2.escape(filter2) + ")");
+    });
+    if (parts.length)
+      return "var " + parts.join(",") + ";";
+    return "";
+  },
+  varsPrefix: function(section) {
+    return this.state[section].vars.length ? "var " + this.state[section].vars.join(",") + ";" : "";
+  },
+  body: function(section) {
+    return this.state[section].body.join("");
+  },
+  recurse: function(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck) {
+    var left, right, self2 = this, args, expression, computed;
+    recursionFn = recursionFn || noop$2;
+    if (!skipWatchIdCheck && isDefined(ast.watchId)) {
+      intoId = intoId || this.nextId();
+      this.if_(
+        "i",
+        this.lazyAssign(intoId, this.unsafeComputedMember("i", ast.watchId)),
+        this.lazyRecurse(ast, intoId, nameId, recursionFn, create, true)
+      );
+      return;
+    }
+    switch (ast.type) {
+      case AST.Program:
+        forEach3(ast.body, function(expression2, pos) {
+          self2.recurse(
+            expression2.expression,
+            void 0,
+            void 0,
+            function(expr) {
+              right = expr;
+            }
+          );
+          if (pos !== ast.body.length - 1) {
+            self2.current().body.push(right, ";");
+          } else {
+            self2.return_(right);
+          }
+        });
+        break;
+      case AST.Literal:
+        expression = this.escape(ast.value);
+        this.assign(intoId, expression);
+        recursionFn(intoId || expression);
+        break;
+      case AST.UnaryExpression:
+        this.recurse(ast.argument, void 0, void 0, function(expr) {
+          right = expr;
+        });
+        expression = ast.operator + "(" + this.ifDefined(right, 0) + ")";
+        this.assign(intoId, expression);
+        recursionFn(expression);
+        break;
+      case AST.BinaryExpression:
+        this.recurse(ast.left, void 0, void 0, function(expr) {
+          left = expr;
+        });
+        this.recurse(ast.right, void 0, void 0, function(expr) {
+          right = expr;
+        });
+        if (ast.operator === "+") {
+          expression = this.plus(left, right);
+        } else if (ast.operator === "-") {
+          expression = this.ifDefined(left, 0) + ast.operator + this.ifDefined(right, 0);
+        } else {
+          expression = "(" + left + ")" + ast.operator + "(" + right + ")";
+        }
+        this.assign(intoId, expression);
+        recursionFn(expression);
+        break;
+      case AST.LogicalExpression:
+        intoId = intoId || this.nextId();
+        self2.recurse(ast.left, intoId);
+        self2.if_(
+          ast.operator === "&&" ? intoId : self2.not(intoId),
+          self2.lazyRecurse(ast.right, intoId)
+        );
+        recursionFn(intoId);
+        break;
+      case AST.ConditionalExpression:
+        intoId = intoId || this.nextId();
+        self2.recurse(ast.test, intoId);
+        self2.if_(
+          intoId,
+          self2.lazyRecurse(ast.alternate, intoId),
+          self2.lazyRecurse(ast.consequent, intoId)
+        );
+        recursionFn(intoId);
+        break;
+      case AST.Identifier:
+        intoId = intoId || this.nextId();
+        var inAssignment = self2.current().inAssignment;
+        if (nameId) {
+          if (inAssignment) {
+            nameId.context = this.assign(this.nextId(), "s");
+          } else {
+            nameId.context = self2.stage === "inputs" ? "s" : this.assign(
+              this.nextId(),
+              this.getHasOwnProperty("l", ast.name) + "?l:s"
+            );
+          }
+          nameId.computed = false;
+          nameId.name = ast.name;
+        }
+        self2.if_(
+          self2.stage === "inputs" || self2.not(self2.getHasOwnProperty("l", ast.name)),
+          function() {
+            self2.if_(
+              self2.stage === "inputs" || self2.and_(
+                "s",
+                self2.or_(
+                  self2.isNull(self2.nonComputedMember("s", ast.name)),
+                  self2.hasOwnProperty_("s", ast.name)
+                )
+              ),
+              function() {
+                if (create && create !== 1) {
+                  self2.if_(
+                    self2.isNull(self2.nonComputedMember("s", ast.name)),
+                    self2.lazyAssign(self2.nonComputedMember("s", ast.name), "{}")
+                  );
+                }
+                self2.assign(intoId, self2.nonComputedMember("s", ast.name));
+              }
+            );
+          },
+          intoId && self2.lazyAssign(intoId, self2.nonComputedMember("l", ast.name))
+        );
+        recursionFn(intoId);
+        break;
+      case AST.MemberExpression:
+        left = nameId && (nameId.context = this.nextId()) || this.nextId();
+        intoId = intoId || this.nextId();
+        self2.recurse(
+          ast.object,
+          left,
+          void 0,
+          function() {
+            var member = null;
+            var inAssignment2 = self2.current().inAssignment;
+            if (ast.computed) {
+              right = self2.nextId();
+              if (inAssignment2 || self2.state.computing === "assign") {
+                member = self2.unsafeComputedMember(left, right);
+              } else {
+                member = self2.computedMember(left, right);
+              }
+            } else {
+              if (inAssignment2 || self2.state.computing === "assign") {
+                member = self2.unsafeNonComputedMember(left, ast.property.name);
+              } else {
+                member = self2.nonComputedMember(left, ast.property.name);
+              }
+              right = ast.property.name;
+            }
+            if (ast.computed) {
+              if (ast.property.type === AST.Literal) {
+                self2.recurse(ast.property, right);
+              }
+            }
+            self2.if_(
+              self2.and_(
+                self2.notNull(left),
+                self2.or_(
+                  self2.isNull(member),
+                  self2.hasOwnProperty_(left, right, ast.computed)
+                )
+              ),
+              function() {
+                if (ast.computed) {
+                  if (ast.property.type !== AST.Literal) {
+                    self2.recurse(ast.property, right);
+                  }
+                  if (create && create !== 1) {
+                    self2.if_(self2.not(member), self2.lazyAssign(member, "{}"));
+                  }
+                  self2.assign(intoId, member);
+                  if (nameId) {
+                    nameId.computed = true;
+                    nameId.name = right;
+                  }
+                } else {
+                  if (create && create !== 1) {
+                    self2.if_(
+                      self2.isNull(member),
+                      self2.lazyAssign(member, "{}")
+                    );
+                  }
+                  self2.assign(intoId, member);
+                  if (nameId) {
+                    nameId.computed = false;
+                    nameId.name = ast.property.name;
+                  }
+                }
+              },
+              function() {
+                self2.assign(intoId, "undefined");
+              }
+            );
+            recursionFn(intoId);
+          },
+          !!create
+        );
+        break;
+      case AST.CallExpression:
+        intoId = intoId || this.nextId();
+        if (ast.filter) {
+          right = self2.filter(ast.callee.name);
+          args = [];
+          forEach3(ast.arguments, function(expr) {
+            var argument = self2.nextId();
+            self2.recurse(expr, argument);
+            args.push(argument);
+          });
+          expression = right + ".call(" + right + "," + args.join(",") + ")";
+          self2.assign(intoId, expression);
+          recursionFn(intoId);
+        } else {
+          right = self2.nextId();
+          left = {};
+          args = [];
+          self2.recurse(ast.callee, right, left, function() {
+            self2.if_(
+              self2.notNull(right),
+              function() {
+                forEach3(ast.arguments, function(expr) {
+                  self2.recurse(
+                    expr,
+                    ast.constant ? void 0 : self2.nextId(),
+                    void 0,
+                    function(argument) {
+                      args.push(argument);
+                    }
+                  );
+                });
+                if (left.name) {
+                  var x = self2.member(left.context, left.name, left.computed);
+                  expression = "(" + x + " === null ? null : " + self2.unsafeMember(left.context, left.name, left.computed) + ".call(" + [left.context].concat(args).join(",") + "))";
+                } else {
+                  expression = right + "(" + args.join(",") + ")";
+                }
+                self2.assign(intoId, expression);
+              },
+              function() {
+                self2.assign(intoId, "undefined");
+              }
+            );
+            recursionFn(intoId);
+          });
+        }
+        break;
+      case AST.AssignmentExpression:
+        right = this.nextId();
+        left = {};
+        self2.current().inAssignment = true;
+        this.recurse(
+          ast.left,
+          void 0,
+          left,
+          function() {
+            self2.if_(
+              self2.and_(
+                self2.notNull(left.context),
+                self2.or_(
+                  self2.hasOwnProperty_(left.context, left.name),
+                  self2.isNull(
+                    self2.member(left.context, left.name, left.computed)
+                  )
+                )
+              ),
+              function() {
+                self2.recurse(ast.right, right);
+                expression = self2.member(left.context, left.name, left.computed) + ast.operator + right;
+                self2.assign(intoId, expression);
+                recursionFn(intoId || expression);
+              }
+            );
+            self2.current().inAssignment = false;
+            self2.recurse(ast.right, right);
+            self2.current().inAssignment = true;
+          },
+          1
+        );
+        self2.current().inAssignment = false;
+        break;
+      case AST.ArrayExpression:
+        args = [];
+        forEach3(ast.elements, function(expr) {
+          self2.recurse(
+            expr,
+            ast.constant ? void 0 : self2.nextId(),
+            void 0,
+            function(argument) {
+              args.push(argument);
+            }
+          );
+        });
+        expression = "[" + args.join(",") + "]";
+        this.assign(intoId, expression);
+        recursionFn(intoId || expression);
+        break;
+      case AST.ObjectExpression:
+        args = [];
+        computed = false;
+        forEach3(ast.properties, function(property2) {
+          if (property2.computed) {
+            computed = true;
+          }
+        });
+        if (computed) {
+          intoId = intoId || this.nextId();
+          this.assign(intoId, "{}");
+          forEach3(ast.properties, function(property2) {
+            if (property2.computed) {
+              left = self2.nextId();
+              self2.recurse(property2.key, left);
+            } else {
+              left = property2.key.type === AST.Identifier ? property2.key.name : "" + property2.key.value;
+            }
+            right = self2.nextId();
+            self2.recurse(property2.value, right);
+            self2.assign(
+              self2.unsafeMember(intoId, left, property2.computed),
+              right
+            );
+          });
+        } else {
+          forEach3(ast.properties, function(property2) {
+            self2.recurse(
+              property2.value,
+              ast.constant ? void 0 : self2.nextId(),
+              void 0,
+              function(expr) {
+                args.push(
+                  self2.escape(
+                    property2.key.type === AST.Identifier ? property2.key.name : "" + property2.key.value
+                  ) + ":" + expr
+                );
+              }
+            );
+          });
+          expression = "{" + args.join(",") + "}";
+          this.assign(intoId, expression);
+        }
+        recursionFn(intoId || expression);
+        break;
+      case AST.ThisExpression:
+        this.assign(intoId, "s");
+        recursionFn(intoId || "s");
+        break;
+      case AST.LocalsExpression:
+        this.assign(intoId, "l");
+        recursionFn(intoId || "l");
+        break;
+      case AST.NGValueParameter:
+        this.assign(intoId, "v");
+        recursionFn(intoId || "v");
+        break;
+    }
+  },
+  getHasOwnProperty: function(element, property2) {
+    var key = element + "." + property2;
+    var own = this.current().own;
+    if (!own.hasOwnProperty(key)) {
+      own[key] = this.nextId(
+        false,
+        element + "&&(" + this.escape(property2) + " in " + element + ")"
+      );
+    }
+    return own[key];
+  },
+  assign: function(id2, value) {
+    if (!id2)
+      return;
+    this.current().body.push(id2, "=", value, ";");
+    return id2;
+  },
+  filter: function(filterName) {
+    if (!this.state.filters.hasOwnProperty(filterName)) {
+      this.state.filters[filterName] = this.nextId(true);
+    }
+    return this.state.filters[filterName];
+  },
+  ifDefined: function(id2, defaultValue2) {
+    return "ifDefined(" + id2 + "," + this.escape(defaultValue2) + ")";
+  },
+  plus: function(left, right) {
+    return "plus(" + left + "," + right + ")";
+  },
+  return_: function(id2) {
+    this.current().body.push("return ", id2, ";");
+  },
+  if_: function(test2, alternate, consequent) {
+    if (test2 === true) {
+      alternate();
+    } else {
+      var body = this.current().body;
+      body.push("if(", test2, "){");
+      alternate();
+      body.push("}");
+      if (consequent) {
+        body.push("else{");
+        consequent();
+        body.push("}");
+      }
+    }
+  },
+  or_: function(expr1, expr2) {
+    return "(" + expr1 + ") || (" + expr2 + ")";
+  },
+  hasOwnProperty_: function(obj, prop, computed) {
+    if (computed) {
+      return "(Object.prototype.hasOwnProperty.call(" + obj + "," + prop + "))";
+    } else {
+      return "(Object.prototype.hasOwnProperty.call(" + obj + ",'" + prop + "'))";
+    }
+  },
+  and_: function(expr1, expr2) {
+    return "(" + expr1 + ") && (" + expr2 + ")";
+  },
+  not: function(expression) {
+    return "!(" + expression + ")";
+  },
+  isNull: function(expression) {
+    return expression + "==null";
+  },
+  notNull: function(expression) {
+    return expression + "!=null";
+  },
+  nonComputedMember: function(left, right) {
+    var SAFE_IDENTIFIER = /^[$_a-zA-Z][$_a-zA-Z0-9]*$/;
+    var UNSAFE_CHARACTERS = /[^$_a-zA-Z0-9]/g;
+    var expr = "";
+    if (SAFE_IDENTIFIER.test(right)) {
+      expr = left + "." + right;
+    } else {
+      right = right.replace(UNSAFE_CHARACTERS, this.stringEscapeFn);
+      expr = left + '["' + right + '"]';
+    }
+    return expr;
+  },
+  unsafeComputedMember: function(left, right) {
+    return left + "[" + right + "]";
+  },
+  unsafeNonComputedMember: function(left, right) {
+    return this.nonComputedMember(left, right);
+  },
+  computedMember: function(left, right) {
+    if (this.state.computing === "assign") {
+      return this.unsafeComputedMember(left, right);
+    }
+    return "(" + left + ".hasOwnProperty(" + right + ") ? " + left + "[" + right + "] : null)";
+  },
+  unsafeMember: function(left, right, computed) {
+    if (computed)
+      return this.unsafeComputedMember(left, right);
+    return this.unsafeNonComputedMember(left, right);
+  },
+  member: function(left, right, computed) {
+    if (computed)
+      return this.computedMember(left, right);
+    return this.nonComputedMember(left, right);
+  },
+  getStringValue: function(item) {
+    this.assign(item, "getStringValue(" + item + ")");
+  },
+  lazyRecurse: function(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck) {
+    var self2 = this;
+    return function() {
+      self2.recurse(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck);
+    };
+  },
+  lazyAssign: function(id2, value) {
+    var self2 = this;
+    return function() {
+      self2.assign(id2, value);
+    };
+  },
+  stringEscapeRegex: /[^ a-zA-Z0-9]/g,
+  stringEscapeFn: function(c2) {
+    return "\\u" + ("0000" + c2.charCodeAt(0).toString(16)).slice(-4);
+  },
+  escape: function(value) {
+    if (isString$1(value))
+      return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
+    if (isNumber$1(value))
+      return value.toString();
+    if (value === true)
+      return "true";
+    if (value === false)
+      return "false";
+    if (value === null)
+      return "null";
+    if (typeof value === "undefined")
+      return "undefined";
+    throw $parseMinErr("esc", "IMPOSSIBLE");
+  },
+  nextId: function(skip, init3) {
+    var id2 = "v" + this.state.nextId++;
+    if (!skip) {
+      this.current().vars.push(id2 + (init3 ? "=" + init3 : ""));
+    }
+    return id2;
+  },
+  current: function() {
+    return this.state[this.state.computing];
+  }
+};
+function ASTInterpreter(astBuilder, $filter) {
+  this.astBuilder = astBuilder;
+  this.$filter = $filter;
+}
+ASTInterpreter.prototype = {
+  compile: function(expression) {
+    var self2 = this;
+    var ast = this.astBuilder.ast(expression);
+    findConstantAndWatchExpressions(ast, self2.$filter);
+    var assignable;
+    var assign2;
+    if (assignable = assignableAST(ast)) {
+      assign2 = this.recurse(assignable);
+    }
+    var toWatch = getInputs(ast.body);
+    var inputs;
+    if (toWatch) {
+      inputs = [];
+      forEach3(toWatch, function(watch, key) {
+        var input = self2.recurse(watch);
+        watch.input = input;
+        inputs.push(input);
+        watch.watchId = key;
+      });
+    }
+    var expressions = [];
+    forEach3(ast.body, function(expression2) {
+      expressions.push(self2.recurse(expression2.expression));
+    });
+    var fn2 = ast.body.length === 0 ? noop$2 : ast.body.length === 1 ? expressions[0] : function(scope, locals) {
+      var lastValue;
+      forEach3(expressions, function(exp) {
+        lastValue = exp(scope, locals);
+      });
+      return lastValue;
+    };
+    if (assign2) {
+      fn2.assign = function(scope, value, locals) {
+        return assign2(scope, locals, value);
+      };
+    }
+    if (inputs) {
+      fn2.inputs = inputs;
+    }
+    fn2.ast = ast;
+    fn2.literal = isLiteral(ast);
+    fn2.constant = isConstant(ast);
+    return fn2;
+  },
+  recurse: function(ast, context2, create) {
+    var left, right, self2 = this, args;
+    if (ast.input) {
+      return this.inputs(ast.input, ast.watchId);
+    }
+    switch (ast.type) {
+      case AST.Literal:
+        return this.value(ast.value, context2);
+      case AST.UnaryExpression:
+        right = this.recurse(ast.argument);
+        return this["unary" + ast.operator](right, context2);
+      case AST.BinaryExpression:
+        left = this.recurse(ast.left);
+        right = this.recurse(ast.right);
+        return this["binary" + ast.operator](left, right, context2);
+      case AST.LogicalExpression:
+        left = this.recurse(ast.left);
+        right = this.recurse(ast.right);
+        return this["binary" + ast.operator](left, right, context2);
+      case AST.ConditionalExpression:
+        return this["ternary?:"](
+          this.recurse(ast.test),
+          this.recurse(ast.alternate),
+          this.recurse(ast.consequent),
+          context2
+        );
+      case AST.Identifier:
+        return self2.identifier(ast.name, context2, create);
+      case AST.MemberExpression:
+        left = this.recurse(ast.object, false, !!create);
+        if (!ast.computed) {
+          right = ast.property.name;
+        }
+        if (ast.computed)
+          right = this.recurse(ast.property);
+        return ast.computed ? this.computedMember(left, right, context2, create) : this.nonComputedMember(left, right, context2, create);
+      case AST.CallExpression:
+        args = [];
+        forEach3(ast.arguments, function(expr) {
+          args.push(self2.recurse(expr));
+        });
+        if (ast.filter)
+          right = this.$filter(ast.callee.name);
+        if (!ast.filter)
+          right = this.recurse(ast.callee, true);
+        return ast.filter ? function(scope, locals, assign2, inputs) {
+          var values = [];
+          for (var i2 = 0; i2 < args.length; ++i2) {
+            values.push(args[i2](scope, locals, assign2, inputs));
+          }
+          var value = right.apply(void 0, values, inputs);
+          return context2 ? { context: void 0, name: void 0, value } : value;
+        } : function(scope, locals, assign2, inputs) {
+          var rhs = right(scope, locals, assign2, inputs);
+          var value;
+          if (rhs.value != null) {
+            var values = [];
+            for (var i2 = 0; i2 < args.length; ++i2) {
+              values.push(args[i2](scope, locals, assign2, inputs));
+            }
+            value = rhs.value.apply(rhs.context, values);
+          }
+          return context2 ? { value } : value;
+        };
+      case AST.AssignmentExpression:
+        left = this.recurse(ast.left, true, 1);
+        right = this.recurse(ast.right);
+        return function(scope, locals, assign2, inputs) {
+          var lhs = left(scope, false, assign2, inputs);
+          var rhs = right(scope, locals, assign2, inputs);
+          lhs.context[lhs.name] = rhs;
+          return context2 ? { value: rhs } : rhs;
+        };
+      case AST.ArrayExpression:
+        args = [];
+        forEach3(ast.elements, function(expr) {
+          args.push(self2.recurse(expr));
+        });
+        return function(scope, locals, assign2, inputs) {
+          var value = [];
+          for (var i2 = 0; i2 < args.length; ++i2) {
+            value.push(args[i2](scope, locals, assign2, inputs));
+          }
+          return context2 ? { value } : value;
+        };
+      case AST.ObjectExpression:
+        args = [];
+        forEach3(ast.properties, function(property2) {
+          if (property2.computed) {
+            args.push({
+              key: self2.recurse(property2.key),
+              computed: true,
+              value: self2.recurse(property2.value)
+            });
+          } else {
+            args.push({
+              key: property2.key.type === AST.Identifier ? property2.key.name : "" + property2.key.value,
+              computed: false,
+              value: self2.recurse(property2.value)
+            });
+          }
+        });
+        return function(scope, locals, assign2, inputs) {
+          var value = {};
+          for (var i2 = 0; i2 < args.length; ++i2) {
+            if (args[i2].computed) {
+              value[args[i2].key(scope, locals, assign2, inputs)] = args[i2].value(
+                scope,
+                locals,
+                assign2,
+                inputs
+              );
+            } else {
+              value[args[i2].key] = args[i2].value(scope, locals, assign2, inputs);
+            }
+          }
+          return context2 ? { value } : value;
+        };
+      case AST.ThisExpression:
+        return function(scope) {
+          return context2 ? { value: scope } : scope;
+        };
+      case AST.LocalsExpression:
+        return function(scope, locals) {
+          return context2 ? { value: locals } : locals;
+        };
+      case AST.NGValueParameter:
+        return function(scope, locals, assign2) {
+          return context2 ? { value: assign2 } : assign2;
+        };
+    }
+  },
+  "unary+": function(argument, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = argument(scope, locals, assign2, inputs);
+      if (isDefined(arg)) {
+        arg = +arg;
+      } else {
+        arg = 0;
+      }
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "unary-": function(argument, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = argument(scope, locals, assign2, inputs);
+      if (isDefined(arg)) {
+        arg = -arg;
+      } else {
+        arg = -0;
+      }
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "unary!": function(argument, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = !argument(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary+": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var lhs = left(scope, locals, assign2, inputs);
+      var rhs = right(scope, locals, assign2, inputs);
+      var arg = plusFn(lhs, rhs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary-": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var lhs = left(scope, locals, assign2, inputs);
+      var rhs = right(scope, locals, assign2, inputs);
+      var arg = (isDefined(lhs) ? lhs : 0) - (isDefined(rhs) ? rhs : 0);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary*": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) * right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary/": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) / right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary%": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) % right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary===": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) === right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary!==": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) !== right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary==": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) == right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary!=": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) != right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary<": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) < right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary>": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) > right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary<=": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) <= right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary>=": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) >= right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary&&": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) && right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "binary||": function(left, right, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = left(scope, locals, assign2, inputs) || right(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  "ternary?:": function(test2, alternate, consequent, context2) {
+    return function(scope, locals, assign2, inputs) {
+      var arg = test2(scope, locals, assign2, inputs) ? alternate(scope, locals, assign2, inputs) : consequent(scope, locals, assign2, inputs);
+      return context2 ? { value: arg } : arg;
+    };
+  },
+  value: function(value, context2) {
+    return function() {
+      return context2 ? { context: void 0, name: void 0, value } : value;
+    };
+  },
+  identifier: function(name, context2, create) {
+    return function(scope, locals, assign2, inputs) {
+      var base = locals && name in locals ? locals : scope;
+      if (create && create !== 1 && base && base[name] == null) {
+        base[name] = {};
+      }
+      var value = base ? base[name] : void 0;
+      if (context2) {
+        return { context: base, name, value };
+      } else {
+        return value;
+      }
+    };
+  },
+  computedMember: function(left, right, context2, create) {
+    return function(scope, locals, assign2, inputs) {
+      var lhs = left(scope, locals, assign2, inputs);
+      var rhs;
+      var value;
+      if (lhs != null) {
+        rhs = right(scope, locals, assign2, inputs);
+        rhs = getStringValue(rhs);
+        if (create && create !== 1) {
+          if (lhs && !lhs[rhs]) {
+            lhs[rhs] = {};
+          }
+        }
+        if (Object.prototype.hasOwnProperty.call(lhs, rhs)) {
+          value = lhs[rhs];
+        }
+      }
+      if (context2) {
+        return { context: lhs, name: rhs, value };
+      } else {
+        return value;
+      }
+    };
+  },
+  nonComputedMember: function(left, right, context2, create) {
+    return function(scope, locals, assign2, inputs) {
+      var lhs = left(scope, locals, assign2, inputs);
+      if (create && create !== 1) {
+        if (lhs && lhs[right] == null) {
+          lhs[right] = {};
+        }
+      }
+      var value = void 0;
+      if (lhs != null && Object.prototype.hasOwnProperty.call(lhs, right)) {
+        value = lhs[right];
+      }
+      if (context2) {
+        return { context: lhs, name: right, value };
+      } else {
+        return value;
+      }
+    };
+  },
+  inputs: function(input, watchId) {
+    return function(scope, value, locals, inputs) {
+      if (inputs)
+        return inputs[watchId];
+      return input(scope, value, locals);
+    };
+  }
+};
+var Parser$1 = function Parser(lexer, $filter, options) {
+  this.lexer = lexer;
+  this.$filter = $filter;
+  this.options = options;
+  this.ast = new AST(lexer, options);
+  this.astCompiler = options.csp ? new ASTInterpreter(this.ast, $filter) : new ASTCompiler(this.ast, $filter);
+};
+Parser$1.prototype = {
+  constructor: Parser$1,
+  parse: function(text2) {
+    return this.astCompiler.compile(text2);
+  }
+};
+parse$5.Lexer = Lexer$1;
+parse$5.Parser = Parser$1;
+var parse$4 = parse$5;
+var filters$1 = {};
+var Lexer2 = parse$4.Lexer;
+var Parser2 = parse$4.Parser;
+function compile$1(src, options) {
+  options = options || {};
+  var localFilters = options.filters || filters$1;
+  var cache = options.filters ? options.cache || {} : compile$1.cache;
+  var lexerOptions = options;
+  var cached;
+  if (typeof src !== "string") {
+    throw new TypeError(
+      "src must be a string, instead saw '" + typeof src + "'"
+    );
+  }
+  var parserOptions = {
+    csp: options.csp != null ? options.csp : false,
+    // noUnsafeEval,
+    literals: options.literals != null ? options.literals : {
+      // defined at: function $ParseProvider() {
+      true: true,
+      false: false,
+      null: null,
+      /*eslint no-undefined: 0*/
+      undefined: void 0
+      /* eslint: no-undefined: 1  */
+    }
+  };
+  var lexer = new Lexer2(lexerOptions);
+  var parser = new Parser2(
+    lexer,
+    function getFilter(name) {
+      return localFilters[name];
+    },
+    parserOptions
+  );
+  if (!cache) {
+    return parser.parse(src);
+  }
+  cached = cache[src];
+  if (!cached) {
+    cached = cache[src] = parser.parse(src);
+  }
+  return cached;
+}
+compile$1.cache = /* @__PURE__ */ Object.create(null);
+var compile_1 = compile$1;
+const setVar = (sentence) => {
+  let setGlobal = false;
+  sentence.args.forEach((e2) => {
+    if (e2.key === "global") {
+      setGlobal = true;
+    }
+  });
+  let targetReducerFunction;
+  if (setGlobal) {
+    targetReducerFunction = setGlobalVar;
+  } else {
+    targetReducerFunction = setStageVar;
+  }
+  if (sentence.content.match(/=/)) {
+    const key = sentence.content.split(/=/)[0];
+    const valExp = sentence.content.split(/=/)[1];
+    if (valExp === "random()") {
+      webgalStore.dispatch(targetReducerFunction({ key, value: Math.random() }));
+    } else if (valExp.match(/[+\-*\/()]/)) {
+      const valExpArr = valExp.split(/([+\-*\/()])/g);
+      const valExp2 = valExpArr.map((e2) => {
+        if (e2.match(/[a-zA-Z]/)) {
+          return getValueFromState(e2).toString();
+        } else
+          return e2;
+      }).reduce((pre, curr) => pre + curr, "");
+      const exp = compile_1(valExp2);
+      const result = exp();
+      webgalStore.dispatch(targetReducerFunction({ key, value: result }));
+    } else if (valExp.match(/true|false/)) {
+      if (valExp.match(/true/)) {
+        webgalStore.dispatch(targetReducerFunction({ key, value: true }));
+      }
+      if (valExp.match(/false/)) {
+        webgalStore.dispatch(targetReducerFunction({ key, value: false }));
+      }
+    } else {
+      if (!isNaN(Number(valExp))) {
+        webgalStore.dispatch(targetReducerFunction({ key, value: Number(valExp) }));
+      } else
+        webgalStore.dispatch(targetReducerFunction({ key, value: valExp }));
+    }
+    if (setGlobal) {
+      logger.debug("设置全局变量：", { key, value: webgalStore.getState().userData.globalGameVar[key] });
+      dumpToStorageFast();
+    } else {
+      logger.debug("设置变量：", { key, value: webgalStore.getState().stage.GameVar[key] });
+    }
+  }
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function getValueFromState(key) {
+  let ret = 0;
+  if (webgalStore.getState().stage.GameVar.hasOwnProperty(key)) {
+    ret = webgalStore.getState().stage.GameVar[key];
+  } else if (webgalStore.getState().userData.globalGameVar.hasOwnProperty(key)) {
+    ret = webgalStore.getState().userData.globalGameVar[key];
+  }
+  return ret;
+}
+const showVars = (sentence) => {
+  const stageState = webgalStore.getState().stage;
+  const userDataState = webgalStore.getState().userData;
+  const dispatch = webgalStore.dispatch;
+  const allVar = {
+    stageGameVar: stageState.GameVar,
+    globalGameVar: userDataState.globalGameVar
+  };
+  dispatch(setStage({ key: "showText", value: JSON.stringify(allVar) }));
+  dispatch(setStage({ key: "showName", value: "展示变量" }));
+  logger.debug("展示变量：", allVar);
+  setTimeout(() => {
+    WebGAL.events.textSettle.emit();
+  }, 0);
+  const performInitName = getRandomPerformName();
+  const endDelay = 750 - userDataState.optionData.textSpeed * 250;
+  return {
+    performName: performInitName,
+    duration: endDelay,
+    isHoldOn: false,
+    stopFunction: () => {
+      WebGAL.events.textSettle.emit();
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function ScriptConfig(scriptType, scriptFunction, config) {
+  return { scriptType, scriptFunction, ...config };
+}
+const scriptRegistry = {};
+function defineScripts(record) {
+  const result = {};
+  for (const [scriptString, config] of Object.entries(record)) {
+    result[scriptString] = scriptRegistry[config.scriptType] = { scriptString, ...config };
+  }
+  return result;
+}
+const applyStyle = (sentence) => {
+  const { content } = sentence;
+  const applyStyleSegments = content.split(",");
+  for (const applyStyleSegment of applyStyleSegments) {
+    const splitSegment = applyStyleSegment.split("->");
+    if (splitSegment.length >= 2) {
+      const classNameToBeChange = splitSegment[0];
+      const classNameChangeTo = splitSegment[1];
+      webgalStore.dispatch(stageActions.replaceUIlable([classNameToBeChange, classNameChangeTo]));
+    }
+  }
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const SCRIPT_TAG_MAP = defineScripts({
+  intro: ScriptConfig(commandType$1.intro, intro),
+  changeBg: ScriptConfig(commandType$1.changeBg, changeBg),
+  changeFigure: ScriptConfig(commandType$1.changeFigure, changeFigure),
+  miniAvatar: ScriptConfig(commandType$1.miniAvatar, miniAvatar, { next: true }),
+  changeScene: ScriptConfig(commandType$1.changeScene, changeSceneScript),
+  choose: ScriptConfig(commandType$1.choose, choose),
+  end: ScriptConfig(commandType$1.end, end),
+  bgm: ScriptConfig(commandType$1.bgm, bgm, { next: true }),
+  playVideo: ScriptConfig(commandType$1.video, playVideo),
+  setComplexAnimation: ScriptConfig(commandType$1.setComplexAnimation, setComplexAnimation),
+  setFilter: ScriptConfig(commandType$1.setFilter, setFilter),
+  pixiInit: ScriptConfig(commandType$1.pixiInit, pixiInit, { next: true }),
+  pixiPerform: ScriptConfig(commandType$1.pixi, pixi, { next: true }),
+  label: ScriptConfig(commandType$1.label, label, { next: true }),
+  jumpLabel: ScriptConfig(commandType$1.jumpLabel, jumpLabel),
+  setVar: ScriptConfig(commandType$1.setVar, setVar, { next: true }),
+  showVars: ScriptConfig(commandType$1.showVars, showVars),
+  unlockCg: ScriptConfig(commandType$1.unlockCg, unlockCg, { next: true }),
+  unlockBgm: ScriptConfig(commandType$1.unlockBgm, unlockBgm$2, { next: true }),
+  say: ScriptConfig(commandType$1.say, say),
+  filmMode: ScriptConfig(commandType$1.filmMode, filmMode, { next: true }),
+  callScene: ScriptConfig(commandType$1.callScene, callSceneScript),
+  setTextbox: ScriptConfig(commandType$1.setTextbox, setTextbox),
+  setAnimation: ScriptConfig(commandType$1.setAnimation, setAnimation),
+  playEffect: ScriptConfig(commandType$1.playEffect, playEffect, { next: true }),
+  setTempAnimation: ScriptConfig(commandType$1.setTempAnimation, setTempAnimation),
+  __commment: ScriptConfig(commandType$1.comment, comment$1, { next: true }),
+  setTransform: ScriptConfig(commandType$1.setTransform, setTransform),
+  setTransition: ScriptConfig(commandType$1.setTransition, setTransition, { next: true }),
+  getUserInput: ScriptConfig(commandType$1.getUserInput, getUserInput),
+  applyStyle: ScriptConfig(commandType$1.applyStyle, applyStyle, { next: true })
+  // if: ScriptConfig(commandType.if, undefined, { next: true }),
+});
+const SCRIPT_CONFIG = Object.values(SCRIPT_TAG_MAP);
+const ADD_NEXT_ARG_LIST = SCRIPT_CONFIG.filter((config) => config.next).map((config) => config.scriptType);
+const WebgalParser = new SceneParser(assetsPrefetcher, assetSetter, ADD_NEXT_ARG_LIST, SCRIPT_CONFIG);
+const sceneParser = (rawScene, sceneName, sceneUrl) => {
+  const parsedScene = WebgalParser.parse(rawScene, sceneName, sceneUrl);
+  logger.info(`解析场景：${sceneName}，数据为：`, parsedScene);
+  return parsedScene;
+};
+const runScript = (script) => {
+  var _a2;
+  let perform = initPerform;
+  const funcToRun = ((_a2 = scriptRegistry[script.command]) == null ? void 0 : _a2.scriptFunction) ?? SCRIPT_TAG_MAP.say.scriptFunction;
+  perform = funcToRun(script);
+  if (perform.arrangePerformPromise) {
+    perform.arrangePerformPromise.then(
+      (resolovedPerform) => WebGAL.gameplay.performController.arrangeNewPerform(resolovedPerform, script)
+    );
+  } else {
+    WebGAL.gameplay.performController.arrangeNewPerform(perform, script);
+  }
+};
+const restoreScene = (entry) => {
+  sceneFetcher(entry.sceneUrl).then((rawScene) => {
+    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, entry.sceneName, entry.sceneUrl);
+    WebGAL.sceneManager.sceneData.currentSentenceId = entry.continueLine + 1;
+    logger.debug("现在恢复场景，恢复后场景：", WebGAL.sceneManager.sceneData.currentScene);
+    nextSentence();
+  });
+};
+function strIf(s2) {
+  const res = compile_1(s2);
+  return res();
+}
+const whenChecker = (whenValue) => {
+  if (whenValue === void 0) {
+    return true;
+  }
+  const valExpArr = whenValue.split(/([+\-*\/()><!]|>=|<=|==|&&|\|\||!=)/g);
+  const valExp = valExpArr.map((e2) => {
+    if (e2.match(/[a-zA-Z]/)) {
+      if (e2.match(/true/) || e2.match(/false/)) {
+        return e2;
+      }
+      return getValueFromState(e2).toString();
+    } else
+      return e2;
+  }).reduce((pre, curr) => pre + curr, "");
+  return !!strIf(valExp);
+};
+const scriptExecutor = () => {
+  if (WebGAL.sceneManager.sceneData.currentSentenceId > WebGAL.sceneManager.sceneData.currentScene.sentenceList.length - 1) {
+    if (WebGAL.sceneManager.sceneData.sceneStack.length !== 0) {
+      const sceneToRestore = WebGAL.sceneManager.sceneData.sceneStack.pop();
+      if (sceneToRestore !== void 0) {
+        restoreScene(sceneToRestore);
+      }
+    }
+    return;
+  }
+  const currentScript = WebGAL.sceneManager.sceneData.currentScene.sentenceList[WebGAL.sceneManager.sceneData.currentSentenceId];
+  const interpolationOneItem = (content) => {
+    let retContent = content;
+    const contentExp = retContent.match(new RegExp("(?<!\\\\)\\{(.*?)\\}", "g"));
+    if (contentExp !== null) {
+      contentExp.forEach((e2) => {
+        const contentVarValue = getValueFromState(e2.replace(new RegExp("(?<!\\\\)\\{(.*)\\}"), "$1"));
+        retContent = retContent.replace(e2, contentVarValue ? contentVarValue.toString() : e2);
+      });
+    }
+    retContent = retContent.replace(/\\{/g, "{").replace(/\\}/g, "}");
+    return retContent;
+  };
+  const variableInterpolation = () => {
+    currentScript.content = interpolationOneItem(currentScript.content);
+    currentScript.args.forEach((arg) => {
+      if (arg.value && typeof arg.value === "string") {
+        arg.value = interpolationOneItem(arg.value);
+      }
+    });
+  };
+  variableInterpolation();
+  let runThis = true;
+  let isHasWhenArg = false;
+  let whenValue = "";
+  currentScript.args.forEach((e2) => {
+    if (e2.key === "when") {
+      isHasWhenArg = true;
+      whenValue = e2.value.toString();
+    }
+  });
+  if (isHasWhenArg) {
+    runThis = whenChecker(whenValue);
+  }
+  if (!runThis) {
+    logger.warn("不满足条件，跳过本句！");
+    WebGAL.sceneManager.sceneData.currentSentenceId++;
+    nextSentence();
+    return;
+  }
+  runScript(currentScript);
+  let isNext = false;
+  currentScript.args.forEach((e2) => {
+    if (e2.key === "next" && e2.value) {
+      isNext = true;
+    }
+  });
+  let isSaveBacklog = currentScript.command === commandType$1.say;
+  currentScript.args.forEach((e2) => {
+    if (e2.key === "notend" && e2.value === true) {
+      isSaveBacklog = false;
+    }
+  });
+  let currentStageState;
+  if (isNext) {
+    WebGAL.sceneManager.sceneData.currentSentenceId++;
+    scriptExecutor();
+    return;
+  }
+  setTimeout(() => {
+    currentStageState = webgalStore.getState().stage;
+    const allState = {
+      currentStageState,
+      globalGameVar: webgalStore.getState().userData.globalGameVar
+    };
+    logger.debug("本条语句执行结果", allState);
+    if (isSaveBacklog) {
+      WebGAL.backlogManager.saveCurrentStateToBacklog();
+    }
+  }, 0);
+  WebGAL.sceneManager.sceneData.currentSentenceId++;
+};
+const nextSentence = () => {
+  WebGAL.events.userInteractNext.emit();
+  const GUIState = webgalStore.getState().GUI;
+  if (GUIState.showTitle) {
+    return;
+  }
+  let isBlockingNext = false;
+  WebGAL.gameplay.performController.performList.forEach((e2) => {
+    if (e2.blockingNext()) {
+      isBlockingNext = true;
+    }
+  });
+  if (isBlockingNext) {
+    logger.warn("next 被阻塞！");
+    return;
+  }
+  let allSettled2 = true;
+  WebGAL.gameplay.performController.performList.forEach((e2) => {
+    if (!e2.isHoldOn && !e2.skipNextCollect)
+      allSettled2 = false;
+  });
+  if (allSettled2) {
+    const stageState = webgalStore.getState().stage;
+    const newStageState = cloneDeep$1(stageState);
+    for (let i2 = 0; i2 < newStageState.PerformList.length; i2++) {
+      const e2 = newStageState.PerformList[i2];
+      if (!e2.isHoldOn) {
+        newStageState.PerformList.splice(i2, 1);
+        i2--;
+      }
+    }
+    webgalStore.dispatch(resetStageState(newStageState));
+    scriptExecutor();
+    return;
+  }
+  logger.warn("提前结束被触发，现在清除普通演出");
+  let isGoNext = false;
+  for (let i2 = 0; i2 < WebGAL.gameplay.performController.performList.length; i2++) {
+    const e2 = WebGAL.gameplay.performController.performList[i2];
+    if (!e2.isHoldOn) {
+      if (e2.goNextWhenOver) {
+        isGoNext = true;
+      }
+      if (!e2.skipNextCollect) {
+        e2.stopFunction();
+        clearTimeout(e2.stopTimeout);
+        WebGAL.gameplay.performController.performList.splice(i2, 1);
+        i2--;
+      }
+    }
+  }
+  if (isGoNext) {
+    nextSentence();
+  }
+};
+const getRandomPerformName = () => {
+  return Math.random().toString().substring(0, 10);
+};
+class PerformController {
+  constructor() {
+    __publicField(this, "performList", []);
+    __publicField(this, "timeoutList", []);
+  }
+  arrangeNewPerform(perform, script, syncPerformState = true) {
+    if (perform.performName === "none") {
+      return;
+    }
+    if (syncPerformState) {
+      const performToAdd = { id: perform.performName, isHoldOn: perform.isHoldOn, script };
+      webgalStore.dispatch(stageActions.addPerform(performToAdd));
+    }
+    perform.stopTimeout = setTimeout(() => {
+      if (!perform.isHoldOn) {
+        this.unmountPerform(perform.performName);
+        if (perform.goNextWhenOver) {
+          this.goNextWhenOver();
+        }
+      }
+    }, perform.duration);
+    this.performList.push(perform);
+  }
+  unmountPerform(name, force = false) {
+    if (!force) {
+      for (let i2 = 0; i2 < this.performList.length; i2++) {
+        const e2 = this.performList[i2];
+        if (!e2.isHoldOn && e2.performName === name) {
+          e2.stopFunction();
+          clearTimeout(e2.stopTimeout);
+          this.performList.splice(i2, 1);
+          i2--;
+        }
+      }
+    } else {
+      for (let i2 = 0; i2 < this.performList.length; i2++) {
+        const e2 = this.performList[i2];
+        if (e2.performName === name) {
+          e2.stopFunction();
+          clearTimeout(e2.stopTimeout);
+          this.performList.splice(i2, 1);
+          i2--;
+          this.erasePerformFromState(name);
+        }
+      }
+    }
+  }
+  erasePerformFromState(name) {
+    webgalStore.dispatch(stageActions.removePerformByName(name));
+  }
+  removeAllPerform() {
+    for (const e2 of this.performList) {
+      e2.stopFunction();
+    }
+    this.performList = [];
+    for (const e2 of this.timeoutList) {
+      clearTimeout(e2);
+    }
+  }
+  goNextWhenOver() {
+    let isBlockingAuto = false;
+    this.performList.forEach((e2) => {
+      if (e2.blockingAuto())
+        isBlockingAuto = true;
+    });
+    if (isBlockingAuto) {
+      setTimeout(this.goNextWhenOver, 100);
+    } else {
+      nextSentence();
+    }
+  }
+}
+class Gameplay {
+  constructor() {
+    __publicField(this, "isAuto", false);
+    __publicField(this, "isFast", false);
+    __publicField(this, "autoInterval", null);
+    __publicField(this, "fastInterval", null);
+    __publicField(this, "autoTimeout", null);
+    __publicField(this, "pixiStage", null);
+    __publicField(this, "performController", new PerformController());
+  }
+  resetGamePlay() {
+    this.performController.timeoutList = [];
+    this.isAuto = false;
+    this.isFast = false;
+    const autoInterval = this.autoInterval;
+    if (autoInterval !== null)
+      clearInterval(autoInterval);
+    this.autoInterval = null;
+    const fastInterval = this.fastInterval;
+    if (fastInterval !== null)
+      clearInterval(fastInterval);
+    this.fastInterval = null;
+    const autoTimeout = this.autoTimeout;
+    if (autoTimeout !== null)
+      clearInterval(autoTimeout);
+    this.autoTimeout = null;
+  }
+}
+function mitt(n2) {
+  return { all: n2 = n2 || /* @__PURE__ */ new Map(), on: function(t2, e2) {
+    var i2 = n2.get(t2);
+    i2 ? i2.push(e2) : n2.set(t2, [e2]);
+  }, off: function(t2, e2) {
+    var i2 = n2.get(t2);
+    i2 && (e2 ? i2.splice(i2.indexOf(e2) >>> 0, 1) : n2.set(t2, []));
+  }, emit: function(t2, e2) {
+    var i2 = n2.get(t2);
+    i2 && i2.slice().map(function(n3) {
+      n3(e2);
+    }), (i2 = n2.get("*")) && i2.slice().map(function(n3) {
+      n3(t2, e2);
+    });
+  } };
+}
+class Events {
+  constructor() {
+    __publicField(this, "textSettle", formEvent("text-settle"));
+    __publicField(this, "userInteractNext", formEvent("__NEXT"));
+    __publicField(this, "fullscreenDbClick", formEvent("fullscreen-dbclick"));
+    __publicField(this, "styleUpdate", formEvent("style-update"));
+  }
+}
+const eventBus = mitt();
+function formEvent(eventName) {
+  return {
+    on: (callback, id2) => {
+      eventBus.on(`${eventName}-${id2 ?? ""}`, callback);
+    },
+    emit: (message, id2) => {
+      eventBus.emit(`${eventName}-${id2 ?? ""}`, message);
+    },
+    off: (callback, id2) => {
+      eventBus.off(`${eventName}-${id2 ?? ""}`, callback);
+    }
+  };
+}
 var flv = { exports: {} };
 (function(module, exports) {
   (function webpackUniversalModuleDefinition(root2, factory) {
@@ -30031,3511 +33534,152 @@ var flv = { exports: {} };
 })(flv);
 var flvExports = flv.exports;
 const FlvJs = /* @__PURE__ */ getDefaultExportFromCjs(flvExports);
-const playVideo = (sentence) => {
-  const userDataState = webgalStore.getState().userData;
-  const mainVol = userDataState.optionData.volumeMain;
-  const vocalVol = mainVol * 0.01 * userDataState.optionData.vocalVolume * 0.01;
-  const bgmVol = mainVol * 0.01 * userDataState.optionData.bgmVolume * 0.01;
-  const performInitName = getRandomPerformName();
-  let chooseContent = "";
-  let loopValue = false;
-  sentence.args.forEach((e2) => {
-    if (e2.key === "choose") {
-      chooseContent = "choose:" + e2.value;
-    }
-    if (e2.key === "loop") {
-      loopValue = e2.value === true;
-    }
-  });
-  let blockingNext = getSentenceArgByKey(sentence, "skipOff");
-  let blockingNextFlag = false;
-  if (blockingNext || loopValue || chooseContent !== "") {
-    blockingNextFlag = true;
+class VideoManager {
+  constructor() {
+    __publicField(this, "videosByKey");
+    __publicField(this, "videoIndex", 0);
+    this.videosByKey = {};
   }
-  let videoElement = null;
-  let flvPlayer = null;
-  ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.videoContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("video", { className: styles$i.fullScreen_video, id: "playVideoElement" }) }),
-    document.getElementById("videoContainer")
-  );
-  setTimeout(() => {
-    videoElement = document.getElementById("playVideoElement");
-    if (FlvJs.isSupported() && videoElement) {
-      flvPlayer = FlvJs.createPlayer({
-        type: sentence.content.endsWith(".mp4") ? "mp4" : "flv",
-        url: sentence.content
-      });
-      flvPlayer.attachMediaElement(videoElement);
-      flvPlayer.load();
-    }
-  }, 1);
-  let isOver = false;
-  const performObject = {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => blockingNextFlag,
-    blockingAuto: () => true,
-    stopTimeout: void 0,
-    // 暂时不用，后面会交给自动清除
-    arrangePerformPromise: new Promise((resolve2) => {
-      const endCallback = (e2) => {
-        isOver = true;
-        e2.stopFunction();
-        WebGAL.gameplay.performController.unmountPerform(e2.performName);
-      };
-      setTimeout(() => {
-        if (flvPlayer !== null && videoElement !== null) {
-          flvPlayer.currentTime = 0.03;
-          flvPlayer.volume = bgmVol;
-          videoElement.loop = loopValue;
-          const endPerform = () => {
-            for (const e2 of WebGAL.gameplay.performController.performList) {
-              if (e2.performName === performInitName) {
-                if (chooseContent !== "" && !loopValue) {
-                  const parsedResult = sceneParser(chooseContent, "temp.txt", "");
-                  if (flvPlayer) {
-                    const duration = flvPlayer.duration || 0;
-                    flvPlayer.currentTime = duration - 0.03;
-                    flvPlayer.pause();
-                  }
-                  const script = parsedResult.sentenceList[0];
-                  const perform2 = choose(script, () => {
-                    endCallback(e2);
-                  });
-                  WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
-                } else {
-                  endCallback(e2);
-                  nextSentence();
-                }
-              }
-            }
-          };
-          const skipVideo = () => {
-            console.log("skip");
-            endPerform();
-          };
-          WebGAL.events.fullscreenDbClick.on(skipVideo);
-          const perform = {
-            performName: performInitName,
-            duration: 1e3 * 60 * 60,
-            isOver: false,
-            isHoldOn: false,
-            stopFunction: () => {
-              WebGAL.events.fullscreenDbClick.off(skipVideo);
-              const bgmElement22 = document.getElementById("currentBgm");
-              if (bgmElement22) {
-                bgmElement22.volume = bgmVol.toString();
-              }
-              const vocalElement2 = document.getElementById("currentVocal");
-              if (bgmElement22) {
-                vocalElement2.volume = vocalVol.toString();
-              }
-              if (flvPlayer) {
-                flvPlayer.pause();
-                flvPlayer.unload();
-                flvPlayer.detachMediaElement();
-                flvPlayer.destroy();
-                flvPlayer = null;
-              }
-              ReactDOM.render(/* @__PURE__ */ jsxRuntimeExports.jsx("div", {}), document.getElementById("videoContainer"));
-            },
-            blockingNext: () => blockingNextFlag,
-            blockingAuto: () => {
-              return !isOver;
-            },
-            stopTimeout: void 0,
-            // 暂时不用，后面会交给自动清除
-            goNextWhenOver: true
-          };
-          resolve2(perform);
-          const vocalVol2 = 0;
-          const bgmVol2 = 0;
-          const bgmElement2 = document.getElementById("currentBgm");
-          if (bgmElement2) {
-            bgmElement2.volume = bgmVol2.toString();
-          }
-          const vocalElement = document.getElementById("currentVocal");
-          if (bgmElement2) {
-            vocalElement.volume = vocalVol2.toString();
-          }
-          flvPlayer.play();
-          if (chooseContent && loopValue) {
-            const parsedResult = sceneParser(chooseContent, "temp.txt", "");
-            const script = parsedResult.sentenceList[0];
-            const perform2 = choose(script, endPerform);
-            WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
-          }
-          videoElement.onended = () => {
-            endPerform();
-          };
-        }
-      }, 100);
-    })
-  };
-  return performObject;
-};
-const setAnimation = (sentence) => {
-  var _a2;
-  webgalStore.getState().stage.currentDialogKey;
-  const animationName = sentence.content;
-  const animationDuration = getAnimateDuration$1(animationName);
-  const target = (((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "default_id").toString();
-  const key = `${target}-${animationName}-${animationDuration}`;
-  let stopFunction;
-  setTimeout(() => {
-    var _a3, _b2;
-    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
-    const animationObj = getAnimationObject$2(animationName, target, animationDuration);
-    if (animationObj) {
-      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
-      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj, key, target);
-    }
-  }, 0);
-  stopFunction = () => {
-    setTimeout(() => {
-      var _a3;
-      webgalStore.getState().stage.currentDialogKey;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
-    }, 0);
-  };
-  return {
-    performName: key,
-    duration: animationDuration,
-    isHoldOn: false,
-    stopFunction,
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function generateTestblurAnimationObj(targetKey, duration) {
-  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
-  function setStartState() {
-    if (target) {
-      target.pixiContainer.alpha = 0;
-      target.pixiContainer.blur = 0;
-    }
-  }
-  function setEndState() {
-    if (target) {
-      target.pixiContainer.alpha = 1;
-      target.pixiContainer.blur = 5;
-    }
-  }
-  function tickerFunc(delta) {
-    if (target) {
-      const container2 = target.pixiContainer;
-      const baseDuration = WebGAL.gameplay.pixiStage.frameDuration;
-      const currentAddOplityDelta = duration / baseDuration * delta;
-      const increasement = 1 / currentAddOplityDelta;
-      const decreasement = 5 / currentAddOplityDelta;
-      if (container2.alpha < 1) {
-        container2.alpha += increasement;
-      }
-      if (container2.blur < 5) {
-        container2.blur += decreasement;
-      }
-    }
-  }
-  return {
-    setStartState,
-    setEndState,
-    tickerFunc
-  };
-}
-const webgalAnimations = [
-  { name: "universalSoftIn", animationGenerateFunc: generateUniversalSoftInAnimationObj },
-  { name: "universalSoftOff", animationGenerateFunc: generateUniversalSoftOffAnimationObj },
-  { name: "testblur", animationGenerateFunc: generateTestblurAnimationObj }
-];
-const setComplexAnimation = (sentence) => {
-  var _a2, _b2, _c2;
-  webgalStore.getState().stage.currentDialogKey;
-  const animationName = sentence.content;
-  const animationDuration = getSentenceArgByKey(sentence, "duration") ?? 0;
-  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
-  const key = `${target}-${animationName}-${animationDuration}`;
-  const animationFunction = getAnimationObject$1(animationName);
-  let stopFunction = () => {
-  };
-  if (animationFunction) {
-    logger.debug(`动画${animationName}作用在${target}`, animationDuration);
-    const animationObj = animationFunction(target, animationDuration);
-    (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.stopPresetAnimationOnTarget(target);
-    (_c2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _c2.registerAnimation(animationObj, key, target);
-    stopFunction = () => {
-      var _a3;
-      webgalStore.getState().stage.currentDialogKey;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
-    };
-  }
-  return {
-    performName: key,
-    duration: animationDuration,
-    isHoldOn: false,
-    stopFunction,
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function getAnimationObject$1(animationName) {
-  const result = webgalAnimations.find((e2) => e2.name === animationName);
-  logger.debug("装载动画", result);
-  if (result) {
-    return result.animationGenerateFunc;
-  }
-  return null;
-}
-const setFilter = (sentence) => {
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const setTempAnimation = (sentence) => {
-  var _a2;
-  webgalStore.getState().stage.currentDialogKey;
-  const animationName = (Math.random() * 10).toString(16);
-  const animationString = sentence.content;
-  let animationObj;
-  try {
-    animationObj = JSON.parse(animationString);
-  } catch (e2) {
-    animationObj = [];
-  }
-  const newAnimation = { name: animationName, effects: animationObj };
-  WebGAL.animationManager.addAnimation(newAnimation);
-  const animationDuration = getAnimateDuration$1(animationName);
-  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
-  const key = `${target}-${animationName}-${animationDuration}`;
-  let stopFunction = () => {
-  };
-  setTimeout(() => {
-    var _a3, _b2;
-    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
-    const animationObj2 = getAnimationObject$2(animationName, target, animationDuration);
-    if (animationObj2) {
-      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
-      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj2, key, target);
-    }
-  }, 0);
-  stopFunction = () => {
-    setTimeout(() => {
-      var _a3;
-      webgalStore.getState().stage.currentDialogKey;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
-    }, 0);
-  };
-  return {
-    performName: key,
-    duration: animationDuration,
-    isHoldOn: false,
-    stopFunction,
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function setTextbox(sentence) {
-  if (sentence.content === "hide") {
-    webgalStore.dispatch(setStage({ key: "isDisableTextbox", value: true }));
-  } else {
-    webgalStore.dispatch(setStage({ key: "isDisableTextbox", value: false }));
-  }
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-}
-const setTransform = (sentence) => {
-  var _a2;
-  webgalStore.getState().stage.currentDialogKey;
-  const animationName = (Math.random() * 10).toString(16);
-  const animationString = sentence.content;
-  let animationObj;
-  const duration = getSentenceArgByKey(sentence, "duration");
-  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
-  try {
-    const frame2 = JSON.parse(animationString);
-    animationObj = generateTransformAnimationObj(target, frame2, duration);
-  } catch (e2) {
-    animationObj = [];
-  }
-  const newAnimation = { name: animationName, effects: animationObj };
-  WebGAL.animationManager.addAnimation(newAnimation);
-  const animationDuration = getAnimateDuration(animationName);
-  const key = `${target}-${animationName}-${animationDuration}`;
-  let stopFunction = () => {
-  };
-  setTimeout(() => {
-    var _a3, _b2;
-    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
-    const animationObj2 = getAnimationObject(animationName, target, animationDuration);
-    if (animationObj2) {
-      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
-      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj2, key, target);
-    }
-  }, 0);
-  stopFunction = () => {
-    setTimeout(() => {
-      var _a3;
-      webgalStore.getState().stage.currentDialogKey;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
-    }, 0);
-  };
-  return {
-    performName: key,
-    duration: animationDuration,
-    isHoldOn: false,
-    stopFunction,
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function getAnimationObject(animationName, target, duration) {
-  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
-  if (effect) {
-    const mappedEffects = effect.effects.map((effect2) => {
-      const newEffect = cloneDeep$1({ ...baseTransform, duration: 0 });
-      Object.assign(newEffect, effect2);
-      newEffect.duration = effect2.duration;
-      return newEffect;
-    });
-    logger.debug("装载自定义动画", mappedEffects);
-    return generateTimelineObj(mappedEffects, target, duration);
-  }
-  return null;
-}
-function getAnimateDuration(animationName) {
-  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
-  if (effect) {
-    let duration = 0;
-    effect.effects.forEach((e2) => {
-      duration += e2.duration;
-    });
-    return duration;
-  }
-  return 0;
-}
-const setTransition = (sentence) => {
-  let key = "0";
-  for (const e2 of sentence.args) {
-    if (e2.key === "target") {
-      key = e2.value.toString();
-    }
-  }
-  if (getSentenceArgByKey(sentence, "enter")) {
-    WebGAL.animationManager.nextEnterAnimationName.set(key, getSentenceArgByKey(sentence, "enter").toString());
-  }
-  if (getSentenceArgByKey(sentence, "exit")) {
-    WebGAL.animationManager.nextExitAnimationName.set(key + "-off", getSentenceArgByKey(sentence, "exit").toString());
-  }
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => false,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const unlockBgm$2 = (sentence) => {
-  const url2 = sentence.content;
-  let name = sentence.content;
-  let series = "default";
-  console.log(sentence, "bgm-sentence");
-  sentence.args.forEach((e2) => {
-    if (e2.key === "name") {
-      name = e2.value.toString();
-    }
-    if (e2.key === "series") {
-      series = e2.value.toString();
-    }
-  });
-  logger.info(`解锁BGM：${name}，路径：${url2}，所属系列：${series}`);
-  webgalStore.dispatch(unlockBgmInUserData({ name, url: url2, series }));
-  const userDataState = webgalStore.getState().userData;
-  localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
-  });
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const unlockCg = (sentence) => {
-  const url2 = sentence.content;
-  let name = sentence.content;
-  let series = "default";
-  console.log(sentence, "cg-sentence");
-  sentence.args.forEach((e2) => {
-    if (e2.key === "name") {
-      name = e2.value.toString();
-    }
-    if (e2.key === "series") {
-      series = e2.value.toString();
-    }
-  });
-  logger.info(`解锁CG：${name}，路径：${url2}，所属系列：${series}`);
-  webgalStore.dispatch(unlockCgInUserData({ name, url: url2, series }));
-  const userDataState = webgalStore.getState().userData;
-  localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
-  });
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const resetStage = (resetBacklog, resetSceneAndVar = true) => {
-  if (resetBacklog) {
-    WebGAL.backlogManager.makeBacklogEmpty();
-  }
-  if (resetSceneAndVar) {
-    WebGAL.sceneManager.resetScene();
-  }
-  WebGAL.gameplay.performController.removeAllPerform();
-  WebGAL.gameplay.resetGamePlay();
-  const initSceneDataCopy = cloneDeep$1(initState$3);
-  const currentVars = webgalStore.getState().stage.GameVar;
-  webgalStore.dispatch(resetStageState(initSceneDataCopy));
-  if (!resetSceneAndVar) {
-    webgalStore.dispatch(setStage({ key: "GameVar", value: currentVars }));
-  }
-};
-const initState$1 = {
-  saveData: [],
-  quickSaveData: null
-};
-const saveDataSlice = createSlice({
-  name: "saveData",
-  initialState: cloneDeep$1(initState$1),
-  reducers: {
-    setFastSave: (state, action) => {
-      state.quickSaveData = action.payload;
-    },
-    resetFastSave: (state) => {
-      state.quickSaveData = null;
-    },
-    resetSaves: (state) => {
-      state.quickSaveData = null;
-      state.saveData = [];
-    },
-    saveGame: (state, action) => {
-      state.saveData[action.payload.index] = action.payload.saveData;
-    },
-    replaceSaveGame: (state, action) => {
-      state.saveData = action.payload;
-    }
-  }
-});
-const saveActions = saveDataSlice.actions;
-const savesReducer = saveDataSlice.reducer;
-const end = (sentence) => {
-  resetStage(true);
-  const dispatch = webgalStore.dispatch;
-  const sceneUrl = assetSetter("start.txt", fileType$1.scene);
-  setTimeout(() => {
-    WebGAL.sceneManager.resetScene();
-  }, 5);
-  dispatch(saveActions.resetFastSave());
-  dumpToStorageFast();
-  sceneFetcher(sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, "start.txt", sceneUrl);
-  });
-  dispatch(setVisibility({ component: "showTitle", visibility: true }));
-  playBgm(webgalStore.getState().GUI.titleBgm);
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const jumpLabel = (sentence) => {
-  jmp(sentence.content);
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const pixiInit = (sentence) => {
-  WebGAL.gameplay.performController.performList.forEach((e2) => {
-    if (e2.performName.match(/PixiPerform/)) {
-      logger.warn("pixi 被脚本重新初始化", e2.performName);
-      for (let i2 = 0; i2 < WebGAL.gameplay.performController.performList.length; i2++) {
-        const e22 = WebGAL.gameplay.performController.performList[i2];
-        if (e22.performName === e2.performName) {
-          e22.stopFunction();
-          clearTimeout(e22.stopTimeout);
-          WebGAL.gameplay.performController.performList.splice(i2, 1);
-          i2--;
-        }
-      }
-      webgalStore.dispatch(stageActions.removeAllPixiPerforms());
-    }
-  });
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const audioContextWrapper = {
-  audioContext: new AudioContext(),
-  source: null,
-  analyser: void 0,
-  dataArray: void 0,
-  audioLevelInterval: setInterval(() => {
-  }, 0),
-  // dummy interval
-  blinkTimerID: setTimeout(() => {
-  }, 0),
-  // dummy timeout
-  maxAudioLevel: 0
-};
-const updateThresholds = (audioLevel) => {
-  audioContextWrapper.maxAudioLevel = Math.max(audioLevel, audioContextWrapper.maxAudioLevel);
-  return {
-    OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.75,
-    HALF_OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.5
-  };
-};
-const performBlinkAnimation = (params) => {
-  let isBlinking = false;
-  function blink() {
+  preloadVideo(url2) {
     var _a2;
-    if (isBlinking || params.animationEndTime && Date.now() > params.animationEndTime)
+    if (this.videosByKey[url2]) {
       return;
-    isBlinking = true;
-    (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.performBlinkAnimation(params.key, params.animationItem, "closed", params.pos);
-    audioContextWrapper.blinkTimerID = setTimeout(() => {
-      var _a3;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.performBlinkAnimation(params.key, params.animationItem, "open", params.pos);
-      isBlinking = false;
-      const nextBlinkTime = Math.random() * 300 + 3500;
-      audioContextWrapper.blinkTimerID = setTimeout(blink, nextBlinkTime);
-    }, 200);
-  }
-  blink();
-};
-const getAudioLevel = (analyser, dataArray, bufferLength) => {
-  analyser.getByteFrequencyData(dataArray);
-  let sum = 0;
-  for (let i2 = 0; i2 < bufferLength; i2++) {
-    sum += dataArray[i2];
-  }
-  return sum / bufferLength;
-};
-const performMouthAnimation = (params) => {
-  var _a2, _b2;
-  const { audioLevel, OPEN_THRESHOLD, HALF_OPEN_THRESHOLD, currentMouthValue, lerpSpeed, key, animationItem, pos } = params;
-  let targetValue;
-  if (audioLevel > OPEN_THRESHOLD) {
-    targetValue = 1;
-  } else if (audioLevel > HALF_OPEN_THRESHOLD) {
-    targetValue = 0.5;
-  } else {
-    targetValue = 0;
-  }
-  const mouthValue = currentMouthValue + (targetValue - currentMouthValue) * lerpSpeed;
-  (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.setModelMouthY(key, audioLevel);
-  let mouthState;
-  if (mouthValue > 0.75) {
-    mouthState = "open";
-  } else if (mouthValue > 0.25) {
-    mouthState = "half_open";
-  } else {
-    mouthState = "closed";
-  }
-  if (animationItem !== void 0) {
-    (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.performMouthSyncAnimation(key, animationItem, mouthState, pos);
-  }
-};
-class Matcher {
-  constructor(subject) {
-    __publicField(this, "subject");
-    __publicField(this, "result");
-    __publicField(this, "isEnd", false);
-    this.subject = subject;
-  }
-  with(pattern, fn2) {
-    if (!this.isEnd && this.subject === pattern) {
-      this.result = fn2();
-      this.isEnd = true;
     }
-    return this;
+    console.info("开始预加载视频", url2);
+    const id2 = "video-" + this.videoIndex++;
+    const videoContainerTag = document.createElement("div");
+    const videoTag = document.createElement("video");
+    videoContainerTag.setAttribute("id", id2);
+    videoContainerTag.style.width = "100%";
+    videoContainerTag.style.height = "100%";
+    videoContainerTag.style.zIndex = "-99";
+    videoContainerTag.style.display = "block";
+    videoContainerTag.style.opacity = "0";
+    videoContainerTag.style.background = "#000";
+    videoContainerTag.style.position = "absolute";
+    videoTag.style.width = "100%";
+    videoTag.style.height = "100%";
+    videoTag.style.zIndex = "11";
+    videoTag.style.position = "absolute";
+    videoTag.style.display = "block";
+    const onEndedHandler = () => {
+      const callbacks = this.videosByKey[url2].events.ended.callbacks;
+      callbacks.forEach((cb2) => cb2());
+    };
+    videoTag.addEventListener("ended", onEndedHandler);
+    videoContainerTag.appendChild(videoTag);
+    (_a2 = document.getElementById("videoContainer")) == null ? void 0 : _a2.appendChild(videoContainerTag);
+    const flvPlayer = FlvJs.createPlayer({
+      type: url2.endsWith(".mp4") ? "mp4" : "flv",
+      url: url2
+    });
+    flvPlayer.attachMediaElement(videoTag);
+    flvPlayer.load();
+    this.videosByKey[url2] = {
+      player: flvPlayer,
+      id: id2,
+      events: {
+        ended: {
+          callbacks: [],
+          handler: onEndedHandler
+        }
+      }
+    };
   }
-  endsWith(pattern, fn2) {
-    if (!this.isEnd && this.subject === pattern) {
-      this.result = fn2();
-      this.isEnd = true;
-    }
-    return this.evaluate();
-  }
-  default(fn2) {
-    if (!this.isEnd)
-      this.result = fn2();
-    return this.evaluate();
-  }
-  evaluate() {
-    return this.result;
-  }
-}
-function match$1(subject) {
-  return new Matcher(subject);
-}
-const playVocal = (sentence) => {
-  logger.debug("play vocal");
-  const performInitName = "vocal-play";
-  const url2 = getSentenceArgByKey(sentence, "vocal");
-  const volume = getSentenceArgByKey(sentence, "volume");
-  let currentStageState;
-  currentStageState = webgalStore.getState().stage;
-  let pos = "";
-  let key = "";
-  const freeFigure = currentStageState.freeFigure;
-  const figureAssociatedAnimation = currentStageState.figureAssociatedAnimation;
-  let bufferLength = 0;
-  let currentMouthValue = 0;
-  const lerpSpeed = 1;
-  let VocalControl = document.getElementById("currentVocal");
-  WebGAL.gameplay.performController.unmountPerform("vocal-play", true);
-  if (VocalControl !== null) {
-    VocalControl.currentTime = 0;
-    VocalControl.pause();
-  }
-  for (const e2 of sentence.args) {
-    if (e2.value === true) {
-      match$1(e2.key).with("left", () => {
-        pos = "left";
-      }).with("right", () => {
-        pos = "right";
-      }).endsWith("center", () => {
-        pos = "center";
-      });
-    }
-    if (e2.key === "figureId") {
-      key = `${e2.value.toString()}`;
+  pauseVideo(key) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      videoItem.player.pause();
     }
   }
-  webgalStore.dispatch(setStage({ key: "playVocal", value: url2 }));
-  webgalStore.dispatch(setStage({ key: "vocal", value: url2 }));
-  let isOver = false;
-  return {
-    arrangePerformPromise: new Promise((resolve2) => {
+  showVideo(key) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      const videoContainerTag = document.getElementById(videoItem.id);
+      if (videoContainerTag) {
+        videoContainerTag.style.opacity = "1";
+        videoContainerTag.style.zIndex = "11";
+      }
+    }
+  }
+  playVideo(key) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      videoItem.player.play();
+    }
+  }
+  setLoop(key, loopValue) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      const videoTag = document.getElementById(videoItem.id);
+      if (videoTag) {
+        videoTag.loop = loopValue;
+      }
+    }
+  }
+  seek(key, time) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      videoItem.player.currentTime = time;
+    }
+  }
+  setVolume(key, volume) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      videoItem.player.volume = volume;
+    }
+  }
+  destory(key) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      videoItem.player.pause();
+      const videoContainer2 = document.getElementById(videoItem.id);
+      if (videoContainer2) {
+        videoContainer2.style.opacity = "0";
+        videoContainer2.style.zIndex = "-99";
+      }
       setTimeout(() => {
-        let VocalControl2 = document.getElementById("currentVocal");
-        typeof volume === "number" && volume >= 0 && volume <= 100 ? webgalStore.dispatch(setStage({ key: "vocalVolume", value: volume })) : webgalStore.dispatch(setStage({ key: "vocalVolume", value: 100 }));
-        if (VocalControl2 !== null) {
-          VocalControl2.currentTime = 0;
-          const perform = {
-            performName: performInitName,
-            duration: 1e3 * 60 * 60,
-            isOver: false,
-            isHoldOn: false,
-            stopFunction: () => {
-              clearInterval(audioContextWrapper.audioLevelInterval);
-              VocalControl2.pause();
-              key = key ? key : `fig-${pos}`;
-              const animationItem2 = figureAssociatedAnimation.find((tid) => tid.targetId === key);
-              performMouthAnimation({
-                audioLevel: 0,
-                OPEN_THRESHOLD: 1,
-                HALF_OPEN_THRESHOLD: 1,
-                currentMouthValue,
-                lerpSpeed,
-                key,
-                animationItem: animationItem2,
-                pos
-              });
-              clearTimeout(audioContextWrapper.blinkTimerID);
-            },
-            blockingNext: () => false,
-            blockingAuto: () => {
-              return !isOver;
-            },
-            skipNextCollect: true,
-            stopTimeout: void 0
-            // 暂时不用，后面会交给自动清除
-          };
-          WebGAL.gameplay.performController.arrangeNewPerform(perform, sentence, false);
-          key = key ? key : `fig-${pos}`;
-          const animationItem = figureAssociatedAnimation.find((tid) => tid.targetId === key);
-          if (animationItem) {
-            const foundFigure = freeFigure.find((figure) => figure.key === key);
-            if (foundFigure) {
-              pos = foundFigure.basePosition;
-            }
-            if (!audioContextWrapper.audioContext) {
-              let audioContext;
-              audioContext = new AudioContext();
-              audioContextWrapper.analyser = audioContext.createAnalyser();
-              audioContextWrapper.analyser.fftSize = 256;
-              audioContextWrapper.dataArray = new Uint8Array(audioContextWrapper.analyser.frequencyBinCount);
-            }
-            if (!audioContextWrapper.analyser) {
-              audioContextWrapper.analyser = audioContextWrapper.audioContext.createAnalyser();
-              audioContextWrapper.analyser.fftSize = 256;
-            }
-            bufferLength = audioContextWrapper.analyser.frequencyBinCount;
-            audioContextWrapper.dataArray = new Uint8Array(bufferLength);
-            let vocalControl = document.getElementById("currentVocal");
-            if (!audioContextWrapper.source) {
-              audioContextWrapper.source = audioContextWrapper.audioContext.createMediaElementSource(vocalControl);
-              audioContextWrapper.source.connect(audioContextWrapper.analyser);
-            }
-            audioContextWrapper.analyser.connect(audioContextWrapper.audioContext.destination);
-            audioContextWrapper.audioLevelInterval = setInterval(() => {
-              const audioLevel = getAudioLevel(
-                audioContextWrapper.analyser,
-                audioContextWrapper.dataArray,
-                bufferLength
-              );
-              const { OPEN_THRESHOLD, HALF_OPEN_THRESHOLD } = updateThresholds(audioLevel);
-              performMouthAnimation({
-                audioLevel,
-                OPEN_THRESHOLD,
-                HALF_OPEN_THRESHOLD,
-                currentMouthValue,
-                lerpSpeed,
-                key,
-                animationItem,
-                pos
-              });
-            }, 50);
-            let animationEndTime;
-            animationEndTime = Date.now() + 1e4;
-            performBlinkAnimation({ key, animationItem, pos, animationEndTime });
-            setTimeout(() => {
-              clearTimeout(audioContextWrapper.blinkTimerID);
-            }, 1e4);
+        try {
+          const video = videoContainer2 == null ? void 0 : videoContainer2.getElementsByTagName("video");
+          if (video == null ? void 0 : video.length) {
+            video[0].removeEventListener("ended", videoItem.events.ended.handler);
+            videoItem.player.destroy();
           }
-          VocalControl2 == null ? void 0 : VocalControl2.play();
-          VocalControl2.onended = () => {
-            for (const e2 of WebGAL.gameplay.performController.performList) {
-              if (e2.performName === performInitName) {
-                isOver = true;
-                e2.stopFunction();
-                WebGAL.gameplay.performController.unmountPerform(e2.performName);
-              }
-            }
-          };
+        } catch (error2) {
+          console.warn(error2);
         }
-      }, 1);
-    })
-  };
-};
-function useTextDelay(num) {
-  if (num === 0) {
-    return 3;
-  } else if (num === 100) {
-    return 80;
-  } else {
-    return 77 * Number(num) / 100;
-  }
-}
-function useTextAnimationDuration(num) {
-  if (num === 0) {
-    return 800;
-  } else if (num === 100) {
-    return 200;
-  } else {
-    return 800 - 600 * Number(num) / 100;
-  }
-}
-const say = (sentence) => {
-  const stageState = webgalStore.getState().stage;
-  const userDataState = webgalStore.getState().userData;
-  const dispatch = webgalStore.dispatch;
-  let dialogKey = Math.random().toString();
-  let dialogToShow = sentence.content;
-  const isConcat = getSentenceArgByKey(sentence, "concat");
-  const isNotend = getSentenceArgByKey(sentence, "notend");
-  const speaker = getSentenceArgByKey(sentence, "speaker");
-  const clear2 = getSentenceArgByKey(sentence, "clear");
-  const vocal = getSentenceArgByKey(sentence, "vocal");
-  if (isConcat) {
-    dialogKey = stageState.currentDialogKey;
-    dialogToShow = stageState.showText + dialogToShow;
-    dispatch(setStage({ key: "currentConcatDialogPrev", value: stageState.showText }));
-  } else {
-    dispatch(setStage({ key: "currentConcatDialogPrev", value: "" }));
-  }
-  dispatch(setStage({ key: "showText", value: dialogToShow }));
-  dispatch(setStage({ key: "vocal", value: "" }));
-  if (!(userDataState.optionData.voiceInterruption === voiceOption.no && vocal === null)) {
-    dispatch(setStage({ key: "playVocal", value: "" }));
-    WebGAL.gameplay.performController.unmountPerform("vocal-play", true);
-  }
-  dispatch(setStage({ key: "currentDialogKey", value: dialogKey }));
-  const textDelay = useTextDelay(userDataState.optionData.textSpeed);
-  const sentenceDelay = textDelay * sentence.content.length;
-  for (const e2 of sentence.args) {
-    if (e2.key === "fontSize") {
-      switch (e2.value) {
-        case "default":
-          dispatch(setStage({ key: "showTextSize", value: -1 }));
-          break;
-        case "small":
-          dispatch(setStage({ key: "showTextSize", value: textSize.small }));
-          break;
-        case "medium":
-          dispatch(setStage({ key: "showTextSize", value: textSize.medium }));
-          break;
-        case "large":
-          dispatch(setStage({ key: "showTextSize", value: textSize.large }));
-          break;
-      }
+        setTimeout(() => {
+          videoContainer2 == null ? void 0 : videoContainer2.remove();
+        }, 500);
+        delete this.videosByKey[key];
+      }, 2e3);
     }
   }
-  let showName = stageState.showName;
-  if (speaker !== null) {
-    showName = speaker;
-  }
-  if (clear2) {
-    showName = "";
-  }
-  dispatch(setStage({ key: "showName", value: showName }));
-  if (vocal) {
-    playVocal(sentence);
-  }
-  const performInitName = getRandomPerformName();
-  let endDelay = 750 - userDataState.optionData.textSpeed / 100 * 2 * 250;
-  if (isNotend) {
-    endDelay = 0;
-  }
-  return {
-    performName: performInitName,
-    duration: sentenceDelay + endDelay,
-    isHoldOn: false,
-    stopFunction: () => {
-      WebGAL.events.textSettle.emit();
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0,
-    // 暂时不用，后面会交给自动清除
-    goNextWhenOver: isNotend
-  };
-};
-var parse$5 = {};
-var window$1 = { document: {} };
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var lowercase = function(string) {
-  return isString$1(string) ? string.toLowerCase() : string;
-};
-var isArray$5 = Array.isArray;
-var manualLowercase = function(s2) {
-  return isString$1(s2) ? s2.replace(/[A-Z]/g, function(ch2) {
-    return String.fromCharCode(ch2.charCodeAt(0) | 32);
-  }) : s2;
-};
-if ("i" !== "I".toLowerCase()) {
-  lowercase = manualLowercase;
-}
-var jqLite, toString2 = Object.prototype.toString, getPrototypeOf = Object.getPrototypeOf, ngMinErr = minErr("ng");
-window$1.angular || (window$1.angular = {});
-window$1.document.documentMode;
-function isArrayLike(obj) {
-  if (obj == null || isWindow(obj))
-    return false;
-  if (isArray$5(obj) || isString$1(obj) || jqLite)
-    return true;
-  var length2 = "length" in Object(obj) && obj.length;
-  return isNumber$1(length2) && (length2 >= 0 && (length2 - 1 in obj || obj instanceof Array) || typeof obj.item === "function");
-}
-function forEach3(obj, iterator, context2) {
-  var key, length2;
-  if (obj) {
-    if (isFunction(obj)) {
-      for (key in obj) {
-        if (key !== "prototype" && key !== "length" && key !== "name" && obj.hasOwnProperty(key)) {
-          iterator.call(context2, obj[key], key, obj);
-        }
-      }
-    } else if (isArray$5(obj) || isArrayLike(obj)) {
-      var isPrimitive = typeof obj !== "object";
-      for (key = 0, length2 = obj.length; key < length2; key++) {
-        if (isPrimitive || key in obj) {
-          iterator.call(context2, obj[key], key, obj);
-        }
-      }
-    } else if (obj.forEach && obj.forEach !== forEach3) {
-      obj.forEach(iterator, context2, obj);
-    } else if (isBlankObject(obj)) {
-      for (key in obj) {
-        iterator.call(context2, obj[key], key, obj);
-      }
-    } else if (typeof obj.hasOwnProperty === "function") {
-      for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          iterator.call(context2, obj[key], key, obj);
-        }
-      }
-    } else {
-      for (key in obj) {
-        if (hasOwnProperty.call(obj, key)) {
-          iterator.call(context2, obj[key], key, obj);
-        }
-      }
-    }
-  }
-  return obj;
-}
-function setHashKey(obj, h2) {
-  if (h2) {
-    obj.$$hashKey = h2;
-  } else {
-    delete obj.$$hashKey;
-  }
-}
-function noop$2() {
-}
-noop$2.$inject = [];
-function isUndefined(value) {
-  return typeof value === "undefined";
-}
-function isDefined(value) {
-  return typeof value !== "undefined";
-}
-function isObject$3(value) {
-  return value !== null && typeof value === "object";
-}
-function isBlankObject(value) {
-  return value !== null && typeof value === "object" && !getPrototypeOf(value);
-}
-function isString$1(value) {
-  return typeof value === "string";
-}
-function isNumber$1(value) {
-  return typeof value === "number";
-}
-function isFunction(value) {
-  return typeof value === "function";
-}
-function isWindow(obj) {
-  return obj && obj.window === obj;
-}
-function isScope(obj) {
-  return obj && obj.$evalAsync && obj.$watch;
-}
-var TYPED_ARRAY_REGEXP = /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array\]$/;
-function isTypedArray(value) {
-  return value && isNumber$1(value.length) && TYPED_ARRAY_REGEXP.test(toString2.call(value));
-}
-function isArrayBuffer(obj) {
-  return toString2.call(obj) === "[object ArrayBuffer]";
-}
-function copy$2(source, destination) {
-  var stackSource = [];
-  var stackDest = [];
-  if (destination) {
-    if (isTypedArray(destination) || isArrayBuffer(destination)) {
-      throw ngMinErr(
-        "cpta",
-        "Can't copy! TypedArray destination cannot be mutated."
-      );
-    }
-    if (source === destination) {
-      throw ngMinErr(
-        "cpi",
-        "Can't copy! Source and destination are identical."
-      );
-    }
-    if (isArray$5(destination)) {
-      destination.length = 0;
-    } else {
-      forEach3(destination, function(value, key) {
-        if (key !== "$$hashKey") {
-          delete destination[key];
-        }
-      });
-    }
-    stackSource.push(source);
-    stackDest.push(destination);
-    return copyRecurse(source, destination);
-  }
-  return copyElement(source);
-  function copyRecurse(source2, destination2) {
-    var h2 = destination2.$$hashKey;
-    var key;
-    if (isArray$5(source2)) {
-      for (var i2 = 0, ii2 = source2.length; i2 < ii2; i2++) {
-        destination2.push(copyElement(source2[i2]));
-      }
-    } else if (isBlankObject(source2)) {
-      for (key in source2) {
-        destination2[key] = copyElement(source2[key]);
-      }
-    } else if (source2 && typeof source2.hasOwnProperty === "function") {
-      for (key in source2) {
-        if (source2.hasOwnProperty(key)) {
-          destination2[key] = copyElement(source2[key]);
-        }
-      }
-    } else {
-      for (key in source2) {
-        if (hasOwnProperty.call(source2, key)) {
-          destination2[key] = copyElement(source2[key]);
-        }
-      }
-    }
-    setHashKey(destination2, h2);
-    return destination2;
-  }
-  function copyElement(source2) {
-    if (!isObject$3(source2)) {
-      return source2;
-    }
-    var index2 = stackSource.indexOf(source2);
-    if (index2 !== -1) {
-      return stackDest[index2];
-    }
-    if (isWindow(source2) || isScope(source2)) {
-      throw ngMinErr(
-        "cpws",
-        "Can't copy! Making copies of Window or Scope instances is not supported."
-      );
-    }
-    var needsRecurse = false;
-    var destination2 = copyType(source2);
-    if (destination2 === void 0) {
-      destination2 = isArray$5(source2) ? [] : Object.create(getPrototypeOf(source2));
-      needsRecurse = true;
-    }
-    stackSource.push(source2);
-    stackDest.push(destination2);
-    return needsRecurse ? copyRecurse(source2, destination2) : destination2;
-  }
-  function copyType(source2) {
-    switch (toString2.call(source2)) {
-      case "[object Int8Array]":
-      case "[object Int16Array]":
-      case "[object Int32Array]":
-      case "[object Float32Array]":
-      case "[object Float64Array]":
-      case "[object Uint8Array]":
-      case "[object Uint8ClampedArray]":
-      case "[object Uint16Array]":
-      case "[object Uint32Array]":
-        return new source2.constructor(
-          copyElement(source2.buffer),
-          source2.byteOffset,
-          source2.length
-        );
-      case "[object ArrayBuffer]":
-        if (!source2.slice) {
-          var copied = new ArrayBuffer(source2.byteLength);
-          new Uint8Array(copied).set(new Uint8Array(source2));
-          return copied;
-        }
-        return source2.slice(0);
-      case "[object Boolean]":
-      case "[object Number]":
-      case "[object String]":
-      case "[object Date]":
-        return new source2.constructor(source2.valueOf());
-      case "[object RegExp]":
-        var re2 = new RegExp(
-          source2.source,
-          source2.toString().match(/[^\/]*$/)[0]
-        );
-        re2.lastIndex = source2.lastIndex;
-        return re2;
-      case "[object Blob]":
-        return new source2.constructor([source2], { type: source2.type });
-    }
-    if (isFunction(source2.cloneNode)) {
-      return source2.cloneNode(true);
-    }
-  }
-}
-function toJsonReplacer(key, value) {
-  var val = value;
-  if (typeof key === "string" && key.charAt(0) === "$" && key.charAt(1) === "$") {
-    val = void 0;
-  } else if (isWindow(value)) {
-    val = "$WINDOW";
-  } else if (value && window$1.document === value) {
-    val = "$DOCUMENT";
-  } else if (isScope(value)) {
-    val = "$SCOPE";
-  }
-  return val;
-}
-function allowAutoBootstrap(document2) {
-  if (!document2.currentScript) {
-    return true;
-  }
-  var src = document2.currentScript.getAttribute("src");
-  var link = document2.createElement("a");
-  link.href = src;
-  var scriptProtocol = link.protocol;
-  var docLoadProtocol = document2.location.protocol;
-  if ((scriptProtocol === "resource:" || scriptProtocol === "chrome-extension:") && docLoadProtocol !== scriptProtocol) {
-    return false;
-  }
-  return true;
-}
-allowAutoBootstrap(window$1.document);
-function createMap() {
-  return /* @__PURE__ */ Object.create(null);
-}
-function serializeObject(obj) {
-  var seen2 = [];
-  return JSON.stringify(obj, function(key, val) {
-    val = toJsonReplacer(key, val);
-    if (isObject$3(val)) {
-      if (seen2.indexOf(val) >= 0)
-        return "...";
-      seen2.push(val);
-    }
-    return val;
-  });
-}
-function toDebugString(obj) {
-  if (typeof obj === "function") {
-    return obj.toString().replace(/ \{[\s\S]*$/, "");
-  } else if (isUndefined(obj)) {
-    return "undefined";
-  } else if (typeof obj !== "string") {
-    return serializeObject(obj);
-  }
-  return obj;
-}
-function minErr(module, ErrorConstructor) {
-  ErrorConstructor = ErrorConstructor || Error;
-  return function() {
-    var SKIP_INDEXES = 2;
-    var templateArgs = arguments, code = templateArgs[0], message = "[" + (module ? module + ":" : "") + code + "] ", template = templateArgs[1], paramPrefix, i2;
-    message += template.replace(/\{\d+\}/g, function(match2) {
-      var index2 = +match2.slice(1, -1), shiftedIndex = index2 + SKIP_INDEXES;
-      if (shiftedIndex < templateArgs.length) {
-        return toDebugString(templateArgs[shiftedIndex]);
-      }
-      return match2;
+  destoryAll() {
+    Object.keys(this.videosByKey).forEach((key) => {
+      this.destory(key);
     });
-    message += '\nhttp://errors.angularjs.org/"NG_VERSION_FULL"/' + (module ? module + "/" : "") + code;
-    for (i2 = SKIP_INDEXES, paramPrefix = "?"; i2 < templateArgs.length; i2++, paramPrefix = "&") {
-      message += paramPrefix + "p" + (i2 - SKIP_INDEXES) + "=" + encodeURIComponent(toDebugString(templateArgs[i2]));
-    }
-    return new ErrorConstructor(message);
-  };
-}
-var $parseMinErr = minErr("$parse");
-({}).constructor.prototype.valueOf;
-function getStringValue(name) {
-  return name + "";
-}
-var OPERATORS = createMap();
-forEach3(
-  "+ - * / % === !== == != < > <= >= && || ! = |".split(" "),
-  function(operator) {
-    OPERATORS[operator] = true;
+    this.videosByKey = {};
   }
-);
-var ESCAPE = {
-  n: "\n",
-  f: "\f",
-  r: "\r",
-  t: "	",
-  v: "\v",
-  "'": "'",
-  '"': '"'
-};
-var Lexer$1 = function Lexer(options) {
-  this.options = options;
-};
-Lexer$1.prototype = {
-  constructor: Lexer$1,
-  lex: function(text2) {
-    this.text = text2;
-    this.index = 0;
-    this.tokens = [];
-    while (this.index < this.text.length) {
-      var ch2 = this.text.charAt(this.index);
-      if (ch2 === '"' || ch2 === "'") {
-        this.readString(ch2);
-      } else if (this.isNumber(ch2) || ch2 === "." && this.isNumber(this.peek())) {
-        this.readNumber();
-      } else if (this.isIdentifierStart(this.peekMultichar())) {
-        this.readIdent();
-      } else if (this.is(ch2, "(){}[].,;:?")) {
-        this.tokens.push({ index: this.index, text: ch2 });
-        this.index++;
-      } else if (this.isWhitespace(ch2)) {
-        this.index++;
-      } else {
-        var ch22 = ch2 + this.peek();
-        var ch3 = ch22 + this.peek(2);
-        var op1 = OPERATORS[ch2];
-        var op2 = OPERATORS[ch22];
-        var op3 = OPERATORS[ch3];
-        if (op1 || op2 || op3) {
-          var token2 = op3 ? ch3 : op2 ? ch22 : ch2;
-          this.tokens.push({ index: this.index, text: token2, operator: true });
-          this.index += token2.length;
-        } else {
-          this.throwError(
-            "Unexpected next character ",
-            this.index,
-            this.index + 1
-          );
-        }
-      }
-    }
-    return this.tokens;
-  },
-  is: function(ch2, chars2) {
-    return chars2.indexOf(ch2) !== -1;
-  },
-  peek: function(i2) {
-    var num = i2 || 1;
-    return this.index + num < this.text.length ? this.text.charAt(this.index + num) : false;
-  },
-  isNumber: function(ch2) {
-    return "0" <= ch2 && ch2 <= "9" && typeof ch2 === "string";
-  },
-  isWhitespace: function(ch2) {
-    return ch2 === " " || ch2 === "\r" || ch2 === "	" || ch2 === "\n" || ch2 === "\v" || ch2 === " ";
-  },
-  isIdentifierStart: function(ch2) {
-    return this.options.isIdentifierStart ? this.options.isIdentifierStart(ch2, this.codePointAt(ch2)) : this.isValidIdentifierStart(ch2);
-  },
-  isValidIdentifierStart: function(ch2) {
-    return "a" <= ch2 && ch2 <= "z" || "A" <= ch2 && ch2 <= "Z" || "_" === ch2 || ch2 === "$";
-  },
-  isIdentifierContinue: function(ch2) {
-    return this.options.isIdentifierContinue ? this.options.isIdentifierContinue(ch2, this.codePointAt(ch2)) : this.isValidIdentifierContinue(ch2);
-  },
-  isValidIdentifierContinue: function(ch2, cp) {
-    return this.isValidIdentifierStart(ch2, cp) || this.isNumber(ch2);
-  },
-  codePointAt: function(ch2) {
-    if (ch2.length === 1)
-      return ch2.charCodeAt(0);
-    return (ch2.charCodeAt(0) << 10) + ch2.charCodeAt(1) - 56613888;
-  },
-  peekMultichar: function() {
-    var ch2 = this.text.charAt(this.index);
-    var peek2 = this.peek();
-    if (!peek2) {
-      return ch2;
-    }
-    var cp1 = ch2.charCodeAt(0);
-    var cp2 = peek2.charCodeAt(0);
-    if (cp1 >= 55296 && cp1 <= 56319 && cp2 >= 56320 && cp2 <= 57343) {
-      return ch2 + peek2;
-    }
-    return ch2;
-  },
-  isExpOperator: function(ch2) {
-    return ch2 === "-" || ch2 === "+" || this.isNumber(ch2);
-  },
-  throwError: function(error2, start, end2) {
-    end2 = end2 || this.index;
-    var colStr = isDefined(start) ? "s " + start + "-" + this.index + " [" + this.text.substring(start, end2) + "]" : " " + end2;
-    throw $parseMinErr(
-      "lexerr",
-      "Lexer Error: {0} at column{1} in expression [{2}].",
-      error2,
-      colStr,
-      this.text
-    );
-  },
-  readNumber: function() {
-    var number2 = "";
-    var start = this.index;
-    while (this.index < this.text.length) {
-      var ch2 = lowercase(this.text.charAt(this.index));
-      if (ch2 === "." || this.isNumber(ch2)) {
-        number2 += ch2;
-      } else {
-        var peekCh = this.peek();
-        if (ch2 === "e" && this.isExpOperator(peekCh)) {
-          number2 += ch2;
-        } else if (this.isExpOperator(ch2) && peekCh && this.isNumber(peekCh) && number2.charAt(number2.length - 1) === "e") {
-          number2 += ch2;
-        } else if (this.isExpOperator(ch2) && (!peekCh || !this.isNumber(peekCh)) && number2.charAt(number2.length - 1) === "e") {
-          this.throwError("Invalid exponent");
-        } else {
-          break;
-        }
-      }
-      this.index++;
-    }
-    this.tokens.push({
-      index: start,
-      text: number2,
-      constant: true,
-      value: Number(number2)
-    });
-  },
-  readIdent: function() {
-    var start = this.index;
-    this.index += this.peekMultichar().length;
-    while (this.index < this.text.length) {
-      var ch2 = this.peekMultichar();
-      if (!this.isIdentifierContinue(ch2)) {
-        break;
-      }
-      this.index += ch2.length;
-    }
-    this.tokens.push({
-      index: start,
-      text: this.text.slice(start, this.index),
-      identifier: true
-    });
-  },
-  readString: function(quote2) {
-    var start = this.index;
-    this.index++;
-    var string = "";
-    var rawString = quote2;
-    var escape2 = false;
-    while (this.index < this.text.length) {
-      var ch2 = this.text.charAt(this.index);
-      rawString += ch2;
-      if (escape2) {
-        if (ch2 === "u") {
-          var hex2 = this.text.substring(this.index + 1, this.index + 5);
-          if (!hex2.match(/[\da-f]{4}/i)) {
-            this.throwError("Invalid unicode escape [\\u" + hex2 + "]");
-          }
-          this.index += 4;
-          string += String.fromCharCode(parseInt(hex2, 16));
-        } else {
-          var rep = ESCAPE[ch2];
-          string = string + (rep || ch2);
-        }
-        escape2 = false;
-      } else if (ch2 === "\\") {
-        escape2 = true;
-      } else if (ch2 === quote2) {
-        this.index++;
-        this.tokens.push({
-          index: start,
-          text: rawString,
-          constant: true,
-          value: string
-        });
-        return;
-      } else {
-        string += ch2;
-      }
-      this.index++;
-    }
-    this.throwError("Unterminated quote", start);
-  }
-};
-var AST = function AST2(lexer, options) {
-  this.lexer = lexer;
-  this.options = options;
-};
-AST.Program = "Program";
-AST.ExpressionStatement = "ExpressionStatement";
-AST.AssignmentExpression = "AssignmentExpression";
-AST.ConditionalExpression = "ConditionalExpression";
-AST.LogicalExpression = "LogicalExpression";
-AST.BinaryExpression = "BinaryExpression";
-AST.UnaryExpression = "UnaryExpression";
-AST.CallExpression = "CallExpression";
-AST.MemberExpression = "MemberExpression";
-AST.Identifier = "Identifier";
-AST.Literal = "Literal";
-AST.ArrayExpression = "ArrayExpression";
-AST.Property = "Property";
-AST.ObjectExpression = "ObjectExpression";
-AST.ThisExpression = "ThisExpression";
-AST.LocalsExpression = "LocalsExpression";
-AST.NGValueParameter = "NGValueParameter";
-AST.prototype = {
-  ast: function(text2) {
-    this.text = text2;
-    this.tokens = this.lexer.lex(text2);
-    var value = this.program();
-    if (this.tokens.length !== 0) {
-      this.throwError("is an unexpected token", this.tokens[0]);
-    }
-    return value;
-  },
-  program: function() {
-    var body = [];
-    while (true) {
-      if (this.tokens.length > 0 && !this.peek("}", ")", ";", "]"))
-        body.push(this.expressionStatement());
-      if (!this.expect(";")) {
-        return { type: AST.Program, body };
-      }
-    }
-  },
-  expressionStatement: function() {
-    return { type: AST.ExpressionStatement, expression: this.filterChain() };
-  },
-  filterChain: function() {
-    var left = this.expression();
-    while (this.expect("|")) {
-      left = this.filter(left);
-    }
-    return left;
-  },
-  expression: function() {
-    return this.assignment();
-  },
-  assignment: function() {
-    var result = this.ternary();
-    if (this.expect("=")) {
-      if (!isAssignable(result)) {
-        throw $parseMinErr("lval", "Trying to assign a value to a non l-value");
-      }
-      result = {
-        type: AST.AssignmentExpression,
-        left: result,
-        right: this.assignment(),
-        operator: "="
-      };
-    }
-    return result;
-  },
-  ternary: function() {
-    var test2 = this.logicalOR();
-    var alternate;
-    var consequent;
-    if (this.expect("?")) {
-      alternate = this.expression();
-      if (this.consume(":")) {
-        consequent = this.expression();
-        return {
-          type: AST.ConditionalExpression,
-          test: test2,
-          alternate,
-          consequent
-        };
-      }
-    }
-    return test2;
-  },
-  logicalOR: function() {
-    var left = this.logicalAND();
-    while (this.expect("||")) {
-      left = {
-        type: AST.LogicalExpression,
-        operator: "||",
-        left,
-        right: this.logicalAND()
-      };
-    }
-    return left;
-  },
-  logicalAND: function() {
-    var left = this.equality();
-    while (this.expect("&&")) {
-      left = {
-        type: AST.LogicalExpression,
-        operator: "&&",
-        left,
-        right: this.equality()
-      };
-    }
-    return left;
-  },
-  equality: function() {
-    var left = this.relational();
-    var token2;
-    while (token2 = this.expect("==", "!=", "===", "!==")) {
-      left = {
-        type: AST.BinaryExpression,
-        operator: token2.text,
-        left,
-        right: this.relational()
-      };
-    }
-    return left;
-  },
-  relational: function() {
-    var left = this.additive();
-    var token2;
-    while (token2 = this.expect("<", ">", "<=", ">=")) {
-      left = {
-        type: AST.BinaryExpression,
-        operator: token2.text,
-        left,
-        right: this.additive()
-      };
-    }
-    return left;
-  },
-  additive: function() {
-    var left = this.multiplicative();
-    var token2;
-    while (token2 = this.expect("+", "-")) {
-      left = {
-        type: AST.BinaryExpression,
-        operator: token2.text,
-        left,
-        right: this.multiplicative()
-      };
-    }
-    return left;
-  },
-  multiplicative: function() {
-    var left = this.unary();
-    var token2;
-    while (token2 = this.expect("*", "/", "%")) {
-      left = {
-        type: AST.BinaryExpression,
-        operator: token2.text,
-        left,
-        right: this.unary()
-      };
-    }
-    return left;
-  },
-  unary: function() {
-    var token2;
-    if (token2 = this.expect("+", "-", "!")) {
-      return {
-        type: AST.UnaryExpression,
-        operator: token2.text,
-        prefix: true,
-        argument: this.unary()
-      };
-    } else {
-      return this.primary();
-    }
-  },
-  primary: function() {
-    var primary;
-    if (this.expect("(")) {
-      primary = this.filterChain();
-      this.consume(")");
-    } else if (this.expect("[")) {
-      primary = this.arrayDeclaration();
-    } else if (this.expect("{")) {
-      primary = this.object();
-    } else if (this.selfReferential.hasOwnProperty(this.peek().text)) {
-      primary = copy$2(this.selfReferential[this.consume().text]);
-    } else if (this.options.literals.hasOwnProperty(this.peek().text)) {
-      primary = {
-        type: AST.Literal,
-        value: this.options.literals[this.consume().text]
-      };
-    } else if (this.peek().identifier) {
-      primary = this.identifier();
-    } else if (this.peek().constant) {
-      primary = this.constant();
-    } else {
-      this.throwError("not a primary expression", this.peek());
-    }
-    var next2;
-    while (next2 = this.expect("(", "[", ".")) {
-      if (next2.text === "(") {
-        primary = {
-          type: AST.CallExpression,
-          callee: primary,
-          arguments: this.parseArguments()
-        };
-        this.consume(")");
-      } else if (next2.text === "[") {
-        primary = {
-          type: AST.MemberExpression,
-          object: primary,
-          property: this.expression(),
-          computed: true
-        };
-        this.consume("]");
-      } else if (next2.text === ".") {
-        primary = {
-          type: AST.MemberExpression,
-          object: primary,
-          property: this.identifier(),
-          computed: false
-        };
-      } else {
-        this.throwError("IMPOSSIBLE");
-      }
-    }
-    return primary;
-  },
-  filter: function(baseExpression) {
-    var args = [baseExpression];
-    var result = {
-      type: AST.CallExpression,
-      callee: this.identifier(),
-      arguments: args,
-      filter: true
-    };
-    while (this.expect(":")) {
-      args.push(this.expression());
-    }
-    return result;
-  },
-  parseArguments: function() {
-    var args = [];
-    if (this.peekToken().text !== ")") {
-      do {
-        args.push(this.filterChain());
-      } while (this.expect(","));
-    }
-    return args;
-  },
-  identifier: function() {
-    var token2 = this.consume();
-    if (!token2.identifier) {
-      this.throwError("is not a valid identifier", token2);
-    }
-    return { type: AST.Identifier, name: token2.text };
-  },
-  constant: function() {
-    return { type: AST.Literal, value: this.consume().value };
-  },
-  arrayDeclaration: function() {
-    var elements = [];
-    if (this.peekToken().text !== "]") {
-      do {
-        if (this.peek("]")) {
-          break;
-        }
-        elements.push(this.expression());
-      } while (this.expect(","));
-    }
-    this.consume("]");
-    return { type: AST.ArrayExpression, elements };
-  },
-  object: function() {
-    var properties = [], property2;
-    if (this.peekToken().text !== "}") {
-      do {
-        if (this.peek("}")) {
-          break;
-        }
-        property2 = { type: AST.Property, kind: "init" };
-        if (this.peek().constant) {
-          property2.key = this.constant();
-          property2.computed = false;
-          this.consume(":");
-          property2.value = this.expression();
-        } else if (this.peek().identifier) {
-          property2.key = this.identifier();
-          property2.computed = false;
-          if (this.peek(":")) {
-            this.consume(":");
-            property2.value = this.expression();
-          } else {
-            property2.value = property2.key;
-          }
-        } else if (this.peek("[")) {
-          this.consume("[");
-          property2.key = this.expression();
-          this.consume("]");
-          property2.computed = true;
-          this.consume(":");
-          property2.value = this.expression();
-        } else {
-          this.throwError("invalid key", this.peek());
-        }
-        properties.push(property2);
-      } while (this.expect(","));
-    }
-    this.consume("}");
-    return { type: AST.ObjectExpression, properties };
-  },
-  throwError: function(msg, token2) {
-    throw $parseMinErr(
-      "syntax",
-      "Syntax Error: Token '{0}' {1} at column {2} of the expression [{3}] starting at [{4}].",
-      token2.text,
-      msg,
-      token2.index + 1,
-      this.text,
-      this.text.substring(token2.index)
-    );
-  },
-  consume: function(e1) {
-    if (this.tokens.length === 0) {
-      throw $parseMinErr(
-        "ueoe",
-        "Unexpected end of expression: {0}",
-        this.text
-      );
-    }
-    var token2 = this.expect(e1);
-    if (!token2) {
-      this.throwError("is unexpected, expecting [" + e1 + "]", this.peek());
-    }
-    return token2;
-  },
-  peekToken: function() {
-    if (this.tokens.length === 0) {
-      throw $parseMinErr(
-        "ueoe",
-        "Unexpected end of expression: {0}",
-        this.text
-      );
-    }
-    return this.tokens[0];
-  },
-  peek: function(e1, e2, e3, e4) {
-    return this.peekAhead(0, e1, e2, e3, e4);
-  },
-  peekAhead: function(i2, e1, e2, e3, e4) {
-    if (this.tokens.length > i2) {
-      var token2 = this.tokens[i2];
-      var t2 = token2.text;
-      if (t2 === e1 || t2 === e2 || t2 === e3 || t2 === e4 || !e1 && !e2 && !e3 && !e4) {
-        return token2;
-      }
-    }
-    return false;
-  },
-  expect: function(e1, e2, e3, e4) {
-    var token2 = this.peek(e1, e2, e3, e4);
-    if (token2) {
-      this.tokens.shift();
-      return token2;
-    }
-    return false;
-  },
-  selfReferential: {
-    this: { type: AST.ThisExpression },
-    $locals: { type: AST.LocalsExpression }
-  }
-};
-function ifDefined(v2, d2) {
-  return typeof v2 !== "undefined" ? v2 : d2;
-}
-function plusFn(l2, r2) {
-  if (typeof l2 === "undefined")
-    return r2;
-  if (typeof r2 === "undefined")
-    return l2;
-  return l2 + r2;
-}
-function isStateless($filter, filterName) {
-  var fn2 = $filter(filterName);
-  if (!fn2) {
-    throw new Error("Filter '" + filterName + "' is not defined");
-  }
-  return !fn2.$stateful;
-}
-function findConstantAndWatchExpressions(ast, $filter) {
-  var allConstants;
-  var argsToWatch;
-  var isStatelessFilter;
-  switch (ast.type) {
-    case AST.Program:
-      allConstants = true;
-      forEach3(ast.body, function(expr) {
-        findConstantAndWatchExpressions(expr.expression, $filter);
-        allConstants = allConstants && expr.expression.constant;
-      });
-      ast.constant = allConstants;
-      break;
-    case AST.Literal:
-      ast.constant = true;
-      ast.toWatch = [];
-      break;
-    case AST.UnaryExpression:
-      findConstantAndWatchExpressions(ast.argument, $filter);
-      ast.constant = ast.argument.constant;
-      ast.toWatch = ast.argument.toWatch;
-      break;
-    case AST.BinaryExpression:
-      findConstantAndWatchExpressions(ast.left, $filter);
-      findConstantAndWatchExpressions(ast.right, $filter);
-      ast.constant = ast.left.constant && ast.right.constant;
-      ast.toWatch = ast.left.toWatch.concat(ast.right.toWatch);
-      break;
-    case AST.LogicalExpression:
-      findConstantAndWatchExpressions(ast.left, $filter);
-      findConstantAndWatchExpressions(ast.right, $filter);
-      ast.constant = ast.left.constant && ast.right.constant;
-      ast.toWatch = ast.constant ? [] : [ast];
-      break;
-    case AST.ConditionalExpression:
-      findConstantAndWatchExpressions(ast.test, $filter);
-      findConstantAndWatchExpressions(ast.alternate, $filter);
-      findConstantAndWatchExpressions(ast.consequent, $filter);
-      ast.constant = ast.test.constant && ast.alternate.constant && ast.consequent.constant;
-      ast.toWatch = ast.constant ? [] : [ast];
-      break;
-    case AST.Identifier:
-      ast.constant = false;
-      ast.toWatch = [ast];
-      break;
-    case AST.MemberExpression:
-      findConstantAndWatchExpressions(ast.object, $filter);
-      if (ast.computed) {
-        findConstantAndWatchExpressions(ast.property, $filter);
-      }
-      ast.constant = ast.object.constant && (!ast.computed || ast.property.constant);
-      ast.toWatch = [ast];
-      break;
-    case AST.CallExpression:
-      isStatelessFilter = ast.filter ? isStateless($filter, ast.callee.name) : false;
-      allConstants = isStatelessFilter;
-      argsToWatch = [];
-      forEach3(ast.arguments, function(expr) {
-        findConstantAndWatchExpressions(expr, $filter);
-        allConstants = allConstants && expr.constant;
-        if (!expr.constant) {
-          argsToWatch.push.apply(argsToWatch, expr.toWatch);
-        }
-      });
-      ast.constant = allConstants;
-      ast.toWatch = isStatelessFilter ? argsToWatch : [ast];
-      break;
-    case AST.AssignmentExpression:
-      findConstantAndWatchExpressions(ast.left, $filter);
-      findConstantAndWatchExpressions(ast.right, $filter);
-      ast.constant = ast.left.constant && ast.right.constant;
-      ast.toWatch = [ast];
-      break;
-    case AST.ArrayExpression:
-      allConstants = true;
-      argsToWatch = [];
-      forEach3(ast.elements, function(expr) {
-        findConstantAndWatchExpressions(expr, $filter);
-        allConstants = allConstants && expr.constant;
-        if (!expr.constant) {
-          argsToWatch.push.apply(argsToWatch, expr.toWatch);
-        }
-      });
-      ast.constant = allConstants;
-      ast.toWatch = argsToWatch;
-      break;
-    case AST.ObjectExpression:
-      allConstants = true;
-      argsToWatch = [];
-      forEach3(ast.properties, function(property2) {
-        findConstantAndWatchExpressions(property2.value, $filter);
-        allConstants = allConstants && property2.value.constant && !property2.computed;
-        if (!property2.value.constant) {
-          argsToWatch.push.apply(argsToWatch, property2.value.toWatch);
-        }
-      });
-      ast.constant = allConstants;
-      ast.toWatch = argsToWatch;
-      break;
-    case AST.ThisExpression:
-      ast.constant = false;
-      ast.toWatch = [];
-      break;
-    case AST.LocalsExpression:
-      ast.constant = false;
-      ast.toWatch = [];
-      break;
-  }
-}
-function getInputs(body) {
-  if (body.length !== 1)
-    return;
-  var lastExpression = body[0].expression;
-  var candidate = lastExpression.toWatch;
-  if (candidate.length !== 1)
-    return candidate;
-  return candidate[0] !== lastExpression ? candidate : void 0;
-}
-function isAssignable(ast) {
-  return ast.type === AST.Identifier || ast.type === AST.MemberExpression;
-}
-function assignableAST(ast) {
-  if (ast.body.length === 1 && isAssignable(ast.body[0].expression)) {
-    return {
-      type: AST.AssignmentExpression,
-      left: ast.body[0].expression,
-      right: { type: AST.NGValueParameter },
-      operator: "="
-    };
-  }
-}
-function isLiteral(ast) {
-  return ast.body.length === 0 || ast.body.length === 1 && (ast.body[0].expression.type === AST.Literal || ast.body[0].expression.type === AST.ArrayExpression || ast.body[0].expression.type === AST.ObjectExpression);
-}
-function isConstant(ast) {
-  return ast.constant;
-}
-function ASTCompiler(astBuilder, $filter) {
-  this.astBuilder = astBuilder;
-  this.$filter = $filter;
-}
-ASTCompiler.prototype = {
-  compile: function(expression) {
-    var self2 = this;
-    var ast = this.astBuilder.ast(expression);
-    this.state = {
-      nextId: 0,
-      filters: {},
-      fn: { vars: [], body: [], own: {} },
-      assign: { vars: [], body: [], own: {} },
-      inputs: []
-    };
-    findConstantAndWatchExpressions(ast, self2.$filter);
-    var extra2 = "";
-    var assignable;
-    this.stage = "assign";
-    if (assignable = assignableAST(ast)) {
-      this.state.computing = "assign";
-      var result = this.nextId();
-      this.recurse(assignable, result);
-      this.return_(result);
-      extra2 = "fn.assign=" + this.generateFunction("assign", "s,v,l");
-    }
-    var toWatch = getInputs(ast.body);
-    self2.stage = "inputs";
-    forEach3(toWatch, function(watch, key) {
-      var fnKey = "fn" + key;
-      self2.state[fnKey] = { vars: [], body: [], own: {} };
-      self2.state.computing = fnKey;
-      var intoId = self2.nextId();
-      self2.recurse(watch, intoId);
-      self2.return_(intoId);
-      self2.state.inputs.push(fnKey);
-      watch.watchId = key;
-    });
-    this.state.computing = "fn";
-    this.stage = "main";
-    this.recurse(ast);
-    var fnString = (
-      // The build and minification steps remove the string "use strict" from the code, but this is done using a regex.
-      // This is a workaround for this until we do a better job at only removing the prefix only when we should.
-      '"' + this.USE + " " + this.STRICT + '";\n' + this.filterPrefix() + "var fn=" + this.generateFunction("fn", "s,l,a,i") + extra2 + this.watchFns() + "return fn;"
-    );
-    var fn2 = new Function(
-      "$filter",
-      "getStringValue",
-      "ifDefined",
-      "plus",
-      fnString
-    )(this.$filter, getStringValue, ifDefined, plusFn);
-    this.state = this.stage = void 0;
-    fn2.ast = ast;
-    fn2.literal = isLiteral(ast);
-    fn2.constant = isConstant(ast);
-    return fn2;
-  },
-  USE: "use",
-  STRICT: "strict",
-  watchFns: function() {
-    var result = [];
-    var fns = this.state.inputs;
-    var self2 = this;
-    forEach3(fns, function(name) {
-      result.push("var " + name + "=" + self2.generateFunction(name, "s"));
-    });
-    if (fns.length) {
-      result.push("fn.inputs=[" + fns.join(",") + "];");
-    }
-    return result.join("");
-  },
-  generateFunction: function(name, params) {
-    return "function(" + params + "){" + this.varsPrefix(name) + this.body(name) + "};";
-  },
-  filterPrefix: function() {
-    var parts = [];
-    var self2 = this;
-    forEach3(this.state.filters, function(id2, filter2) {
-      parts.push(id2 + "=$filter(" + self2.escape(filter2) + ")");
-    });
-    if (parts.length)
-      return "var " + parts.join(",") + ";";
-    return "";
-  },
-  varsPrefix: function(section) {
-    return this.state[section].vars.length ? "var " + this.state[section].vars.join(",") + ";" : "";
-  },
-  body: function(section) {
-    return this.state[section].body.join("");
-  },
-  recurse: function(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck) {
-    var left, right, self2 = this, args, expression, computed;
-    recursionFn = recursionFn || noop$2;
-    if (!skipWatchIdCheck && isDefined(ast.watchId)) {
-      intoId = intoId || this.nextId();
-      this.if_(
-        "i",
-        this.lazyAssign(intoId, this.unsafeComputedMember("i", ast.watchId)),
-        this.lazyRecurse(ast, intoId, nameId, recursionFn, create, true)
-      );
-      return;
-    }
-    switch (ast.type) {
-      case AST.Program:
-        forEach3(ast.body, function(expression2, pos) {
-          self2.recurse(
-            expression2.expression,
-            void 0,
-            void 0,
-            function(expr) {
-              right = expr;
-            }
-          );
-          if (pos !== ast.body.length - 1) {
-            self2.current().body.push(right, ";");
-          } else {
-            self2.return_(right);
-          }
-        });
-        break;
-      case AST.Literal:
-        expression = this.escape(ast.value);
-        this.assign(intoId, expression);
-        recursionFn(intoId || expression);
-        break;
-      case AST.UnaryExpression:
-        this.recurse(ast.argument, void 0, void 0, function(expr) {
-          right = expr;
-        });
-        expression = ast.operator + "(" + this.ifDefined(right, 0) + ")";
-        this.assign(intoId, expression);
-        recursionFn(expression);
-        break;
-      case AST.BinaryExpression:
-        this.recurse(ast.left, void 0, void 0, function(expr) {
-          left = expr;
-        });
-        this.recurse(ast.right, void 0, void 0, function(expr) {
-          right = expr;
-        });
-        if (ast.operator === "+") {
-          expression = this.plus(left, right);
-        } else if (ast.operator === "-") {
-          expression = this.ifDefined(left, 0) + ast.operator + this.ifDefined(right, 0);
-        } else {
-          expression = "(" + left + ")" + ast.operator + "(" + right + ")";
-        }
-        this.assign(intoId, expression);
-        recursionFn(expression);
-        break;
-      case AST.LogicalExpression:
-        intoId = intoId || this.nextId();
-        self2.recurse(ast.left, intoId);
-        self2.if_(
-          ast.operator === "&&" ? intoId : self2.not(intoId),
-          self2.lazyRecurse(ast.right, intoId)
-        );
-        recursionFn(intoId);
-        break;
-      case AST.ConditionalExpression:
-        intoId = intoId || this.nextId();
-        self2.recurse(ast.test, intoId);
-        self2.if_(
-          intoId,
-          self2.lazyRecurse(ast.alternate, intoId),
-          self2.lazyRecurse(ast.consequent, intoId)
-        );
-        recursionFn(intoId);
-        break;
-      case AST.Identifier:
-        intoId = intoId || this.nextId();
-        var inAssignment = self2.current().inAssignment;
-        if (nameId) {
-          if (inAssignment) {
-            nameId.context = this.assign(this.nextId(), "s");
-          } else {
-            nameId.context = self2.stage === "inputs" ? "s" : this.assign(
-              this.nextId(),
-              this.getHasOwnProperty("l", ast.name) + "?l:s"
-            );
-          }
-          nameId.computed = false;
-          nameId.name = ast.name;
-        }
-        self2.if_(
-          self2.stage === "inputs" || self2.not(self2.getHasOwnProperty("l", ast.name)),
-          function() {
-            self2.if_(
-              self2.stage === "inputs" || self2.and_(
-                "s",
-                self2.or_(
-                  self2.isNull(self2.nonComputedMember("s", ast.name)),
-                  self2.hasOwnProperty_("s", ast.name)
-                )
-              ),
-              function() {
-                if (create && create !== 1) {
-                  self2.if_(
-                    self2.isNull(self2.nonComputedMember("s", ast.name)),
-                    self2.lazyAssign(self2.nonComputedMember("s", ast.name), "{}")
-                  );
-                }
-                self2.assign(intoId, self2.nonComputedMember("s", ast.name));
-              }
-            );
-          },
-          intoId && self2.lazyAssign(intoId, self2.nonComputedMember("l", ast.name))
-        );
-        recursionFn(intoId);
-        break;
-      case AST.MemberExpression:
-        left = nameId && (nameId.context = this.nextId()) || this.nextId();
-        intoId = intoId || this.nextId();
-        self2.recurse(
-          ast.object,
-          left,
-          void 0,
-          function() {
-            var member = null;
-            var inAssignment2 = self2.current().inAssignment;
-            if (ast.computed) {
-              right = self2.nextId();
-              if (inAssignment2 || self2.state.computing === "assign") {
-                member = self2.unsafeComputedMember(left, right);
-              } else {
-                member = self2.computedMember(left, right);
-              }
-            } else {
-              if (inAssignment2 || self2.state.computing === "assign") {
-                member = self2.unsafeNonComputedMember(left, ast.property.name);
-              } else {
-                member = self2.nonComputedMember(left, ast.property.name);
-              }
-              right = ast.property.name;
-            }
-            if (ast.computed) {
-              if (ast.property.type === AST.Literal) {
-                self2.recurse(ast.property, right);
-              }
-            }
-            self2.if_(
-              self2.and_(
-                self2.notNull(left),
-                self2.or_(
-                  self2.isNull(member),
-                  self2.hasOwnProperty_(left, right, ast.computed)
-                )
-              ),
-              function() {
-                if (ast.computed) {
-                  if (ast.property.type !== AST.Literal) {
-                    self2.recurse(ast.property, right);
-                  }
-                  if (create && create !== 1) {
-                    self2.if_(self2.not(member), self2.lazyAssign(member, "{}"));
-                  }
-                  self2.assign(intoId, member);
-                  if (nameId) {
-                    nameId.computed = true;
-                    nameId.name = right;
-                  }
-                } else {
-                  if (create && create !== 1) {
-                    self2.if_(
-                      self2.isNull(member),
-                      self2.lazyAssign(member, "{}")
-                    );
-                  }
-                  self2.assign(intoId, member);
-                  if (nameId) {
-                    nameId.computed = false;
-                    nameId.name = ast.property.name;
-                  }
-                }
-              },
-              function() {
-                self2.assign(intoId, "undefined");
-              }
-            );
-            recursionFn(intoId);
-          },
-          !!create
-        );
-        break;
-      case AST.CallExpression:
-        intoId = intoId || this.nextId();
-        if (ast.filter) {
-          right = self2.filter(ast.callee.name);
-          args = [];
-          forEach3(ast.arguments, function(expr) {
-            var argument = self2.nextId();
-            self2.recurse(expr, argument);
-            args.push(argument);
-          });
-          expression = right + ".call(" + right + "," + args.join(",") + ")";
-          self2.assign(intoId, expression);
-          recursionFn(intoId);
-        } else {
-          right = self2.nextId();
-          left = {};
-          args = [];
-          self2.recurse(ast.callee, right, left, function() {
-            self2.if_(
-              self2.notNull(right),
-              function() {
-                forEach3(ast.arguments, function(expr) {
-                  self2.recurse(
-                    expr,
-                    ast.constant ? void 0 : self2.nextId(),
-                    void 0,
-                    function(argument) {
-                      args.push(argument);
-                    }
-                  );
-                });
-                if (left.name) {
-                  var x = self2.member(left.context, left.name, left.computed);
-                  expression = "(" + x + " === null ? null : " + self2.unsafeMember(left.context, left.name, left.computed) + ".call(" + [left.context].concat(args).join(",") + "))";
-                } else {
-                  expression = right + "(" + args.join(",") + ")";
-                }
-                self2.assign(intoId, expression);
-              },
-              function() {
-                self2.assign(intoId, "undefined");
-              }
-            );
-            recursionFn(intoId);
-          });
-        }
-        break;
-      case AST.AssignmentExpression:
-        right = this.nextId();
-        left = {};
-        self2.current().inAssignment = true;
-        this.recurse(
-          ast.left,
-          void 0,
-          left,
-          function() {
-            self2.if_(
-              self2.and_(
-                self2.notNull(left.context),
-                self2.or_(
-                  self2.hasOwnProperty_(left.context, left.name),
-                  self2.isNull(
-                    self2.member(left.context, left.name, left.computed)
-                  )
-                )
-              ),
-              function() {
-                self2.recurse(ast.right, right);
-                expression = self2.member(left.context, left.name, left.computed) + ast.operator + right;
-                self2.assign(intoId, expression);
-                recursionFn(intoId || expression);
-              }
-            );
-            self2.current().inAssignment = false;
-            self2.recurse(ast.right, right);
-            self2.current().inAssignment = true;
-          },
-          1
-        );
-        self2.current().inAssignment = false;
-        break;
-      case AST.ArrayExpression:
-        args = [];
-        forEach3(ast.elements, function(expr) {
-          self2.recurse(
-            expr,
-            ast.constant ? void 0 : self2.nextId(),
-            void 0,
-            function(argument) {
-              args.push(argument);
-            }
-          );
-        });
-        expression = "[" + args.join(",") + "]";
-        this.assign(intoId, expression);
-        recursionFn(intoId || expression);
-        break;
-      case AST.ObjectExpression:
-        args = [];
-        computed = false;
-        forEach3(ast.properties, function(property2) {
-          if (property2.computed) {
-            computed = true;
-          }
-        });
-        if (computed) {
-          intoId = intoId || this.nextId();
-          this.assign(intoId, "{}");
-          forEach3(ast.properties, function(property2) {
-            if (property2.computed) {
-              left = self2.nextId();
-              self2.recurse(property2.key, left);
-            } else {
-              left = property2.key.type === AST.Identifier ? property2.key.name : "" + property2.key.value;
-            }
-            right = self2.nextId();
-            self2.recurse(property2.value, right);
-            self2.assign(
-              self2.unsafeMember(intoId, left, property2.computed),
-              right
-            );
-          });
-        } else {
-          forEach3(ast.properties, function(property2) {
-            self2.recurse(
-              property2.value,
-              ast.constant ? void 0 : self2.nextId(),
-              void 0,
-              function(expr) {
-                args.push(
-                  self2.escape(
-                    property2.key.type === AST.Identifier ? property2.key.name : "" + property2.key.value
-                  ) + ":" + expr
-                );
-              }
-            );
-          });
-          expression = "{" + args.join(",") + "}";
-          this.assign(intoId, expression);
-        }
-        recursionFn(intoId || expression);
-        break;
-      case AST.ThisExpression:
-        this.assign(intoId, "s");
-        recursionFn(intoId || "s");
-        break;
-      case AST.LocalsExpression:
-        this.assign(intoId, "l");
-        recursionFn(intoId || "l");
-        break;
-      case AST.NGValueParameter:
-        this.assign(intoId, "v");
-        recursionFn(intoId || "v");
-        break;
-    }
-  },
-  getHasOwnProperty: function(element, property2) {
-    var key = element + "." + property2;
-    var own = this.current().own;
-    if (!own.hasOwnProperty(key)) {
-      own[key] = this.nextId(
-        false,
-        element + "&&(" + this.escape(property2) + " in " + element + ")"
-      );
-    }
-    return own[key];
-  },
-  assign: function(id2, value) {
-    if (!id2)
-      return;
-    this.current().body.push(id2, "=", value, ";");
-    return id2;
-  },
-  filter: function(filterName) {
-    if (!this.state.filters.hasOwnProperty(filterName)) {
-      this.state.filters[filterName] = this.nextId(true);
-    }
-    return this.state.filters[filterName];
-  },
-  ifDefined: function(id2, defaultValue2) {
-    return "ifDefined(" + id2 + "," + this.escape(defaultValue2) + ")";
-  },
-  plus: function(left, right) {
-    return "plus(" + left + "," + right + ")";
-  },
-  return_: function(id2) {
-    this.current().body.push("return ", id2, ";");
-  },
-  if_: function(test2, alternate, consequent) {
-    if (test2 === true) {
-      alternate();
-    } else {
-      var body = this.current().body;
-      body.push("if(", test2, "){");
-      alternate();
-      body.push("}");
-      if (consequent) {
-        body.push("else{");
-        consequent();
-        body.push("}");
-      }
-    }
-  },
-  or_: function(expr1, expr2) {
-    return "(" + expr1 + ") || (" + expr2 + ")";
-  },
-  hasOwnProperty_: function(obj, prop, computed) {
-    if (computed) {
-      return "(Object.prototype.hasOwnProperty.call(" + obj + "," + prop + "))";
-    } else {
-      return "(Object.prototype.hasOwnProperty.call(" + obj + ",'" + prop + "'))";
-    }
-  },
-  and_: function(expr1, expr2) {
-    return "(" + expr1 + ") && (" + expr2 + ")";
-  },
-  not: function(expression) {
-    return "!(" + expression + ")";
-  },
-  isNull: function(expression) {
-    return expression + "==null";
-  },
-  notNull: function(expression) {
-    return expression + "!=null";
-  },
-  nonComputedMember: function(left, right) {
-    var SAFE_IDENTIFIER = /^[$_a-zA-Z][$_a-zA-Z0-9]*$/;
-    var UNSAFE_CHARACTERS = /[^$_a-zA-Z0-9]/g;
-    var expr = "";
-    if (SAFE_IDENTIFIER.test(right)) {
-      expr = left + "." + right;
-    } else {
-      right = right.replace(UNSAFE_CHARACTERS, this.stringEscapeFn);
-      expr = left + '["' + right + '"]';
-    }
-    return expr;
-  },
-  unsafeComputedMember: function(left, right) {
-    return left + "[" + right + "]";
-  },
-  unsafeNonComputedMember: function(left, right) {
-    return this.nonComputedMember(left, right);
-  },
-  computedMember: function(left, right) {
-    if (this.state.computing === "assign") {
-      return this.unsafeComputedMember(left, right);
-    }
-    return "(" + left + ".hasOwnProperty(" + right + ") ? " + left + "[" + right + "] : null)";
-  },
-  unsafeMember: function(left, right, computed) {
-    if (computed)
-      return this.unsafeComputedMember(left, right);
-    return this.unsafeNonComputedMember(left, right);
-  },
-  member: function(left, right, computed) {
-    if (computed)
-      return this.computedMember(left, right);
-    return this.nonComputedMember(left, right);
-  },
-  getStringValue: function(item) {
-    this.assign(item, "getStringValue(" + item + ")");
-  },
-  lazyRecurse: function(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck) {
-    var self2 = this;
-    return function() {
-      self2.recurse(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck);
-    };
-  },
-  lazyAssign: function(id2, value) {
-    var self2 = this;
-    return function() {
-      self2.assign(id2, value);
-    };
-  },
-  stringEscapeRegex: /[^ a-zA-Z0-9]/g,
-  stringEscapeFn: function(c2) {
-    return "\\u" + ("0000" + c2.charCodeAt(0).toString(16)).slice(-4);
-  },
-  escape: function(value) {
-    if (isString$1(value))
-      return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
-    if (isNumber$1(value))
-      return value.toString();
-    if (value === true)
-      return "true";
-    if (value === false)
-      return "false";
-    if (value === null)
-      return "null";
-    if (typeof value === "undefined")
-      return "undefined";
-    throw $parseMinErr("esc", "IMPOSSIBLE");
-  },
-  nextId: function(skip, init3) {
-    var id2 = "v" + this.state.nextId++;
-    if (!skip) {
-      this.current().vars.push(id2 + (init3 ? "=" + init3 : ""));
-    }
-    return id2;
-  },
-  current: function() {
-    return this.state[this.state.computing];
-  }
-};
-function ASTInterpreter(astBuilder, $filter) {
-  this.astBuilder = astBuilder;
-  this.$filter = $filter;
-}
-ASTInterpreter.prototype = {
-  compile: function(expression) {
-    var self2 = this;
-    var ast = this.astBuilder.ast(expression);
-    findConstantAndWatchExpressions(ast, self2.$filter);
-    var assignable;
-    var assign2;
-    if (assignable = assignableAST(ast)) {
-      assign2 = this.recurse(assignable);
-    }
-    var toWatch = getInputs(ast.body);
-    var inputs;
-    if (toWatch) {
-      inputs = [];
-      forEach3(toWatch, function(watch, key) {
-        var input = self2.recurse(watch);
-        watch.input = input;
-        inputs.push(input);
-        watch.watchId = key;
-      });
-    }
-    var expressions = [];
-    forEach3(ast.body, function(expression2) {
-      expressions.push(self2.recurse(expression2.expression));
-    });
-    var fn2 = ast.body.length === 0 ? noop$2 : ast.body.length === 1 ? expressions[0] : function(scope, locals) {
-      var lastValue;
-      forEach3(expressions, function(exp) {
-        lastValue = exp(scope, locals);
-      });
-      return lastValue;
-    };
-    if (assign2) {
-      fn2.assign = function(scope, value, locals) {
-        return assign2(scope, locals, value);
-      };
-    }
-    if (inputs) {
-      fn2.inputs = inputs;
-    }
-    fn2.ast = ast;
-    fn2.literal = isLiteral(ast);
-    fn2.constant = isConstant(ast);
-    return fn2;
-  },
-  recurse: function(ast, context2, create) {
-    var left, right, self2 = this, args;
-    if (ast.input) {
-      return this.inputs(ast.input, ast.watchId);
-    }
-    switch (ast.type) {
-      case AST.Literal:
-        return this.value(ast.value, context2);
-      case AST.UnaryExpression:
-        right = this.recurse(ast.argument);
-        return this["unary" + ast.operator](right, context2);
-      case AST.BinaryExpression:
-        left = this.recurse(ast.left);
-        right = this.recurse(ast.right);
-        return this["binary" + ast.operator](left, right, context2);
-      case AST.LogicalExpression:
-        left = this.recurse(ast.left);
-        right = this.recurse(ast.right);
-        return this["binary" + ast.operator](left, right, context2);
-      case AST.ConditionalExpression:
-        return this["ternary?:"](
-          this.recurse(ast.test),
-          this.recurse(ast.alternate),
-          this.recurse(ast.consequent),
-          context2
-        );
-      case AST.Identifier:
-        return self2.identifier(ast.name, context2, create);
-      case AST.MemberExpression:
-        left = this.recurse(ast.object, false, !!create);
-        if (!ast.computed) {
-          right = ast.property.name;
-        }
-        if (ast.computed)
-          right = this.recurse(ast.property);
-        return ast.computed ? this.computedMember(left, right, context2, create) : this.nonComputedMember(left, right, context2, create);
-      case AST.CallExpression:
-        args = [];
-        forEach3(ast.arguments, function(expr) {
-          args.push(self2.recurse(expr));
-        });
-        if (ast.filter)
-          right = this.$filter(ast.callee.name);
-        if (!ast.filter)
-          right = this.recurse(ast.callee, true);
-        return ast.filter ? function(scope, locals, assign2, inputs) {
-          var values = [];
-          for (var i2 = 0; i2 < args.length; ++i2) {
-            values.push(args[i2](scope, locals, assign2, inputs));
-          }
-          var value = right.apply(void 0, values, inputs);
-          return context2 ? { context: void 0, name: void 0, value } : value;
-        } : function(scope, locals, assign2, inputs) {
-          var rhs = right(scope, locals, assign2, inputs);
-          var value;
-          if (rhs.value != null) {
-            var values = [];
-            for (var i2 = 0; i2 < args.length; ++i2) {
-              values.push(args[i2](scope, locals, assign2, inputs));
-            }
-            value = rhs.value.apply(rhs.context, values);
-          }
-          return context2 ? { value } : value;
-        };
-      case AST.AssignmentExpression:
-        left = this.recurse(ast.left, true, 1);
-        right = this.recurse(ast.right);
-        return function(scope, locals, assign2, inputs) {
-          var lhs = left(scope, false, assign2, inputs);
-          var rhs = right(scope, locals, assign2, inputs);
-          lhs.context[lhs.name] = rhs;
-          return context2 ? { value: rhs } : rhs;
-        };
-      case AST.ArrayExpression:
-        args = [];
-        forEach3(ast.elements, function(expr) {
-          args.push(self2.recurse(expr));
-        });
-        return function(scope, locals, assign2, inputs) {
-          var value = [];
-          for (var i2 = 0; i2 < args.length; ++i2) {
-            value.push(args[i2](scope, locals, assign2, inputs));
-          }
-          return context2 ? { value } : value;
-        };
-      case AST.ObjectExpression:
-        args = [];
-        forEach3(ast.properties, function(property2) {
-          if (property2.computed) {
-            args.push({
-              key: self2.recurse(property2.key),
-              computed: true,
-              value: self2.recurse(property2.value)
-            });
-          } else {
-            args.push({
-              key: property2.key.type === AST.Identifier ? property2.key.name : "" + property2.key.value,
-              computed: false,
-              value: self2.recurse(property2.value)
-            });
-          }
-        });
-        return function(scope, locals, assign2, inputs) {
-          var value = {};
-          for (var i2 = 0; i2 < args.length; ++i2) {
-            if (args[i2].computed) {
-              value[args[i2].key(scope, locals, assign2, inputs)] = args[i2].value(
-                scope,
-                locals,
-                assign2,
-                inputs
-              );
-            } else {
-              value[args[i2].key] = args[i2].value(scope, locals, assign2, inputs);
-            }
-          }
-          return context2 ? { value } : value;
-        };
-      case AST.ThisExpression:
-        return function(scope) {
-          return context2 ? { value: scope } : scope;
-        };
-      case AST.LocalsExpression:
-        return function(scope, locals) {
-          return context2 ? { value: locals } : locals;
-        };
-      case AST.NGValueParameter:
-        return function(scope, locals, assign2) {
-          return context2 ? { value: assign2 } : assign2;
-        };
-    }
-  },
-  "unary+": function(argument, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = argument(scope, locals, assign2, inputs);
-      if (isDefined(arg)) {
-        arg = +arg;
-      } else {
-        arg = 0;
-      }
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "unary-": function(argument, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = argument(scope, locals, assign2, inputs);
-      if (isDefined(arg)) {
-        arg = -arg;
-      } else {
-        arg = -0;
-      }
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "unary!": function(argument, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = !argument(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary+": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var lhs = left(scope, locals, assign2, inputs);
-      var rhs = right(scope, locals, assign2, inputs);
-      var arg = plusFn(lhs, rhs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary-": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var lhs = left(scope, locals, assign2, inputs);
-      var rhs = right(scope, locals, assign2, inputs);
-      var arg = (isDefined(lhs) ? lhs : 0) - (isDefined(rhs) ? rhs : 0);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary*": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) * right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary/": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) / right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary%": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) % right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary===": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) === right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary!==": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) !== right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary==": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) == right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary!=": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) != right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary<": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) < right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary>": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) > right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary<=": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) <= right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary>=": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) >= right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary&&": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) && right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "binary||": function(left, right, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = left(scope, locals, assign2, inputs) || right(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  "ternary?:": function(test2, alternate, consequent, context2) {
-    return function(scope, locals, assign2, inputs) {
-      var arg = test2(scope, locals, assign2, inputs) ? alternate(scope, locals, assign2, inputs) : consequent(scope, locals, assign2, inputs);
-      return context2 ? { value: arg } : arg;
-    };
-  },
-  value: function(value, context2) {
-    return function() {
-      return context2 ? { context: void 0, name: void 0, value } : value;
-    };
-  },
-  identifier: function(name, context2, create) {
-    return function(scope, locals, assign2, inputs) {
-      var base = locals && name in locals ? locals : scope;
-      if (create && create !== 1 && base && base[name] == null) {
-        base[name] = {};
-      }
-      var value = base ? base[name] : void 0;
-      if (context2) {
-        return { context: base, name, value };
-      } else {
-        return value;
-      }
-    };
-  },
-  computedMember: function(left, right, context2, create) {
-    return function(scope, locals, assign2, inputs) {
-      var lhs = left(scope, locals, assign2, inputs);
-      var rhs;
-      var value;
-      if (lhs != null) {
-        rhs = right(scope, locals, assign2, inputs);
-        rhs = getStringValue(rhs);
-        if (create && create !== 1) {
-          if (lhs && !lhs[rhs]) {
-            lhs[rhs] = {};
-          }
-        }
-        if (Object.prototype.hasOwnProperty.call(lhs, rhs)) {
-          value = lhs[rhs];
-        }
-      }
-      if (context2) {
-        return { context: lhs, name: rhs, value };
-      } else {
-        return value;
-      }
-    };
-  },
-  nonComputedMember: function(left, right, context2, create) {
-    return function(scope, locals, assign2, inputs) {
-      var lhs = left(scope, locals, assign2, inputs);
-      if (create && create !== 1) {
-        if (lhs && lhs[right] == null) {
-          lhs[right] = {};
-        }
-      }
-      var value = void 0;
-      if (lhs != null && Object.prototype.hasOwnProperty.call(lhs, right)) {
-        value = lhs[right];
-      }
-      if (context2) {
-        return { context: lhs, name: right, value };
-      } else {
-        return value;
-      }
-    };
-  },
-  inputs: function(input, watchId) {
-    return function(scope, value, locals, inputs) {
-      if (inputs)
-        return inputs[watchId];
-      return input(scope, value, locals);
-    };
-  }
-};
-var Parser$1 = function Parser(lexer, $filter, options) {
-  this.lexer = lexer;
-  this.$filter = $filter;
-  this.options = options;
-  this.ast = new AST(lexer, options);
-  this.astCompiler = options.csp ? new ASTInterpreter(this.ast, $filter) : new ASTCompiler(this.ast, $filter);
-};
-Parser$1.prototype = {
-  constructor: Parser$1,
-  parse: function(text2) {
-    return this.astCompiler.compile(text2);
-  }
-};
-parse$5.Lexer = Lexer$1;
-parse$5.Parser = Parser$1;
-var parse$4 = parse$5;
-var filters$1 = {};
-var Lexer2 = parse$4.Lexer;
-var Parser2 = parse$4.Parser;
-function compile$1(src, options) {
-  options = options || {};
-  var localFilters = options.filters || filters$1;
-  var cache = options.filters ? options.cache || {} : compile$1.cache;
-  var lexerOptions = options;
-  var cached;
-  if (typeof src !== "string") {
-    throw new TypeError(
-      "src must be a string, instead saw '" + typeof src + "'"
-    );
-  }
-  var parserOptions = {
-    csp: options.csp != null ? options.csp : false,
-    // noUnsafeEval,
-    literals: options.literals != null ? options.literals : {
-      // defined at: function $ParseProvider() {
-      true: true,
-      false: false,
-      null: null,
-      /*eslint no-undefined: 0*/
-      undefined: void 0
-      /* eslint: no-undefined: 1  */
-    }
-  };
-  var lexer = new Lexer2(lexerOptions);
-  var parser = new Parser2(
-    lexer,
-    function getFilter(name) {
-      return localFilters[name];
-    },
-    parserOptions
-  );
-  if (!cache) {
-    return parser.parse(src);
-  }
-  cached = cache[src];
-  if (!cached) {
-    cached = cache[src] = parser.parse(src);
-  }
-  return cached;
-}
-compile$1.cache = /* @__PURE__ */ Object.create(null);
-var compile_1 = compile$1;
-const setVar = (sentence) => {
-  let setGlobal = false;
-  sentence.args.forEach((e2) => {
-    if (e2.key === "global") {
-      setGlobal = true;
-    }
-  });
-  let targetReducerFunction;
-  if (setGlobal) {
-    targetReducerFunction = setGlobalVar;
-  } else {
-    targetReducerFunction = setStageVar;
-  }
-  if (sentence.content.match(/=/)) {
-    const key = sentence.content.split(/=/)[0];
-    const valExp = sentence.content.split(/=/)[1];
-    if (valExp === "random()") {
-      webgalStore.dispatch(targetReducerFunction({ key, value: Math.random() }));
-    } else if (valExp.match(/[+\-*\/()]/)) {
-      const valExpArr = valExp.split(/([+\-*\/()])/g);
-      const valExp2 = valExpArr.map((e2) => {
-        if (e2.match(/[a-zA-Z]/)) {
-          return getValueFromState(e2).toString();
-        } else
-          return e2;
-      }).reduce((pre, curr) => pre + curr, "");
-      const exp = compile_1(valExp2);
-      const result = exp();
-      webgalStore.dispatch(targetReducerFunction({ key, value: result }));
-    } else if (valExp.match(/true|false/)) {
-      if (valExp.match(/true/)) {
-        webgalStore.dispatch(targetReducerFunction({ key, value: true }));
-      }
-      if (valExp.match(/false/)) {
-        webgalStore.dispatch(targetReducerFunction({ key, value: false }));
-      }
-    } else {
-      if (!isNaN(Number(valExp))) {
-        webgalStore.dispatch(targetReducerFunction({ key, value: Number(valExp) }));
-      } else
-        webgalStore.dispatch(targetReducerFunction({ key, value: valExp }));
-    }
-    if (setGlobal) {
-      logger.debug("设置全局变量：", { key, value: webgalStore.getState().userData.globalGameVar[key] });
-      dumpToStorageFast();
-    } else {
-      logger.debug("设置变量：", { key, value: webgalStore.getState().stage.GameVar[key] });
+  onEnded(key, callback) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      videoItem.events.ended.callbacks.push(callback);
     }
   }
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function getValueFromState(key) {
-  let ret = 0;
-  if (webgalStore.getState().stage.GameVar.hasOwnProperty(key)) {
-    ret = webgalStore.getState().stage.GameVar[key];
-  } else if (webgalStore.getState().userData.globalGameVar.hasOwnProperty(key)) {
-    ret = webgalStore.getState().userData.globalGameVar[key];
-  }
-  return ret;
-}
-const showVars = (sentence) => {
-  const stageState = webgalStore.getState().stage;
-  const userDataState = webgalStore.getState().userData;
-  const dispatch = webgalStore.dispatch;
-  const allVar = {
-    stageGameVar: stageState.GameVar,
-    globalGameVar: userDataState.globalGameVar
-  };
-  dispatch(setStage({ key: "showText", value: JSON.stringify(allVar) }));
-  dispatch(setStage({ key: "showName", value: "展示变量" }));
-  logger.debug("展示变量：", allVar);
-  setTimeout(() => {
-    WebGAL.events.textSettle.emit();
-  }, 0);
-  const performInitName = getRandomPerformName();
-  const endDelay = 750 - userDataState.optionData.textSpeed * 250;
-  return {
-    performName: performInitName,
-    duration: endDelay,
-    isHoldOn: false,
-    stopFunction: () => {
-      WebGAL.events.textSettle.emit();
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function ScriptConfig(scriptType, scriptFunction, config) {
-  return { scriptType, scriptFunction, ...config };
-}
-const scriptRegistry = {};
-function defineScripts(record) {
-  const result = {};
-  for (const [scriptString, config] of Object.entries(record)) {
-    result[scriptString] = scriptRegistry[config.scriptType] = { scriptString, ...config };
-  }
-  return result;
-}
-const applyStyle = (sentence) => {
-  const { content } = sentence;
-  const applyStyleSegments = content.split(",");
-  for (const applyStyleSegment of applyStyleSegments) {
-    const splitSegment = applyStyleSegment.split("->");
-    if (splitSegment.length >= 2) {
-      const classNameToBeChange = splitSegment[0];
-      const classNameChangeTo = splitSegment[1];
-      webgalStore.dispatch(stageActions.replaceUIlable([classNameToBeChange, classNameChangeTo]));
+  getDuration(key) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      return videoItem.player.duration;
     }
   }
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const SCRIPT_TAG_MAP = defineScripts({
-  intro: ScriptConfig(commandType$1.intro, intro),
-  changeBg: ScriptConfig(commandType$1.changeBg, changeBg),
-  changeFigure: ScriptConfig(commandType$1.changeFigure, changeFigure),
-  miniAvatar: ScriptConfig(commandType$1.miniAvatar, miniAvatar, { next: true }),
-  changeScene: ScriptConfig(commandType$1.changeScene, changeSceneScript),
-  choose: ScriptConfig(commandType$1.choose, choose),
-  end: ScriptConfig(commandType$1.end, end),
-  bgm: ScriptConfig(commandType$1.bgm, bgm, { next: true }),
-  playVideo: ScriptConfig(commandType$1.video, playVideo),
-  setComplexAnimation: ScriptConfig(commandType$1.setComplexAnimation, setComplexAnimation),
-  setFilter: ScriptConfig(commandType$1.setFilter, setFilter),
-  pixiInit: ScriptConfig(commandType$1.pixiInit, pixiInit, { next: true }),
-  pixiPerform: ScriptConfig(commandType$1.pixi, pixi, { next: true }),
-  label: ScriptConfig(commandType$1.label, label, { next: true }),
-  jumpLabel: ScriptConfig(commandType$1.jumpLabel, jumpLabel),
-  setVar: ScriptConfig(commandType$1.setVar, setVar, { next: true }),
-  showVars: ScriptConfig(commandType$1.showVars, showVars),
-  unlockCg: ScriptConfig(commandType$1.unlockCg, unlockCg, { next: true }),
-  unlockBgm: ScriptConfig(commandType$1.unlockBgm, unlockBgm$2, { next: true }),
-  say: ScriptConfig(commandType$1.say, say),
-  filmMode: ScriptConfig(commandType$1.filmMode, filmMode, { next: true }),
-  callScene: ScriptConfig(commandType$1.callScene, callSceneScript),
-  setTextbox: ScriptConfig(commandType$1.setTextbox, setTextbox),
-  setAnimation: ScriptConfig(commandType$1.setAnimation, setAnimation),
-  playEffect: ScriptConfig(commandType$1.playEffect, playEffect, { next: true }),
-  setTempAnimation: ScriptConfig(commandType$1.setTempAnimation, setTempAnimation),
-  __commment: ScriptConfig(commandType$1.comment, comment$1, { next: true }),
-  setTransform: ScriptConfig(commandType$1.setTransform, setTransform),
-  setTransition: ScriptConfig(commandType$1.setTransition, setTransition, { next: true }),
-  getUserInput: ScriptConfig(commandType$1.getUserInput, getUserInput),
-  applyStyle: ScriptConfig(commandType$1.applyStyle, applyStyle, { next: true })
-  // if: ScriptConfig(commandType.if, undefined, { next: true }),
-});
-const SCRIPT_CONFIG = Object.values(SCRIPT_TAG_MAP);
-const ADD_NEXT_ARG_LIST = SCRIPT_CONFIG.filter((config) => config.next).map((config) => config.scriptType);
-const WebgalParser = new SceneParser(assetsPrefetcher, assetSetter, ADD_NEXT_ARG_LIST, SCRIPT_CONFIG);
-const sceneParser = (rawScene, sceneName, sceneUrl) => {
-  const parsedScene = WebgalParser.parse(rawScene, sceneName, sceneUrl);
-  logger.info(`解析场景：${sceneName}，数据为：`, parsedScene);
-  return parsedScene;
-};
-const runScript = (script) => {
-  var _a2;
-  let perform = initPerform;
-  const funcToRun = ((_a2 = scriptRegistry[script.command]) == null ? void 0 : _a2.scriptFunction) ?? SCRIPT_TAG_MAP.say.scriptFunction;
-  perform = funcToRun(script);
-  if (perform.arrangePerformPromise) {
-    perform.arrangePerformPromise.then(
-      (resolovedPerform) => WebGAL.gameplay.performController.arrangeNewPerform(resolovedPerform, script)
-    );
-  } else {
-    WebGAL.gameplay.performController.arrangeNewPerform(perform, script);
-  }
-};
-const restoreScene = (entry) => {
-  sceneFetcher(entry.sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, entry.sceneName, entry.sceneUrl);
-    WebGAL.sceneManager.sceneData.currentSentenceId = entry.continueLine + 1;
-    logger.debug("现在恢复场景，恢复后场景：", WebGAL.sceneManager.sceneData.currentScene);
-    nextSentence();
-  });
-};
-function strIf(s2) {
-  const res = compile_1(s2);
-  return res();
-}
-const whenChecker = (whenValue) => {
-  if (whenValue === void 0) {
-    return true;
-  }
-  const valExpArr = whenValue.split(/([+\-*\/()><!]|>=|<=|==|&&|\|\||!=)/g);
-  const valExp = valExpArr.map((e2) => {
-    if (e2.match(/[a-zA-Z]/)) {
-      if (e2.match(/true/) || e2.match(/false/)) {
-        return e2;
-      }
-      return getValueFromState(e2).toString();
-    } else
-      return e2;
-  }).reduce((pre, curr) => pre + curr, "");
-  return !!strIf(valExp);
-};
-const scriptExecutor = () => {
-  if (WebGAL.sceneManager.sceneData.currentSentenceId > WebGAL.sceneManager.sceneData.currentScene.sentenceList.length - 1) {
-    if (WebGAL.sceneManager.sceneData.sceneStack.length !== 0) {
-      const sceneToRestore = WebGAL.sceneManager.sceneData.sceneStack.pop();
-      if (sceneToRestore !== void 0) {
-        restoreScene(sceneToRestore);
-      }
-    }
-    return;
-  }
-  const currentScript = WebGAL.sceneManager.sceneData.currentScene.sentenceList[WebGAL.sceneManager.sceneData.currentSentenceId];
-  const interpolationOneItem = (content) => {
-    let retContent = content;
-    const contentExp = retContent.match(new RegExp("(?<!\\\\)\\{(.*?)\\}", "g"));
-    if (contentExp !== null) {
-      contentExp.forEach((e2) => {
-        const contentVarValue = getValueFromState(e2.replace(new RegExp("(?<!\\\\)\\{(.*)\\}"), "$1"));
-        retContent = retContent.replace(e2, contentVarValue ? contentVarValue.toString() : e2);
-      });
-    }
-    retContent = retContent.replace(/\\{/g, "{").replace(/\\}/g, "}");
-    return retContent;
-  };
-  const variableInterpolation = () => {
-    currentScript.content = interpolationOneItem(currentScript.content);
-    currentScript.args.forEach((arg) => {
-      if (arg.value && typeof arg.value === "string") {
-        arg.value = interpolationOneItem(arg.value);
+  destoryExcept(keys2) {
+    Object.keys(this.videosByKey).forEach((key) => {
+      if (!keys2.includes(key)) {
+        this.destory(key);
       }
     });
-  };
-  variableInterpolation();
-  let runThis = true;
-  let isHasWhenArg = false;
-  let whenValue = "";
-  currentScript.args.forEach((e2) => {
-    if (e2.key === "when") {
-      isHasWhenArg = true;
-      whenValue = e2.value.toString();
-    }
-  });
-  if (isHasWhenArg) {
-    runThis = whenChecker(whenValue);
   }
-  if (!runThis) {
-    logger.warn("不满足条件，跳过本句！");
-    WebGAL.sceneManager.sceneData.currentSentenceId++;
-    nextSentence();
-    return;
-  }
-  runScript(currentScript);
-  let isNext = false;
-  currentScript.args.forEach((e2) => {
-    if (e2.key === "next" && e2.value) {
-      isNext = true;
-    }
-  });
-  let isSaveBacklog = currentScript.command === commandType$1.say;
-  currentScript.args.forEach((e2) => {
-    if (e2.key === "notend" && e2.value === true) {
-      isSaveBacklog = false;
-    }
-  });
-  let currentStageState;
-  if (isNext) {
-    WebGAL.sceneManager.sceneData.currentSentenceId++;
-    scriptExecutor();
-    return;
-  }
-  setTimeout(() => {
-    currentStageState = webgalStore.getState().stage;
-    const allState = {
-      currentStageState,
-      globalGameVar: webgalStore.getState().userData.globalGameVar
-    };
-    logger.debug("本条语句执行结果", allState);
-    if (isSaveBacklog) {
-      WebGAL.backlogManager.saveCurrentStateToBacklog();
-    }
-  }, 0);
-  WebGAL.sceneManager.sceneData.currentSentenceId++;
-};
-const nextSentence = () => {
-  WebGAL.events.userInteractNext.emit();
-  const GUIState = webgalStore.getState().GUI;
-  if (GUIState.showTitle) {
-    return;
-  }
-  let isBlockingNext = false;
-  WebGAL.gameplay.performController.performList.forEach((e2) => {
-    if (e2.blockingNext()) {
-      isBlockingNext = true;
-    }
-  });
-  if (isBlockingNext) {
-    logger.warn("next 被阻塞！");
-    return;
-  }
-  let allSettled2 = true;
-  WebGAL.gameplay.performController.performList.forEach((e2) => {
-    if (!e2.isHoldOn && !e2.skipNextCollect)
-      allSettled2 = false;
-  });
-  if (allSettled2) {
-    const stageState = webgalStore.getState().stage;
-    const newStageState = cloneDeep$1(stageState);
-    for (let i2 = 0; i2 < newStageState.PerformList.length; i2++) {
-      const e2 = newStageState.PerformList[i2];
-      if (!e2.isHoldOn) {
-        newStageState.PerformList.splice(i2, 1);
-        i2--;
-      }
-    }
-    webgalStore.dispatch(resetStageState(newStageState));
-    scriptExecutor();
-    return;
-  }
-  logger.warn("提前结束被触发，现在清除普通演出");
-  let isGoNext = false;
-  for (let i2 = 0; i2 < WebGAL.gameplay.performController.performList.length; i2++) {
-    const e2 = WebGAL.gameplay.performController.performList[i2];
-    if (!e2.isHoldOn) {
-      if (e2.goNextWhenOver) {
-        isGoNext = true;
-      }
-      if (!e2.skipNextCollect) {
-        e2.stopFunction();
-        clearTimeout(e2.stopTimeout);
-        WebGAL.gameplay.performController.performList.splice(i2, 1);
-        i2--;
-      }
-    }
-  }
-  if (isGoNext) {
-    nextSentence();
-  }
-};
-const getRandomPerformName = () => {
-  return Math.random().toString().substring(0, 10);
-};
-class PerformController {
-  constructor() {
-    __publicField(this, "performList", []);
-    __publicField(this, "timeoutList", []);
-  }
-  arrangeNewPerform(perform, script, syncPerformState = true) {
-    if (perform.performName === "none") {
-      return;
-    }
-    if (syncPerformState) {
-      const performToAdd = { id: perform.performName, isHoldOn: perform.isHoldOn, script };
-      webgalStore.dispatch(stageActions.addPerform(performToAdd));
-    }
-    perform.stopTimeout = setTimeout(() => {
-      if (!perform.isHoldOn) {
-        this.unmountPerform(perform.performName);
-        if (perform.goNextWhenOver) {
-          this.goNextWhenOver();
-        }
-      }
-    }, perform.duration);
-    this.performList.push(perform);
-  }
-  unmountPerform(name, force = false) {
-    if (!force) {
-      for (let i2 = 0; i2 < this.performList.length; i2++) {
-        const e2 = this.performList[i2];
-        if (!e2.isHoldOn && e2.performName === name) {
-          e2.stopFunction();
-          clearTimeout(e2.stopTimeout);
-          this.performList.splice(i2, 1);
-          i2--;
-        }
-      }
-    } else {
-      for (let i2 = 0; i2 < this.performList.length; i2++) {
-        const e2 = this.performList[i2];
-        if (e2.performName === name) {
-          e2.stopFunction();
-          clearTimeout(e2.stopTimeout);
-          this.performList.splice(i2, 1);
-          i2--;
-          this.erasePerformFromState(name);
-        }
-      }
-    }
-  }
-  erasePerformFromState(name) {
-    webgalStore.dispatch(stageActions.removePerformByName(name));
-  }
-  removeAllPerform() {
-    for (const e2 of this.performList) {
-      e2.stopFunction();
-    }
-    this.performList = [];
-    for (const e2 of this.timeoutList) {
-      clearTimeout(e2);
-    }
-  }
-  goNextWhenOver() {
-    let isBlockingAuto = false;
-    this.performList.forEach((e2) => {
-      if (e2.blockingAuto())
-        isBlockingAuto = true;
-    });
-    if (isBlockingAuto) {
-      setTimeout(this.goNextWhenOver, 100);
-    } else {
-      nextSentence();
-    }
-  }
-}
-class Gameplay {
-  constructor() {
-    __publicField(this, "isAuto", false);
-    __publicField(this, "isFast", false);
-    __publicField(this, "autoInterval", null);
-    __publicField(this, "fastInterval", null);
-    __publicField(this, "autoTimeout", null);
-    __publicField(this, "pixiStage", null);
-    __publicField(this, "performController", new PerformController());
-  }
-  resetGamePlay() {
-    this.performController.timeoutList = [];
-    this.isAuto = false;
-    this.isFast = false;
-    const autoInterval = this.autoInterval;
-    if (autoInterval !== null)
-      clearInterval(autoInterval);
-    this.autoInterval = null;
-    const fastInterval = this.fastInterval;
-    if (fastInterval !== null)
-      clearInterval(fastInterval);
-    this.fastInterval = null;
-    const autoTimeout = this.autoTimeout;
-    if (autoTimeout !== null)
-      clearInterval(autoTimeout);
-    this.autoTimeout = null;
-  }
-}
-function mitt(n2) {
-  return { all: n2 = n2 || /* @__PURE__ */ new Map(), on: function(t2, e2) {
-    var i2 = n2.get(t2);
-    i2 ? i2.push(e2) : n2.set(t2, [e2]);
-  }, off: function(t2, e2) {
-    var i2 = n2.get(t2);
-    i2 && (e2 ? i2.splice(i2.indexOf(e2) >>> 0, 1) : n2.set(t2, []));
-  }, emit: function(t2, e2) {
-    var i2 = n2.get(t2);
-    i2 && i2.slice().map(function(n3) {
-      n3(e2);
-    }), (i2 = n2.get("*")) && i2.slice().map(function(n3) {
-      n3(t2, e2);
-    });
-  } };
-}
-class Events {
-  constructor() {
-    __publicField(this, "textSettle", formEvent("text-settle"));
-    __publicField(this, "userInteractNext", formEvent("__NEXT"));
-    __publicField(this, "fullscreenDbClick", formEvent("fullscreen-dbclick"));
-    __publicField(this, "styleUpdate", formEvent("style-update"));
-  }
-}
-const eventBus = mitt();
-function formEvent(eventName) {
-  return {
-    on: (callback, id2) => {
-      eventBus.on(`${eventName}-${id2 ?? ""}`, callback);
-    },
-    emit: (message, id2) => {
-      eventBus.emit(`${eventName}-${id2 ?? ""}`, message);
-    },
-    off: (callback, id2) => {
-      eventBus.off(`${eventName}-${id2 ?? ""}`, callback);
-    }
-  };
 }
 class WebgalCore {
   constructor() {
@@ -33546,6 +33690,7 @@ class WebgalCore {
     __publicField(this, "gameName", "");
     __publicField(this, "gameKey", "");
     __publicField(this, "events", new Events());
+    __publicField(this, "videoManager", new VideoManager());
   }
 }
 const WebGAL = new WebgalCore();
@@ -33832,7 +33977,7 @@ async function fastSaveGame() {
   await dumpFastSaveToStorage();
 }
 const startGame = () => {
-  resetStage(true);
+  resetStage(true, true, false);
   const sceneUrl = assetSetter("start.txt", fileType$1.scene);
   sceneFetcher(sceneUrl).then((rawScene) => {
     WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, "start.txt", sceneUrl);
@@ -107997,7 +108142,7 @@ instance.use(initReactI18next).init({
     escapeValue: false
     // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
   }
-}).then(() => console.log("WebGAL i18n Ready!"));
+}).then(() => console.log("IdolTime i18n Ready!"));
 ReactDOM.render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(React.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trans, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Provider, { store: webgalStore, children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) }) }) }),
   document.getElementById("root")
