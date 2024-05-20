@@ -11932,7 +11932,7 @@ function stripBOM$1(content) {
   }
   return content;
 }
-var utils$p = {
+var utils$q = {
   isArray: isArray$d,
   isArrayBuffer: isArrayBuffer$2,
   isBuffer: isBuffer$4,
@@ -11956,7 +11956,7 @@ var utils$p = {
   trim: trim$2,
   stripBOM: stripBOM$1
 };
-var utils$o = utils$p;
+var utils$p = utils$q;
 function encode$3(val) {
   return encodeURIComponent(val).replace(/%3A/gi, ":").replace(/%24/g, "$").replace(/%2C/gi, ",").replace(/%20/g, "+").replace(/%5B/gi, "[").replace(/%5D/gi, "]");
 }
@@ -11967,23 +11967,23 @@ var buildURL$3 = function buildURL(url2, params, paramsSerializer) {
   var serializedParams;
   if (paramsSerializer) {
     serializedParams = paramsSerializer(params);
-  } else if (utils$o.isURLSearchParams(params)) {
+  } else if (utils$p.isURLSearchParams(params)) {
     serializedParams = params.toString();
   } else {
     var parts = [];
-    utils$o.forEach(params, function serialize2(val, key) {
+    utils$p.forEach(params, function serialize2(val, key) {
       if (val === null || typeof val === "undefined") {
         return;
       }
-      if (utils$o.isArray(val)) {
+      if (utils$p.isArray(val)) {
         key = key + "[]";
       } else {
         val = [val];
       }
-      utils$o.forEach(val, function parseValue(v2) {
-        if (utils$o.isDate(v2)) {
+      utils$p.forEach(val, function parseValue(v2) {
+        if (utils$p.isDate(v2)) {
           v2 = v2.toISOString();
-        } else if (utils$o.isObject(v2)) {
+        } else if (utils$p.isObject(v2)) {
           v2 = JSON.stringify(v2);
         }
         parts.push(encode$3(key) + "=" + encode$3(v2));
@@ -12000,7 +12000,7 @@ var buildURL$3 = function buildURL(url2, params, paramsSerializer) {
   }
   return url2;
 };
-var utils$n = utils$p;
+var utils$o = utils$q;
 function InterceptorManager$3() {
   this.handlers = [];
 }
@@ -12019,16 +12019,16 @@ InterceptorManager$3.prototype.eject = function eject(id2) {
   }
 };
 InterceptorManager$3.prototype.forEach = function forEach(fn2) {
-  utils$n.forEach(this.handlers, function forEachHandler(h2) {
+  utils$o.forEach(this.handlers, function forEachHandler(h2) {
     if (h2 !== null) {
       fn2(h2);
     }
   });
 };
 var InterceptorManager_1$1 = InterceptorManager$3;
-var utils$m = utils$p;
+var utils$n = utils$q;
 var normalizeHeaderName$3 = function normalizeHeaderName(headers, normalizedName) {
-  utils$m.forEach(headers, function processHeader(value, name) {
+  utils$n.forEach(headers, function processHeader(value, name) {
     if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
       headers[normalizedName] = value;
       delete headers[name];
@@ -12106,7 +12106,7 @@ function requireCookies$1() {
   if (hasRequiredCookies$1)
     return cookies$1;
   hasRequiredCookies$1 = 1;
-  var utils2 = utils$p;
+  var utils2 = utils$q;
   cookies$1 = utils2.isStandardBrowserEnv() ? (
     // Standard browser envs support document.cookie
     function standardBrowserEnv() {
@@ -12197,7 +12197,7 @@ function requireParseHeaders$1() {
   if (hasRequiredParseHeaders$1)
     return parseHeaders$1;
   hasRequiredParseHeaders$1 = 1;
-  var utils2 = utils$p;
+  var utils2 = utils$q;
   var ignoreDuplicateOf = [
     "age",
     "authorization",
@@ -12250,7 +12250,7 @@ function requireIsURLSameOrigin$1() {
   if (hasRequiredIsURLSameOrigin$1)
     return isURLSameOrigin$1;
   hasRequiredIsURLSameOrigin$1 = 1;
-  var utils2 = utils$p;
+  var utils2 = utils$q;
   isURLSameOrigin$1 = utils2.isStandardBrowserEnv() ? (
     // Standard browser envs have full support of the APIs needed to test
     // whether the request URL is of the same origin as current location.
@@ -12314,7 +12314,7 @@ function requireXhr$1() {
   if (hasRequiredXhr$1)
     return xhr$1;
   hasRequiredXhr$1 = 1;
-  var utils2 = utils$p;
+  var utils2 = utils$q;
   var settle2 = requireSettle$1();
   var cookies2 = requireCookies$1();
   var buildURL4 = buildURL$3;
@@ -12466,7 +12466,7 @@ function requireDefaults() {
   if (hasRequiredDefaults)
     return defaults_1$1;
   hasRequiredDefaults = 1;
-  var utils2 = utils$p;
+  var utils2 = utils$q;
   var normalizeHeaderName4 = normalizeHeaderName$3;
   var enhanceError$1 = enhanceError;
   var DEFAULT_CONTENT_TYPE2 = {
@@ -12571,11 +12571,11 @@ function requireDefaults() {
   defaults_1$1 = defaults2;
   return defaults_1$1;
 }
-var utils$l = utils$p;
+var utils$m = utils$q;
 var defaults$8 = requireDefaults();
 var transformData$3 = function transformData(data2, headers, fns) {
   var context2 = this || defaults$8;
-  utils$l.forEach(fns, function transform(fn2) {
+  utils$m.forEach(fns, function transform(fn2) {
     data2 = fn2.call(context2, data2, headers);
   });
   return data2;
@@ -12591,7 +12591,7 @@ function requireIsCancel$1() {
   };
   return isCancel$3;
 }
-var utils$k = utils$p;
+var utils$l = utils$q;
 var transformData$2 = transformData$3;
 var isCancel$2 = requireIsCancel$1();
 var defaults$7 = requireDefaults();
@@ -12613,12 +12613,12 @@ var dispatchRequest$3 = function dispatchRequest(config) {
     config.headers,
     config.transformRequest
   );
-  config.headers = utils$k.merge(
+  config.headers = utils$l.merge(
     config.headers.common || {},
     config.headers[config.method] || {},
     config.headers
   );
-  utils$k.forEach(
+  utils$l.forEach(
     ["delete", "get", "head", "post", "put", "patch", "common"],
     function cleanHeaderConfig(method) {
       delete config.headers[method];
@@ -12649,36 +12649,36 @@ var dispatchRequest$3 = function dispatchRequest(config) {
     return Promise.reject(reason);
   });
 };
-var utils$j = utils$p;
+var utils$k = utils$q;
 var mergeConfig$5 = function mergeConfig(config1, config2) {
   config2 = config2 || {};
   var config = {};
   function getMergedValue(target, source) {
-    if (utils$j.isPlainObject(target) && utils$j.isPlainObject(source)) {
-      return utils$j.merge(target, source);
-    } else if (utils$j.isPlainObject(source)) {
-      return utils$j.merge({}, source);
-    } else if (utils$j.isArray(source)) {
+    if (utils$k.isPlainObject(target) && utils$k.isPlainObject(source)) {
+      return utils$k.merge(target, source);
+    } else if (utils$k.isPlainObject(source)) {
+      return utils$k.merge({}, source);
+    } else if (utils$k.isArray(source)) {
       return source.slice();
     }
     return source;
   }
   function mergeDeepProperties(prop) {
-    if (!utils$j.isUndefined(config2[prop])) {
+    if (!utils$k.isUndefined(config2[prop])) {
       return getMergedValue(config1[prop], config2[prop]);
-    } else if (!utils$j.isUndefined(config1[prop])) {
+    } else if (!utils$k.isUndefined(config1[prop])) {
       return getMergedValue(void 0, config1[prop]);
     }
   }
   function valueFromConfig2(prop) {
-    if (!utils$j.isUndefined(config2[prop])) {
+    if (!utils$k.isUndefined(config2[prop])) {
       return getMergedValue(void 0, config2[prop]);
     }
   }
   function defaultToConfig2(prop) {
-    if (!utils$j.isUndefined(config2[prop])) {
+    if (!utils$k.isUndefined(config2[prop])) {
       return getMergedValue(void 0, config2[prop]);
-    } else if (!utils$j.isUndefined(config1[prop])) {
+    } else if (!utils$k.isUndefined(config1[prop])) {
       return getMergedValue(void 0, config1[prop]);
     }
   }
@@ -12717,10 +12717,10 @@ var mergeConfig$5 = function mergeConfig(config1, config2) {
     "responseEncoding": defaultToConfig2,
     "validateStatus": mergeDirectKeys
   };
-  utils$j.forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop) {
+  utils$k.forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop) {
     var merge3 = mergeMap[prop] || mergeDeepProperties;
     var configValue = merge3(prop);
-    utils$j.isUndefined(configValue) && merge3 !== mergeDirectKeys || (config[prop] = configValue);
+    utils$k.isUndefined(configValue) && merge3 !== mergeDirectKeys || (config[prop] = configValue);
   });
   return config;
 };
@@ -12789,7 +12789,7 @@ var validator$3 = {
   assertOptions: assertOptions$1,
   validators: validators$3
 };
-var utils$i = utils$p;
+var utils$j = utils$q;
 var buildURL$2 = buildURL$3;
 var InterceptorManager$2 = InterceptorManager_1$1;
 var dispatchRequest$2 = dispatchRequest$3;
@@ -12875,7 +12875,7 @@ Axios$3.prototype.getUri = function getUri(config) {
   config = mergeConfig$4(this.defaults, config);
   return buildURL$2(config.url, config.params, config.paramsSerializer).replace(/^\?/, "");
 };
-utils$i.forEach(["delete", "get", "head", "options"], function forEachMethodNoData(method) {
+utils$j.forEach(["delete", "get", "head", "options"], function forEachMethodNoData(method) {
   Axios$3.prototype[method] = function(url2, config) {
     return this.request(mergeConfig$4(config || {}, {
       method,
@@ -12884,7 +12884,7 @@ utils$i.forEach(["delete", "get", "head", "options"], function forEachMethodNoDa
     }));
   };
 });
-utils$i.forEach(["post", "put", "patch"], function forEachMethodWithData(method) {
+utils$j.forEach(["post", "put", "patch"], function forEachMethodWithData(method) {
   Axios$3.prototype[method] = function(url2, data2, config) {
     return this.request(mergeConfig$4(config || {}, {
       method,
@@ -13001,7 +13001,7 @@ function requireIsAxiosError$1() {
   };
   return isAxiosError$1;
 }
-var utils$h = utils$p;
+var utils$i = utils$q;
 var bind$6 = bind$8;
 var Axios$2 = Axios_1$1;
 var mergeConfig$3 = mergeConfig$5;
@@ -13009,8 +13009,8 @@ var defaults$6 = requireDefaults();
 function createInstance$1(defaultConfig) {
   var context2 = new Axios$2(defaultConfig);
   var instance2 = bind$6(Axios$2.prototype.request, context2);
-  utils$h.extend(instance2, Axios$2.prototype, context2);
-  utils$h.extend(instance2, context2);
+  utils$i.extend(instance2, Axios$2.prototype, context2);
+  utils$i.extend(instance2, context2);
   instance2.create = function create(instanceConfig) {
     return createInstance$1(mergeConfig$3(defaultConfig, instanceConfig));
   };
@@ -15700,7 +15700,7 @@ function inherits(constructor, superConstructor, props, descriptors2) {
   constructor.prototype.constructor = constructor;
   props && Object.assign(constructor.prototype, props);
 }
-function toFlatObject(sourceObj, destObj, filter, propFilter) {
+function toFlatObject(sourceObj, destObj, filter2, propFilter) {
   var props;
   var i2;
   var prop;
@@ -15718,8 +15718,8 @@ function toFlatObject(sourceObj, destObj, filter, propFilter) {
         merged[prop] = true;
       }
     }
-    sourceObj = filter !== false && Object.getPrototypeOf(sourceObj);
-  } while (sourceObj && (!filter || filter(sourceObj, destObj)) && sourceObj !== Object.prototype);
+    sourceObj = filter2 !== false && Object.getPrototypeOf(sourceObj);
+  } while (sourceObj && (!filter2 || filter2(sourceObj, destObj)) && sourceObj !== Object.prototype);
   return destObj;
 }
 function endsWith(str, searchString, position2) {
@@ -15773,7 +15773,7 @@ var hasOwnProperty$3 = function resolver(_hasOwnProperty) {
     return _hasOwnProperty.call(obj, prop);
   };
 }(Object.prototype.hasOwnProperty);
-var utils$g = {
+var utils$h = {
   isArray: isArray$c,
   isArrayBuffer: isArrayBuffer$1,
   isBuffer: isBuffer$3,
@@ -15810,8 +15810,8 @@ var utils$g = {
   isHTMLForm,
   hasOwnProperty: hasOwnProperty$3
 };
-var utils$f = utils$g;
-function AxiosError$2(message, code, config, request3, response) {
+var utils$g = utils$h;
+function AxiosError$3(message, code, config, request3, response) {
   Error.call(this);
   if (Error.captureStackTrace) {
     Error.captureStackTrace(this, this.constructor);
@@ -15825,7 +15825,7 @@ function AxiosError$2(message, code, config, request3, response) {
   request3 && (this.request = request3);
   response && (this.response = response);
 }
-utils$f.inherits(AxiosError$2, Error, {
+utils$g.inherits(AxiosError$3, Error, {
   toJSON: function toJSON() {
     return {
       // Standard
@@ -15846,7 +15846,7 @@ utils$f.inherits(AxiosError$2, Error, {
     };
   }
 });
-var prototype$1 = AxiosError$2.prototype;
+var prototype$1 = AxiosError$3.prototype;
 var descriptors = {};
 [
   "ERR_BAD_OPTION_VALUE",
@@ -15865,166 +15865,142 @@ var descriptors = {};
 ].forEach(function(code) {
   descriptors[code] = { value: code };
 });
-Object.defineProperties(AxiosError$2, descriptors);
+Object.defineProperties(AxiosError$3, descriptors);
 Object.defineProperty(prototype$1, "isAxiosError", { value: true });
-AxiosError$2.from = function(error2, code, config, request3, response, customProps) {
+AxiosError$3.from = function(error2, code, config, request3, response, customProps) {
   var axiosError = Object.create(prototype$1);
-  utils$f.toFlatObject(error2, axiosError, function filter(obj) {
+  utils$g.toFlatObject(error2, axiosError, function filter2(obj) {
     return obj !== Error.prototype;
   });
-  AxiosError$2.call(axiosError, error2.message, code, config, request3, response);
+  AxiosError$3.call(axiosError, error2.message, code, config, request3, response);
   axiosError.cause = error2;
   axiosError.name = error2.name;
   customProps && Object.assign(axiosError, customProps);
   return axiosError;
 };
-var AxiosError_1 = AxiosError$2;
-var browser$1;
-var hasRequiredBrowser;
-function requireBrowser() {
-  if (hasRequiredBrowser)
-    return browser$1;
-  hasRequiredBrowser = 1;
-  browser$1 = typeof self == "object" ? self.FormData : window.FormData;
-  return browser$1;
+var AxiosError_1 = AxiosError$3;
+var browser$1 = typeof self == "object" ? self.FormData : window.FormData;
+var FormData$1 = browser$1;
+var utils$f = utils$h;
+var AxiosError$2 = AxiosError_1;
+var envFormData = FormData$1;
+function isVisitable(thing) {
+  return utils$f.isPlainObject(thing) || utils$f.isArray(thing);
 }
-var FormData$1;
-var hasRequiredFormData;
-function requireFormData() {
-  if (hasRequiredFormData)
-    return FormData$1;
-  hasRequiredFormData = 1;
-  FormData$1 = requireBrowser();
-  return FormData$1;
+function removeBrackets(key) {
+  return utils$f.endsWith(key, "[]") ? key.slice(0, -2) : key;
 }
-var toFormData_1;
-var hasRequiredToFormData;
-function requireToFormData() {
-  if (hasRequiredToFormData)
-    return toFormData_1;
-  hasRequiredToFormData = 1;
-  var utils2 = utils$g;
-  var AxiosError2 = AxiosError_1;
-  var envFormData = requireFormData();
-  function isVisitable(thing) {
-    return utils2.isPlainObject(thing) || utils2.isArray(thing);
+function renderKey(path2, key, dots) {
+  if (!path2)
+    return key;
+  return path2.concat(key).map(function each(token2, i2) {
+    token2 = removeBrackets(token2);
+    return !dots && i2 ? "[" + token2 + "]" : token2;
+  }).join(dots ? "." : "");
+}
+function isFlatArray(arr) {
+  return utils$f.isArray(arr) && !arr.some(isVisitable);
+}
+var predicates = utils$f.toFlatObject(utils$f, {}, null, function filter(prop) {
+  return /^is[A-Z]/.test(prop);
+});
+function isSpecCompliant(thing) {
+  return thing && utils$f.isFunction(thing.append) && thing[Symbol.toStringTag] === "FormData" && thing[Symbol.iterator];
+}
+function toFormData$3(obj, formData, options) {
+  if (!utils$f.isObject(obj)) {
+    throw new TypeError("target must be an object");
   }
-  function removeBrackets(key) {
-    return utils2.endsWith(key, "[]") ? key.slice(0, -2) : key;
-  }
-  function renderKey(path2, key, dots) {
-    if (!path2)
-      return key;
-    return path2.concat(key).map(function each(token2, i2) {
-      token2 = removeBrackets(token2);
-      return !dots && i2 ? "[" + token2 + "]" : token2;
-    }).join(dots ? "." : "");
-  }
-  function isFlatArray(arr) {
-    return utils2.isArray(arr) && !arr.some(isVisitable);
-  }
-  var predicates = utils2.toFlatObject(utils2, {}, null, function filter(prop) {
-    return /^is[A-Z]/.test(prop);
+  formData = formData || new (envFormData || FormData)();
+  options = utils$f.toFlatObject(options, {
+    metaTokens: true,
+    dots: false,
+    indexes: false
+  }, false, function defined(option, source) {
+    return !utils$f.isUndefined(source[option]);
   });
-  function isSpecCompliant(thing) {
-    return thing && utils2.isFunction(thing.append) && thing[Symbol.toStringTag] === "FormData" && thing[Symbol.iterator];
+  var metaTokens = options.metaTokens;
+  var visitor = options.visitor || defaultVisitor;
+  var dots = options.dots;
+  var indexes = options.indexes;
+  var _Blob = options.Blob || typeof Blob !== "undefined" && Blob;
+  var useBlob = _Blob && isSpecCompliant(formData);
+  if (!utils$f.isFunction(visitor)) {
+    throw new TypeError("visitor must be a function");
   }
-  function toFormData2(obj, formData, options) {
-    if (!utils2.isObject(obj)) {
-      throw new TypeError("target must be an object");
+  function convertValue(value) {
+    if (value === null)
+      return "";
+    if (utils$f.isDate(value)) {
+      return value.toISOString();
     }
-    formData = formData || new (envFormData || FormData)();
-    options = utils2.toFlatObject(options, {
-      metaTokens: true,
-      dots: false,
-      indexes: false
-    }, false, function defined(option, source) {
-      return !utils2.isUndefined(source[option]);
-    });
-    var metaTokens = options.metaTokens;
-    var visitor = options.visitor || defaultVisitor;
-    var dots = options.dots;
-    var indexes = options.indexes;
-    var _Blob = options.Blob || typeof Blob !== "undefined" && Blob;
-    var useBlob = _Blob && isSpecCompliant(formData);
-    if (!utils2.isFunction(visitor)) {
-      throw new TypeError("visitor must be a function");
+    if (!useBlob && utils$f.isBlob(value)) {
+      throw new AxiosError$2("Blob is not supported. Use a Buffer instead.");
     }
-    function convertValue(value) {
-      if (value === null)
-        return "";
-      if (utils2.isDate(value)) {
-        return value.toISOString();
-      }
-      if (!useBlob && utils2.isBlob(value)) {
-        throw new AxiosError2("Blob is not supported. Use a Buffer instead.");
-      }
-      if (utils2.isArrayBuffer(value) || utils2.isTypedArray(value)) {
-        return useBlob && typeof Blob === "function" ? new Blob([value]) : Buffer.from(value);
-      }
-      return value;
+    if (utils$f.isArrayBuffer(value) || utils$f.isTypedArray(value)) {
+      return useBlob && typeof Blob === "function" ? new Blob([value]) : Buffer.from(value);
     }
-    function defaultVisitor(value, key, path2) {
-      var arr = value;
-      if (value && !path2 && typeof value === "object") {
-        if (utils2.endsWith(key, "{}")) {
-          key = metaTokens ? key : key.slice(0, -2);
-          value = JSON.stringify(value);
-        } else if (utils2.isArray(value) && isFlatArray(value) || (utils2.isFileList(value) || utils2.endsWith(key, "[]") && (arr = utils2.toArray(value)))) {
-          key = removeBrackets(key);
-          arr.forEach(function each(el, index2) {
-            !utils2.isUndefined(el) && formData.append(
-              // eslint-disable-next-line no-nested-ternary
-              indexes === true ? renderKey([key], index2, dots) : indexes === null ? key : key + "[]",
-              convertValue(el)
-            );
-          });
-          return false;
-        }
-      }
-      if (isVisitable(value)) {
-        return true;
-      }
-      formData.append(renderKey(path2, key, dots), convertValue(value));
-      return false;
-    }
-    var stack = [];
-    var exposedHelpers = Object.assign(predicates, {
-      defaultVisitor,
-      convertValue,
-      isVisitable
-    });
-    function build(value, path2) {
-      if (utils2.isUndefined(value))
-        return;
-      if (stack.indexOf(value) !== -1) {
-        throw Error("Circular reference detected in " + path2.join("."));
-      }
-      stack.push(value);
-      utils2.forEach(value, function each(el, key) {
-        var result = !utils2.isUndefined(el) && visitor.call(
-          formData,
-          el,
-          utils2.isString(key) ? key.trim() : key,
-          path2,
-          exposedHelpers
-        );
-        if (result === true) {
-          build(el, path2 ? path2.concat(key) : [key]);
-        }
-      });
-      stack.pop();
-    }
-    if (!utils2.isObject(obj)) {
-      throw new TypeError("data must be an object");
-    }
-    build(obj);
-    return formData;
+    return value;
   }
-  toFormData_1 = toFormData2;
-  return toFormData_1;
+  function defaultVisitor(value, key, path2) {
+    var arr = value;
+    if (value && !path2 && typeof value === "object") {
+      if (utils$f.endsWith(key, "{}")) {
+        key = metaTokens ? key : key.slice(0, -2);
+        value = JSON.stringify(value);
+      } else if (utils$f.isArray(value) && isFlatArray(value) || (utils$f.isFileList(value) || utils$f.endsWith(key, "[]") && (arr = utils$f.toArray(value)))) {
+        key = removeBrackets(key);
+        arr.forEach(function each(el, index2) {
+          !utils$f.isUndefined(el) && formData.append(
+            // eslint-disable-next-line no-nested-ternary
+            indexes === true ? renderKey([key], index2, dots) : indexes === null ? key : key + "[]",
+            convertValue(el)
+          );
+        });
+        return false;
+      }
+    }
+    if (isVisitable(value)) {
+      return true;
+    }
+    formData.append(renderKey(path2, key, dots), convertValue(value));
+    return false;
+  }
+  var stack = [];
+  var exposedHelpers = Object.assign(predicates, {
+    defaultVisitor,
+    convertValue,
+    isVisitable
+  });
+  function build(value, path2) {
+    if (utils$f.isUndefined(value))
+      return;
+    if (stack.indexOf(value) !== -1) {
+      throw Error("Circular reference detected in " + path2.join("."));
+    }
+    stack.push(value);
+    utils$f.forEach(value, function each(el, key) {
+      var result = !utils$f.isUndefined(el) && visitor.call(
+        formData,
+        el,
+        utils$f.isString(key) ? key.trim() : key,
+        path2,
+        exposedHelpers
+      );
+      if (result === true) {
+        build(el, path2 ? path2.concat(key) : [key]);
+      }
+    });
+    stack.pop();
+  }
+  if (!utils$f.isObject(obj)) {
+    throw new TypeError("data must be an object");
+  }
+  build(obj);
+  return formData;
 }
-var toFormData$2 = requireToFormData();
+var toFormData_1 = toFormData$3;
+var toFormData$2 = toFormData_1;
 function encode$2(str) {
   var charMap = {
     "!": "%21",
@@ -16056,7 +16032,7 @@ prototype.toString = function toString(encoder) {
   }, "").join("&");
 };
 var AxiosURLSearchParams_1 = AxiosURLSearchParams$2;
-var utils$e = utils$g;
+var utils$e = utils$h;
 var AxiosURLSearchParams$1 = AxiosURLSearchParams_1;
 function encode$1(val) {
   return encodeURIComponent(val).replace(/%3A/gi, ":").replace(/%24/g, "$").replace(/%2C/gi, ",").replace(/%20/g, "+").replace(/%5B/gi, "[").replace(/%5D/gi, "]");
@@ -16076,7 +16052,7 @@ var buildURL$1 = function buildURL2(url2, params, options) {
   }
   return url2;
 };
-var utils$d = utils$g;
+var utils$d = utils$h;
 function InterceptorManager$1() {
   this.handlers = [];
 }
@@ -16107,7 +16083,7 @@ InterceptorManager$1.prototype.forEach = function forEach2(fn2) {
   });
 };
 var InterceptorManager_1 = InterceptorManager$1;
-var utils$c = utils$g;
+var utils$c = utils$h;
 var normalizeHeaderName$2 = function normalizeHeaderName2(headers, normalizedName) {
   utils$c.forEach(headers, function processHeader(value, name) {
     if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
@@ -16134,8 +16110,8 @@ var browser = {
   protocols: ["http", "https", "file", "blob", "url", "data"]
 };
 var platform$2 = browser;
-var utils$b = utils$g;
-var toFormData$1 = requireToFormData();
+var utils$b = utils$h;
+var toFormData$1 = toFormData_1;
 var platform$1 = platform$2;
 var toURLEncodedForm$1 = function toURLEncodedForm(data2, options) {
   return toFormData$1(data2, new platform$1.classes.URLSearchParams(), Object.assign({
@@ -16148,7 +16124,7 @@ var toURLEncodedForm$1 = function toURLEncodedForm(data2, options) {
     }
   }, options));
 };
-var utils$a = utils$g;
+var utils$a = utils$h;
 function parsePropPath(name) {
   return utils$a.matchAll(/\w+|\[(\w*)]/g, name).map(function(match2) {
     return match2[0] === "[]" ? "" : match2[1] || match2[0];
@@ -16228,7 +16204,7 @@ function requireCookies() {
   if (hasRequiredCookies)
     return cookies;
   hasRequiredCookies = 1;
-  var utils2 = utils$g;
+  var utils2 = utils$h;
   cookies = utils2.isStandardBrowserEnv() ? (
     // Standard browser envs support document.cookie
     function standardBrowserEnv() {
@@ -16295,7 +16271,7 @@ function requireParseHeaders() {
   if (hasRequiredParseHeaders)
     return parseHeaders;
   hasRequiredParseHeaders = 1;
-  var utils2 = utils$g;
+  var utils2 = utils$h;
   var ignoreDuplicateOf = [
     "age",
     "authorization",
@@ -16348,7 +16324,7 @@ function requireIsURLSameOrigin() {
   if (hasRequiredIsURLSameOrigin)
     return isURLSameOrigin;
   hasRequiredIsURLSameOrigin = 1;
-  var utils2 = utils$g;
+  var utils2 = utils$h;
   isURLSameOrigin = utils2.isStandardBrowserEnv() ? (
     // Standard browser envs have full support of the APIs needed to test
     // whether the request URL is of the same origin as current location.
@@ -16397,7 +16373,7 @@ function requireCanceledError() {
     return CanceledError_1;
   hasRequiredCanceledError = 1;
   var AxiosError2 = AxiosError_1;
-  var utils2 = utils$g;
+  var utils2 = utils$h;
   function CanceledError2(message, config, request3) {
     AxiosError2.call(this, message == null ? "canceled" : message, AxiosError2.ERR_CANCELED, config, request3);
     this.name = "CanceledError";
@@ -16426,7 +16402,7 @@ function requireXhr() {
   if (hasRequiredXhr)
     return xhr;
   hasRequiredXhr = 1;
-  var utils2 = utils$g;
+  var utils2 = utils$h;
   var settle2 = requireSettle();
   var cookies2 = requireCookies();
   var buildURL4 = buildURL$1;
@@ -16583,11 +16559,11 @@ function requireXhr() {
   };
   return xhr;
 }
-var utils$9 = utils$g;
+var utils$9 = utils$h;
 var normalizeHeaderName$1 = normalizeHeaderName$2;
 var AxiosError$1 = AxiosError_1;
 var transitionalDefaults = transitional2;
-var toFormData = requireToFormData();
+var toFormData = toFormData_1;
 var toURLEncodedForm2 = toURLEncodedForm$1;
 var platform = platform$2;
 var formDataToJSON$1 = formDataToJSON_1;
@@ -16716,7 +16692,7 @@ utils$9.forEach(["post", "put", "patch"], function forEachMethodWithData2(method
   defaults$5.headers[method] = utils$9.merge(DEFAULT_CONTENT_TYPE);
 });
 var defaults_1 = defaults$5;
-var utils$8 = utils$g;
+var utils$8 = utils$h;
 var defaults$4 = defaults_1;
 var transformData$1 = function transformData2(data2, headers, status, fns) {
   var context2 = this || defaults$4;
@@ -16736,7 +16712,7 @@ function requireIsCancel() {
   };
   return isCancel$1;
 }
-var utils$7 = utils$g;
+var utils$7 = utils$h;
 var transformData3 = transformData$1;
 var isCancel = requireIsCancel();
 var defaults$3 = defaults_1;
@@ -16800,7 +16776,7 @@ var dispatchRequest$1 = function dispatchRequest2(config) {
     return Promise.reject(reason);
   });
 };
-var utils$6 = utils$g;
+var utils$6 = utils$h;
 var mergeConfig$2 = function mergeConfig2(config1, config2) {
   config2 = config2 || {};
   var config = {};
@@ -16948,7 +16924,7 @@ var validator$1 = {
   assertOptions,
   validators: validators$1
 };
-var utils$5 = utils$g;
+var utils$5 = utils$h;
 var buildURL3 = buildURL$1;
 var InterceptorManager = InterceptorManager_1;
 var dispatchRequest3 = dispatchRequest$1;
@@ -17165,13 +17141,13 @@ function requireIsAxiosError() {
   if (hasRequiredIsAxiosError)
     return isAxiosError;
   hasRequiredIsAxiosError = 1;
-  var utils2 = utils$g;
+  var utils2 = utils$h;
   isAxiosError = function isAxiosError2(payload) {
     return utils2.isObject(payload) && payload.isAxiosError === true;
   };
   return isAxiosError;
 }
-var utils$4 = utils$g;
+var utils$4 = utils$h;
 var bind$3 = bind$5;
 var Axios = Axios_1;
 var mergeConfig3 = mergeConfig$2;
@@ -17193,7 +17169,7 @@ axios$2.CanceledError = requireCanceledError();
 axios$2.CancelToken = requireCancelToken();
 axios$2.isCancel = requireIsCancel();
 axios$2.VERSION = requireData().version;
-axios$2.toFormData = requireToFormData();
+axios$2.toFormData = toFormData_1;
 axios$2.AxiosError = AxiosError_1;
 axios$2.Cancel = axios$2.CanceledError;
 axios$2.all = function all2(promises) {
@@ -19318,14 +19294,18 @@ const jmp = (labelName) => {
   WebGAL.sceneManager.sceneData.currentSentenceId = result;
   setTimeout(nextSentence, 1);
 };
-const Choose_Main$1 = "_Choose_Main_1fx8w_1";
-const Choose_item$1 = "_Choose_item_1fx8w_13";
-const Choose_item_image = "_Choose_item_image_1fx8w_30";
-const Choose_item_disabled = "_Choose_item_disabled_1fx8w_45";
+const Choose_Main$1 = "_Choose_Main_p1fjh_1";
+const Choose_item$1 = "_Choose_item_p1fjh_13";
+const Choose_item_image = "_Choose_item_image_p1fjh_30";
+const Choose_item_countdown = "_Choose_item_countdown_p1fjh_45";
+const Choose_item_progress_bar = "_Choose_item_progress_bar_p1fjh_52";
+const Choose_item_disabled = "_Choose_item_disabled_p1fjh_59";
 const styles$m = {
   Choose_Main: Choose_Main$1,
   Choose_item: Choose_item$1,
   Choose_item_image,
+  Choose_item_countdown,
+  Choose_item_progress_bar,
   Choose_item_disabled
 };
 const page_flip_1 = "" + new URL("page-flip-1-7df32409.mp3", import.meta.url).href;
@@ -19989,6 +19969,8 @@ const useSEByWebgalStore = () => {
     // 鼠标点击
   };
 };
+const ProgressBarBackground = "data:image/png;base64,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";
+const ProgressBar = "" + new URL("progress-bar-01049335.png", import.meta.url).href;
 class ChooseOption {
   constructor(text2, jump) {
     __publicField(this, "text");
@@ -20045,14 +20027,21 @@ const choose = (sentence, chooseCallback) => {
   const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
   const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
   const { playSeEnter, playSeClick } = useSEByWebgalStore();
+  let timer = {
+    current: null
+  };
   const runtimeBuildList = (chooseListFull) => {
     return chooseListFull.filter((e2, i2) => whenChecker(e2.showCondition)).map((e2, i2) => {
-      var _a2;
+      var _a2, _b2;
       const enable = whenChecker(e2.enableCondition);
       let className = enable ? styles$m.Choose_item : styles$m.Choose_item_disabled;
       const onClick = enable ? () => {
         playSeClick();
         chooseCallback == null ? void 0 : chooseCallback();
+        if (timer.current) {
+          clearTimeout(timer.current);
+          timer.current = null;
+        }
         if (e2.jumpToScene) {
           changeScene(e2.jump, e2.text);
         } else {
@@ -20093,7 +20082,38 @@ const choose = (sentence, chooseCallback) => {
           styleObj["color"] = e2.style.fontColor;
         }
       }
-      if ((_a2 = e2.style) == null ? void 0 : _a2.image) {
+      console.log(3333, e2.style);
+      if (typeof ((_a2 = e2.style) == null ? void 0 : _a2.countdown) === "number") {
+        className = styles$m.Choose_item_countdown;
+        let time = e2.style.countdown;
+        let width = 1082;
+        let unit = 1082 / (time * 1e3 / 16);
+        const countdown = () => {
+          if (time <= 0 && timer.current) {
+            console.log(666666, timer);
+            clearTimeout(timer);
+            timer.current = null;
+            onClick();
+          } else {
+            timer.current = setTimeout(() => {
+              time -= 0.016;
+              width -= unit;
+              let rect = document.getElementById("rect");
+              rect == null ? void 0 : rect.setAttribute("width", Math.max(0, width).toString());
+              countdown();
+            }, 16);
+          }
+        };
+        countdown();
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBarBackground, alt: e2.text }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$m.Choose_item_progress_bar })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "0", height: "0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("clipPath", { id: "myClip", children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { id: "rect", width: "1082", height: "106", rx: "53", ry: "53", style: { fill: "#fff" } }) }) }) })
+        ] }, e2.jump + i2);
+      }
+      if ((_b2 = e2.style) == null ? void 0 : _b2.image) {
         className = styles$m.Choose_item_image;
         const imgUrl = assetSetter(e2.style.image, fileType$1.ui);
         return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
@@ -20498,7 +20518,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-fa152bea.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-b43222f7.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -22655,8 +22675,8 @@ ASTCompiler.prototype = {
   filterPrefix: function() {
     var parts = [];
     var self2 = this;
-    forEach3(this.state.filters, function(id2, filter) {
-      parts.push(id2 + "=$filter(" + self2.escape(filter) + ")");
+    forEach3(this.state.filters, function(id2, filter2) {
+      parts.push(id2 + "=$filter(" + self2.escape(filter2) + ")");
     });
     if (parts.length)
       return "var " + parts.join(",") + ";";
@@ -40260,7 +40280,7 @@ var isNonNullishPrimitive = function isNonNullishPrimitive2(v2) {
   return typeof v2 === "string" || typeof v2 === "number" || typeof v2 === "boolean" || typeof v2 === "symbol" || typeof v2 === "bigint";
 };
 var sentinel = {};
-var stringify$1 = function stringify(object, prefix2, generateArrayPrefix, commaRoundTrip, allowEmptyArrays, strictNullHandling, skipNulls, encodeDotInKeys, encoder, filter, sort, allowDots, serializeDate2, format2, formatter, encodeValuesOnly, charset, sideChannel2) {
+var stringify$1 = function stringify(object, prefix2, generateArrayPrefix, commaRoundTrip, allowEmptyArrays, strictNullHandling, skipNulls, encodeDotInKeys, encoder, filter2, sort, allowDots, serializeDate2, format2, formatter, encodeValuesOnly, charset, sideChannel2) {
   var obj = object;
   var tmpSc = sideChannel2;
   var step = 0;
@@ -40279,8 +40299,8 @@ var stringify$1 = function stringify(object, prefix2, generateArrayPrefix, comma
       step = 0;
     }
   }
-  if (typeof filter === "function") {
-    obj = filter(prefix2, obj);
+  if (typeof filter2 === "function") {
+    obj = filter2(prefix2, obj);
   } else if (obj instanceof Date) {
     obj = serializeDate2(obj);
   } else if (generateArrayPrefix === "comma" && isArray$1(obj)) {
@@ -40314,8 +40334,8 @@ var stringify$1 = function stringify(object, prefix2, generateArrayPrefix, comma
       obj = utils$2.maybeMap(obj, encoder);
     }
     objKeys = [{ value: obj.length > 0 ? obj.join(",") || null : void 0 }];
-  } else if (isArray$1(filter)) {
-    objKeys = filter;
+  } else if (isArray$1(filter2)) {
+    objKeys = filter2;
   } else {
     var keys2 = Object.keys(obj);
     objKeys = sort ? keys2.sort(sort) : keys2;
@@ -40346,7 +40366,7 @@ var stringify$1 = function stringify(object, prefix2, generateArrayPrefix, comma
       skipNulls,
       encodeDotInKeys,
       generateArrayPrefix === "comma" && encodeValuesOnly && isArray$1(obj) ? null : encoder,
-      filter,
+      filter2,
       sort,
       allowDots,
       serializeDate2,
@@ -40384,9 +40404,9 @@ var normalizeStringifyOptions = function normalizeStringifyOptions2(opts) {
     format2 = opts.format;
   }
   var formatter = formats$2.formatters[format2];
-  var filter = defaults$1.filter;
+  var filter2 = defaults$1.filter;
   if (typeof opts.filter === "function" || isArray$1(opts.filter)) {
-    filter = opts.filter;
+    filter2 = opts.filter;
   }
   var arrayFormat;
   if (opts.arrayFormat in arrayPrefixGenerators) {
@@ -40413,7 +40433,7 @@ var normalizeStringifyOptions = function normalizeStringifyOptions2(opts) {
     encodeDotInKeys: typeof opts.encodeDotInKeys === "boolean" ? opts.encodeDotInKeys : defaults$1.encodeDotInKeys,
     encoder: typeof opts.encoder === "function" ? opts.encoder : defaults$1.encoder,
     encodeValuesOnly: typeof opts.encodeValuesOnly === "boolean" ? opts.encodeValuesOnly : defaults$1.encodeValuesOnly,
-    filter,
+    filter: filter2,
     format: format2,
     formatter,
     serializeDate: typeof opts.serializeDate === "function" ? opts.serializeDate : defaults$1.serializeDate,
@@ -40426,13 +40446,13 @@ var stringify_1 = function(object, opts) {
   var obj = object;
   var options = normalizeStringifyOptions(opts);
   var objKeys;
-  var filter;
+  var filter2;
   if (typeof options.filter === "function") {
-    filter = options.filter;
-    obj = filter("", obj);
+    filter2 = options.filter;
+    obj = filter2("", obj);
   } else if (isArray$1(options.filter)) {
-    filter = options.filter;
-    objKeys = filter;
+    filter2 = options.filter;
+    objKeys = filter2;
   }
   var keys2 = [];
   if (typeof obj !== "object" || obj === null) {
@@ -48152,12 +48172,12 @@ var FilterSystem = (
       var autoFit = filters2[0].autoFit;
       var legacy = (_a2 = filters2[0].legacy) !== null && _a2 !== void 0 ? _a2 : true;
       for (var i2 = 1; i2 < filters2.length; i2++) {
-        var filter = filters2[i2];
-        resolution = Math.min(resolution, filter.resolution);
-        multisample = Math.min(multisample, filter.multisample);
-        padding = this.useMaxPadding ? Math.max(padding, filter.padding) : padding + filter.padding;
-        autoFit = autoFit && filter.autoFit;
-        legacy = legacy || ((_b2 = filter.legacy) !== null && _b2 !== void 0 ? _b2 : true);
+        var filter2 = filters2[i2];
+        resolution = Math.min(resolution, filter2.resolution);
+        multisample = Math.min(multisample, filter2.multisample);
+        padding = this.useMaxPadding ? Math.max(padding, filter2.padding) : padding + filter2.padding;
+        autoFit = autoFit && filter2.autoFit;
+        legacy = legacy || ((_b2 = filter2.legacy) !== null && _b2 !== void 0 ? _b2 : true);
       }
       if (filterStack.length === 1) {
         this.defaultFilterStack[0].renderTexture = renderTextureSystem.current;
@@ -48290,15 +48310,15 @@ var FilterSystem = (
         this.renderer.framebuffer.clear(0, 0, 0, 0);
       }
     };
-    FilterSystem2.prototype.applyFilter = function(filter, input, output2, clearMode) {
+    FilterSystem2.prototype.applyFilter = function(filter2, input, output2, clearMode) {
       var renderer = this.renderer;
-      renderer.state.set(filter.state);
+      renderer.state.set(filter2.state);
       this.bindAndClear(output2, clearMode);
-      filter.uniforms.uSampler = input;
-      filter.uniforms.filterGlobals = this.globalUniforms;
-      renderer.shader.bind(filter);
-      filter.legacy = !!filter.program.attributeData.aTextureCoord;
-      if (filter.legacy) {
+      filter2.uniforms.uSampler = input;
+      filter2.uniforms.filterGlobals = this.globalUniforms;
+      renderer.shader.bind(filter2);
+      filter2.legacy = !!filter2.program.attributeData.aTextureCoord;
+      if (filter2.legacy) {
         this.quadUv.map(input._frame, input.filterFrame);
         renderer.geometry.bind(this.quadUv);
         renderer.geometry.draw(DRAW_MODES.TRIANGLES);
@@ -71030,17 +71050,17 @@ class WebGALPixiContainer extends Container {
     __publicField(this, "baseX", 0);
     __publicField(this, "baseY", 0);
   }
-  addFilter(filter) {
+  addFilter(filter2) {
     if (this.filters) {
-      this.filters.push(filter);
+      this.filters.push(filter2);
     } else {
-      this.filters = [filter];
+      this.filters = [filter2];
     }
   }
   removeFilter(name) {
-    const filter = this.containerFilters.get(name);
-    if (filter) {
-      const index2 = ((this == null ? void 0 : this.filters) ?? []).findIndex((e2) => e2 === filter);
+    const filter2 = this.containerFilters.get(name);
+    if (filter2) {
+      const index2 = ((this == null ? void 0 : this.filters) ?? []).findIndex((e2) => e2 === filter2);
       if (this.filters) {
         this.filters.splice(index2, 1);
         this.containerFilters.delete(name);
@@ -71944,14 +71964,14 @@ var TextureAtlasPage = (
     }
     TextureAtlasPage2.prototype.setFilters = function() {
       var tex = this.baseTexture;
-      var filter = this.minFilter;
-      if (filter == TextureFilter.Linear) {
+      var filter2 = this.minFilter;
+      if (filter2 == TextureFilter.Linear) {
         tex.scaleMode = SCALE_MODES.LINEAR;
       } else if (this.minFilter == TextureFilter.Nearest) {
         tex.scaleMode = SCALE_MODES.NEAREST;
       } else {
         tex.mipmap = MIPMAP_MODES.POW2;
-        if (filter == TextureFilter.MipMapNearestNearest) {
+        if (filter2 == TextureFilter.MipMapNearestNearest) {
           tex.scaleMode = SCALE_MODES.NEAREST;
         } else {
           tex.scaleMode = SCALE_MODES.LINEAR;
