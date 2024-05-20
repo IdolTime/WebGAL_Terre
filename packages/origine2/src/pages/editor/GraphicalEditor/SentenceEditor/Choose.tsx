@@ -1,17 +1,19 @@
-import { ISentenceEditorProps } from "./index";
 import styles from "./sentenceEditor.module.scss";
-import { useValue } from "../../../../hooks/useValue";
 import { cloneDeep } from "lodash";
 import ChooseFile from "../../ChooseFile/ChooseFile";
 import useTrans from "@/hooks/useTrans";
 import { Button } from "@fluentui/react-components";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import WhenARG from '../components/WhenARG';
+import { getWhenARGExpression } from '@/utils/utils';
+import TerreToggle from "@/components/terreToggle/TerreToggle";
+import CommonOptions from "../components/CommonOption";
 
 interface IOptions {
   text: string;
   jump: string;
-  showCondition: string;
-  enableCondition: string;
+  showCondition: Variable;
+  enableCondition: Variable;
   style: {
     x?: number;
     y?: number;
@@ -19,7 +21,14 @@ interface IOptions {
     fontSize?: number;
     fontColor?: string;
     image?: string;
+    countdown?: number;
   },
+}
+
+interface Variable {
+  name?: string;
+  value?: string;
+  operator?: string;
 }
 
 const parse = (script: string) => {
@@ -40,8 +49,8 @@ const parse = (script: string) => {
       fontColor: undefined,
       image: undefined
     },
-    showCondition: '',
-    enableCondition: ''
+    showCondition: {},
+    enableCondition: {}
   };
 
   // Extract style information
@@ -63,35 +72,61 @@ const parse = (script: string) => {
     option.style = style;
   }
 
+  let showCondition = '';
+  let enableCondition = '';
+
   if (conditonPart !== null) {
     const showConditionPart = conditonPart.match(/\((.*)\)/);
     if (showConditionPart) {
-      option.showCondition = showConditionPart[1];
+      showCondition = showConditionPart[1];
     }
     const enableConditionPart = conditonPart.match(/\[(.*)\]/);
     if (enableConditionPart) {
-      option.enableCondition = enableConditionPart[1];
+      enableCondition = enableConditionPart[1];
     }
   }
+
+  const valExpArr = getWhenARGExpression(showCondition);
+  option.showCondition.name = valExpArr[0] ?? '';
+  option.showCondition.operator = valExpArr[1] ?? '>';
+  option.showCondition.value = valExpArr[2] ?? '';
+
+  const valExpArr2 = getWhenARGExpression(enableCondition);
+  option.enableCondition.name = valExpArr2[0] ?? '';
+  option.enableCondition.operator = valExpArr2[1] ?? '>';
+  option.enableCondition.value = valExpArr2[2] ?? '';
+
   return option;
 };
 
-export default function Choose(props: ISentenceEditorProps) {
+export default function Choose(props: any) {
   const t = useTrans('editor.graphical.sentences.choose.');
+  const content = props.chooseValue ? props.chooseValue : props.sentence.content;
   const [options, setOptions] = useState<IOptions[]>(props.sentence.content.split('|').map(parse));
 
   useEffect(() => {
-    const value = props.sentence.content.split('|');
+    const value = content.split('|');
     const newOption = value.map((item: string) => parse(item));
     setOptions(newOption);
-  }, [props.sentence.content]);
+  }, [content]);
 
-  const setStyle = (index: number, key: 'x' | 'y' | 'scale' | 'fontSize' | 'fontColor' | 'image', value?: number | string) => {
+  const setStyle = (index: number, key: 'x' | 'y' | 'scale' | 'fontSize' | 'fontColor' | 'image' | 'countdown', value?: number | string) => {
     const newList = [...options];
     if (value === undefined) {
       delete newList[index].style[key];
     } else {
       newList[index].style[key] = value as any;
+    }
+    setOptions(newList);
+  };
+
+  const setCondition = (index: number, condition: 'show' | 'enable', variable: Variable) => {
+    const newList = [...options];
+
+    if (condition === 'show') {
+      newList[index].showCondition = variable;
+    } else {
+      newList[index].enableCondition = variable;
     }
     setOptions(newList);
   };
@@ -103,13 +138,13 @@ export default function Choose(props: ISentenceEditorProps) {
       let styleContent = '';
       let arrow = '';
 
-      if (item.showCondition) {
-        showCondition = `(${item.showCondition})`;
+      if (item.showCondition.name || item.showCondition.value) {
+        showCondition = `(${item.showCondition.name}${item.showCondition.operator}${item.showCondition.value})`;
         arrow = '->';
       }
 
-      if (item.enableCondition) {
-        enableCondition = `[${item.enableCondition}]`;
+      if (item.enableCondition.name || item.enableCondition.value) {
+        enableCondition = `[${item.enableCondition.name}${item.enableCondition.operator}${item.enableCondition.value}]`;
         arrow = '->';
       }
 
@@ -125,7 +160,11 @@ export default function Choose(props: ISentenceEditorProps) {
       return showCondition + enableCondition + arrow + style + (item.text || '') + ':' + (item.jump || '');
     });
 
-    props.onSubmit(`choose:${optionStr.join('|')};`);
+    if (props.chooseValue) {
+      props.onSubmit(optionStr.join('|'));
+    } else {
+      props.onSubmit(`choose:${optionStr.join('|')};`);
+    }
   };
 
   const chooseList = options.map((item: any, i: number) => {
@@ -160,7 +199,7 @@ export default function Choose(props: ISentenceEditorProps) {
           const newList = cloneDeep(options);
           newList[i].jump = newValue;
           setOptions(newList);
-          submit(options);
+          submit(newList);
         }} extName={[".txt"]} />
         <span style={{ margin: '0 6px 0 6px' }}>按钮样式 {item.style.image}</span>
         <ChooseFile sourceBase="ui" onChange={(newFile) => {
@@ -228,6 +267,79 @@ export default function Choose(props: ISentenceEditorProps) {
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
       </div>
+      <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px", marginTop: '6px' }}>
+        <span style={{ marginLeft: '6px' }}>倒计时选项</span>
+        <TerreToggle title="" onChange={(newValue) => {
+          if (newValue) {
+            setStyle(i, 'countdown', 5);
+          } else {
+            setStyle(i, 'countdown', undefined);
+          }
+        }} onText='是' offText='否' isChecked={!!item.style.countdown} />
+        {item.style.countdown !== undefined && <span style={{ marginLeft: '20px' }}>倒计时时间</span>}
+        {item.style.countdown !== undefined && <input type="number" value={item.style.countdown}
+          onChange={(ev) => {
+            setStyle(i, 'countdown', Number(ev.target.value));
+          }}
+          onBlur={() => submit(options)}
+          className={styles.sayInput}
+          placeholder="倒计时时间"
+          style={{ width: "10%", margin: "0 6px 0 6px" }}
+        />}
+        {item.style.countdown !== undefined && <span style={{ marginLeft: '4px' }}>秒</span>}
+      </div>
+      <WhenARG
+        style={{ paddingLeft: '102px' }}
+        name={options[i].showCondition.name ?? ''}
+        setName={(value) => {
+          setCondition(i, 'show', {
+            ...options[i].showCondition,
+            name: value
+          });
+        }}
+        operator={options[i].showCondition.operator ?? '>'}
+        setOperator={(value) => {
+          setCondition(i, 'show', {
+            ...options[i].showCondition,
+            operator: value,
+          });
+        }}
+        value={options[i].showCondition.value ?? ''}
+        setValue={(value) => {
+          setCondition(i, 'show', {
+            ...options[i].showCondition,
+            value,
+          });
+        }}
+        submit={() => submit(options)}
+        tips="隐藏"
+      />
+      <WhenARG
+        style={{ paddingLeft: '102px' }}
+        name={options[i].enableCondition.name ?? ''}
+        setName={(value) => {
+          setCondition(i, 'enable', {
+            ...options[i].enableCondition,
+            name: value
+          });
+        }}
+        operator={options[i].enableCondition.operator ?? '>'}
+        setOperator={(value) => {
+          setCondition(i, 'enable', {
+            ...options[i].enableCondition,
+            operator: value,
+          });
+        }}
+        value={options[i].enableCondition.value ?? ''}
+        setValue={(value) => {
+          setCondition(i, 'enable', {
+            ...options[i].enableCondition,
+            value,
+          });
+        }}
+        submit={() => submit(options)}
+        tips="禁用"
+      />
     </div>;
   });
   return <div className={styles.sentenceEditorContent}>
@@ -240,8 +352,8 @@ export default function Choose(props: ISentenceEditorProps) {
           text: trans[0],
           jump: trans[1],
           style: {},
-          showCondition: '',
-          enableCondition: ''
+          showCondition: {},
+          enableCondition: {}
         });
         setOptions(newList);
         submit(newList);

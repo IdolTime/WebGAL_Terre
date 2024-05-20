@@ -2,6 +2,7 @@ import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { _open } from 'src/util/open';
 import { IFileInfo, WebgalFsService } from '../webgal-fs/webgal-fs.service';
 import * as process from 'process';
+import { resolve } from 'path';
 
 @Injectable()
 export class ManageGameService {
@@ -115,9 +116,19 @@ export class ManageGameService {
     const gameDir = this.webgalFs.getPathFromRoot(
       `/public/games/${gameName}/game/`,
     );
+
     // 如果导出文件夹不存在就创建
     if (!(await this.webgalFs.existsDir('Exported_Games')))
       await this.webgalFs.mkdir('Exported_Games', '');
+
+    const electronTemplateDir = resolve(
+      process.cwd(),
+      'assets/templates/WebGAL_Electron_Template/',
+    );
+
+    if (!(await this.webgalFs.existsDir(electronTemplateDir)))
+      await this.webgalFs.mkdir(electronTemplateDir, '');
+
     // 检查导出文件夹是否存在这个游戏
     const exportedGamesDir = await this.webgalFs.getDirInfo(
       this.webgalFs.getPathFromRoot(`/Exported_Games`),

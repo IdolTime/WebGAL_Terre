@@ -40,15 +40,16 @@ import UnlockExtra from "./UnlockExtra";
 import SetAnimation from "./SetAnimation";
 import ChangeCallScene from "./ChangeCallScene";
 import Choose from "./Choose";
-import SetTransition from "@/pages/editor/GraphicalEditor/SentenceEditor/SetTransition";
-import SetTransform from "@/pages/editor/GraphicalEditor/SentenceEditor/SetTransform";
 import styles from "./sentenceEditor.module.scss";
-import GetUserInput from "@/pages/editor/GraphicalEditor/SentenceEditor/GetUserInput";
+import SetVar from "./SetVar";
+import SetTransform from "./SetTransform";
+import SetTransition from "./SetTransition";
+import GetUserInput from "./GetUserInput";
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
   onSubmit: (newSentence: string) => void;
-  index:number
+  index: number
 }
 
 export interface ISentenceEditorConfig {
@@ -233,19 +234,27 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     descText: () => t(tPrefix + 'transition.descText')
   },
   {
-    type:commandType.setTransform,
-    title:() => t(tPrefix + 'transform.title'),
+    type: commandType.setTransform,
+    title: () => t(tPrefix + 'transform.title'),
     initialText: () => t(tPrefix + 'transform.initText'),
-    component:SetTransform,
+    component: SetTransform,
     icon: <ApplicationEffect theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'transform.descText')
   },
   {
-    type:commandType.getUserInput,
-    title:() => t(tPrefix + 'getUserInput.title'),
+    type: commandType.getUserInput,
+    title: () => t(tPrefix + 'getUserInput.title'),
     initialText: () => t(tPrefix + 'getUserInput.initText'),
-    component:GetUserInput,
+    component: GetUserInput,
     icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'getUserInput.descText')
+  },
+  {
+    type: commandType.setVar,
+    title: () => t(tPrefix + 'setVar.title'),
+    initialText: () => t(tPrefix + 'setVar.initText'),
+    component: SetVar,
+    icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'setVar.descText')
   }
 ];

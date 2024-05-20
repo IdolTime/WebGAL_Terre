@@ -19301,14 +19301,18 @@ const jmp = (labelName) => {
   WebGAL.sceneManager.sceneData.currentSentenceId = result;
   setTimeout(nextSentence, 1);
 };
-const Choose_Main$1 = "_Choose_Main_2pw9b_1";
-const Choose_item$1 = "_Choose_item_2pw9b_15";
-const Choose_item_image = "_Choose_item_image_2pw9b_40";
-const Choose_item_disabled = "_Choose_item_disabled_2pw9b_55";
+const Choose_Main$1 = "_Choose_Main_1dqxn_1";
+const Choose_item$1 = "_Choose_item_1dqxn_15";
+const Choose_item_image = "_Choose_item_image_1dqxn_40";
+const Choose_item_countdown = "_Choose_item_countdown_1dqxn_55";
+const Choose_item_progress_bar = "_Choose_item_progress_bar_1dqxn_62";
+const Choose_item_disabled = "_Choose_item_disabled_1dqxn_69";
 const styles$k = {
   Choose_Main: Choose_Main$1,
   Choose_item: Choose_item$1,
   Choose_item_image,
+  Choose_item_countdown,
+  Choose_item_progress_bar,
   Choose_item_disabled
 };
 const page_flip_1 = "" + new URL("page-flip-1-7df32409.mp3", import.meta.url).href;
@@ -19972,6 +19976,8 @@ const useSEByWebgalStore = () => {
     // 鼠标点击
   };
 };
+const ProgressBarBackground = "data:image/png;base64,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";
+const ProgressBar = "" + new URL("progress-bar-01049335.png", import.meta.url).href;
 class ChooseOption {
   constructor(text2, jump) {
     __publicField(this, "text");
@@ -20028,14 +20034,21 @@ const choose = (sentence, chooseCallback) => {
   const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
   const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
   const { playSeEnter, playSeClick } = useSEByWebgalStore();
+  let timer = {
+    current: null
+  };
   const runtimeBuildList = (chooseListFull) => {
     return chooseListFull.filter((e2, i2) => whenChecker(e2.showCondition)).map((e2, i2) => {
-      var _a2;
+      var _a2, _b2;
       const enable = whenChecker(e2.enableCondition);
       let className = enable ? styles$k.Choose_item : styles$k.Choose_item_disabled;
       const onClick = enable ? () => {
         playSeClick();
         chooseCallback == null ? void 0 : chooseCallback();
+        if (timer.current) {
+          clearTimeout(timer.current);
+          timer.current = null;
+        }
         if (e2.jumpToScene) {
           changeScene(e2.jump, e2.text);
         } else {
@@ -20076,7 +20089,36 @@ const choose = (sentence, chooseCallback) => {
           styleObj["color"] = e2.style.fontColor;
         }
       }
-      if ((_a2 = e2.style) == null ? void 0 : _a2.image) {
+      if (typeof ((_a2 = e2.style) == null ? void 0 : _a2.countdown) === "number") {
+        className = styles$k.Choose_item_countdown;
+        let time = e2.style.countdown;
+        let width = 1082;
+        let unit = 1082 / (time * 1e3 / 16);
+        const countdown = () => {
+          if (time <= 0 && timer.current) {
+            clearTimeout(timer);
+            timer.current = null;
+            onClick();
+          } else {
+            timer.current = setTimeout(() => {
+              time -= 0.016;
+              width -= unit;
+              let rect = document.getElementById("rect");
+              rect == null ? void 0 : rect.setAttribute("width", Math.max(0, width).toString());
+              countdown();
+            }, 16);
+          }
+        };
+        countdown();
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBarBackground, alt: e2.text }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$k.Choose_item_progress_bar })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "0", height: "0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("clipPath", { id: "myClip", children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { id: "rect", width: "1082", height: "106", rx: "53", ry: "53", style: { fill: "#fff" } }) }) }) })
+        ] }, e2.jump + i2);
+      }
+      if ((_b2 = e2.style) == null ? void 0 : _b2.image) {
         className = styles$k.Choose_item_image;
         const imgUrl = assetSetter(e2.style.image, fileType$1.ui);
         return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
@@ -20481,7 +20523,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-9a097e00.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-4b213dbb.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
