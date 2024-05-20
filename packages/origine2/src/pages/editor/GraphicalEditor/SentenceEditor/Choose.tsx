@@ -6,6 +6,8 @@ import { Button } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 import WhenARG from '../components/WhenARG';
 import { getWhenARGExpression } from '@/utils/utils';
+import TerreToggle from "@/components/terreToggle/TerreToggle";
+import CommonOptions from "../components/CommonOption";
 
 interface IOptions {
   text: string;
@@ -19,6 +21,7 @@ interface IOptions {
     fontSize?: number;
     fontColor?: string;
     image?: string;
+    countdown?: number;
   },
 }
 
@@ -107,7 +110,7 @@ export default function Choose(props: any) {
     setOptions(newOption);
   }, [content]);
 
-  const setStyle = (index: number, key: 'x' | 'y' | 'scale' | 'fontSize' | 'fontColor' | 'image', value?: number | string) => {
+  const setStyle = (index: number, key: 'x' | 'y' | 'scale' | 'fontSize' | 'fontColor' | 'image' | 'countdown', value?: number | string) => {
     const newList = [...options];
     if (value === undefined) {
       delete newList[index].style[key];
@@ -263,6 +266,27 @@ export default function Choose(props: any) {
           placeholder="文字大小"
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
+      </div>
+      <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px", marginTop: '6px' }}>
+        <span style={{ marginLeft: '6px' }}>倒计时选项</span>
+        <TerreToggle title="" onChange={(newValue) => {
+          if (newValue) {
+            setStyle(i, 'countdown', 5);
+          } else {
+            setStyle(i, 'countdown', undefined);
+          }
+        }} onText='是' offText='否' isChecked={!!item.style.countdown} />
+        {item.style.countdown !== undefined && <span style={{ marginLeft: '20px' }}>倒计时时间</span>}
+        {item.style.countdown !== undefined && <input type="number" value={item.style.countdown}
+          onChange={(ev) => {
+            setStyle(i, 'countdown', Number(ev.target.value));
+          }}
+          onBlur={() => submit(options)}
+          className={styles.sayInput}
+          placeholder="倒计时时间"
+          style={{ width: "10%", margin: "0 6px 0 6px" }}
+        />}
+        {item.style.countdown !== undefined && <span style={{ marginLeft: '4px' }}>秒</span>}
       </div>
       <WhenARG
         style={{ paddingLeft: '102px' }}
