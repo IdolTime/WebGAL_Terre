@@ -20082,7 +20082,6 @@ const choose = (sentence, chooseCallback) => {
           styleObj["color"] = e2.style.fontColor;
         }
       }
-      console.log(3333, e2.style);
       if (typeof ((_a2 = e2.style) == null ? void 0 : _a2.countdown) === "number") {
         className = styles$m.Choose_item_countdown;
         let time = e2.style.countdown;
@@ -20090,7 +20089,6 @@ const choose = (sentence, chooseCallback) => {
         let unit = 1082 / (time * 1e3 / 16);
         const countdown = () => {
           if (time <= 0 && timer.current) {
-            console.log(666666, timer);
             clearTimeout(timer);
             timer.current = null;
             onClick();
@@ -20518,7 +20516,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-b43222f7.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-6d35cc48.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23629,9 +23627,15 @@ compile$1.cache = /* @__PURE__ */ Object.create(null);
 var compile_1 = compile$1;
 const setVar = (sentence) => {
   let setGlobal = false;
+  let minValue = null;
+  let maxValue = null;
   sentence.args.forEach((e2) => {
     if (e2.key === "global") {
       setGlobal = true;
+    } else if (e2.key === "minValue") {
+      minValue = e2.value;
+    } else if (e2.key === "maxValue") {
+      maxValue = e2.value;
     }
   });
   let targetReducerFunction;
@@ -23654,7 +23658,19 @@ const setVar = (sentence) => {
           return e2;
       }).reduce((pre, curr) => pre + curr, "");
       const exp = compile_1(valExp2);
-      const result = exp();
+      let result = exp();
+      if (typeof result === "number") {
+        if (typeof minValue === "number") {
+          if (result < minValue) {
+            result = minValue;
+          }
+        }
+        if (typeof maxValue === "number") {
+          if (result > maxValue) {
+            result = maxValue;
+          }
+        }
+      }
       webgalStore.dispatch(targetReducerFunction({ key, value: result }));
     } else if (valExp.match(/true|false/)) {
       if (valExp.match(/true/)) {
