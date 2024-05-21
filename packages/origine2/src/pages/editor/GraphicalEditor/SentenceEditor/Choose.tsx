@@ -102,7 +102,7 @@ const parse = (script: string) => {
 export default function Choose(props: any) {
   const t = useTrans('editor.graphical.sentences.choose.');
   const content = props.chooseValue ? props.chooseValue : props.sentence.content;
-  const [options, setOptions] = useState<IOptions[]>(props.sentence.content.split('|').map(parse));
+  const [options, setOptions] = useState<IOptions[]>(content.split('|').map(parse));
 
   useEffect(() => {
     const value = content.split('|');

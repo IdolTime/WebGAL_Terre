@@ -652,7 +652,9 @@ export const zhCn = {
           descText: '增加一个新的变量或重新赋值一个已有的变量',
           options: {
             name: "变量名称",
-            value: "表达式"
+            value: "表达式",
+            maxValue: "最大值",
+            minValue: "最小值"
           }
         },
         unknown: {
