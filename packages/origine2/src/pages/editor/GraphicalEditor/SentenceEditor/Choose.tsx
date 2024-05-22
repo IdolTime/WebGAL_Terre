@@ -288,58 +288,62 @@ export default function Choose(props: any) {
         />}
         {item.style.countdown !== undefined && <span style={{ marginLeft: '4px' }}>秒</span>}
       </div>
-      <WhenARG
-        style={{ paddingLeft: '102px' }}
-        name={options[i].showCondition.name ?? ''}
-        setName={(value) => {
-          setCondition(i, 'show', {
-            ...options[i].showCondition,
-            name: value
-          });
-        }}
-        operator={options[i].showCondition.operator ?? '>'}
-        setOperator={(value) => {
-          setCondition(i, 'show', {
-            ...options[i].showCondition,
-            operator: value,
-          });
-        }}
-        value={options[i].showCondition.value ?? ''}
-        setValue={(value) => {
-          setCondition(i, 'show', {
-            ...options[i].showCondition,
-            value,
-          });
-        }}
-        submit={() => submit(options)}
-        tips="隐藏"
-      />
-      <WhenARG
-        style={{ paddingLeft: '102px' }}
-        name={options[i].enableCondition.name ?? ''}
-        setName={(value) => {
-          setCondition(i, 'enable', {
-            ...options[i].enableCondition,
-            name: value
-          });
-        }}
-        operator={options[i].enableCondition.operator ?? '>'}
-        setOperator={(value) => {
-          setCondition(i, 'enable', {
-            ...options[i].enableCondition,
-            operator: value,
-          });
-        }}
-        value={options[i].enableCondition.value ?? ''}
-        setValue={(value) => {
-          setCondition(i, 'enable', {
-            ...options[i].enableCondition,
-            value,
-          });
-        }}
-        submit={() => submit(options)}
-        tips="禁用"
-      />
+      <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '102px' }}>
+        <span>条件：</span>
+        <WhenARG
+          name={options[i].showCondition.name ?? ''}
+          setName={(value) => {
+            setCondition(i, 'show', {
+              ...options[i].showCondition,
+              name: value
+            });
+          }}
+          operator={options[i].showCondition.operator ?? '>'}
+          setOperator={(value) => {
+            setCondition(i, 'show', {
+              ...options[i].showCondition,
+              operator: value,
+            });
+          }}
+          value={options[i].showCondition.value ?? ''}
+          setValue={(value) => {
+            setCondition(i, 'show', {
+              ...options[i].showCondition,
+              value,
+            });
+          }}
+          submit={() => submit(options)}
+          tips="否则隐藏"
+        />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '102px' }}>
+        <span>条件：</span>
+        <WhenARG
+          name={options[i].enableCondition.name ?? ''}
+          setName={(value) => {
+            setCondition(i, 'enable', {
+              ...options[i].enableCondition,
+              name: value
+            });
+          }}
+          operator={options[i].enableCondition.operator ?? '>'}
+          setOperator={(value) => {
+            setCondition(i, 'enable', {
+              ...options[i].enableCondition,
+              operator: value,
+            });
+          }}
+          value={options[i].enableCondition.value ?? ''}
+          setValue={(value) => {
+            setCondition(i, 'enable', {
+              ...options[i].enableCondition,
+              value,
+            });
+          }}
+          submit={() => submit(options)}
+          tips="否则禁用"
+        />
+      </div>
     </div>;
   });
   return <div className={styles.sentenceEditorContent}>

@@ -195,7 +195,7 @@ code {
   position: absolute;
   z-index: 13;
   background: linear-gradient(135deg, #fdfbfb 0%, #dcddde 100%);
-}._Choose_Main_p1fjh_1 {
+}._Choose_Main_o52on_1 {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -207,7 +207,7 @@ code {
   background: rgba(0, 0, 0, 0.05);
 }
 
-._Choose_item_p1fjh_13 {
+._Choose_item_o52on_13 {
   position: relative;
   font-family: "WebgalUI", serif;
   cursor: pointer;
@@ -224,7 +224,7 @@ code {
   transition: background-color 0.5s, border 0.5s, font-weight 0.5s, box-shadow 0.5s;
 }
 
-._Choose_item_image_p1fjh_30 {
+._Choose_item_image_o52on_30 {
   font-family: "WebgalUI", serif;
   cursor: pointer;
   margin: 0.25em 0 0.25em 0;
@@ -232,28 +232,30 @@ code {
   font-size: 265%;
   color: #8E354A;
 }
-._Choose_item_image_p1fjh_30 span {
+._Choose_item_image_o52on_30 span {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
 }
 
-._Choose_item_countdown_p1fjh_45 {
+._Choose_item_countdown_o52on_45 {
   font-family: "WebgalUI", serif;
   cursor: pointer;
   margin: 0.25em 0 0.25em 0;
   position: relative;
 }
 
-._Choose_item_progress_bar_p1fjh_52 {
+._Choose_item_progress_bar_o52on_52 {
   position: absolute;
   clip-path: url(#myClip);
   left: 0;
   top: 0;
+  width: 1082px;
+  height: 106px;
 }
 
-._Choose_item_disabled_p1fjh_59 {
+._Choose_item_disabled_o52on_61 {
   font-family: "WebgalUI", serif;
   cursor: not-allowed;
   min-width: 50%;
@@ -269,7 +271,7 @@ code {
   transition: background-color 0.5s, border 0.5s, font-weight 0.5s, box-shadow 0.5s;
 }
 
-._Choose_item_p1fjh_13:hover {
+._Choose_item_o52on_13:hover {
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.35);
   border: 3px solid #8E354A;

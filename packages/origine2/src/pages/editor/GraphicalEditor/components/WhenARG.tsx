@@ -36,7 +36,7 @@ const WhenARG: React.FC<WhenARGProps> = ({
 
   return (
     <div className={styles.container} style={style}>
-      <p>条件：当数值</p>
+      <p>当数值</p>
       <input
         style={{ width: '100px' }}
         className={editorStyles.sayInput}

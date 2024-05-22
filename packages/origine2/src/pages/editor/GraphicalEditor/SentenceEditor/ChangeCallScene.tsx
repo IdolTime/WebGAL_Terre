@@ -54,21 +54,23 @@ export default function ChangeCallScene(props: ISentenceEditorProps) {
             isChecked={isCallScene.value}
           />
         </CommonOptions>
-        <WhenARG
-          name={whenName.value}
-          setName={(value) => {
-            whenName.set(value);
-          }}
-          operator={whenOperator.value}
-          setOperator={(value) => {
-            whenOperator.set(value);
-          }}
-          value={whenValue.value}
-          setValue={(value) => {
-            whenValue.set(value);
-          }}
-          submit={() => submit()}
-        />
+        <CommonOptions key="3" title="条件">
+          <WhenARG
+            name={whenName.value}
+            setName={(value) => {
+              whenName.set(value);
+            }}
+            operator={whenOperator.value}
+            setOperator={(value) => {
+              whenOperator.set(value);
+            }}
+            value={whenValue.value}
+            setValue={(value) => {
+              whenValue.set(value);
+            }}
+            submit={() => submit()}
+          />
+        </CommonOptions>
       </div>
     </div>
   );
