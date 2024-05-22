@@ -19301,12 +19301,12 @@ const jmp = (labelName) => {
   WebGAL.sceneManager.sceneData.currentSentenceId = result;
   setTimeout(nextSentence, 1);
 };
-const Choose_Main$1 = "_Choose_Main_1dqxn_1";
-const Choose_item$1 = "_Choose_item_1dqxn_15";
-const Choose_item_image = "_Choose_item_image_1dqxn_40";
-const Choose_item_countdown = "_Choose_item_countdown_1dqxn_55";
-const Choose_item_progress_bar = "_Choose_item_progress_bar_1dqxn_62";
-const Choose_item_disabled = "_Choose_item_disabled_1dqxn_69";
+const Choose_Main$1 = "_Choose_Main_1h1e9_1";
+const Choose_item$1 = "_Choose_item_1h1e9_15";
+const Choose_item_image = "_Choose_item_image_1h1e9_40";
+const Choose_item_countdown = "_Choose_item_countdown_1h1e9_55";
+const Choose_item_progress_bar = "_Choose_item_progress_bar_1h1e9_62";
+const Choose_item_disabled = "_Choose_item_disabled_1h1e9_71";
 const styles$k = {
   Choose_Main: Choose_Main$1,
   Choose_item: Choose_item$1,
@@ -20112,7 +20112,7 @@ const choose = (sentence, chooseCallback) => {
         countdown();
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBarBackground, alt: e2.text }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBarBackground, alt: e2.text, style: { width: "1082px", height: "106px" } }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$k.Choose_item_progress_bar })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "0", height: "0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("clipPath", { id: "myClip", children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { id: "rect", width: "1082", height: "106", rx: "53", ry: "53", style: { fill: "#fff" } }) }) }) })
@@ -20121,10 +20121,35 @@ const choose = (sentence, chooseCallback) => {
       if ((_b2 = e2.style) == null ? void 0 : _b2.image) {
         className = styles$k.Choose_item_image;
         const imgUrl = assetSetter(e2.style.image, fileType$1.ui);
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: imgUrl, alt: e2.text }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: e2.text })
-        ] }, e2.jump + i2);
+        const id2 = `img-option-${i2}`;
+        const img = new Image();
+        img.src = imgUrl;
+        img.onload = function() {
+          let ele = document.getElementById(id2);
+          img.style.width = img.naturalWidth + "px";
+          img.style.height = img.naturalHeight + "px";
+          img.alt = e2.text;
+          if (ele) {
+            ele.style.width = img.naturalWidth + "px";
+            ele.style.height = img.naturalHeight + "px";
+            setTimeout(() => {
+              ele == null ? void 0 : ele.prepend(img);
+              ele = null;
+            }, 32);
+          }
+        };
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: id2,
+            className,
+            style: styleObj,
+            onClick,
+            onMouseEnter: playSeEnter,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: e2.text })
+          },
+          e2.jump + i2
+        );
       }
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: e2.text }, e2.jump + i2);
     });
@@ -20523,7 +20548,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-edc3a03a.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-394de5b9.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -33622,11 +33647,11 @@ class VideoManager {
     videoTag.style.zIndex = "11";
     videoTag.style.position = "absolute";
     videoTag.style.display = "block";
+    videoTag.volume = 0;
     const onEndedHandler = () => {
       const callbacks = this.videosByKey[url2].events.ended.callbacks;
       callbacks.forEach((cb2) => cb2());
     };
-    videoTag.addEventListener("ended", onEndedHandler);
     videoContainerTag.appendChild(videoTag);
     (_a2 = document.getElementById("videoContainer")) == null ? void 0 : _a2.appendChild(videoContainerTag);
     const flvPlayer = FlvJs.createPlayer({
@@ -33638,6 +33663,7 @@ class VideoManager {
     this.videosByKey[url2] = {
       player: flvPlayer,
       id: id2,
+      progressTimer: null,
       events: {
         ended: {
           callbacks: [],
@@ -33666,6 +33692,7 @@ class VideoManager {
     const videoItem = this.videosByKey[key];
     if (videoItem) {
       videoItem.player.play();
+      this.checkProgress(key);
     }
   }
   setLoop(key, loopValue) {
@@ -33693,16 +33720,19 @@ class VideoManager {
     const videoItem = this.videosByKey[key];
     if (videoItem) {
       videoItem.player.pause();
+      videoItem.player.volume = 0;
       const videoContainer2 = document.getElementById(videoItem.id);
       if (videoContainer2) {
         videoContainer2.style.opacity = "0";
         videoContainer2.style.zIndex = "-99";
       }
+      if (videoItem.progressTimer) {
+        clearTimeout(videoItem.progressTimer);
+      }
       setTimeout(() => {
         try {
           const video = videoContainer2 == null ? void 0 : videoContainer2.getElementsByTagName("video");
           if (video == null ? void 0 : video.length) {
-            video[0].removeEventListener("ended", videoItem.events.ended.handler);
             videoItem.player.destroy();
           }
         } catch (error2) {
@@ -33739,6 +33769,23 @@ class VideoManager {
         this.destory(key);
       }
     });
+  }
+  checkProgress(key) {
+    const videoItem = this.videosByKey[key];
+    if (videoItem) {
+      const player = videoItem.player;
+      const currentTime = player.currentTime;
+      const duration = player.duration;
+      if (duration - currentTime <= 0.03) {
+        clearTimeout(videoItem.progressTimer);
+        videoItem.progressTimer = null;
+        videoItem.events.ended.handler();
+        return;
+      }
+      videoItem.progressTimer = setTimeout(() => {
+        this.checkProgress(key);
+      }, 100);
+    }
   }
 }
 class WebgalCore {
