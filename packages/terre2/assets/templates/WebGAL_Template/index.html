@@ -7,8 +7,8 @@
   <link rel="manifest" href="./manifest.json" />
   <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
   <title>IdolTime</title>
-  <script type="module" crossorigin src="./assets/index-c1ecd501.js"></script>
-  <link rel="stylesheet" href="./assets/index-6857cc3e.css">
+  <script type="module" crossorigin src="./assets/index-2169591f.js"></script>
+  <link rel="stylesheet" href="./assets/index-b0b3a8b4.css">
 </head>
 
 <body>
@@ -40,24 +40,80 @@
     position: absolute;
     top: 0;
 "></div>
-    <!-- 落地页视频 -->
+
     <div id="Title_enter_text" style="width: 100%; height: 100%;">
-      <div class="toCenter" style="width: 100%; height: 100%;">
-        <video id="loadingVideo" width="100%" autoplay muted>
-          <source src="./assets/enter_page_video-8790e1b1.mp4" type="video/mp4">
-        </video>
+      <!-- logo page -->
+      <div 
+        class="logo-page"
+        style="
+          width: 100%;
+          height: 100%;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 999;
+          opacity: 1;
+          transition: opacity 1s;
+          background-color: #000;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+        "
+      >
+        <img 
+          src="./assets/logo-20a20ce5.png" 
+          style="width: 400px; height: 65px; object-fit: cover;" />
+      </div>
+
+      <!-- loading page -->
+      <div 
+        class="loading-page"
+        style="
+          width: 100%; 
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 997;
+        "
+      >
+        <img 
+          style="display: block; width: 100%; height: 100%; object-fit: cover;" 
+          src="./assets/loading-enter-ef779128.png" 
+        />
+        <img 
+          style="width: 90%; max-height: 100%; object-fit: cover;position: absolute;bottom: 35px; z-index: 998;" 
+          src="./assets/loading-bar-94c0f1c3.png" alt=""
+        />
       </div>
     </div>
   </div>
   <div id="panic-overlay"> <!-- 紧急回避 --> </div>
   <div id="root"></div>
   <script>
+    const logoPage = document.querySelector('.logo-page');
+    const loadingPage = document.querySelector('.loading-page');
 
-    const video = document.getElementById('loadingVideo');  
-    video.addEventListener('ended', function() {  
-        // 当视频播放完成后执行 ,进入引擎主界面
+    if (logoPage) {
+      setTimeout(() => {
+        logoPage.style.opacity = 0;
+      }, 1000)
+    }
+
+    if (loadingPage) {
+      setTimeout(() => {
         enter()
-    }, false);  
+      }, 5000)
+    }
 
     /**
      * 在窗口大小改变时进行强制缩放
@@ -223,6 +279,7 @@
       const bgContainer = document.getElementById("Title_bg_container");
       if (bgContainer) {
         bgContainer.style.opacity = "0"; // 调整标题背景的透明度
+        loadingPage.style.opacity = "0";
       }
       const enterText = document.getElementById("Title_enter_text");
       if (enterText) {
