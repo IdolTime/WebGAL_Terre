@@ -19376,16 +19376,20 @@ const whenChecker = (whenValue) => {
     return true;
   }
   const valExpArr = whenValue.split(/([+\-*\/()><!]|>=|<=|==|&&|\|\||!=)/g);
-  const valExp = valExpArr.map((e2) => {
-    if (e2.match(/[a-zA-Z]/)) {
-      if (e2.match(/true/) || e2.match(/false/)) {
+  const allValExists = valExpArr.every((e2) => e2.length);
+  if (allValExists) {
+    const valExp = valExpArr.map((e2) => {
+      if (e2.match(/[a-zA-Z]/)) {
+        if (e2.match(/true/) || e2.match(/false/)) {
+          return e2;
+        }
+        return getValueFromState(e2).toString();
+      } else
         return e2;
-      }
-      return getValueFromState(e2).toString();
-    } else
-      return e2;
-  }).reduce((pre, curr) => pre + curr, "");
-  return !!strIf(valExp);
+    }).reduce((pre, curr) => pre + curr, "");
+    return !!strIf(valExp);
+  }
+  return true;
 };
 const scriptExecutor = () => {
   if (WebGAL.sceneManager.sceneData.currentSentenceId > WebGAL.sceneManager.sceneData.currentScene.sentenceList.length - 1) {
@@ -22877,7 +22881,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-ce6dc821.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-b2a09f3a.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
