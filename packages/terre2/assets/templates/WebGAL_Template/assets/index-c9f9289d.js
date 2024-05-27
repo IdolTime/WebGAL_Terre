@@ -19388,16 +19388,20 @@ const whenChecker = (whenValue) => {
     return true;
   }
   const valExpArr = whenValue.split(/([+\-*\/()><!]|>=|<=|==|&&|\|\||!=)/g);
-  const valExp = valExpArr.map((e2) => {
-    if (e2.match(/[a-zA-Z]/)) {
-      if (e2.match(/true/) || e2.match(/false/)) {
+  const allValExists = valExpArr.every((e2) => e2.length);
+  if (allValExists) {
+    const valExp = valExpArr.map((e2) => {
+      if (e2.match(/[a-zA-Z]/)) {
+        if (e2.match(/true/) || e2.match(/false/)) {
+          return e2;
+        }
+        return getValueFromState(e2).toString();
+      } else
         return e2;
-      }
-      return getValueFromState(e2).toString();
-    } else
-      return e2;
-  }).reduce((pre, curr) => pre + curr, "");
-  return !!strIf(valExp);
+    }).reduce((pre, curr) => pre + curr, "");
+    return !!strIf(valExp);
+  }
+  return true;
 };
 const scriptExecutor = () => {
   if (WebGAL.sceneManager.sceneData.currentSentenceId > WebGAL.sceneManager.sceneData.currentScene.sentenceList.length - 1) {
@@ -22342,7 +22346,7 @@ class ChooseOption {
     const text2 = mainPartNodes[0].replace(/\${[^{}]*}/, "");
     const option = new ChooseOption(text2, mainPartNodes[1]);
     const styleRegex = /\$\{(.*?)\}/;
-    const styleMatch = conditonPart ? conditonPart.match(styleRegex) : mainPart.match(styleRegex);
+    const styleMatch = mainPart.match(styleRegex);
     if (styleMatch) {
       const styleStr = styleMatch[1];
       const styleProps = styleStr.split(",");
@@ -22400,6 +22404,7 @@ const choose = (sentence, chooseCallback) => {
       const styleObj = {
         fontFamily: font
       };
+      console.log(33333, e2);
       if (e2.style) {
         if (typeof e2.style.x === "number") {
           styleObj.position = "absolute";
@@ -22451,7 +22456,7 @@ const choose = (sentence, chooseCallback) => {
         };
         countdown();
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBarBackground, alt: e2.text, style: { width: "1082px", height: "106px" } }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$l.Choose_item_progress_bar })
           ] }),
@@ -22888,7 +22893,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-fb532791.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-1e83cc1c.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {

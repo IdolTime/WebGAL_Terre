@@ -13,7 +13,7 @@ self.addEventListener('activate', (event) => {
 // fetch事件
 self.addEventListener('fetch', (event) => {
   // console.log('[Service Worker] Fetching:', event.request.url);
-  const ignoreResources = ['.mp4', '.flv', '.webm'];
+  const ignoreResources = ['.mp4', '.flv', '.webm', '.txt'];
 
   const url = event.request.url;
   let shouldReturningFromCache = !!(url.match('/assets/') || url.match('/game/'));
