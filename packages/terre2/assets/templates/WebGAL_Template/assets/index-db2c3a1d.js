@@ -14542,6 +14542,19 @@ const assetsPrefetcher = (assetList, sceneName) => {
           assetsLoadedObject[asset.url] = true;
           checkIfAllSceneAssetsAreSettled(sceneName);
         };
+        newLink.onerror = () => {
+          assetsLoadedObject[asset.url] = true;
+          checkIfAllSceneAssetsAreSettled(sceneName);
+          const index2 = WebGAL.sceneManager.settledAssets.findIndex((settledAssetUrl, index22) => {
+            if (settledAssetUrl === asset.url) {
+              return true;
+            }
+            return false;
+          });
+          if (index2 > -1) {
+            WebGAL.sceneManager.settledAssets.splice(index2, 1);
+          }
+        };
         WebGAL.sceneManager.settledAssets.push(asset.url);
       }
     }
@@ -22875,7 +22888,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-71df3a7b.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-fb532791.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
