@@ -1,14 +1,49 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
+
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <link rel="icon" type="image/x-icon" href="./icons/favicon.ico" />
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
   <link rel="manifest" href="./manifest.json" />
   <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
   <title>IdolTime</title>
-  <script type="module" crossorigin src="./assets/index-b7586a76.js"></script>
-  <link rel="stylesheet" href="./assets/index-f2efb3b6.css">
+  <script>
+    function PubSub() {
+      this.subscribers = {};
+    }
+
+    PubSub.prototype.subscribe = function (topic, callback) {
+      if (!this.subscribers[topic]) {
+        this.subscribers[topic] = [];
+      }
+      this.subscribers[topic].push(callback);
+      var that = this;
+      return function () {
+        that.unsubscribe(topic, callback);
+      };
+    };
+
+    PubSub.prototype.publish = function (topic, data) {
+      if (this.subscribers[topic]) {
+        this.subscribers[topic].forEach(function (callback) {
+          callback(data);
+        });
+      }
+    };
+
+    PubSub.prototype.unsubscribe = function (topic, callback) {
+      if (this.subscribers[topic]) {
+        this.subscribers[topic] = this.subscribers[topic].filter(function (cb) {
+          return cb !== callback;
+        });
+      }
+    };
+
+    window.pubsub = new PubSub();
+  </script>
+  <script type="module" crossorigin src="./assets/index-db2c3a1d.js"></script>
+  <link rel="stylesheet" href="./assets/index-18bfd490.css">
 </head>
 
 <body>
@@ -22,7 +57,7 @@
             top: 0;
             z-index: 14;
             opacity: 1;
-            transition: opacity 1.5s;
+            transition: opacity 2s linear;
 ">
     <!--    落地页背景-->
     <div id="Title_bg_container" style="
@@ -43,9 +78,7 @@
 
     <div id="Title_enter_text" style="width: 100%; height: 100%;">
       <!-- logo page -->
-      <div 
-        class="logo-page"
-        style="
+      <div class="logo-page" style="
           width: 100%;
           height: 100%;
           position: fixed;
@@ -61,17 +94,12 @@
           justify-content: center;
           align-items: center;
           overflow: hidden;
-        "
-      >
-        <img 
-          src="./assets/logo-20a20ce5.png" 
-          style="width: 400px; height: 65px; object-fit: cover;" />
+        ">
+        <img src="./assets/logo-20a20ce5.png" style="width: 400px; height: 65px; object-fit: cover;" />
       </div>
 
       <!-- loading page -->
-      <div 
-        class="loading-page"
-        style="
+      <div class="loading-page" style="
           width: 100%; 
           height: 100%;
           display: flex;
@@ -84,16 +112,19 @@
           right: 0;
           bottom: 0;
           z-index: 997;
-        "
-      >
-        <img 
-          style="display: block; width: 100%; height: 100%; object-fit: cover;" 
-          src="./assets/loading-enter-ef779128.png" 
-        />
-        <img 
-          style="width: 90%; max-height: 100%; object-fit: cover;position: absolute;bottom: 35px; z-index: 998;" 
-          src="./assets/loading-bar-94c0f1c3.png" alt=""
-        />
+        ">
+        <img style="display: block; width: 100%; height: 100%; object-fit: cover;"
+          src="./assets/loading-enter-ef779128.png" />
+        <img id="bar-image"
+          style="width: 90%; max-height: 100%; object-fit: cover;position: absolute;bottom: 35px; z-index: 998;clip-path: url(#clipW);"
+          src="./assets/loading-bar-94c0f1c3.png" alt="" />
+        <svg width="100%" height="0">
+          <defs>
+            <clipPath id="clipW">
+              <rect id="rectW" width="0" height="0" style="fill: #fff;" />
+            </clipPath>
+          </defs>
+        </svg>
       </div>
     </div>
   </div>
@@ -106,13 +137,8 @@
     if (logoPage) {
       setTimeout(() => {
         logoPage.style.opacity = 0;
+        enter();
       }, 1000)
-    }
-
-    if (loadingPage) {
-      setTimeout(() => {
-        enter()
-      }, 5000)
     }
 
     /**
@@ -243,6 +269,60 @@
   <!--<script src="lib/live2d.min.js"></script>-->
   <!--<script src="lib/live2dcubismcore.min.js"></script>-->
   <script>
+    const title = document.getElementById("Title_enter_page");
+    const barImage = document.getElementById('bar-image');
+    const barImageLayout = barImage.getBoundingClientRect();
+    const transformString = title.style.transform.split('scale')[1]
+    const matches = transformString.match(/\(([^,]+),\s*([^)]+)\)/);
+    let scaleX = 1;
+    let scaleY = 1;
+
+    if (matches) {
+      scaleX = parseFloat(matches[1]);
+      scaleY = parseFloat(matches[2]);
+    }
+
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function show() {
+      title.style.opacity = 0;
+      setTimeout(() => {
+        if (title) {
+          title.style.display = "none";
+          title.remove();
+        }
+      }, 2000); // 将落地页设置为不显示
+      window.enterPromise();
+      delete window.enterPromise;
+    }
+
+    function setProgress(num, width, height) {
+      const progress = document.getElementById('rectW');
+      progress.setAttribute('width', (num / 100 * width).toFixed(2) + 'px');
+      progress.setAttribute('height', height + 'px')
+    }
+    const downloadCompleteRef = { current: 0 };
+    const progressTimerRef = { current: null }
+
+    const dispose = window.pubsub.subscribe('sceneAssetsLoaded', ({ sceneName }) => {
+      if (sceneName === 'start.txt') {
+        dispose();
+        if (!progressTimerRef.current) {
+          downloadCompleteRef.current = 1;
+        } else {
+          clearTimeout(progressTimerRef.current);
+          setProgress(100, barImageLayout.width / scaleX, barImageLayout.height / scaleY);
+          setTimeout(() => {
+            show();
+          }, 300);
+        }
+      }
+    })
+
     let enterPromise = new Promise(res => window.enterPromise = res);
     let renderPromise = new Promise(res => window.renderPromise = res);
     /**
@@ -279,34 +359,58 @@
       const bgContainer = document.getElementById("Title_bg_container");
       if (bgContainer) {
         bgContainer.style.opacity = "0"; // 调整标题背景的透明度
-        loadingPage.style.opacity = "0";
-      }
-      const enterText = document.getElementById("Title_enter_text");
-      if (enterText) {
-        enterText.style.opacity = "0"; // 调整标题文字的透明度
       }
       const whiteContainer = document.getElementById("Title_white_container");
-      setTimeout(() => {
-        if (whiteContainer) {
-          whiteContainer.style.opacity = "1";
-        }
-      }, 50); // 在50ms后开始显示白色渐变
-      const title = document.getElementById("Title_enter_page");
-      setTimeout(() => {
-        if (title)
-          title.style.opacity = "0";
-      }, 500); //500ms后开始降低落地页透明度
+      // setTimeout(() => {
+      //   if (whiteContainer) {
+      //     whiteContainer.style.opacity = "1";
+      //   }
+      // }, 50); // 在50ms后开始显示白色渐变
+      // setTimeout(() => {
+      //   if (title)
+      //     title.style.opacity = "0";
+      // }, 500); //500ms后开始降低落地页透明度
       if (!isIOS && title) {
-        title.style.pointerEvents = "none"; //落地页不再响应点击
         title.style.background = "linear-gradient( #a1c4fd 0%, #c2e9fb 100%)"; //改变标题渐变效果
       }
-      setTimeout(() => {
-        if (title) {
-          title.style.display = "none";
+
+      if (downloadCompleteRef.current === 1) {
+        let num = 0;
+        function countdown() {
+          if (num >= 100) {
+            clearTimeout(progressTimerRef.current);
+            show();
+          } else {
+            progressTimerRef.current = setTimeout(() => {
+              num += getRandomInt(5, 10)
+              num = Math.min(100, num);
+              setProgress(num, barImageLayout.width / scaleX, barImageLayout.height / scaleY)
+              countdown();
+            }, 200);
+          }
         }
-      }, 2000); // 将落地页设置为不显示
-      window.enterPromise();
-      delete window.enterPromise;
+        countdown()
+      } else {
+        let num = 0;
+        let increment = 0;
+        let base = 50;
+        function countdown() {
+          progressTimerRef.current = setTimeout(() => {
+            num += getRandomInt(1, 5);
+            if (num >= 50 && num < 70) {
+              increment += 0.5;
+            } else if (num >= 70 && num < 85) {
+              increment += 0.24;
+            } else if (num >= 85 && num < 98) {
+              increment += 0.1;
+            }
+            num = Math.min(50 + increment, num);
+            setProgress(num, barImageLayout.width / scaleX, barImageLayout.height / scaleY)
+            countdown();
+          }, 200);
+        }
+        countdown()
+      }
     }
   </script>
 </body>
