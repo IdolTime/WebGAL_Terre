@@ -21,8 +21,11 @@ export default function ChangeCallScene(props: ISentenceEditorProps) {
 
   const submit = () => {
     let str = `${isCallScene.value ? 'callScene' : 'changeScene'}:${fileName.value}`;
-    str += ` -when=${whenName.value}${whenOperator.value}${whenValue.value};`;
-    props.onSubmit(str);
+    // str += ` -when=${whenName.value}${whenOperator.value}${whenValue.value};`;
+    if (whenName.value.trim().length || whenValue.value.trim().length) {
+      str += ` -when=${whenName.value}${whenOperator.value}${whenValue.value}`;
+    }
+    props.onSubmit(str + ';');
   };
 
   return (
