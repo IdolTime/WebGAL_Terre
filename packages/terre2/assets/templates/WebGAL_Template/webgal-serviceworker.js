@@ -12,7 +12,7 @@ self.addEventListener('activate', (event) => {
 
 // fetch事件
 self.addEventListener('fetch', (event) => {
-  console.log('[Service Worker] Fetching:', event.request.url);
+  // console.log('[Service Worker] Fetching:', event.request.url);
   const ignoreResources = ['.mp4', '.flv', '.webm'];
 
   const url = event.request.url;
@@ -31,10 +31,10 @@ self.addEventListener('fetch', (event) => {
         .match(event.request)
         .then((response) => {
           if (response) {
-            console.log('[Service Worker] Returning from cache:', url);
+            // console.log('[Service Worker] Returning from cache:', url);
             return response;
           }
-          console.log('[Service Worker] Fetching from network:', url);
+          // console.log('[Service Worker] Fetching from network:', url);
           return fetch(event.request).then((networkResponse) => {
             if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
               // 处理 206 Partial Content 响应

@@ -14546,6 +14546,9 @@ const assetsPrefetcher = (assetList, sceneName) => {
       }
     }
   }
+  if (assetList.length === 0) {
+    checkIfAllSceneAssetsAreSettled(sceneName);
+  }
 };
 const checkIfAllSceneAssetsAreSettled = (sceneName) => {
   const assetsLoadedObject = WebGAL.sceneManager.sceneAssetsList[sceneName];
@@ -22872,7 +22875,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-309085de.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-71df3a7b.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
