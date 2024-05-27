@@ -6963,7 +6963,7 @@ const Title_buttonList = "_Title_buttonList_xpe81_8";
 const Title_button = "_Title_button_xpe81_8";
 const Title_button_text = "_Title_button_text_xpe81_41";
 const Title_backup_background = "_Title_backup_background_xpe81_48";
-const styles$n = {
+const styles$o = {
   Title_main,
   Title_buttonList,
   Title_button,
@@ -14450,60 +14450,6 @@ class BacklogManager {
     }
   }
 }
-const initSceneData = {
-  currentSentenceId: 0,
-  // 当前语句ID
-  sceneStack: [],
-  // 初始场景，没有数据
-  currentScene: {
-    sceneName: "",
-    // 场景名称
-    sceneUrl: "",
-    // 场景url
-    sentenceList: [],
-    // 语句列表
-    assetsList: [],
-    // 资源列表
-    subSceneList: []
-    // 子场景列表
-  }
-};
-class SceneManager {
-  constructor() {
-    __publicField(this, "settledScenes", []);
-    __publicField(this, "settledAssets", []);
-    __publicField(this, "sceneData", cloneDeep$1(initSceneData));
-  }
-  resetScene() {
-    this.sceneData.currentSentenceId = 0;
-    this.sceneData.sceneStack = [];
-    this.sceneData.currentScene = cloneDeep$1(initSceneData.currentScene);
-  }
-}
-class AnimationManager {
-  constructor() {
-    __publicField(this, "nextEnterAnimationName", /* @__PURE__ */ new Map());
-    __publicField(this, "nextExitAnimationName", /* @__PURE__ */ new Map());
-    __publicField(this, "animations", []);
-  }
-  addAnimation(animation2) {
-    this.animations.push(animation2);
-  }
-  getAnimations() {
-    return this.animations;
-  }
-}
-const initPerform = {
-  performName: "",
-  duration: 100,
-  // isOver: false,
-  isHoldOn: false,
-  stopFunction: () => {
-  },
-  blockingNext: () => false,
-  blockingAuto: () => true,
-  stopTimeout: void 0
-};
 var fileType$1 = /* @__PURE__ */ ((fileType2) => {
   fileType2[fileType2["background"] = 0] = "background";
   fileType2[fileType2["bgm"] = 1] = "bgm";
@@ -14549,18 +14495,28 @@ const assetSetter = (fileName, assetType) => {
     return returnFilePath;
   }
 };
-const assetsPrefetcher = (assetList) => {
+const assetsPrefetcher = (assetList, sceneName) => {
+  WebGAL.sceneManager.sceneAssetsList[sceneName] = assetList.reduce((p, c2) => {
+    p[c2.url] = false;
+    return p;
+  }, {});
   for (const asset of assetList) {
-    let isInsert = true;
-    WebGAL.sceneManager.settledAssets.forEach((settledAssetUrl) => {
+    const hasHandled = !!WebGAL.sceneManager.settledAssets.find((settledAssetUrl) => {
       if (settledAssetUrl === asset.url) {
-        isInsert = false;
+        return true;
       }
+      return false;
     });
-    if (!isInsert) {
+    const assetsLoadedObject = WebGAL.sceneManager.sceneAssetsList[sceneName];
+    if (hasHandled) {
+      assetsLoadedObject[asset.url] = true;
+      checkIfAllSceneAssetsAreSettled(sceneName);
       logger.warn("该资源已在预加载列表中，无需重复加载");
     } else {
+      console.log("预加载资源：", asset.url);
       if (asset.url.endsWith(".mp4") || asset.url.endsWith(".flv")) {
+        assetsLoadedObject[asset.url] = true;
+        checkIfAllSceneAssetsAreSettled(sceneName);
         WebGAL.videoManager.preloadVideo(asset.url);
       } else {
         const newLink = document.createElement("link");
@@ -14570,9 +14526,37 @@ const assetsPrefetcher = (assetList) => {
         if (head.length) {
           head[0].appendChild(newLink);
         }
+        newLink.onload = () => {
+          assetsLoadedObject[asset.url] = true;
+          checkIfAllSceneAssetsAreSettled(sceneName);
+        };
+        newLink.onerror = () => {
+          assetsLoadedObject[asset.url] = true;
+          checkIfAllSceneAssetsAreSettled(sceneName);
+          const index2 = WebGAL.sceneManager.settledAssets.findIndex((settledAssetUrl, index22) => {
+            if (settledAssetUrl === asset.url) {
+              return true;
+            }
+            return false;
+          });
+          if (index2 > -1) {
+            WebGAL.sceneManager.settledAssets.splice(index2, 1);
+          }
+        };
         WebGAL.sceneManager.settledAssets.push(asset.url);
       }
     }
+  }
+  if (assetList.length === 0) {
+    checkIfAllSceneAssetsAreSettled(sceneName);
+  }
+};
+const checkIfAllSceneAssetsAreSettled = (sceneName) => {
+  const assetsLoadedObject = WebGAL.sceneManager.sceneAssetsList[sceneName];
+  const allSettled2 = Object.values(assetsLoadedObject).every((x) => x);
+  if (allSettled2) {
+    WebGAL.sceneManager.sceneAssetsLoadedList[sceneName] = true;
+    window.pubsub.publish("sceneAssetsLoaded", { sceneName });
   }
 };
 var commandType;
@@ -15444,7 +15428,7 @@ const sceneParser$1 = (rawScene, sceneName, sceneUrl, assetsPrefetcher2, assetSe
     return returnSentence;
   });
   assetsList = uniqWith_1$1(assetsList);
-  assetsPrefetcher2(assetsList);
+  assetsPrefetcher2(assetsList, sceneName);
   return {
     sceneName,
     sceneUrl,
@@ -17193,4417 +17177,62 @@ const sceneFetcher = (sceneUrl) => {
     });
   });
 };
-var HASH_UNDEFINED = "__lodash_hash_undefined__";
-function setCacheAdd$1(value) {
-  this.__data__.set(value, HASH_UNDEFINED);
-  return this;
-}
-var _setCacheAdd = setCacheAdd$1;
-function setCacheHas$1(value) {
-  return this.__data__.has(value);
-}
-var _setCacheHas = setCacheHas$1;
-var MapCache$1 = _MapCache$1, setCacheAdd = _setCacheAdd, setCacheHas = _setCacheHas;
-function SetCache$2(values) {
-  var index2 = -1, length2 = values == null ? 0 : values.length;
-  this.__data__ = new MapCache$1();
-  while (++index2 < length2) {
-    this.add(values[index2]);
-  }
-}
-SetCache$2.prototype.add = SetCache$2.prototype.push = setCacheAdd;
-SetCache$2.prototype.has = setCacheHas;
-var _SetCache = SetCache$2;
-function baseFindIndex$1(array, predicate, fromIndex, fromRight) {
-  var length2 = array.length, index2 = fromIndex + (fromRight ? 1 : -1);
-  while (fromRight ? index2-- : ++index2 < length2) {
-    if (predicate(array[index2], index2, array)) {
-      return index2;
-    }
-  }
-  return -1;
-}
-var _baseFindIndex = baseFindIndex$1;
-function baseIsNaN$1(value) {
-  return value !== value;
-}
-var _baseIsNaN = baseIsNaN$1;
-function strictIndexOf$1(array, value, fromIndex) {
-  var index2 = fromIndex - 1, length2 = array.length;
-  while (++index2 < length2) {
-    if (array[index2] === value) {
-      return index2;
-    }
-  }
-  return -1;
-}
-var _strictIndexOf = strictIndexOf$1;
-var baseFindIndex = _baseFindIndex, baseIsNaN = _baseIsNaN, strictIndexOf = _strictIndexOf;
-function baseIndexOf$1(array, value, fromIndex) {
-  return value === value ? strictIndexOf(array, value, fromIndex) : baseFindIndex(array, baseIsNaN, fromIndex);
-}
-var _baseIndexOf = baseIndexOf$1;
-var baseIndexOf = _baseIndexOf;
-function arrayIncludes$1(array, value) {
-  var length2 = array == null ? 0 : array.length;
-  return !!length2 && baseIndexOf(array, value, 0) > -1;
-}
-var _arrayIncludes = arrayIncludes$1;
-function arrayIncludesWith$1(array, value, comparator) {
-  var index2 = -1, length2 = array == null ? 0 : array.length;
-  while (++index2 < length2) {
-    if (comparator(value, array[index2])) {
-      return true;
-    }
-  }
-  return false;
-}
-var _arrayIncludesWith = arrayIncludesWith$1;
-function cacheHas$2(cache, key) {
-  return cache.has(key);
-}
-var _cacheHas = cacheHas$2;
-function noop$4() {
-}
-var noop_1 = noop$4;
-function setToArray$3(set) {
-  var index2 = -1, result = Array(set.size);
-  set.forEach(function(value) {
-    result[++index2] = value;
-  });
-  return result;
-}
-var _setToArray = setToArray$3;
-var Set$1 = _Set$1, noop$3 = noop_1, setToArray$2 = _setToArray;
-var INFINITY$2 = 1 / 0;
-var createSet$1 = !(Set$1 && 1 / setToArray$2(new Set$1([, -0]))[1] == INFINITY$2) ? noop$3 : function(values) {
-  return new Set$1(values);
-};
-var _createSet = createSet$1;
-var SetCache$1 = _SetCache, arrayIncludes = _arrayIncludes, arrayIncludesWith = _arrayIncludesWith, cacheHas$1 = _cacheHas, createSet = _createSet, setToArray$1 = _setToArray;
-var LARGE_ARRAY_SIZE = 200;
-function baseUniq$1(array, iteratee, comparator) {
-  var index2 = -1, includes = arrayIncludes, length2 = array.length, isCommon = true, result = [], seen2 = result;
-  if (comparator) {
-    isCommon = false;
-    includes = arrayIncludesWith;
-  } else if (length2 >= LARGE_ARRAY_SIZE) {
-    var set = iteratee ? null : createSet(array);
-    if (set) {
-      return setToArray$1(set);
-    }
-    isCommon = false;
-    includes = cacheHas$1;
-    seen2 = new SetCache$1();
-  } else {
-    seen2 = iteratee ? [] : result;
-  }
-  outer:
-    while (++index2 < length2) {
-      var value = array[index2], computed = iteratee ? iteratee(value) : value;
-      value = comparator || value !== 0 ? value : 0;
-      if (isCommon && computed === computed) {
-        var seenIndex = seen2.length;
-        while (seenIndex--) {
-          if (seen2[seenIndex] === computed) {
-            continue outer;
-          }
-        }
-        if (iteratee) {
-          seen2.push(computed);
-        }
-        result.push(value);
-      } else if (!includes(seen2, computed, comparator)) {
-        if (seen2 !== result) {
-          seen2.push(computed);
-        }
-        result.push(value);
-      }
-    }
-  return result;
-}
-var _baseUniq = baseUniq$1;
-var baseUniq = _baseUniq;
-function uniqWith(array, comparator) {
-  comparator = typeof comparator == "function" ? comparator : void 0;
-  return array && array.length ? baseUniq(array, void 0, comparator) : [];
-}
-var uniqWith_1 = uniqWith;
-const uniqWith$1 = /* @__PURE__ */ getDefaultExportFromCjs(uniqWith_1);
-const scenePrefetcher = (sceneList) => {
-  for (const e2 of sceneList) {
-    if (!WebGAL.sceneManager.settledScenes.includes(e2)) {
-      logger.info(`现在预加载场景${e2}`);
-      sceneFetcher(e2).then((r2) => {
-        sceneParser(r2, e2, e2);
-      });
-    } else {
-      logger.warn(`场景${e2}已经加载过，无需再次加载`);
-    }
-  }
-};
-const callScene = (sceneUrl, sceneName) => {
-  WebGAL.sceneManager.sceneData.sceneStack.push({
-    sceneName: WebGAL.sceneManager.sceneData.currentScene.sceneName,
-    sceneUrl: WebGAL.sceneManager.sceneData.currentScene.sceneUrl,
-    continueLine: WebGAL.sceneManager.sceneData.currentSentenceId
-  });
-  sceneFetcher(sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, sceneName, sceneUrl);
-    WebGAL.sceneManager.sceneData.currentSentenceId = 0;
-    const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
-    WebGAL.sceneManager.settledScenes.push(sceneUrl);
-    const subSceneListUniq = uniqWith$1(subSceneList);
-    scenePrefetcher(subSceneListUniq);
-    logger.debug("现在调用场景，调用结果：", WebGAL.sceneManager.sceneData);
-    nextSentence();
-  });
-};
-const callSceneScript = (sentence) => {
-  const sceneNameArray = sentence.content.split("/");
-  const sceneName = sceneNameArray[sceneNameArray.length - 1];
-  callScene(sentence.content, sceneName);
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: true,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function generateTransformAnimationObj(target, applyFrame, duration) {
-  let animationObj;
-  const transformState = webgalStore.getState().stage.effects;
-  const targetEffect = transformState.find((effect) => effect.target === target);
-  applyFrame.duration = 500;
-  if (duration && typeof duration === "number") {
-    applyFrame.duration = duration;
-  }
-  animationObj = [applyFrame];
-  if (targetEffect) {
-    const effectWithDuration = { ...targetEffect.transform, duration: 0 };
-    animationObj.unshift(effectWithDuration);
-  } else {
-    const effectWithDuration = { ...applyFrame, alpha: 0, duration: 0 };
-    animationObj.unshift(effectWithDuration);
-  }
-  return animationObj;
-}
-function generateUniversalSoftInAnimationObj(targetKey, duration) {
-  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
-  function setStartState() {
-    if (target) {
-      target.pixiContainer.alpha = 0;
-    }
-  }
-  function setEndState() {
-    if (target) {
-      target.pixiContainer.alpha = 1;
-    }
-  }
-  function tickerFunc(delta) {
-    if (target) {
-      const sprite = target.pixiContainer;
-      const baseDuration = WebGAL.gameplay.pixiStage.frameDuration;
-      const currentAddOplityDelta = duration / baseDuration * delta;
-      const increasement = 1 / currentAddOplityDelta;
-      if (sprite.alpha < 1) {
-        sprite.alpha += increasement;
-      }
-    }
-  }
-  return {
-    setStartState,
-    setEndState,
-    tickerFunc
-  };
-}
-function generateUniversalSoftOffAnimationObj(targetKey, duration) {
-  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
-  function setStartState() {
-  }
-  function setEndState() {
-    if (target)
-      target.pixiContainer.alpha = 0;
-  }
-  function tickerFunc(delta) {
-    if (target) {
-      const sprite = target.pixiContainer;
-      const baseDuration = WebGAL.gameplay.pixiStage.frameDuration;
-      const currentAddOplityDelta = duration / baseDuration * delta;
-      const decreasement = 1 / currentAddOplityDelta;
-      if (sprite.alpha > 0) {
-        sprite.alpha -= decreasement;
-      }
-    }
-  }
-  return {
-    setStartState,
-    setEndState,
-    tickerFunc
-  };
-}
-const baseTransform = {
-  alpha: 1,
-  scale: {
-    x: 1,
-    y: 1
+const initPerform = {
+  performName: "",
+  duration: 100,
+  // isOver: false,
+  isHoldOn: false,
+  stopFunction: () => {
   },
-  // pivot: {
-  //   x: 0.5,
-  //   y: 0.5,
-  // },
-  position: {
-    x: 0,
-    y: 0
-  },
-  rotation: 0,
-  blur: 0
-};
-function __rest$2(s2, e2) {
-  var t2 = {};
-  for (var p in s2)
-    if (Object.prototype.hasOwnProperty.call(s2, p) && e2.indexOf(p) < 0)
-      t2[p] = s2[p];
-  if (s2 != null && typeof Object.getOwnPropertySymbols === "function")
-    for (var i2 = 0, p = Object.getOwnPropertySymbols(s2); i2 < p.length; i2++) {
-      if (e2.indexOf(p[i2]) < 0 && Object.prototype.propertyIsEnumerable.call(s2, p[i2]))
-        t2[p[i2]] = s2[p[i2]];
-    }
-  return t2;
-}
-var warning = function() {
-};
-var invariant = function() {
-};
-const clamp$1 = (min, max2, v2) => Math.min(Math.max(v2, min), max2);
-const safeMin = 1e-3;
-const minDuration = 0.01;
-const maxDuration = 10;
-const minDamping = 0.05;
-const maxDamping = 1;
-function findSpring({ duration = 800, bounce = 0.25, velocity = 0, mass = 1 }) {
-  let envelope;
-  let derivative;
-  warning(duration <= maxDuration * 1e3);
-  let dampingRatio = 1 - bounce;
-  dampingRatio = clamp$1(minDamping, maxDamping, dampingRatio);
-  duration = clamp$1(minDuration, maxDuration, duration / 1e3);
-  if (dampingRatio < 1) {
-    envelope = (undampedFreq2) => {
-      const exponentialDecay = undampedFreq2 * dampingRatio;
-      const delta = exponentialDecay * duration;
-      const a2 = exponentialDecay - velocity;
-      const b2 = calcAngularFreq(undampedFreq2, dampingRatio);
-      const c2 = Math.exp(-delta);
-      return safeMin - a2 / b2 * c2;
-    };
-    derivative = (undampedFreq2) => {
-      const exponentialDecay = undampedFreq2 * dampingRatio;
-      const delta = exponentialDecay * duration;
-      const d2 = delta * velocity + velocity;
-      const e2 = Math.pow(dampingRatio, 2) * Math.pow(undampedFreq2, 2) * duration;
-      const f2 = Math.exp(-delta);
-      const g2 = calcAngularFreq(Math.pow(undampedFreq2, 2), dampingRatio);
-      const factor = -envelope(undampedFreq2) + safeMin > 0 ? -1 : 1;
-      return factor * ((d2 - e2) * f2) / g2;
-    };
-  } else {
-    envelope = (undampedFreq2) => {
-      const a2 = Math.exp(-undampedFreq2 * duration);
-      const b2 = (undampedFreq2 - velocity) * duration + 1;
-      return -safeMin + a2 * b2;
-    };
-    derivative = (undampedFreq2) => {
-      const a2 = Math.exp(-undampedFreq2 * duration);
-      const b2 = (velocity - undampedFreq2) * (duration * duration);
-      return a2 * b2;
-    };
-  }
-  const initialGuess = 5 / duration;
-  const undampedFreq = approximateRoot(envelope, derivative, initialGuess);
-  duration = duration * 1e3;
-  if (isNaN(undampedFreq)) {
-    return {
-      stiffness: 100,
-      damping: 10,
-      duration
-    };
-  } else {
-    const stiffness = Math.pow(undampedFreq, 2) * mass;
-    return {
-      stiffness,
-      damping: dampingRatio * 2 * Math.sqrt(mass * stiffness),
-      duration
-    };
-  }
-}
-const rootIterations = 12;
-function approximateRoot(envelope, derivative, initialGuess) {
-  let result = initialGuess;
-  for (let i2 = 1; i2 < rootIterations; i2++) {
-    result = result - envelope(result) / derivative(result);
-  }
-  return result;
-}
-function calcAngularFreq(undampedFreq, dampingRatio) {
-  return undampedFreq * Math.sqrt(1 - dampingRatio * dampingRatio);
-}
-const durationKeys = ["duration", "bounce"];
-const physicsKeys = ["stiffness", "damping", "mass"];
-function isSpringType(options, keys2) {
-  return keys2.some((key) => options[key] !== void 0);
-}
-function getSpringOptions(options) {
-  let springOptions = Object.assign({ velocity: 0, stiffness: 100, damping: 10, mass: 1, isResolvedFromDuration: false }, options);
-  if (!isSpringType(options, physicsKeys) && isSpringType(options, durationKeys)) {
-    const derived = findSpring(options);
-    springOptions = Object.assign(Object.assign(Object.assign({}, springOptions), derived), { velocity: 0, mass: 1 });
-    springOptions.isResolvedFromDuration = true;
-  }
-  return springOptions;
-}
-function spring(_a2) {
-  var { from: from2 = 0, to = 1, restSpeed = 2, restDelta } = _a2, options = __rest$2(_a2, ["from", "to", "restSpeed", "restDelta"]);
-  const state = { done: false, value: from2 };
-  let { stiffness, damping, mass, velocity, duration, isResolvedFromDuration } = getSpringOptions(options);
-  let resolveSpring = zero;
-  let resolveVelocity = zero;
-  function createSpring() {
-    const initialVelocity = velocity ? -(velocity / 1e3) : 0;
-    const initialDelta = to - from2;
-    const dampingRatio = damping / (2 * Math.sqrt(stiffness * mass));
-    const undampedAngularFreq = Math.sqrt(stiffness / mass) / 1e3;
-    if (restDelta === void 0) {
-      restDelta = Math.min(Math.abs(to - from2) / 100, 0.4);
-    }
-    if (dampingRatio < 1) {
-      const angularFreq = calcAngularFreq(undampedAngularFreq, dampingRatio);
-      resolveSpring = (t2) => {
-        const envelope = Math.exp(-dampingRatio * undampedAngularFreq * t2);
-        return to - envelope * ((initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) / angularFreq * Math.sin(angularFreq * t2) + initialDelta * Math.cos(angularFreq * t2));
-      };
-      resolveVelocity = (t2) => {
-        const envelope = Math.exp(-dampingRatio * undampedAngularFreq * t2);
-        return dampingRatio * undampedAngularFreq * envelope * (Math.sin(angularFreq * t2) * (initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) / angularFreq + initialDelta * Math.cos(angularFreq * t2)) - envelope * (Math.cos(angularFreq * t2) * (initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) - angularFreq * initialDelta * Math.sin(angularFreq * t2));
-      };
-    } else if (dampingRatio === 1) {
-      resolveSpring = (t2) => to - Math.exp(-undampedAngularFreq * t2) * (initialDelta + (initialVelocity + undampedAngularFreq * initialDelta) * t2);
-    } else {
-      const dampedAngularFreq = undampedAngularFreq * Math.sqrt(dampingRatio * dampingRatio - 1);
-      resolveSpring = (t2) => {
-        const envelope = Math.exp(-dampingRatio * undampedAngularFreq * t2);
-        const freqForT = Math.min(dampedAngularFreq * t2, 300);
-        return to - envelope * ((initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) * Math.sinh(freqForT) + dampedAngularFreq * initialDelta * Math.cosh(freqForT)) / dampedAngularFreq;
-      };
-    }
-  }
-  createSpring();
-  return {
-    next: (t2) => {
-      const current = resolveSpring(t2);
-      if (!isResolvedFromDuration) {
-        const currentVelocity = resolveVelocity(t2) * 1e3;
-        const isBelowVelocityThreshold = Math.abs(currentVelocity) <= restSpeed;
-        const isBelowDisplacementThreshold = Math.abs(to - current) <= restDelta;
-        state.done = isBelowVelocityThreshold && isBelowDisplacementThreshold;
-      } else {
-        state.done = t2 >= duration;
-      }
-      state.value = state.done ? to : current;
-      return state;
-    },
-    flipTarget: () => {
-      velocity = -velocity;
-      [from2, to] = [to, from2];
-      createSpring();
-    }
-  };
-}
-spring.needsInterpolation = (a2, b2) => typeof a2 === "string" || typeof b2 === "string";
-const zero = (_t) => 0;
-const progress = (from2, to, value) => {
-  const toFromDifference = to - from2;
-  return toFromDifference === 0 ? 1 : (value - from2) / toFromDifference;
-};
-const mix = (from2, to, progress2) => -progress2 * from2 + progress2 * to + from2;
-const clamp = (min, max2) => (v2) => Math.max(Math.min(v2, max2), min);
-const sanitize = (v2) => v2 % 1 ? Number(v2.toFixed(5)) : v2;
-const floatRegex = /(-)?([\d]*\.?[\d])+/g;
-const colorRegex = /(#[0-9a-f]{6}|#[0-9a-f]{3}|#(?:[0-9a-f]{2}){2,4}|(rgb|hsl)a?\((-?[\d\.]+%?[,\s]+){2}(-?[\d\.]+%?)\s*[\,\/]?\s*[\d\.]*%?\))/gi;
-const singleColorRegex = /^(#[0-9a-f]{3}|#(?:[0-9a-f]{2}){2,4}|(rgb|hsl)a?\((-?[\d\.]+%?[,\s]+){2}(-?[\d\.]+%?)\s*[\,\/]?\s*[\d\.]*%?\))$/i;
-function isString$2(v2) {
-  return typeof v2 === "string";
-}
-const number = {
-  test: (v2) => typeof v2 === "number",
-  parse: parseFloat,
-  transform: (v2) => v2
-};
-const alpha = Object.assign(Object.assign({}, number), { transform: clamp(0, 1) });
-Object.assign(Object.assign({}, number), { default: 1 });
-const createUnitType = (unit) => ({
-  test: (v2) => isString$2(v2) && v2.endsWith(unit) && v2.split(" ").length === 1,
-  parse: parseFloat,
-  transform: (v2) => `${v2}${unit}`
-});
-const percent = createUnitType("%");
-Object.assign(Object.assign({}, percent), { parse: (v2) => percent.parse(v2) / 100, transform: (v2) => percent.transform(v2 * 100) });
-const isColorString = (type2, testProp) => (v2) => {
-  return Boolean(isString$2(v2) && singleColorRegex.test(v2) && v2.startsWith(type2) || testProp && Object.prototype.hasOwnProperty.call(v2, testProp));
-};
-const splitColor = (aName, bName, cName) => (v2) => {
-  if (!isString$2(v2))
-    return v2;
-  const [a2, b2, c2, alpha2] = v2.match(floatRegex);
-  return {
-    [aName]: parseFloat(a2),
-    [bName]: parseFloat(b2),
-    [cName]: parseFloat(c2),
-    alpha: alpha2 !== void 0 ? parseFloat(alpha2) : 1
-  };
-};
-const hsla = {
-  test: isColorString("hsl", "hue"),
-  parse: splitColor("hue", "saturation", "lightness"),
-  transform: ({ hue, saturation, lightness, alpha: alpha$1 = 1 }) => {
-    return "hsla(" + Math.round(hue) + ", " + percent.transform(sanitize(saturation)) + ", " + percent.transform(sanitize(lightness)) + ", " + sanitize(alpha.transform(alpha$1)) + ")";
-  }
-};
-const clampRgbUnit = clamp(0, 255);
-const rgbUnit = Object.assign(Object.assign({}, number), { transform: (v2) => Math.round(clampRgbUnit(v2)) });
-const rgba = {
-  test: isColorString("rgb", "red"),
-  parse: splitColor("red", "green", "blue"),
-  transform: ({ red: red2, green: green2, blue: blue2, alpha: alpha$1 = 1 }) => "rgba(" + rgbUnit.transform(red2) + ", " + rgbUnit.transform(green2) + ", " + rgbUnit.transform(blue2) + ", " + sanitize(alpha.transform(alpha$1)) + ")"
-};
-function parseHex(v2) {
-  let r2 = "";
-  let g2 = "";
-  let b2 = "";
-  let a2 = "";
-  if (v2.length > 5) {
-    r2 = v2.substr(1, 2);
-    g2 = v2.substr(3, 2);
-    b2 = v2.substr(5, 2);
-    a2 = v2.substr(7, 2);
-  } else {
-    r2 = v2.substr(1, 1);
-    g2 = v2.substr(2, 1);
-    b2 = v2.substr(3, 1);
-    a2 = v2.substr(4, 1);
-    r2 += r2;
-    g2 += g2;
-    b2 += b2;
-    a2 += a2;
-  }
-  return {
-    red: parseInt(r2, 16),
-    green: parseInt(g2, 16),
-    blue: parseInt(b2, 16),
-    alpha: a2 ? parseInt(a2, 16) / 255 : 1
-  };
-}
-const hex = {
-  test: isColorString("#"),
-  parse: parseHex,
-  transform: rgba.transform
-};
-const color = {
-  test: (v2) => rgba.test(v2) || hex.test(v2) || hsla.test(v2),
-  parse: (v2) => {
-    if (rgba.test(v2)) {
-      return rgba.parse(v2);
-    } else if (hsla.test(v2)) {
-      return hsla.parse(v2);
-    } else {
-      return hex.parse(v2);
-    }
-  },
-  transform: (v2) => {
-    return isString$2(v2) ? v2 : v2.hasOwnProperty("red") ? rgba.transform(v2) : hsla.transform(v2);
-  }
-};
-const colorToken = "${c}";
-const numberToken = "${n}";
-function test$1(v2) {
-  var _a2, _b2, _c2, _d;
-  return isNaN(v2) && isString$2(v2) && ((_b2 = (_a2 = v2.match(floatRegex)) === null || _a2 === void 0 ? void 0 : _a2.length) !== null && _b2 !== void 0 ? _b2 : 0) + ((_d = (_c2 = v2.match(colorRegex)) === null || _c2 === void 0 ? void 0 : _c2.length) !== null && _d !== void 0 ? _d : 0) > 0;
-}
-function analyse$1(v2) {
-  if (typeof v2 === "number")
-    v2 = `${v2}`;
-  const values = [];
-  let numColors = 0;
-  const colors = v2.match(colorRegex);
-  if (colors) {
-    numColors = colors.length;
-    v2 = v2.replace(colorRegex, colorToken);
-    values.push(...colors.map(color.parse));
-  }
-  const numbers = v2.match(floatRegex);
-  if (numbers) {
-    v2 = v2.replace(floatRegex, numberToken);
-    values.push(...numbers.map(number.parse));
-  }
-  return { values, numColors, tokenised: v2 };
-}
-function parse$6(v2) {
-  return analyse$1(v2).values;
-}
-function createTransformer(v2) {
-  const { values, numColors, tokenised } = analyse$1(v2);
-  const numValues = values.length;
-  return (v3) => {
-    let output2 = tokenised;
-    for (let i2 = 0; i2 < numValues; i2++) {
-      output2 = output2.replace(i2 < numColors ? colorToken : numberToken, i2 < numColors ? color.transform(v3[i2]) : sanitize(v3[i2]));
-    }
-    return output2;
-  };
-}
-const convertNumbersToZero = (v2) => typeof v2 === "number" ? 0 : v2;
-function getAnimatableNone(v2) {
-  const parsed = parse$6(v2);
-  const transformer = createTransformer(v2);
-  return transformer(parsed.map(convertNumbersToZero));
-}
-const complex = { test: test$1, parse: parse$6, createTransformer, getAnimatableNone };
-function hueToRgb(p, q2, t2) {
-  if (t2 < 0)
-    t2 += 1;
-  if (t2 > 1)
-    t2 -= 1;
-  if (t2 < 1 / 6)
-    return p + (q2 - p) * 6 * t2;
-  if (t2 < 1 / 2)
-    return q2;
-  if (t2 < 2 / 3)
-    return p + (q2 - p) * (2 / 3 - t2) * 6;
-  return p;
-}
-function hslaToRgba({ hue, saturation, lightness, alpha: alpha2 }) {
-  hue /= 360;
-  saturation /= 100;
-  lightness /= 100;
-  let red2 = 0;
-  let green2 = 0;
-  let blue2 = 0;
-  if (!saturation) {
-    red2 = green2 = blue2 = lightness;
-  } else {
-    const q2 = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
-    const p = 2 * lightness - q2;
-    red2 = hueToRgb(p, q2, hue + 1 / 3);
-    green2 = hueToRgb(p, q2, hue);
-    blue2 = hueToRgb(p, q2, hue - 1 / 3);
-  }
-  return {
-    red: Math.round(red2 * 255),
-    green: Math.round(green2 * 255),
-    blue: Math.round(blue2 * 255),
-    alpha: alpha2
-  };
-}
-const mixLinearColor = (from2, to, v2) => {
-  const fromExpo = from2 * from2;
-  const toExpo = to * to;
-  return Math.sqrt(Math.max(0, v2 * (toExpo - fromExpo) + fromExpo));
-};
-const colorTypes = [hex, rgba, hsla];
-const getColorType = (v2) => colorTypes.find((type2) => type2.test(v2));
-const mixColor = (from2, to) => {
-  let fromColorType = getColorType(from2);
-  let toColorType = getColorType(to);
-  let fromColor = fromColorType.parse(from2);
-  let toColor = toColorType.parse(to);
-  if (fromColorType === hsla) {
-    fromColor = hslaToRgba(fromColor);
-    fromColorType = rgba;
-  }
-  if (toColorType === hsla) {
-    toColor = hslaToRgba(toColor);
-    toColorType = rgba;
-  }
-  const blended = Object.assign({}, fromColor);
-  return (v2) => {
-    for (const key in blended) {
-      if (key !== "alpha") {
-        blended[key] = mixLinearColor(fromColor[key], toColor[key], v2);
-      }
-    }
-    blended.alpha = mix(fromColor.alpha, toColor.alpha, v2);
-    return fromColorType.transform(blended);
-  };
-};
-const isNum = (v2) => typeof v2 === "number";
-const combineFunctions = (a2, b2) => (v2) => b2(a2(v2));
-const pipe = (...transformers) => transformers.reduce(combineFunctions);
-function getMixer(origin, target) {
-  if (isNum(origin)) {
-    return (v2) => mix(origin, target, v2);
-  } else if (color.test(origin)) {
-    return mixColor(origin, target);
-  } else {
-    return mixComplex(origin, target);
-  }
-}
-const mixArray = (from2, to) => {
-  const output2 = [...from2];
-  const numValues = output2.length;
-  const blendValue = from2.map((fromThis, i2) => getMixer(fromThis, to[i2]));
-  return (v2) => {
-    for (let i2 = 0; i2 < numValues; i2++) {
-      output2[i2] = blendValue[i2](v2);
-    }
-    return output2;
-  };
-};
-const mixObject = (origin, target) => {
-  const output2 = Object.assign(Object.assign({}, origin), target);
-  const blendValue = {};
-  for (const key in output2) {
-    if (origin[key] !== void 0 && target[key] !== void 0) {
-      blendValue[key] = getMixer(origin[key], target[key]);
-    }
-  }
-  return (v2) => {
-    for (const key in blendValue) {
-      output2[key] = blendValue[key](v2);
-    }
-    return output2;
-  };
-};
-function analyse(value) {
-  const parsed = complex.parse(value);
-  const numValues = parsed.length;
-  let numNumbers = 0;
-  let numRGB = 0;
-  let numHSL = 0;
-  for (let i2 = 0; i2 < numValues; i2++) {
-    if (numNumbers || typeof parsed[i2] === "number") {
-      numNumbers++;
-    } else {
-      if (parsed[i2].hue !== void 0) {
-        numHSL++;
-      } else {
-        numRGB++;
-      }
-    }
-  }
-  return { parsed, numNumbers, numRGB, numHSL };
-}
-const mixComplex = (origin, target) => {
-  const template = complex.createTransformer(target);
-  const originStats = analyse(origin);
-  const targetStats = analyse(target);
-  const canInterpolate = originStats.numHSL === targetStats.numHSL && originStats.numRGB === targetStats.numRGB && originStats.numNumbers >= targetStats.numNumbers;
-  if (canInterpolate) {
-    return pipe(mixArray(originStats.parsed, targetStats.parsed), template);
-  } else {
-    return (p) => `${p > 0 ? target : origin}`;
-  }
-};
-const mixNumber = (from2, to) => (p) => mix(from2, to, p);
-function detectMixerFactory(v2) {
-  if (typeof v2 === "number") {
-    return mixNumber;
-  } else if (typeof v2 === "string") {
-    if (color.test(v2)) {
-      return mixColor;
-    } else {
-      return mixComplex;
-    }
-  } else if (Array.isArray(v2)) {
-    return mixArray;
-  } else if (typeof v2 === "object") {
-    return mixObject;
-  }
-}
-function createMixers(output2, ease, customMixer) {
-  const mixers = [];
-  const mixerFactory = customMixer || detectMixerFactory(output2[0]);
-  const numMixers = output2.length - 1;
-  for (let i2 = 0; i2 < numMixers; i2++) {
-    let mixer = mixerFactory(output2[i2], output2[i2 + 1]);
-    if (ease) {
-      const easingFunction = Array.isArray(ease) ? ease[i2] : ease;
-      mixer = pipe(easingFunction, mixer);
-    }
-    mixers.push(mixer);
-  }
-  return mixers;
-}
-function fastInterpolate([from2, to], [mixer]) {
-  return (v2) => mixer(progress(from2, to, v2));
-}
-function slowInterpolate(input, mixers) {
-  const inputLength = input.length;
-  const lastInputIndex = inputLength - 1;
-  return (v2) => {
-    let mixerIndex = 0;
-    let foundMixerIndex = false;
-    if (v2 <= input[0]) {
-      foundMixerIndex = true;
-    } else if (v2 >= input[lastInputIndex]) {
-      mixerIndex = lastInputIndex - 1;
-      foundMixerIndex = true;
-    }
-    if (!foundMixerIndex) {
-      let i2 = 1;
-      for (; i2 < inputLength; i2++) {
-        if (input[i2] > v2 || i2 === lastInputIndex) {
-          break;
-        }
-      }
-      mixerIndex = i2 - 1;
-    }
-    const progressInRange = progress(input[mixerIndex], input[mixerIndex + 1], v2);
-    return mixers[mixerIndex](progressInRange);
-  };
-}
-function interpolate(input, output2, { clamp: isClamp = true, ease, mixer } = {}) {
-  const inputLength = input.length;
-  invariant(inputLength === output2.length);
-  invariant(!ease || !Array.isArray(ease) || ease.length === inputLength - 1);
-  if (input[0] > input[inputLength - 1]) {
-    input = [].concat(input);
-    output2 = [].concat(output2);
-    input.reverse();
-    output2.reverse();
-  }
-  const mixers = createMixers(output2, ease, mixer);
-  const interpolator = inputLength === 2 ? fastInterpolate(input, mixers) : slowInterpolate(input, mixers);
-  return isClamp ? (v2) => interpolator(clamp$1(input[0], input[inputLength - 1], v2)) : interpolator;
-}
-const mirrorEasing = (easing) => (p) => p <= 0.5 ? easing(2 * p) / 2 : (2 - easing(2 * (1 - p))) / 2;
-const createExpoIn = (power) => (p) => Math.pow(p, power);
-const createBackIn = (power) => (p) => p * p * ((power + 1) * p - power);
-const createAnticipate = (power) => {
-  const backEasing = createBackIn(power);
-  return (p) => (p *= 2) < 1 ? 0.5 * backEasing(p) : 0.5 * (2 - Math.pow(2, -10 * (p - 1)));
-};
-const DEFAULT_OVERSHOOT_STRENGTH = 1.525;
-const easeIn = createExpoIn(2);
-const easeInOut = mirrorEasing(easeIn);
-createAnticipate(DEFAULT_OVERSHOOT_STRENGTH);
-function defaultEasing(values, easing) {
-  return values.map(() => easing || easeInOut).splice(0, values.length - 1);
-}
-function defaultOffset(values) {
-  const numValues = values.length;
-  return values.map((_value, i2) => i2 !== 0 ? i2 / (numValues - 1) : 0);
-}
-function convertOffsetToTimes(offset, duration) {
-  return offset.map((o2) => o2 * duration);
-}
-function keyframes({ from: from2 = 0, to = 1, ease, offset, duration = 300 }) {
-  const state = { done: false, value: from2 };
-  const values = Array.isArray(to) ? to : [from2, to];
-  const times = convertOffsetToTimes(offset && offset.length === values.length ? offset : defaultOffset(values), duration);
-  function createInterpolator() {
-    return interpolate(times, values, {
-      ease: Array.isArray(ease) ? ease : defaultEasing(values, ease)
-    });
-  }
-  let interpolator = createInterpolator();
-  return {
-    next: (t2) => {
-      state.value = interpolator(t2);
-      state.done = t2 >= duration;
-      return state;
-    },
-    flipTarget: () => {
-      values.reverse();
-      interpolator = createInterpolator();
-    }
-  };
-}
-function decay({ velocity = 0, from: from2 = 0, power = 0.8, timeConstant = 350, restDelta = 0.5, modifyTarget }) {
-  const state = { done: false, value: from2 };
-  let amplitude = power * velocity;
-  const ideal = from2 + amplitude;
-  const target = modifyTarget === void 0 ? ideal : modifyTarget(ideal);
-  if (target !== ideal)
-    amplitude = target - from2;
-  return {
-    next: (t2) => {
-      const delta = -amplitude * Math.exp(-t2 / timeConstant);
-      state.done = !(delta > restDelta || delta < -restDelta);
-      state.value = state.done ? target : target + delta;
-      return state;
-    },
-    flipTarget: () => {
-    }
-  };
-}
-const types = { keyframes, spring, decay };
-function detectAnimationFromOptions(config) {
-  if (Array.isArray(config.to)) {
-    return keyframes;
-  } else if (types[config.type]) {
-    return types[config.type];
-  }
-  const keys2 = new Set(Object.keys(config));
-  if (keys2.has("ease") || keys2.has("duration") && !keys2.has("dampingRatio")) {
-    return keyframes;
-  } else if (keys2.has("dampingRatio") || keys2.has("stiffness") || keys2.has("mass") || keys2.has("damping") || keys2.has("restSpeed") || keys2.has("restDelta")) {
-    return spring;
-  }
-  return keyframes;
-}
-const defaultTimestep = 1 / 60 * 1e3;
-const getCurrentTime = typeof performance !== "undefined" ? () => performance.now() : () => Date.now();
-const onNextFrame = typeof window !== "undefined" ? (callback) => window.requestAnimationFrame(callback) : (callback) => setTimeout(() => callback(getCurrentTime()), defaultTimestep);
-function createRenderStep(runNextFrame2) {
-  let toRun = [];
-  let toRunNextFrame = [];
-  let numToRun = 0;
-  let isProcessing2 = false;
-  let flushNextFrame = false;
-  const toKeepAlive = /* @__PURE__ */ new WeakSet();
-  const step = {
-    schedule: (callback, keepAlive = false, immediate = false) => {
-      const addToCurrentFrame = immediate && isProcessing2;
-      const buffer = addToCurrentFrame ? toRun : toRunNextFrame;
-      if (keepAlive)
-        toKeepAlive.add(callback);
-      if (buffer.indexOf(callback) === -1) {
-        buffer.push(callback);
-        if (addToCurrentFrame && isProcessing2)
-          numToRun = toRun.length;
-      }
-      return callback;
-    },
-    cancel: (callback) => {
-      const index2 = toRunNextFrame.indexOf(callback);
-      if (index2 !== -1)
-        toRunNextFrame.splice(index2, 1);
-      toKeepAlive.delete(callback);
-    },
-    process: (frameData) => {
-      if (isProcessing2) {
-        flushNextFrame = true;
-        return;
-      }
-      isProcessing2 = true;
-      [toRun, toRunNextFrame] = [toRunNextFrame, toRun];
-      toRunNextFrame.length = 0;
-      numToRun = toRun.length;
-      if (numToRun) {
-        for (let i2 = 0; i2 < numToRun; i2++) {
-          const callback = toRun[i2];
-          callback(frameData);
-          if (toKeepAlive.has(callback)) {
-            step.schedule(callback);
-            runNextFrame2();
-          }
-        }
-      }
-      isProcessing2 = false;
-      if (flushNextFrame) {
-        flushNextFrame = false;
-        step.process(frameData);
-      }
-    }
-  };
-  return step;
-}
-const maxElapsed = 40;
-let useDefaultElapsed = true;
-let runNextFrame = false;
-let isProcessing = false;
-const frame = {
-  delta: 0,
-  timestamp: 0
-};
-const stepsOrder = [
-  "read",
-  "update",
-  "preRender",
-  "render",
-  "postRender"
-];
-const steps = stepsOrder.reduce((acc, key) => {
-  acc[key] = createRenderStep(() => runNextFrame = true);
-  return acc;
-}, {});
-const sync = stepsOrder.reduce((acc, key) => {
-  const step = steps[key];
-  acc[key] = (process2, keepAlive = false, immediate = false) => {
-    if (!runNextFrame)
-      startLoop();
-    return step.schedule(process2, keepAlive, immediate);
-  };
-  return acc;
-}, {});
-const cancelSync = stepsOrder.reduce((acc, key) => {
-  acc[key] = steps[key].cancel;
-  return acc;
-}, {});
-stepsOrder.reduce((acc, key) => {
-  acc[key] = () => steps[key].process(frame);
-  return acc;
-}, {});
-const processStep = (stepId) => steps[stepId].process(frame);
-const processFrame = (timestamp) => {
-  runNextFrame = false;
-  frame.delta = useDefaultElapsed ? defaultTimestep : Math.max(Math.min(timestamp - frame.timestamp, maxElapsed), 1);
-  frame.timestamp = timestamp;
-  isProcessing = true;
-  stepsOrder.forEach(processStep);
-  isProcessing = false;
-  if (runNextFrame) {
-    useDefaultElapsed = false;
-    onNextFrame(processFrame);
-  }
-};
-const startLoop = () => {
-  runNextFrame = true;
-  useDefaultElapsed = true;
-  if (!isProcessing)
-    onNextFrame(processFrame);
-};
-const sync$1 = sync;
-function loopElapsed(elapsed, duration, delay = 0) {
-  return elapsed - duration - delay;
-}
-function reverseElapsed(elapsed, duration, delay = 0, isForwardPlayback = true) {
-  return isForwardPlayback ? loopElapsed(duration + -elapsed, duration, delay) : duration - (elapsed - duration) + delay;
-}
-function hasRepeatDelayElapsed(elapsed, duration, delay, isForwardPlayback) {
-  return isForwardPlayback ? elapsed >= duration + delay : elapsed <= -delay;
-}
-const framesync = (update) => {
-  const passTimestamp = ({ delta }) => update(delta);
-  return {
-    start: () => sync$1.update(passTimestamp, true),
-    stop: () => cancelSync.update(passTimestamp)
-  };
-};
-function animate(_a2) {
-  var _b2, _c2;
-  var { from: from2, autoplay = true, driver = framesync, elapsed = 0, repeat: repeatMax = 0, repeatType = "loop", repeatDelay = 0, onPlay, onStop, onComplete, onRepeat, onUpdate } = _a2, options = __rest$2(_a2, ["from", "autoplay", "driver", "elapsed", "repeat", "repeatType", "repeatDelay", "onPlay", "onStop", "onComplete", "onRepeat", "onUpdate"]);
-  let { to } = options;
-  let driverControls;
-  let repeatCount = 0;
-  let computedDuration = options.duration;
-  let latest;
-  let isComplete = false;
-  let isForwardPlayback = true;
-  let interpolateFromNumber;
-  const animator = detectAnimationFromOptions(options);
-  if ((_c2 = (_b2 = animator).needsInterpolation) === null || _c2 === void 0 ? void 0 : _c2.call(_b2, from2, to)) {
-    interpolateFromNumber = interpolate([0, 100], [from2, to], {
-      clamp: false
-    });
-    from2 = 0;
-    to = 100;
-  }
-  const animation2 = animator(Object.assign(Object.assign({}, options), { from: from2, to }));
-  function repeat2() {
-    repeatCount++;
-    if (repeatType === "reverse") {
-      isForwardPlayback = repeatCount % 2 === 0;
-      elapsed = reverseElapsed(elapsed, computedDuration, repeatDelay, isForwardPlayback);
-    } else {
-      elapsed = loopElapsed(elapsed, computedDuration, repeatDelay);
-      if (repeatType === "mirror")
-        animation2.flipTarget();
-    }
-    isComplete = false;
-    onRepeat && onRepeat();
-  }
-  function complete() {
-    driverControls.stop();
-    onComplete && onComplete();
-  }
-  function update(delta) {
-    if (!isForwardPlayback)
-      delta = -delta;
-    elapsed += delta;
-    if (!isComplete) {
-      const state = animation2.next(Math.max(0, elapsed));
-      latest = state.value;
-      if (interpolateFromNumber)
-        latest = interpolateFromNumber(latest);
-      isComplete = isForwardPlayback ? state.done : elapsed <= 0;
-    }
-    onUpdate === null || onUpdate === void 0 ? void 0 : onUpdate(latest);
-    if (isComplete) {
-      if (repeatCount === 0)
-        computedDuration !== null && computedDuration !== void 0 ? computedDuration : computedDuration = elapsed;
-      if (repeatCount < repeatMax) {
-        hasRepeatDelayElapsed(elapsed, computedDuration, repeatDelay, isForwardPlayback) && repeat2();
-      } else {
-        complete();
-      }
-    }
-  }
-  function play() {
-    onPlay === null || onPlay === void 0 ? void 0 : onPlay();
-    driverControls = driver(update);
-    driverControls.start();
-  }
-  autoplay && play();
-  return {
-    stop: () => {
-      onStop === null || onStop === void 0 ? void 0 : onStop();
-      driverControls.stop();
-    }
-  };
-}
-function arraySome$1(array, predicate) {
-  var index2 = -1, length2 = array == null ? 0 : array.length;
-  while (++index2 < length2) {
-    if (predicate(array[index2], index2, array)) {
-      return true;
-    }
-  }
-  return false;
-}
-var _arraySome = arraySome$1;
-var SetCache = _SetCache, arraySome = _arraySome, cacheHas = _cacheHas;
-var COMPARE_PARTIAL_FLAG$5 = 1, COMPARE_UNORDERED_FLAG$3 = 2;
-function equalArrays$2(array, other, bitmask, customizer, equalFunc, stack) {
-  var isPartial = bitmask & COMPARE_PARTIAL_FLAG$5, arrLength = array.length, othLength = other.length;
-  if (arrLength != othLength && !(isPartial && othLength > arrLength)) {
-    return false;
-  }
-  var arrStacked = stack.get(array);
-  var othStacked = stack.get(other);
-  if (arrStacked && othStacked) {
-    return arrStacked == other && othStacked == array;
-  }
-  var index2 = -1, result = true, seen2 = bitmask & COMPARE_UNORDERED_FLAG$3 ? new SetCache() : void 0;
-  stack.set(array, other);
-  stack.set(other, array);
-  while (++index2 < arrLength) {
-    var arrValue = array[index2], othValue = other[index2];
-    if (customizer) {
-      var compared = isPartial ? customizer(othValue, arrValue, index2, other, array, stack) : customizer(arrValue, othValue, index2, array, other, stack);
-    }
-    if (compared !== void 0) {
-      if (compared) {
-        continue;
-      }
-      result = false;
-      break;
-    }
-    if (seen2) {
-      if (!arraySome(other, function(othValue2, othIndex) {
-        if (!cacheHas(seen2, othIndex) && (arrValue === othValue2 || equalFunc(arrValue, othValue2, bitmask, customizer, stack))) {
-          return seen2.push(othIndex);
-        }
-      })) {
-        result = false;
-        break;
-      }
-    } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))) {
-      result = false;
-      break;
-    }
-  }
-  stack["delete"](array);
-  stack["delete"](other);
-  return result;
-}
-var _equalArrays = equalArrays$2;
-function mapToArray$1(map2) {
-  var index2 = -1, result = Array(map2.size);
-  map2.forEach(function(value, key) {
-    result[++index2] = [key, value];
-  });
-  return result;
-}
-var _mapToArray = mapToArray$1;
-var Symbol$2 = _Symbol$1, Uint8Array$1 = _Uint8Array, eq = eq_1$1, equalArrays$1 = _equalArrays, mapToArray = _mapToArray, setToArray = _setToArray;
-var COMPARE_PARTIAL_FLAG$4 = 1, COMPARE_UNORDERED_FLAG$2 = 2;
-var boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", mapTag = "[object Map]", numberTag = "[object Number]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag$1 = "[object Symbol]";
-var arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]";
-var symbolProto$1 = Symbol$2 ? Symbol$2.prototype : void 0, symbolValueOf = symbolProto$1 ? symbolProto$1.valueOf : void 0;
-function equalByTag$1(object, other, tag2, bitmask, customizer, equalFunc, stack) {
-  switch (tag2) {
-    case dataViewTag:
-      if (object.byteLength != other.byteLength || object.byteOffset != other.byteOffset) {
-        return false;
-      }
-      object = object.buffer;
-      other = other.buffer;
-    case arrayBufferTag:
-      if (object.byteLength != other.byteLength || !equalFunc(new Uint8Array$1(object), new Uint8Array$1(other))) {
-        return false;
-      }
-      return true;
-    case boolTag:
-    case dateTag:
-    case numberTag:
-      return eq(+object, +other);
-    case errorTag:
-      return object.name == other.name && object.message == other.message;
-    case regexpTag:
-    case stringTag:
-      return object == other + "";
-    case mapTag:
-      var convert = mapToArray;
-    case setTag:
-      var isPartial = bitmask & COMPARE_PARTIAL_FLAG$4;
-      convert || (convert = setToArray);
-      if (object.size != other.size && !isPartial) {
-        return false;
-      }
-      var stacked = stack.get(object);
-      if (stacked) {
-        return stacked == other;
-      }
-      bitmask |= COMPARE_UNORDERED_FLAG$2;
-      stack.set(object, other);
-      var result = equalArrays$1(convert(object), convert(other), bitmask, customizer, equalFunc, stack);
-      stack["delete"](object);
-      return result;
-    case symbolTag$1:
-      if (symbolValueOf) {
-        return symbolValueOf.call(object) == symbolValueOf.call(other);
-      }
-  }
-  return false;
-}
-var _equalByTag = equalByTag$1;
-var getAllKeys = _getAllKeys;
-var COMPARE_PARTIAL_FLAG$3 = 1;
-var objectProto$1 = Object.prototype;
-var hasOwnProperty$2 = objectProto$1.hasOwnProperty;
-function equalObjects$1(object, other, bitmask, customizer, equalFunc, stack) {
-  var isPartial = bitmask & COMPARE_PARTIAL_FLAG$3, objProps = getAllKeys(object), objLength = objProps.length, othProps = getAllKeys(other), othLength = othProps.length;
-  if (objLength != othLength && !isPartial) {
-    return false;
-  }
-  var index2 = objLength;
-  while (index2--) {
-    var key = objProps[index2];
-    if (!(isPartial ? key in other : hasOwnProperty$2.call(other, key))) {
-      return false;
-    }
-  }
-  var objStacked = stack.get(object);
-  var othStacked = stack.get(other);
-  if (objStacked && othStacked) {
-    return objStacked == other && othStacked == object;
-  }
-  var result = true;
-  stack.set(object, other);
-  stack.set(other, object);
-  var skipCtor = isPartial;
-  while (++index2 < objLength) {
-    key = objProps[index2];
-    var objValue = object[key], othValue = other[key];
-    if (customizer) {
-      var compared = isPartial ? customizer(othValue, objValue, key, other, object, stack) : customizer(objValue, othValue, key, object, other, stack);
-    }
-    if (!(compared === void 0 ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack) : compared)) {
-      result = false;
-      break;
-    }
-    skipCtor || (skipCtor = key == "constructor");
-  }
-  if (result && !skipCtor) {
-    var objCtor = object.constructor, othCtor = other.constructor;
-    if (objCtor != othCtor && ("constructor" in object && "constructor" in other) && !(typeof objCtor == "function" && objCtor instanceof objCtor && typeof othCtor == "function" && othCtor instanceof othCtor)) {
-      result = false;
-    }
-  }
-  stack["delete"](object);
-  stack["delete"](other);
-  return result;
-}
-var _equalObjects = equalObjects$1;
-var Stack$1 = _Stack, equalArrays = _equalArrays, equalByTag = _equalByTag, equalObjects = _equalObjects, getTag = _getTag, isArray$b = isArray_1, isBuffer$2 = isBufferExports, isTypedArray$1 = isTypedArray_1;
-var COMPARE_PARTIAL_FLAG$2 = 1;
-var argsTag = "[object Arguments]", arrayTag = "[object Array]", objectTag = "[object Object]";
-var objectProto = Object.prototype;
-var hasOwnProperty$1 = objectProto.hasOwnProperty;
-function baseIsEqualDeep$1(object, other, bitmask, customizer, equalFunc, stack) {
-  var objIsArr = isArray$b(object), othIsArr = isArray$b(other), objTag = objIsArr ? arrayTag : getTag(object), othTag = othIsArr ? arrayTag : getTag(other);
-  objTag = objTag == argsTag ? objectTag : objTag;
-  othTag = othTag == argsTag ? objectTag : othTag;
-  var objIsObj = objTag == objectTag, othIsObj = othTag == objectTag, isSameTag = objTag == othTag;
-  if (isSameTag && isBuffer$2(object)) {
-    if (!isBuffer$2(other)) {
-      return false;
-    }
-    objIsArr = true;
-    objIsObj = false;
-  }
-  if (isSameTag && !objIsObj) {
-    stack || (stack = new Stack$1());
-    return objIsArr || isTypedArray$1(object) ? equalArrays(object, other, bitmask, customizer, equalFunc, stack) : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack);
-  }
-  if (!(bitmask & COMPARE_PARTIAL_FLAG$2)) {
-    var objIsWrapped = objIsObj && hasOwnProperty$1.call(object, "__wrapped__"), othIsWrapped = othIsObj && hasOwnProperty$1.call(other, "__wrapped__");
-    if (objIsWrapped || othIsWrapped) {
-      var objUnwrapped = objIsWrapped ? object.value() : object, othUnwrapped = othIsWrapped ? other.value() : other;
-      stack || (stack = new Stack$1());
-      return equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
-    }
-  }
-  if (!isSameTag) {
-    return false;
-  }
-  stack || (stack = new Stack$1());
-  return equalObjects(object, other, bitmask, customizer, equalFunc, stack);
-}
-var _baseIsEqualDeep = baseIsEqualDeep$1;
-var baseIsEqualDeep = _baseIsEqualDeep, isObjectLike$1 = isObjectLike_1;
-function baseIsEqual$2(value, other, bitmask, customizer, stack) {
-  if (value === other) {
-    return true;
-  }
-  if (value == null || other == null || !isObjectLike$1(value) && !isObjectLike$1(other)) {
-    return value !== value && other !== other;
-  }
-  return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual$2, stack);
-}
-var _baseIsEqual = baseIsEqual$2;
-var Stack = _Stack, baseIsEqual$1 = _baseIsEqual;
-var COMPARE_PARTIAL_FLAG$1 = 1, COMPARE_UNORDERED_FLAG$1 = 2;
-function baseIsMatch$1(object, source, matchData, customizer) {
-  var index2 = matchData.length, length2 = index2, noCustomizer = !customizer;
-  if (object == null) {
-    return !length2;
-  }
-  object = Object(object);
-  while (index2--) {
-    var data2 = matchData[index2];
-    if (noCustomizer && data2[2] ? data2[1] !== object[data2[0]] : !(data2[0] in object)) {
-      return false;
-    }
-  }
-  while (++index2 < length2) {
-    data2 = matchData[index2];
-    var key = data2[0], objValue = object[key], srcValue = data2[1];
-    if (noCustomizer && data2[2]) {
-      if (objValue === void 0 && !(key in object)) {
-        return false;
-      }
-    } else {
-      var stack = new Stack();
-      if (customizer) {
-        var result = customizer(objValue, srcValue, key, object, source, stack);
-      }
-      if (!(result === void 0 ? baseIsEqual$1(srcValue, objValue, COMPARE_PARTIAL_FLAG$1 | COMPARE_UNORDERED_FLAG$1, customizer, stack) : result)) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-var _baseIsMatch = baseIsMatch$1;
-var isObject$5 = isObject_1$1;
-function isStrictComparable$2(value) {
-  return value === value && !isObject$5(value);
-}
-var _isStrictComparable = isStrictComparable$2;
-var isStrictComparable$1 = _isStrictComparable, keys = keys_1;
-function getMatchData$1(object) {
-  var result = keys(object), length2 = result.length;
-  while (length2--) {
-    var key = result[length2], value = object[key];
-    result[length2] = [key, value, isStrictComparable$1(value)];
-  }
-  return result;
-}
-var _getMatchData = getMatchData$1;
-function matchesStrictComparable$2(key, srcValue) {
-  return function(object) {
-    if (object == null) {
-      return false;
-    }
-    return object[key] === srcValue && (srcValue !== void 0 || key in Object(object));
-  };
-}
-var _matchesStrictComparable = matchesStrictComparable$2;
-var baseIsMatch = _baseIsMatch, getMatchData = _getMatchData, matchesStrictComparable$1 = _matchesStrictComparable;
-function baseMatches$1(source) {
-  var matchData = getMatchData(source);
-  if (matchData.length == 1 && matchData[0][2]) {
-    return matchesStrictComparable$1(matchData[0][0], matchData[0][1]);
-  }
-  return function(object) {
-    return object === source || baseIsMatch(object, source, matchData);
-  };
-}
-var _baseMatches = baseMatches$1;
-var baseGetTag = _baseGetTag$1, isObjectLike = isObjectLike_1;
-var symbolTag = "[object Symbol]";
-function isSymbol$5(value) {
-  return typeof value == "symbol" || isObjectLike(value) && baseGetTag(value) == symbolTag;
-}
-var isSymbol_1 = isSymbol$5;
-var isArray$a = isArray_1, isSymbol$4 = isSymbol_1;
-var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/;
-function isKey$3(value, object) {
-  if (isArray$a(value)) {
-    return false;
-  }
-  var type2 = typeof value;
-  if (type2 == "number" || type2 == "symbol" || type2 == "boolean" || value == null || isSymbol$4(value)) {
-    return true;
-  }
-  return reIsPlainProp.test(value) || !reIsDeepProp.test(value) || object != null && value in Object(object);
-}
-var _isKey = isKey$3;
-var MapCache = _MapCache$1;
-var FUNC_ERROR_TEXT$3 = "Expected a function";
-function memoize$2(func, resolver2) {
-  if (typeof func != "function" || resolver2 != null && typeof resolver2 != "function") {
-    throw new TypeError(FUNC_ERROR_TEXT$3);
-  }
-  var memoized = function() {
-    var args = arguments, key = resolver2 ? resolver2.apply(this, args) : args[0], cache = memoized.cache;
-    if (cache.has(key)) {
-      return cache.get(key);
-    }
-    var result = func.apply(this, args);
-    memoized.cache = cache.set(key, result) || cache;
-    return result;
-  };
-  memoized.cache = new (memoize$2.Cache || MapCache)();
-  return memoized;
-}
-memoize$2.Cache = MapCache;
-var memoize_1 = memoize$2;
-var memoize$1 = memoize_1;
-var MAX_MEMOIZE_SIZE = 500;
-function memoizeCapped$1(func) {
-  var result = memoize$1(func, function(key) {
-    if (cache.size === MAX_MEMOIZE_SIZE) {
-      cache.clear();
-    }
-    return key;
-  });
-  var cache = result.cache;
-  return result;
-}
-var _memoizeCapped = memoizeCapped$1;
-var memoizeCapped = _memoizeCapped;
-var rePropName$1 = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
-var reEscapeChar$1 = /\\(\\)?/g;
-var stringToPath$2 = memoizeCapped(function(string) {
-  var result = [];
-  if (string.charCodeAt(0) === 46) {
-    result.push("");
-  }
-  string.replace(rePropName$1, function(match2, number2, quote2, subString) {
-    result.push(quote2 ? subString.replace(reEscapeChar$1, "$1") : number2 || match2);
-  });
-  return result;
-});
-var _stringToPath = stringToPath$2;
-function arrayMap$2(array, iteratee) {
-  var index2 = -1, length2 = array == null ? 0 : array.length, result = Array(length2);
-  while (++index2 < length2) {
-    result[index2] = iteratee(array[index2], index2, array);
-  }
-  return result;
-}
-var _arrayMap = arrayMap$2;
-var Symbol$1 = _Symbol$1, arrayMap$1 = _arrayMap, isArray$9 = isArray_1, isSymbol$3 = isSymbol_1;
-var INFINITY$1 = 1 / 0;
-var symbolProto = Symbol$1 ? Symbol$1.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0;
-function baseToString$1(value) {
-  if (typeof value == "string") {
-    return value;
-  }
-  if (isArray$9(value)) {
-    return arrayMap$1(value, baseToString$1) + "";
-  }
-  if (isSymbol$3(value)) {
-    return symbolToString ? symbolToString.call(value) : "";
-  }
-  var result = value + "";
-  return result == "0" && 1 / value == -INFINITY$1 ? "-0" : result;
-}
-var _baseToString = baseToString$1;
-var baseToString = _baseToString;
-function toString$2(value) {
-  return value == null ? "" : baseToString(value);
-}
-var toString_1 = toString$2;
-var isArray$8 = isArray_1, isKey$2 = _isKey, stringToPath$1 = _stringToPath, toString$1 = toString_1;
-function castPath$4(value, object) {
-  if (isArray$8(value)) {
-    return value;
-  }
-  return isKey$2(value, object) ? [value] : stringToPath$1(toString$1(value));
-}
-var _castPath = castPath$4;
-var isSymbol$2 = isSymbol_1;
-var INFINITY = 1 / 0;
-function toKey$5(value) {
-  if (typeof value == "string" || isSymbol$2(value)) {
-    return value;
-  }
-  var result = value + "";
-  return result == "0" && 1 / value == -INFINITY ? "-0" : result;
-}
-var _toKey = toKey$5;
-var castPath$3 = _castPath, toKey$4 = _toKey;
-function baseGet$3(object, path2) {
-  path2 = castPath$3(path2, object);
-  var index2 = 0, length2 = path2.length;
-  while (object != null && index2 < length2) {
-    object = object[toKey$4(path2[index2++])];
-  }
-  return index2 && index2 == length2 ? object : void 0;
-}
-var _baseGet = baseGet$3;
-var baseGet$2 = _baseGet;
-function get$2(object, path2, defaultValue2) {
-  var result = object == null ? void 0 : baseGet$2(object, path2);
-  return result === void 0 ? defaultValue2 : result;
-}
-var get_1 = get$2;
-function baseHasIn$1(object, key) {
-  return object != null && key in Object(object);
-}
-var _baseHasIn = baseHasIn$1;
-var castPath$2 = _castPath, isArguments = isArguments_1, isArray$7 = isArray_1, isIndex$1 = _isIndex, isLength = isLength_1, toKey$3 = _toKey;
-function hasPath$1(object, path2, hasFunc) {
-  path2 = castPath$2(path2, object);
-  var index2 = -1, length2 = path2.length, result = false;
-  while (++index2 < length2) {
-    var key = toKey$3(path2[index2]);
-    if (!(result = object != null && hasFunc(object, key))) {
-      break;
-    }
-    object = object[key];
-  }
-  if (result || ++index2 != length2) {
-    return result;
-  }
-  length2 = object == null ? 0 : object.length;
-  return !!length2 && isLength(length2) && isIndex$1(key, length2) && (isArray$7(object) || isArguments(object));
-}
-var _hasPath = hasPath$1;
-var baseHasIn = _baseHasIn, hasPath = _hasPath;
-function hasIn$1(object, path2) {
-  return object != null && hasPath(object, path2, baseHasIn);
-}
-var hasIn_1 = hasIn$1;
-var baseIsEqual = _baseIsEqual, get$1 = get_1, hasIn = hasIn_1, isKey$1 = _isKey, isStrictComparable = _isStrictComparable, matchesStrictComparable = _matchesStrictComparable, toKey$2 = _toKey;
-var COMPARE_PARTIAL_FLAG = 1, COMPARE_UNORDERED_FLAG = 2;
-function baseMatchesProperty$1(path2, srcValue) {
-  if (isKey$1(path2) && isStrictComparable(srcValue)) {
-    return matchesStrictComparable(toKey$2(path2), srcValue);
-  }
-  return function(object) {
-    var objValue = get$1(object, path2);
-    return objValue === void 0 && objValue === srcValue ? hasIn(object, path2) : baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG);
-  };
-}
-var _baseMatchesProperty = baseMatchesProperty$1;
-function identity$1(value) {
-  return value;
-}
-var identity_1 = identity$1;
-function baseProperty$1(key) {
-  return function(object) {
-    return object == null ? void 0 : object[key];
-  };
-}
-var _baseProperty = baseProperty$1;
-var baseGet$1 = _baseGet;
-function basePropertyDeep$1(path2) {
-  return function(object) {
-    return baseGet$1(object, path2);
-  };
-}
-var _basePropertyDeep = basePropertyDeep$1;
-var baseProperty = _baseProperty, basePropertyDeep = _basePropertyDeep, isKey = _isKey, toKey$1 = _toKey;
-function property$1(path2) {
-  return isKey(path2) ? baseProperty(toKey$1(path2)) : basePropertyDeep(path2);
-}
-var property_1 = property$1;
-var baseMatches = _baseMatches, baseMatchesProperty = _baseMatchesProperty, identity = identity_1, isArray$6 = isArray_1, property = property_1;
-function baseIteratee$2(value) {
-  if (typeof value == "function") {
-    return value;
-  }
-  if (value == null) {
-    return identity;
-  }
-  if (typeof value == "object") {
-    return isArray$6(value) ? baseMatchesProperty(value[0], value[1]) : baseMatches(value);
-  }
-  return property(value);
-}
-var _baseIteratee = baseIteratee$2;
-var FUNC_ERROR_TEXT$2 = "Expected a function";
-function negate$1(predicate) {
-  if (typeof predicate != "function") {
-    throw new TypeError(FUNC_ERROR_TEXT$2);
-  }
-  return function() {
-    var args = arguments;
-    switch (args.length) {
-      case 0:
-        return !predicate.call(this);
-      case 1:
-        return !predicate.call(this, args[0]);
-      case 2:
-        return !predicate.call(this, args[0], args[1]);
-      case 3:
-        return !predicate.call(this, args[0], args[1], args[2]);
-    }
-    return !predicate.apply(this, args);
-  };
-}
-var negate_1 = negate$1;
-var assignValue = _assignValue, castPath$1 = _castPath, isIndex = _isIndex, isObject$4 = isObject_1$1, toKey = _toKey;
-function baseSet$1(object, path2, value, customizer) {
-  if (!isObject$4(object)) {
-    return object;
-  }
-  path2 = castPath$1(path2, object);
-  var index2 = -1, length2 = path2.length, lastIndex = length2 - 1, nested = object;
-  while (nested != null && ++index2 < length2) {
-    var key = toKey(path2[index2]), newValue = value;
-    if (key === "__proto__" || key === "constructor" || key === "prototype") {
-      return object;
-    }
-    if (index2 != lastIndex) {
-      var objValue = nested[key];
-      newValue = customizer ? customizer(objValue, key, nested) : void 0;
-      if (newValue === void 0) {
-        newValue = isObject$4(objValue) ? objValue : isIndex(path2[index2 + 1]) ? [] : {};
-      }
-    }
-    assignValue(nested, key, newValue);
-    nested = nested[key];
-  }
-  return object;
-}
-var _baseSet = baseSet$1;
-var baseGet = _baseGet, baseSet = _baseSet, castPath = _castPath;
-function basePickBy$1(object, paths, predicate) {
-  var index2 = -1, length2 = paths.length, result = {};
-  while (++index2 < length2) {
-    var path2 = paths[index2], value = baseGet(object, path2);
-    if (predicate(value, path2)) {
-      baseSet(result, castPath(path2, object), value);
-    }
-  }
-  return result;
-}
-var _basePickBy = basePickBy$1;
-var arrayMap = _arrayMap, baseIteratee$1 = _baseIteratee, basePickBy = _basePickBy, getAllKeysIn = _getAllKeysIn;
-function pickBy$1(object, predicate) {
-  if (object == null) {
-    return {};
-  }
-  var props = arrayMap(getAllKeysIn(object), function(prop) {
-    return [prop];
-  });
-  predicate = baseIteratee$1(predicate);
-  return basePickBy(object, props, function(value, path2) {
-    return predicate(value, path2[0]);
-  });
-}
-var pickBy_1 = pickBy$1;
-var baseIteratee = _baseIteratee, negate = negate_1, pickBy = pickBy_1;
-function omitBy(object, predicate) {
-  return pickBy(object, negate(baseIteratee(predicate)));
-}
-var omitBy_1 = omitBy;
-const omitBy$1 = /* @__PURE__ */ getDefaultExportFromCjs(omitBy_1);
-function isUndefined$1(value) {
-  return value === void 0;
-}
-var isUndefined_1 = isUndefined$1;
-const isUndefined$2 = /* @__PURE__ */ getDefaultExportFromCjs(isUndefined_1);
-function generateTimelineObj(timeline, targetKey, duration) {
-  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
-  let currentDelay = 0;
-  const values = [];
-  const times = [];
-  for (const segment of timeline) {
-    const segmentDuration = segment.duration;
-    currentDelay += segmentDuration;
-    const { position: position2, scale, ...segmentValues } = segment;
-    values.push({ x: position2.x, y: position2.y, scaleX: scale.x, scaleY: scale.y, ...segmentValues });
-    if (duration !== 0) {
-      times.push(currentDelay / duration);
-    } else
-      times.push(0);
-  }
-  const container2 = target == null ? void 0 : target.pixiContainer;
-  let animateInstance = null;
-  if (duration > 0) {
-    animateInstance = animate({
-      to: values,
-      offset: times,
-      duration,
-      onUpdate: (updateValue) => {
-        if (container2) {
-          const { scaleX, scaleY, ...val } = updateValue;
-          Object.assign(container2, omitBy$1(val, isUndefined$2));
-          if (!isUndefined$2(scaleX))
-            container2.scale.x = scaleX;
-          if (!isUndefined$2(scaleY))
-            container2.scale.y = scaleY;
-        }
-      }
-    });
-  }
-  const { duration: sliceDuration, ...endState } = getEndStateEffect();
-  webgalStore.dispatch(stageActions.updateEffect({ target: targetKey, transform: endState }));
-  function setStartState() {
-    if (target == null ? void 0 : target.pixiContainer) {
-      const { position: position2, scale, ...state } = getStartStateEffect();
-      const assignValue2 = omitBy$1({ x: position2.x, y: position2.y, ...state }, isUndefined$2);
-      Object.assign(target == null ? void 0 : target.pixiContainer, assignValue2);
-      if (target == null ? void 0 : target.pixiContainer) {
-        if (!isUndefined$2(scale.x)) {
-          target.pixiContainer.scale.x = scale.x;
-        }
-        if (!isUndefined$2(scale == null ? void 0 : scale.y)) {
-          target.pixiContainer.scale.y = scale.y;
-        }
-      }
-    }
-  }
-  function setEndState() {
-    if (animateInstance)
-      animateInstance.stop();
-    animateInstance = null;
-    if (target == null ? void 0 : target.pixiContainer) {
-      const { position: position2, scale, ...state } = getEndStateEffect();
-      const assignValue2 = omitBy$1({ x: position2.x, y: position2.y, ...state }, isUndefined$2);
-      Object.assign(target == null ? void 0 : target.pixiContainer, assignValue2);
-      if (target == null ? void 0 : target.pixiContainer) {
-        if (!isUndefined$2(scale.x)) {
-          target.pixiContainer.scale.x = scale.x;
-        }
-        if (!isUndefined$2(scale == null ? void 0 : scale.y)) {
-          target.pixiContainer.scale.y = scale.y;
-        }
-      }
-    }
-  }
-  function tickerFunc(delta) {
-  }
-  function getStartStateEffect() {
-    return timeline[0];
-  }
-  function getEndStateEffect() {
-    return timeline[timeline.length - 1];
-  }
-  function getEndFilterEffect() {
-    const endSegment = timeline[timeline.length - 1];
-    const { alpha: alpha2, rotation, blur, duration: duration2, scale, position: position2, ...rest } = endSegment;
-    return rest;
-  }
-  return {
-    setStartState,
-    setEndState,
-    tickerFunc,
-    getEndFilterEffect
-  };
-}
-function getAnimationObject$2(animationName, target, duration) {
-  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
-  if (effect) {
-    const mappedEffects = effect.effects.map((effect2) => {
-      const targetSetEffect = webgalStore.getState().stage.effects.find((e2) => e2.target === target);
-      const newEffect = cloneDeep$1({ ...(targetSetEffect == null ? void 0 : targetSetEffect.transform) ?? baseTransform, duration: 0 });
-      Object.assign(newEffect, effect2);
-      newEffect.duration = effect2.duration;
-      return newEffect;
-    });
-    logger.debug("装载自定义动画", mappedEffects);
-    return generateTimelineObj(mappedEffects, target, duration);
-  }
-  return null;
-}
-function getAnimateDuration$1(animationName) {
-  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
-  if (effect) {
-    let duration = 0;
-    effect.effects.forEach((e2) => {
-      duration += e2.duration;
-    });
-    return duration;
-  }
-  return 0;
-}
-function getEnterExitAnimation(target, type2, isBg = false) {
-  if (type2 === "enter") {
-    let duration = 500;
-    if (isBg) {
-      duration = 1500;
-    }
-    let animation2 = generateUniversalSoftInAnimationObj(target, duration);
-    const animarionName = WebGAL.animationManager.nextEnterAnimationName.get(target);
-    if (animarionName) {
-      logger.debug("取代默认进入动画", target);
-      animation2 = getAnimationObject$2(animarionName, target, getAnimateDuration$1(animarionName));
-      duration = getAnimateDuration$1(animarionName);
-      WebGAL.animationManager.nextEnterAnimationName.delete(target);
-    }
-    return { duration, animation: animation2 };
-  } else {
-    let duration = 750;
-    if (isBg) {
-      duration = 1500;
-    }
-    let animation2 = generateUniversalSoftOffAnimationObj(target, duration);
-    const animarionName = WebGAL.animationManager.nextExitAnimationName.get(target);
-    if (animarionName) {
-      logger.debug("取代默认退出动画", target);
-      animation2 = getAnimationObject$2(animarionName, target, getAnimateDuration$1(animarionName));
-      duration = getAnimateDuration$1(animarionName);
-      WebGAL.animationManager.nextExitAnimationName.delete(target);
-    }
-    return { duration, animation: animation2 };
-  }
-}
-const changeBg = (sentence) => {
-  const url2 = sentence.content;
-  let name = "";
-  let series = "default";
-  sentence.args.forEach((e2) => {
-    if (e2.key === "unlockname") {
-      name = e2.value.toString();
-    }
-    if (e2.key === "series") {
-      series = e2.value.toString();
-    }
-  });
-  const dispatch = webgalStore.dispatch;
-  if (name !== "")
-    dispatch(unlockCgInUserData({ name, url: url2, series }));
-  dispatch(stageActions.removeEffectByTargetId(`bg-main`));
-  const transformString = getSentenceArgByKey(sentence, "transform");
-  let duration = getSentenceArgByKey(sentence, "duration");
-  if (!duration || typeof duration !== "number") {
-    duration = 1e3;
-  }
-  let animationObj;
-  if (transformString) {
-    try {
-      const frame2 = JSON.parse(transformString.toString());
-      animationObj = generateTransformAnimationObj("bg-main", frame2, duration);
-      animationObj[0].alpha = 0;
-      const animationName = (Math.random() * 10).toString(16);
-      const newAnimation = { name: animationName, effects: animationObj };
-      WebGAL.animationManager.addAnimation(newAnimation);
-      duration = getAnimateDuration$1(animationName);
-      WebGAL.animationManager.nextEnterAnimationName.set("bg-main", animationName);
-    } catch (e2) {
-      applyDefaultTransform();
-    }
-  } else {
-    applyDefaultTransform();
-  }
-  function applyDefaultTransform() {
-    const frame2 = {};
-    animationObj = generateTransformAnimationObj("bg-main", frame2, duration);
-    animationObj[0].alpha = 0;
-    const animationName = (Math.random() * 10).toString(16);
-    const newAnimation = { name: animationName, effects: animationObj };
-    WebGAL.animationManager.addAnimation(newAnimation);
-    duration = getAnimateDuration$1(animationName);
-    WebGAL.animationManager.nextEnterAnimationName.set("bg-main", animationName);
-  }
-  if (getSentenceArgByKey(sentence, "enter")) {
-    WebGAL.animationManager.nextEnterAnimationName.set("bg-main", getSentenceArgByKey(sentence, "enter").toString());
-    duration = getAnimateDuration$1(getSentenceArgByKey(sentence, "enter").toString());
-  }
-  if (getSentenceArgByKey(sentence, "exit")) {
-    WebGAL.animationManager.nextExitAnimationName.set("bg-main-off", getSentenceArgByKey(sentence, "exit").toString());
-    duration = getAnimateDuration$1(getSentenceArgByKey(sentence, "exit").toString());
-  }
-  dispatch(setStage({ key: "bgName", value: sentence.content }));
-  return {
-    performName: "none",
-    duration,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function changeFigure(sentence) {
-  let pos = "center";
-  let content = sentence.content;
-  let isFreeFigure = false;
-  let motion = "";
-  let expression = "";
-  let key = "";
-  let duration = 500;
-  let mouthOpen = "";
-  let mouthClose = "";
-  let mouthHalfOpen = "";
-  let eyesOpen = "";
-  let eyesClose = "";
-  let animationFlag = "";
-  const dispatch = webgalStore.dispatch;
-  for (const e2 of sentence.args) {
-    switch (e2.key) {
-      case "left":
-        if (e2.value === true) {
-          pos = "left";
-        }
-        break;
-      case "right":
-        if (e2.value === true) {
-          pos = "right";
-        }
-        break;
-      case "clear":
-        if (e2.value === true) {
-          content = "";
-        }
-        break;
-      case "id":
-        isFreeFigure = true;
-        key = e2.value.toString();
-        break;
-      case "motion":
-        motion = e2.value.toString();
-        break;
-      case "expression":
-        expression = e2.value.toString();
-        break;
-      case "mouthOpen":
-        mouthOpen = e2.value.toString();
-        mouthOpen = assetSetter(mouthOpen, fileType$1.figure);
-        break;
-      case "mouthClose":
-        mouthClose = e2.value.toString();
-        mouthClose = assetSetter(mouthClose, fileType$1.figure);
-        break;
-      case "mouthHalfOpen":
-        mouthHalfOpen = e2.value.toString();
-        mouthHalfOpen = assetSetter(mouthHalfOpen, fileType$1.figure);
-        break;
-      case "eyesOpen":
-        eyesOpen = e2.value.toString();
-        eyesOpen = assetSetter(eyesOpen, fileType$1.figure);
-        break;
-      case "eyesClose":
-        eyesClose = e2.value.toString();
-        eyesClose = assetSetter(eyesClose, fileType$1.figure);
-        break;
-      case "animationFlag":
-        animationFlag = e2.value.toString();
-        break;
-      case "none":
-        content = "";
-        break;
-    }
-  }
-  const id2 = key ? key : `fig-${pos}`;
-  const currentFigureAssociatedAnimation = webgalStore.getState().stage.figureAssociatedAnimation;
-  const filteredFigureAssociatedAnimation = currentFigureAssociatedAnimation.filter((item) => item.targetId !== id2);
-  const newFigureAssociatedAnimationItem = {
-    targetId: id2,
-    animationFlag,
-    mouthAnimation: {
-      open: mouthOpen,
-      close: mouthClose,
-      halfOpen: mouthHalfOpen
-    },
-    blinkAnimation: {
-      open: eyesOpen,
-      close: eyesClose
-    }
-  };
-  filteredFigureAssociatedAnimation.push(newFigureAssociatedAnimationItem);
-  dispatch(setStage({ key: "figureAssociatedAnimation", value: filteredFigureAssociatedAnimation }));
-  let isRemoveEffects = true;
-  if (key !== "") {
-    const figWithKey = webgalStore.getState().stage.freeFigure.find((e2) => e2.key === key);
-    if (figWithKey) {
-      if (figWithKey.name === sentence.content) {
-        isRemoveEffects = false;
-      }
-    }
-  } else {
-    if (pos === "center") {
-      if (webgalStore.getState().stage.figName === sentence.content) {
-        isRemoveEffects = false;
-      }
-    }
-    if (pos === "left") {
-      if (webgalStore.getState().stage.figNameLeft === sentence.content) {
-        isRemoveEffects = false;
-      }
-    }
-    if (pos === "right") {
-      if (webgalStore.getState().stage.figNameRight === sentence.content) {
-        isRemoveEffects = false;
-      }
-    }
-  }
-  if (isRemoveEffects) {
-    const deleteKey = `fig-${pos}`;
-    const deleteKey2 = `${key}`;
-    webgalStore.dispatch(stageActions.removeEffectByTargetId(deleteKey));
-    webgalStore.dispatch(stageActions.removeEffectByTargetId(deleteKey2));
-  }
-  const setAnimationNames = (key2, sentence2) => {
-    const transformString = getSentenceArgByKey(sentence2, "transform");
-    const durationFromArg = getSentenceArgByKey(sentence2, "duration");
-    if (durationFromArg && typeof durationFromArg === "number") {
-      duration = durationFromArg;
-    }
-    let animationObj;
-    if (transformString) {
-      console.log(transformString);
-      try {
-        const frame2 = JSON.parse(transformString.toString());
-        animationObj = generateTransformAnimationObj(key2, frame2, duration);
-        animationObj[0].alpha = 0;
-        const animationName = (Math.random() * 10).toString(16);
-        const newAnimation = { name: animationName, effects: animationObj };
-        WebGAL.animationManager.addAnimation(newAnimation);
-        duration = getAnimateDuration$1(animationName);
-        WebGAL.animationManager.nextEnterAnimationName.set(key2, animationName);
-      } catch (e2) {
-        applyDefaultTransform();
-      }
-    } else {
-      applyDefaultTransform();
-    }
-    function applyDefaultTransform() {
-      const frame2 = {};
-      animationObj = generateTransformAnimationObj(key2, frame2, duration);
-      animationObj[0].alpha = 0;
-      const animationName = (Math.random() * 10).toString(16);
-      const newAnimation = { name: animationName, effects: animationObj };
-      WebGAL.animationManager.addAnimation(newAnimation);
-      duration = getAnimateDuration$1(animationName);
-      WebGAL.animationManager.nextEnterAnimationName.set(key2, animationName);
-    }
-    const enterAnim = getSentenceArgByKey(sentence2, "enter");
-    const exitAnim = getSentenceArgByKey(sentence2, "exit");
-    if (enterAnim) {
-      WebGAL.animationManager.nextEnterAnimationName.set(key2, enterAnim.toString());
-      duration = getAnimateDuration$1(enterAnim.toString());
-    }
-    if (exitAnim) {
-      WebGAL.animationManager.nextExitAnimationName.set(key2 + "-off", exitAnim.toString());
-      duration = getAnimateDuration$1(exitAnim.toString());
-    }
-  };
-  if (isFreeFigure) {
-    webgalStore.getState().stage.freeFigure;
-    const freeFigureItem = { key, name: content, basePosition: pos };
-    setAnimationNames(key, sentence);
-    if (motion) {
-      dispatch(stageActions.setLive2dMotion({ target: key, motion }));
-    }
-    if (expression) {
-      dispatch(stageActions.setLive2dExpression({ target: key, expression }));
-    }
-    dispatch(stageActions.setFreeFigureByKey(freeFigureItem));
-  } else {
-    const positionMap = {
-      center: "fig-center",
-      left: "fig-left",
-      right: "fig-right"
-    };
-    const dispatchMap = {
-      center: "figName",
-      left: "figNameLeft",
-      right: "figNameRight"
-    };
-    key = positionMap[pos];
-    setAnimationNames(key, sentence);
-    if (motion) {
-      dispatch(stageActions.setLive2dMotion({ target: key, motion }));
-    }
-    if (expression) {
-      dispatch(stageActions.setLive2dExpression({ target: key, expression }));
-    }
-    dispatch(setStage({ key: dispatchMap[pos], value: content }));
-  }
-  return {
-    performName: "none",
-    duration,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => false,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-}
-const changeScene = (sceneUrl, sceneName) => {
-  sceneFetcher(sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, sceneName, sceneUrl);
-    WebGAL.sceneManager.sceneData.currentSentenceId = 0;
-    const currentSceneVideos = [];
-    WebGAL.sceneManager.sceneData.currentScene.assetsList.forEach((x) => {
-      if (x.url.endsWith(".mp4") || x.url.endsWith(".flv")) {
-        currentSceneVideos.push(x.url);
-      }
-    });
-    WebGAL.videoManager.destoryExcept(currentSceneVideos);
-    const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
-    WebGAL.sceneManager.settledScenes.push(sceneUrl);
-    const subSceneListUniq = uniqWith$1(subSceneList);
-    scenePrefetcher(subSceneListUniq);
-    logger.debug("现在切换场景，切换后的结果：", WebGAL.sceneManager.sceneData);
-    nextSentence();
-  });
-};
-const changeSceneScript = (sentence) => {
-  const sceneNameArray = sentence.content.split("/");
-  const sceneName = sceneNameArray[sceneNameArray.length - 1];
-  changeScene(sentence.content, sceneName);
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: true,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const jmp = (labelName) => {
-  const currentLine = WebGAL.sceneManager.sceneData.currentSentenceId;
-  let result = currentLine;
-  WebGAL.sceneManager.sceneData.currentScene.sentenceList.forEach((sentence, index2) => {
-    if (sentence.command === commandType$1.label && sentence.content === labelName && index2 !== currentLine) {
-      result = index2;
-    }
-  });
-  WebGAL.sceneManager.sceneData.currentSentenceId = result;
-  setTimeout(nextSentence, 1);
-};
-const Choose_Main$1 = "_Choose_Main_o52on_1";
-const Choose_item$1 = "_Choose_item_o52on_13";
-const Choose_item_image = "_Choose_item_image_o52on_30";
-const Choose_item_countdown = "_Choose_item_countdown_o52on_45";
-const Choose_item_progress_bar = "_Choose_item_progress_bar_o52on_52";
-const Choose_item_disabled = "_Choose_item_disabled_o52on_61";
-const styles$m = {
-  Choose_Main: Choose_Main$1,
-  Choose_item: Choose_item$1,
-  Choose_item_image,
-  Choose_item_countdown,
-  Choose_item_progress_bar,
-  Choose_item_disabled
-};
-const page_flip_1 = "" + new URL("page-flip-1-7df32409.mp3", import.meta.url).href;
-const switch_1 = "" + new URL("switch-1-99b576bc.mp3", import.meta.url).href;
-const mouse_enter = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjE0LjEwMAAAAAAAAAAAAAAA//OAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAHAAAGhgA/Pz8/Pz8/Pz8/Pz8/P19fX19fX19fX19fX19ff39/f39/f39/f39/f3+fn5+fn5+fn5+fn5+fn5+/v7+/v7+/v7+/v7+/v9/f39/f39/f39/f39/f//////////////////8AAAAATGF2YzU3LjE1AAAAAAAAAAAAAAAAJAAAAAAAAAAABoYV32R7AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/zgGQAAAABpAAAAAAAAANIAAAAACADH/+QtN3NAAAKF6IiVEl7hE0Sv/+XsgGgCgQDQFAgGg3D+yBShQzd+K0qXyBQyRQUp3hEkUMGn/8oCBQ5KOIf+sPl3//+Xf/+GP//6w+EgFgk/nOfWhA4Q4ABxjnQhDhCD3pgIQLAARlkyZ8Ew+Ud1AgUOfy7/4OeGOUORPD//wwUd/KHP//+GPykMA445BCHBIYg4ZC4AyGP+PuWtgyRb6quwuJvp+v8wQwDAKoXYMnpC0w6gAc0HLf/84JkuwnkuN6ioaAAD3CpsVVFMAAFQBkWjRnE4hYMOnIaT5sXEGFHCyMLPhfcDTHTUmRcgnQMuCfCKHjcDRlTchxFTcEHsKGiBNQ6mLhLkNImWi8PkY6s3kUWgaJmjd1igSfFzk+gLLIOcMi4gXyupR9A20G/4zAhOJ/PDgGYKI4y4LMEEBYhnUz1lpozrmZk3//lsky4s+TB4ul8ny6YOV0FmRx0ElHlMbNWYOr///1uZFQ3IGRNBRmfWlRUYkeV8mVhC5j/+UOiwF4DdcGgB//zgmTqHCnhQS/NUAGcStp6X4JQAARBgQCDIwGbMjrzxBIRk8s4+IS7mMEYN4elXLheFicbuxm88zzzHaw/G//9DCJ+eYRf8WGFtZp9ydCUvPMKGf/57ZjPRjzHtq+3//+YZ2U8817jxbb1vcn/1yAPkAgGUJuPiliw1FHilYbAAkIkV4CdGauxnChrTd+JTOW4BTlAB55YoeqaxWm7Wv8xLqLOiiZLUixqapJF5JNAcoviEoN2gAwAUcLiN5Mk6i3TRU+ikk++6KKKTqSKyBsx//OCZFMVigU/GuzMAIuQEq5fwxACNMZGRPKvoqXbR0UbJP11I0t9J/SqSrRZ0lXoqetSTnWoto0kl26LJGJqizoJmtJSSNSWk7WdTpXUkiigbVor9K6lpKSrdFNi8gnstA65dQVWxkXlGyTGRiRt9gUkBwgAggllBkQbKigffEMUfzqlL+6Ruli5Bv+4lPf//////X/////o0Wte9XLYBs4JbHGkwql7GrPNPMusqAJDUPzthoURwGi5eZyu+VuecNrURSYBU/p8//81Vf+Znkn/84JkNA4gwTcvDYYmF1lmTbAzByQpycp3ROJPn025p4SQJoSeFQoViUUAoiJFRL3c8JRUNETudLFn0MtLDwrM4lUeOiJtiztbvBk6xyPrctYdEkBpA09q2Xn9/TmkZxYMuXBUW17I4clP/nKrXbW/C6FI5G0z11z31L9fvGqoAzY1X86WwYUHIdWCvLEwkeEq3kQ7iI8MPM/ssO/8OnlHsFW1nWeCvyzwVOtEvHuyqv/8hOYSETL//NtNaySXOSsAqIiRrkS82UvXUvppbobMbv/zgmQhC0HzBAAEwpKVEO4JYAjTIJ/y/0egY3vXWaZv65cpZm36G/mMUpdalcpStzalb1KXUoUBf8pXKyGM5Sv/TRRPKoUSQMYKTJfSwiUDeW+ZhhmIXNYfiyfSbiqFFLNEQaajFVnrO9YLTodKvET9Z0FcSgq6s6eIz3uLcFQmCxJY06W/g0Cri31AqGrq56EgaXxLPCUNdBZ5USrBUse3BqpNF93yP//yMyMDWEJGQ01////MjMv//I1kcjJrLf/stlzL55SkyyOX5q0cjVrL//OCZC4KtfrOGgAjbodYBawMAEQAYf//+Rk1qGRqygo5GRq1sP/sln//cyNWCg0cj//ZZZZKh+asCHP8lAL////9n/////////GMYm3raaWKige/+sW+LesVTEFNRTMuOTkuNaqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=";
-const dialog_se = "" + new URL("dialog-d5b91235.mp3", import.meta.url).href;
-const click_se = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjIzLjEwMQAAAAAAAAAAAAAA//OAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAHAAAGhgA/Pz8/Pz8/Pz8/Pz8/P19fX19fX19fX19fX19ff39/f39/f39/f39/f3+fn5+fn5+fn5+fn5+fn5+/v7+/v7+/v7+/v7+/v9/f39/f39/f39/f39/f//////////////////8AAAAATGF2YzU4LjQwAAAAAAAAAAAAAAAAJAL7AAAAAAAABobgvJxkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/zgGQADLH/PRigiACM0AZ+XUAQAoAVYA9AY3IAASAgeRjeQMhP0O/nec/1cn+Qnv/8n+RuhGUhPoQDPISc6HP1Oec7+pwAROeQikI3IT////z+p3Q56VOd/nOc5JzyAAhQAAI053QDFnoQjKACGvoQ7yThzoBgZ8ADMJQURtuNAkMH4P4P+XOZD4f5d/D/64f/3co7/8H8u/wQ5R3/+sPiN8TvB95SDgYT/yjgQf+mpbd5dJrdLkpewIOA5GsDQUQZnZzSB6Q1U50Guqy9OaH/84JkIg/hbXkux6gBEfpLBx+SKAZQvxWLwbxAAoJRbMJjWBoPcgIzjpzzz2clFsxj0ITlVELLXdjzyg8Q3UoM0PPct+QCw/6D5KMrNmLdXOUnPRjXJ3nMYVFVfnfdzf//q//MR+Q/8uwB0uyB/lVHlY6YhEIGR4cHYHAcAZwSQAJAcAocdAxoAMh6L1HV969TxECi7iHlYn7jW//an//+JXU5/9v4l//6EM3f83/41j3///+ozd63/9C2p2W2W22i0Mq2OVytAvxB06nWCVQIZP/zgmQXD4W5ey/HqAEQUkbOR4koAmYRklcoUe+Yd1AuC8AHmsVSoIxFCwPh6RI8ajdB8807yw/JxoLbsai/djzjScCv+Q/lARCSFyRC8hIFYZkF06Dv//MLs5zV+edqzv6krdvP9V/yO3p66H//n73UnMetFzzx4P/MNxBOVut0AFwIAARCgysYSXL+VO2TXhMWBADVCKKhQmjLmX/////0/P+rf7f///29++FO9LfYWYp//Z9n/yHlg30VsPil34MMSQVrYqfLAYVacpCtK1Oq//OCZBUPGaFC3+e0AA8ZVoZdyxAA2az68kOa28sO3puYoqNkUTUxnD6CKnSNlGTJJositaK2TdJSb2NWSX/SSScyDlAnQ6myTv/1X0aJePGZqjnT1FL6v9SRkXW/dVaKP6VaKLOv//+r//X/ZzF06dSFLuv/1B0aZUKwhImgCMAB2aHaUe7x55QPP/rp3zyZZf/VkdS3RFZ3m/9H//iSCn/1Qaev/0CVH3+oO1P///1t+j//9KoPL7QDcAaC4x+83dEEEvXL3vljkRVf5ZqiVpT/84JkGw5BSSx+MMpOEjoual7AxBzqOG5mzBJL6c7URxGtROS/Zu8vMwc2/naKcgTgLi5R79f/ZSUVjWOSaa1aHK5xM/apQnJHJUuTbXQ5VN09HRzSUNfirDtAVBYCwdfpJmYrjDVue/9pJZFMiSvSUMuMAg40uvlBXQECFUh3VKcOGoUBJAurXLsY3+xpv///1aZAwAP///yghpkdW/5qt8OMEMKKg7/pDn///h1/Ues6P/xLEaAkoyibeSeC8E+AuhymiEos8tLHJNRoThxKnP/zgmQcDD0TFAk8xToRuh4sCGgPKooy1Y8s/q2X/ZH//6tqJAEEQwRKxjI9y1KWWqPDw8awiKqQPPob/pRUDwAioCEtX9R7/9eGlncrLPLBVgKmRZ+GpD/tqEogdIXwLlNkUnUxiamSS0W/ooqUlrot//zUCIHRc05Zrqaabod86PDZv/+b/UamAIGjTP+W/879s9liLSrmCVxXgq7xL+RKoQZ+UAAwBYQh4Rig2ZaVmytcNUuiO5/zP8jP1/+VMy/1RygyCgEMDDLv4CCZF3/S//OCZC8JaK7qfiQiTgxILdAAYYYEEhVLrP///S1HoCosaCoCCYZrZUSBkQDwESH/WkJSAZjByJI0oE4Z/////4FCQeBkVZ/xX/zIsRd/6hf7X//4qSfqwEEiLv1ciEyISQKqTEFNRTMuMTAwqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=";
-var shim = { exports: {} };
-var useSyncExternalStoreShim_production_min = {};
-/**
- * @license React
- * use-sync-external-store-shim.production.min.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-var e$3 = reactExports;
-function h$3(a2, b2) {
-  return a2 === b2 && (0 !== a2 || 1 / a2 === 1 / b2) || a2 !== a2 && b2 !== b2;
-}
-var k$2 = "function" === typeof Object.is ? Object.is : h$3, l$2 = e$3.useState, m$2 = e$3.useEffect, n$4 = e$3.useLayoutEffect, p$4 = e$3.useDebugValue;
-function q$3(a2, b2) {
-  var d2 = b2(), f2 = l$2({ inst: { value: d2, getSnapshot: b2 } }), c2 = f2[0].inst, g2 = f2[1];
-  n$4(function() {
-    c2.value = d2;
-    c2.getSnapshot = b2;
-    r$3(c2) && g2({ inst: c2 });
-  }, [a2, d2, b2]);
-  m$2(function() {
-    r$3(c2) && g2({ inst: c2 });
-    return a2(function() {
-      r$3(c2) && g2({ inst: c2 });
-    });
-  }, [a2]);
-  p$4(d2);
-  return d2;
-}
-function r$3(a2) {
-  var b2 = a2.getSnapshot;
-  a2 = a2.value;
-  try {
-    var d2 = b2();
-    return !k$2(a2, d2);
-  } catch (f2) {
-    return true;
-  }
-}
-function t$4(a2, b2) {
-  return b2();
-}
-var u$3 = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? t$4 : q$3;
-useSyncExternalStoreShim_production_min.useSyncExternalStore = void 0 !== e$3.useSyncExternalStore ? e$3.useSyncExternalStore : u$3;
-{
-  shim.exports = useSyncExternalStoreShim_production_min;
-}
-var shimExports = shim.exports;
-var withSelector = { exports: {} };
-var withSelector_production_min = {};
-/**
- * @license React
- * use-sync-external-store-shim/with-selector.production.min.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-var h$2 = reactExports, n$3 = shimExports;
-function p$3(a2, b2) {
-  return a2 === b2 && (0 !== a2 || 1 / a2 === 1 / b2) || a2 !== a2 && b2 !== b2;
-}
-var q$2 = "function" === typeof Object.is ? Object.is : p$3, r$2 = n$3.useSyncExternalStore, t$3 = h$2.useRef, u$2 = h$2.useEffect, v$2 = h$2.useMemo, w$1 = h$2.useDebugValue;
-withSelector_production_min.useSyncExternalStoreWithSelector = function(a2, b2, e2, l2, g2) {
-  var c2 = t$3(null);
-  if (null === c2.current) {
-    var f2 = { hasValue: false, value: null };
-    c2.current = f2;
-  } else
-    f2 = c2.current;
-  c2 = v$2(function() {
-    function a3(a4) {
-      if (!c3) {
-        c3 = true;
-        d3 = a4;
-        a4 = l2(a4);
-        if (void 0 !== g2 && f2.hasValue) {
-          var b3 = f2.value;
-          if (g2(b3, a4))
-            return k2 = b3;
-        }
-        return k2 = a4;
-      }
-      b3 = k2;
-      if (q$2(d3, a4))
-        return b3;
-      var e3 = l2(a4);
-      if (void 0 !== g2 && g2(b3, e3))
-        return b3;
-      d3 = a4;
-      return k2 = e3;
-    }
-    var c3 = false, d3, k2, m2 = void 0 === e2 ? null : e2;
-    return [function() {
-      return a3(b2());
-    }, null === m2 ? void 0 : function() {
-      return a3(m2());
-    }];
-  }, [b2, e2, l2, g2]);
-  var d2 = r$2(a2, c2[0], c2[1]);
-  u$2(function() {
-    f2.hasValue = true;
-    f2.value = d2;
-  }, [d2]);
-  w$1(d2);
-  return d2;
-};
-{
-  withSelector.exports = withSelector_production_min;
-}
-var withSelectorExports = withSelector.exports;
-function defaultNoopBatch(callback) {
-  callback();
-}
-let batch = defaultNoopBatch;
-const setBatch = (newBatch) => batch = newBatch;
-const getBatch = () => batch;
-const ContextKey = Symbol.for(`react-redux-context`);
-const gT = typeof globalThis !== "undefined" ? globalThis : (
-  /* fall back to a per-module scope (pre-8.1 behaviour) if `globalThis` is not available */
-  {}
-);
-function getContext() {
-  var _gT$ContextKey;
-  if (!reactExports.createContext)
-    return {};
-  const contextMap = (_gT$ContextKey = gT[ContextKey]) != null ? _gT$ContextKey : gT[ContextKey] = /* @__PURE__ */ new Map();
-  let realContext = contextMap.get(reactExports.createContext);
-  if (!realContext) {
-    realContext = reactExports.createContext(null);
-    contextMap.set(reactExports.createContext, realContext);
-  }
-  return realContext;
-}
-const ReactReduxContext = /* @__PURE__ */ getContext();
-function createReduxContextHook(context2 = ReactReduxContext) {
-  return function useReduxContext2() {
-    const contextValue = reactExports.useContext(context2);
-    return contextValue;
-  };
-}
-const useReduxContext = /* @__PURE__ */ createReduxContextHook();
-const notInitialized = () => {
-  throw new Error("uSES not initialized!");
-};
-let useSyncExternalStoreWithSelector = notInitialized;
-const initializeUseSelector = (fn2) => {
-  useSyncExternalStoreWithSelector = fn2;
-};
-const refEquality = (a2, b2) => a2 === b2;
-function createSelectorHook(context2 = ReactReduxContext) {
-  const useReduxContext$1 = context2 === ReactReduxContext ? useReduxContext : createReduxContextHook(context2);
-  return function useSelector2(selector, equalityFnOrOptions = {}) {
-    const {
-      equalityFn = refEquality,
-      stabilityCheck = void 0,
-      noopCheck = void 0
-    } = typeof equalityFnOrOptions === "function" ? {
-      equalityFn: equalityFnOrOptions
-    } : equalityFnOrOptions;
-    const {
-      store,
-      subscription,
-      getServerState,
-      stabilityCheck: globalStabilityCheck,
-      noopCheck: globalNoopCheck
-    } = useReduxContext$1();
-    reactExports.useRef(true);
-    const wrappedSelector = reactExports.useCallback({
-      [selector.name](state) {
-        const selected = selector(state);
-        return selected;
-      }
-    }[selector.name], [selector, globalStabilityCheck, stabilityCheck]);
-    const selectedState = useSyncExternalStoreWithSelector(subscription.addNestedSub, store.getState, getServerState || store.getState, wrappedSelector, equalityFn);
-    reactExports.useDebugValue(selectedState);
-    return selectedState;
-  };
-}
-const useSelector = /* @__PURE__ */ createSelectorHook();
-function _objectWithoutPropertiesLoose$1(source, excluded) {
-  if (source == null)
-    return {};
-  var target = {};
-  var sourceKeys = Object.keys(source);
-  var key, i2;
-  for (i2 = 0; i2 < sourceKeys.length; i2++) {
-    key = sourceKeys[i2];
-    if (excluded.indexOf(key) >= 0)
-      continue;
-    target[key] = source[key];
-  }
-  return target;
-}
-var reactIs$1 = { exports: {} };
-var reactIs_production_min$1 = {};
-/** @license React v16.13.1
- * react-is.production.min.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-var b$1 = "function" === typeof Symbol && Symbol.for, c$2 = b$1 ? Symbol.for("react.element") : 60103, d$1 = b$1 ? Symbol.for("react.portal") : 60106, e$2 = b$1 ? Symbol.for("react.fragment") : 60107, f$1 = b$1 ? Symbol.for("react.strict_mode") : 60108, g$1 = b$1 ? Symbol.for("react.profiler") : 60114, h$1 = b$1 ? Symbol.for("react.provider") : 60109, k$1 = b$1 ? Symbol.for("react.context") : 60110, l$1 = b$1 ? Symbol.for("react.async_mode") : 60111, m$1 = b$1 ? Symbol.for("react.concurrent_mode") : 60111, n$2 = b$1 ? Symbol.for("react.forward_ref") : 60112, p$2 = b$1 ? Symbol.for("react.suspense") : 60113, q$1 = b$1 ? Symbol.for("react.suspense_list") : 60120, r$1 = b$1 ? Symbol.for("react.memo") : 60115, t$2 = b$1 ? Symbol.for("react.lazy") : 60116, v$1 = b$1 ? Symbol.for("react.block") : 60121, w = b$1 ? Symbol.for("react.fundamental") : 60117, x$1 = b$1 ? Symbol.for("react.responder") : 60118, y = b$1 ? Symbol.for("react.scope") : 60119;
-function z(a2) {
-  if ("object" === typeof a2 && null !== a2) {
-    var u2 = a2.$$typeof;
-    switch (u2) {
-      case c$2:
-        switch (a2 = a2.type, a2) {
-          case l$1:
-          case m$1:
-          case e$2:
-          case g$1:
-          case f$1:
-          case p$2:
-            return a2;
-          default:
-            switch (a2 = a2 && a2.$$typeof, a2) {
-              case k$1:
-              case n$2:
-              case t$2:
-              case r$1:
-              case h$1:
-                return a2;
-              default:
-                return u2;
-            }
-        }
-      case d$1:
-        return u2;
-    }
-  }
-}
-function A(a2) {
-  return z(a2) === m$1;
-}
-reactIs_production_min$1.AsyncMode = l$1;
-reactIs_production_min$1.ConcurrentMode = m$1;
-reactIs_production_min$1.ContextConsumer = k$1;
-reactIs_production_min$1.ContextProvider = h$1;
-reactIs_production_min$1.Element = c$2;
-reactIs_production_min$1.ForwardRef = n$2;
-reactIs_production_min$1.Fragment = e$2;
-reactIs_production_min$1.Lazy = t$2;
-reactIs_production_min$1.Memo = r$1;
-reactIs_production_min$1.Portal = d$1;
-reactIs_production_min$1.Profiler = g$1;
-reactIs_production_min$1.StrictMode = f$1;
-reactIs_production_min$1.Suspense = p$2;
-reactIs_production_min$1.isAsyncMode = function(a2) {
-  return A(a2) || z(a2) === l$1;
-};
-reactIs_production_min$1.isConcurrentMode = A;
-reactIs_production_min$1.isContextConsumer = function(a2) {
-  return z(a2) === k$1;
-};
-reactIs_production_min$1.isContextProvider = function(a2) {
-  return z(a2) === h$1;
-};
-reactIs_production_min$1.isElement = function(a2) {
-  return "object" === typeof a2 && null !== a2 && a2.$$typeof === c$2;
-};
-reactIs_production_min$1.isForwardRef = function(a2) {
-  return z(a2) === n$2;
-};
-reactIs_production_min$1.isFragment = function(a2) {
-  return z(a2) === e$2;
-};
-reactIs_production_min$1.isLazy = function(a2) {
-  return z(a2) === t$2;
-};
-reactIs_production_min$1.isMemo = function(a2) {
-  return z(a2) === r$1;
-};
-reactIs_production_min$1.isPortal = function(a2) {
-  return z(a2) === d$1;
-};
-reactIs_production_min$1.isProfiler = function(a2) {
-  return z(a2) === g$1;
-};
-reactIs_production_min$1.isStrictMode = function(a2) {
-  return z(a2) === f$1;
-};
-reactIs_production_min$1.isSuspense = function(a2) {
-  return z(a2) === p$2;
-};
-reactIs_production_min$1.isValidElementType = function(a2) {
-  return "string" === typeof a2 || "function" === typeof a2 || a2 === e$2 || a2 === m$1 || a2 === g$1 || a2 === f$1 || a2 === p$2 || a2 === q$1 || "object" === typeof a2 && null !== a2 && (a2.$$typeof === t$2 || a2.$$typeof === r$1 || a2.$$typeof === h$1 || a2.$$typeof === k$1 || a2.$$typeof === n$2 || a2.$$typeof === w || a2.$$typeof === x$1 || a2.$$typeof === y || a2.$$typeof === v$1);
-};
-reactIs_production_min$1.typeOf = z;
-{
-  reactIs$1.exports = reactIs_production_min$1;
-}
-var reactIsExports = reactIs$1.exports;
-var reactIs = reactIsExports;
-var FORWARD_REF_STATICS = {
-  "$$typeof": true,
-  render: true,
-  defaultProps: true,
-  displayName: true,
-  propTypes: true
-};
-var MEMO_STATICS = {
-  "$$typeof": true,
-  compare: true,
-  defaultProps: true,
-  displayName: true,
-  propTypes: true,
-  type: true
-};
-var TYPE_STATICS = {};
-TYPE_STATICS[reactIs.ForwardRef] = FORWARD_REF_STATICS;
-TYPE_STATICS[reactIs.Memo] = MEMO_STATICS;
-var reactIs_production_min = {};
-/**
- * @license React
- * react-is.production.min.js
- *
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-var b = Symbol.for("react.element"), c$1 = Symbol.for("react.portal"), d = Symbol.for("react.fragment"), e$1 = Symbol.for("react.strict_mode"), f = Symbol.for("react.profiler"), g = Symbol.for("react.provider"), h = Symbol.for("react.context"), k = Symbol.for("react.server_context"), l = Symbol.for("react.forward_ref"), m = Symbol.for("react.suspense"), n$1 = Symbol.for("react.suspense_list"), p$1 = Symbol.for("react.memo"), q = Symbol.for("react.lazy"), t$1 = Symbol.for("react.offscreen"), u$1;
-u$1 = Symbol.for("react.module.reference");
-function v(a2) {
-  if ("object" === typeof a2 && null !== a2) {
-    var r2 = a2.$$typeof;
-    switch (r2) {
-      case b:
-        switch (a2 = a2.type, a2) {
-          case d:
-          case f:
-          case e$1:
-          case m:
-          case n$1:
-            return a2;
-          default:
-            switch (a2 = a2 && a2.$$typeof, a2) {
-              case k:
-              case h:
-              case l:
-              case q:
-              case p$1:
-              case g:
-                return a2;
-              default:
-                return r2;
-            }
-        }
-      case c$1:
-        return r2;
-    }
-  }
-}
-reactIs_production_min.ContextConsumer = h;
-reactIs_production_min.ContextProvider = g;
-reactIs_production_min.Element = b;
-reactIs_production_min.ForwardRef = l;
-reactIs_production_min.Fragment = d;
-reactIs_production_min.Lazy = q;
-reactIs_production_min.Memo = p$1;
-reactIs_production_min.Portal = c$1;
-reactIs_production_min.Profiler = f;
-reactIs_production_min.StrictMode = e$1;
-reactIs_production_min.Suspense = m;
-reactIs_production_min.SuspenseList = n$1;
-reactIs_production_min.isAsyncMode = function() {
-  return false;
-};
-reactIs_production_min.isConcurrentMode = function() {
-  return false;
-};
-reactIs_production_min.isContextConsumer = function(a2) {
-  return v(a2) === h;
-};
-reactIs_production_min.isContextProvider = function(a2) {
-  return v(a2) === g;
-};
-reactIs_production_min.isElement = function(a2) {
-  return "object" === typeof a2 && null !== a2 && a2.$$typeof === b;
-};
-reactIs_production_min.isForwardRef = function(a2) {
-  return v(a2) === l;
-};
-reactIs_production_min.isFragment = function(a2) {
-  return v(a2) === d;
-};
-reactIs_production_min.isLazy = function(a2) {
-  return v(a2) === q;
-};
-reactIs_production_min.isMemo = function(a2) {
-  return v(a2) === p$1;
-};
-reactIs_production_min.isPortal = function(a2) {
-  return v(a2) === c$1;
-};
-reactIs_production_min.isProfiler = function(a2) {
-  return v(a2) === f;
-};
-reactIs_production_min.isStrictMode = function(a2) {
-  return v(a2) === e$1;
-};
-reactIs_production_min.isSuspense = function(a2) {
-  return v(a2) === m;
-};
-reactIs_production_min.isSuspenseList = function(a2) {
-  return v(a2) === n$1;
-};
-reactIs_production_min.isValidElementType = function(a2) {
-  return "string" === typeof a2 || "function" === typeof a2 || a2 === d || a2 === f || a2 === e$1 || a2 === m || a2 === n$1 || a2 === t$1 || "object" === typeof a2 && null !== a2 && (a2.$$typeof === q || a2.$$typeof === p$1 || a2.$$typeof === g || a2.$$typeof === h || a2.$$typeof === l || a2.$$typeof === u$1 || void 0 !== a2.getModuleId) ? true : false;
-};
-reactIs_production_min.typeOf = v;
-function createListenerCollection() {
-  const batch2 = getBatch();
-  let first = null;
-  let last = null;
-  return {
-    clear() {
-      first = null;
-      last = null;
-    },
-    notify() {
-      batch2(() => {
-        let listener = first;
-        while (listener) {
-          listener.callback();
-          listener = listener.next;
-        }
-      });
-    },
-    get() {
-      let listeners = [];
-      let listener = first;
-      while (listener) {
-        listeners.push(listener);
-        listener = listener.next;
-      }
-      return listeners;
-    },
-    subscribe(callback) {
-      let isSubscribed = true;
-      let listener = last = {
-        callback,
-        next: null,
-        prev: last
-      };
-      if (listener.prev) {
-        listener.prev.next = listener;
-      } else {
-        first = listener;
-      }
-      return function unsubscribe() {
-        if (!isSubscribed || first === null)
-          return;
-        isSubscribed = false;
-        if (listener.next) {
-          listener.next.prev = listener.prev;
-        } else {
-          last = listener.prev;
-        }
-        if (listener.prev) {
-          listener.prev.next = listener.next;
-        } else {
-          first = listener.next;
-        }
-      };
-    }
-  };
-}
-const nullListeners = {
-  notify() {
-  },
-  get: () => []
-};
-function createSubscription(store, parentSub) {
-  let unsubscribe;
-  let listeners = nullListeners;
-  let subscriptionsAmount = 0;
-  let selfSubscribed = false;
-  function addNestedSub(listener) {
-    trySubscribe();
-    const cleanupListener = listeners.subscribe(listener);
-    let removed = false;
-    return () => {
-      if (!removed) {
-        removed = true;
-        cleanupListener();
-        tryUnsubscribe();
-      }
-    };
-  }
-  function notifyNestedSubs() {
-    listeners.notify();
-  }
-  function handleChangeWrapper() {
-    if (subscription.onStateChange) {
-      subscription.onStateChange();
-    }
-  }
-  function isSubscribed() {
-    return selfSubscribed;
-  }
-  function trySubscribe() {
-    subscriptionsAmount++;
-    if (!unsubscribe) {
-      unsubscribe = parentSub ? parentSub.addNestedSub(handleChangeWrapper) : store.subscribe(handleChangeWrapper);
-      listeners = createListenerCollection();
-    }
-  }
-  function tryUnsubscribe() {
-    subscriptionsAmount--;
-    if (unsubscribe && subscriptionsAmount === 0) {
-      unsubscribe();
-      unsubscribe = void 0;
-      listeners.clear();
-      listeners = nullListeners;
-    }
-  }
-  function trySubscribeSelf() {
-    if (!selfSubscribed) {
-      selfSubscribed = true;
-      trySubscribe();
-    }
-  }
-  function tryUnsubscribeSelf() {
-    if (selfSubscribed) {
-      selfSubscribed = false;
-      tryUnsubscribe();
-    }
-  }
-  const subscription = {
-    addNestedSub,
-    notifyNestedSubs,
-    handleChangeWrapper,
-    isSubscribed,
-    trySubscribe: trySubscribeSelf,
-    tryUnsubscribe: tryUnsubscribeSelf,
-    getListeners: () => listeners
-  };
-  return subscription;
-}
-const canUseDOM = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
-const useIsomorphicLayoutEffect = canUseDOM ? reactExports.useLayoutEffect : reactExports.useEffect;
-function Provider({
-  store,
-  context: context2,
-  children,
-  serverState,
-  stabilityCheck = "once",
-  noopCheck = "once"
-}) {
-  const contextValue = reactExports.useMemo(() => {
-    const subscription = createSubscription(store);
-    return {
-      store,
-      subscription,
-      getServerState: serverState ? () => serverState : void 0,
-      stabilityCheck,
-      noopCheck
-    };
-  }, [store, serverState, stabilityCheck, noopCheck]);
-  const previousState = reactExports.useMemo(() => store.getState(), [store]);
-  useIsomorphicLayoutEffect(() => {
-    const {
-      subscription
-    } = contextValue;
-    subscription.onStateChange = subscription.notifyNestedSubs;
-    subscription.trySubscribe();
-    if (previousState !== store.getState()) {
-      subscription.notifyNestedSubs();
-    }
-    return () => {
-      subscription.tryUnsubscribe();
-      subscription.onStateChange = void 0;
-    };
-  }, [contextValue, previousState]);
-  const Context = context2 || ReactReduxContext;
-  return /* @__PURE__ */ reactExports.createElement(Context.Provider, {
-    value: contextValue
-  }, children);
-}
-function createStoreHook(context2 = ReactReduxContext) {
-  const useReduxContext$1 = (
-    // @ts-ignore
-    context2 === ReactReduxContext ? useReduxContext : (
-      // @ts-ignore
-      createReduxContextHook(context2)
-    )
-  );
-  return function useStore2() {
-    const {
-      store
-    } = useReduxContext$1();
-    return store;
-  };
-}
-const useStore = /* @__PURE__ */ createStoreHook();
-function createDispatchHook(context2 = ReactReduxContext) {
-  const useStore$1 = (
-    // @ts-ignore
-    context2 === ReactReduxContext ? useStore : createStoreHook(context2)
-  );
-  return function useDispatch2() {
-    const store = useStore$1();
-    return store.dispatch;
-  };
-}
-const useDispatch = /* @__PURE__ */ createDispatchHook();
-initializeUseSelector(withSelectorExports.useSyncExternalStoreWithSelector);
-setBatch(reactDomExports.unstable_batchedUpdates);
-const useSoundEffect = () => {
-  const dispatch = useDispatch();
-  const playSeEnter = () => {
-    dispatch(setStage({ key: "uiSe", value: mouse_enter }));
-  };
-  const playSeClick = () => {
-    dispatch(setStage({ key: "uiSe", value: click_se }));
-  };
-  const playSeSwitch = () => {
-    dispatch(setStage({ key: "uiSe", value: switch_1 }));
-  };
-  const playSePageChange = () => {
-    dispatch(setStage({ key: "uiSe", value: page_flip_1 }));
-  };
-  const playSeDialogOpen = () => {
-    dispatch(setStage({ key: "uiSe", value: dialog_se }));
-  };
-  return {
-    playSeEnter,
-    playSeClick,
-    playSePageChange,
-    playSeDialogOpen,
-    playSeSwitch
-  };
-};
-const useSEByWebgalStore = () => {
-  const playSeEnter = () => {
-    webgalStore.dispatch(setStage({ key: "uiSe", value: mouse_enter }));
-  };
-  const playSeClick = () => {
-    webgalStore.dispatch(setStage({ key: "uiSe", value: click_se }));
-  };
-  return {
-    playSeEnter,
-    // 鼠标进入
-    playSeClick
-    // 鼠标点击
-  };
-};
-const ProgressBarBackground = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABDoAAABqCAMAAABqMsFvAAAAXVBMVEUAAADRnfoAAADRnvvSnfq3itwbFCDQn/rSnPnVoP51Wo1oT30OCxDVqv/FkuvQnvjRnvlcRG5JOFgoHi/Qn/TQn/qdd7uCY502KT40KT7Sm/rRnPzDkunRn/nTnPeeEeHhAAAAH3RSTlNeXgBSL15eIVgMXl5eBl5HPl5eXhg1Xl5eXilYXk0SC9HCDwAABSBJREFUeNrs3dt2ojAUgOG95RBBOYioA46+/2NOzFCWtShJpxez5P8ubJ/gX8lOjLLyl5m+ri/RWQG8lXN0qerYXFf+PNNRtIeKZABv7lzF7Q+mo+jJBrAYtcl+JB0t3QAWpjb/mo4ivutGecx3zT7dCoC3sk27bpcfSx1Fc0sP8QxHkjepAHhraXNKxnjEL+MhPuFINp0AWIR9nozx+FY62kidMqcbwKJ0p3HbEpyOrBrCsWG0ASxOukvUqbOwdJgz4QAWbYhHZALSURzUIRzAcqW5OofCNx1ZpDfHvQBYsHRYeGR+6WjPapU7AbBwm7/tuPqkw+hNwi0OAB8Lj34+HbHenJhyALC2ud7EM+kYyrERAHA2k+2QqXI0AgCDZmjHi3T0apXcHgVwZ1+qZZ6n4+rKwZksgIl2tJPpGO9zUA4ADzq11tl0OoqIOQeA5/OOqJhMx4GzFQCvzlkOU+kwauUCABNOn0el8mnQkXATDMCkbeLGHV/SUavF7XMAT6SlqlaP6TAMOgC8tFOrfUiH264IADx1HE9ZxnTEbFcAzNirFd+nI4s4XQHgc0K7Lu7SEfNCB4BZ23Jcdsi46OBVMADeyw6XDsOMFEDQssOlg0UHAP9lx0c6DMcrAPyXHe2Qjtr+fxIAmJW7K6UuHZlavwQAZnXDoFQYkgIIkKhq79JRcx0MQMigtHLp4FVBAKE7Flm17FcAhO1YWpuOmPMVAGFnLAebjoq3jAH4a9ywQ1Zr7oMB8Je6C6VytX9+CwB4KlU1E2M/jwIAAY+FGYm51QEgdE7aS823ZgGEPm9cS8UXWACEaFw6LqQDQOjrxheJOJsFEHo6G8nafvJzkQC8bVV1LWoJAHhTi3QAIB0AviAdAP4HajEmBfCNMSmHs/jT3r0mpwoEARSmG5CXPKKghlL3v8wLnWQq8U7J4E853yJOzYsGeOVy9sZ4QQBrfNqTsI5JPwDWpqPl8zcAr3z+NvLRPYC1H90njPoB8Mqon4IBgwDWDhi8M9YYwPqxxvxMAcBrP1MYOCcFEO4sIgM/jgTw2o8j65wRgwBCHWWiGqkddlQRAAS+6ugsHSM7FgBr9ivZnA52LACCfcqksHRoyx0LgPD7lU4tHXbHcmXcD4BFO5lklo5JzkEpgNCvZmP9SUfCsgNA8CGpS0fNsgNA6KKj+EoHyw4AYXapiCQ6i5RlB4AwpVt0aKQmEaYbAwi4Xkn0dzrqmGFhAJbPSGN16TC9MN4YwDOVTLKHdNiT0ivTwgA82650+piOIheRlFsWAF771J2RunSYTCbnCAA8SrddMZE6g3BDC+DJQcegvnTUsTDhGIDPQSZx7UuHHXcwuQPA/45WjkI96XA3tFdehgH449jI5K6+dJiMdgB4dLFyjOpPh0mE8w4Afxxklqg/Ha4d3LMA+KXylUMj9baj5G0YgMn+7MrhT4czyizlTToAm9AxyXQ5HXqP2bQAmH00Msl7DUmHFjELDwDR8STuPUdIOrQexJTEA9isfSVmqDUoHSb7XngwwQPYpn3VyCzP1CtSv6KT73iw8gA2Zw6HaQtdkQ638DBnvmoBNuVSNmLiXjU8HU7yE4+05G06sBGXKpUveVLr6nSYwuJh0vOBnQvw5naHMhV/OMLTYYosFqc5lR+Xy46HpsCb2e+Oh4/y1IiEhcPSsSTrBMCW5G2vSyJdVlAPYDPydqx1WaRh+qTNBcBby9uhrzVIpOHuWdK1t5iEAG8mj29dN2aFhvsHJeNTSzL9K1cAAAAASUVORK5CYII=";
-const ProgressBar = "" + new URL("progress-bar-01049335.png", import.meta.url).href;
-class ChooseOption {
-  constructor(text2, jump) {
-    __publicField(this, "text");
-    __publicField(this, "jump");
-    __publicField(this, "jumpToScene");
-    __publicField(this, "showCondition");
-    __publicField(this, "enableCondition");
-    __publicField(this, "style");
-    this.text = text2;
-    this.jump = jump;
-    this.jumpToScene = jump.match(/\./) !== null;
-  }
-  /**
-   * 格式：
-   * (showConditionVar>1)[enableConditionVar>2]->${x=1,y=1,scale=1,image=./assets/baidu.png,fontSize:24,fontColor:#fff}text:jump
-   */
-  static parse(script) {
-    const parts = script.split("->");
-    const conditonPart = parts.length > 1 ? parts[0] : null;
-    const mainPart = parts.length > 1 ? parts[1] : parts[0];
-    const mainPartNodes = mainPart.split(":");
-    const text2 = mainPartNodes[0].replace(/\${[^{}]*}/, "");
-    const option = new ChooseOption(text2, mainPartNodes[1]);
-    const styleRegex = /\$\{(.*?)\}/;
-    const styleMatch = conditonPart ? conditonPart.match(styleRegex) : mainPart.match(styleRegex);
-    if (styleMatch) {
-      const styleStr = styleMatch[1];
-      const styleProps = styleStr.split(",");
-      const style = {};
-      styleProps.forEach((prop) => {
-        const [key, value] = prop.split("=");
-        if (key && value) {
-          style[key.trim()] = isNaN(Number(value.trim())) ? value.trim() : Number(value.trim());
-        }
-      });
-      option.style = style;
-    }
-    if (conditonPart !== null) {
-      const showConditionPart = conditonPart.match(/\((.*)\)/);
-      if (showConditionPart) {
-        option.showCondition = showConditionPart[1];
-      }
-      const enableConditionPart = conditonPart.match(/\[(.*)\]/);
-      if (enableConditionPart) {
-        option.enableCondition = enableConditionPart[1];
-      }
-    }
-    return option;
-  }
-}
-const choose = (sentence, chooseCallback) => {
-  const chooseOptionScripts = sentence.content.split("|");
-  const chooseOptions = chooseOptionScripts.map((e2) => ChooseOption.parse(e2));
-  const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
-  const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
-  const { playSeEnter, playSeClick } = useSEByWebgalStore();
-  let timer = {
-    current: null
-  };
-  const runtimeBuildList = (chooseListFull) => {
-    return chooseListFull.filter((e2, i2) => whenChecker(e2.showCondition)).map((e2, i2) => {
-      var _a2, _b2;
-      const enable = whenChecker(e2.enableCondition);
-      let className = enable ? styles$m.Choose_item : styles$m.Choose_item_disabled;
-      const onClick = enable ? () => {
-        playSeClick();
-        chooseCallback == null ? void 0 : chooseCallback();
-        if (timer.current) {
-          clearTimeout(timer.current);
-          timer.current = null;
-        }
-        if (e2.jumpToScene) {
-          changeScene(e2.jump, e2.text);
-        } else {
-          jmp(e2.jump);
-        }
-        WebGAL.gameplay.performController.unmountPerform("choose");
-      } : () => {
-      };
-      const styleObj = {
-        fontFamily: font
-      };
-      if (e2.style) {
-        if (typeof e2.style.x === "number") {
-          styleObj.position = "absolute";
-          styleObj["left"] = e2.style.x * 1.33333 + "px";
-          styleObj["transform"] = "translateX(-50%)";
-        }
-        if (typeof e2.style.y === "number") {
-          styleObj.position = "absolute";
-          styleObj["top"] = e2.style.y * 1.33333 + "px";
-          if (styleObj["transform"]) {
-            styleObj["transform"] += " translateY(-50%)";
-          } else {
-            styleObj["transform"] = "translateY(-50%)";
-          }
-        }
-        if (typeof e2.style.scale === "number") {
-          if (styleObj["transform"]) {
-            styleObj["transform"] += " scale(" + e2.style.scale + ")";
-          } else {
-            styleObj["transform"] = "scale(" + e2.style.scale + ")";
-          }
-        }
-        if (typeof e2.style.fontSize === "number") {
-          styleObj["fontSize"] = e2.style.fontSize + "px";
-        }
-        if (typeof e2.style.fontColor === "string" && e2.style.fontColor[0] === "#") {
-          styleObj["color"] = e2.style.fontColor;
-        }
-      }
-      if (typeof ((_a2 = e2.style) == null ? void 0 : _a2.countdown) === "number") {
-        className = styles$m.Choose_item_countdown;
-        let time = e2.style.countdown;
-        let width = 1082;
-        let unit = 1082 / (time * 1e3 / 16);
-        const countdown = () => {
-          if (time <= 0 && timer.current) {
-            clearTimeout(timer);
-            timer.current = null;
-            onClick();
-          } else {
-            timer.current = setTimeout(() => {
-              time -= 0.016;
-              width -= unit;
-              let rect = document.getElementById("rect");
-              rect == null ? void 0 : rect.setAttribute("width", Math.max(0, width).toString());
-              countdown();
-            }, 16);
-          }
-        };
-        countdown();
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBarBackground, alt: e2.text, style: { width: "1082px", height: "106px" } }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$m.Choose_item_progress_bar })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "0", height: "0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("clipPath", { id: "myClip", children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { id: "rect", width: "1082", height: "106", rx: "53", ry: "53", style: { fill: "#fff" } }) }) }) })
-        ] }, e2.jump + i2);
-      }
-      if ((_b2 = e2.style) == null ? void 0 : _b2.image) {
-        className = styles$m.Choose_item_image;
-        const imgUrl = assetSetter(e2.style.image, fileType$1.ui);
-        const id2 = `img-option-${i2}`;
-        const img = new Image();
-        img.src = imgUrl;
-        img.onload = function() {
-          let ele = document.getElementById(id2);
-          img.style.width = img.naturalWidth + "px";
-          img.style.height = img.naturalHeight + "px";
-          img.alt = e2.text;
-          if (ele) {
-            ele.style.width = img.naturalWidth + "px";
-            ele.style.height = img.naturalHeight + "px";
-            setTimeout(() => {
-              ele == null ? void 0 : ele.prepend(img);
-              ele = null;
-            }, 32);
-          }
-        };
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            id: id2,
-            className,
-            style: styleObj,
-            onClick,
-            onMouseEnter: playSeEnter,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: e2.text })
-          },
-          e2.jump + i2
-        );
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: e2.text }, e2.jump + i2);
-    });
-  };
-  ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$m.Choose_Main, children: runtimeBuildList(chooseOptions) }),
-    document.getElementById("chooseContainer")
-  );
-  return {
-    performName: "choose",
-    duration: 1e3 * 60 * 60 * 24,
-    isHoldOn: false,
-    stopFunction: () => {
-      ReactDOM.render(/* @__PURE__ */ jsxRuntimeExports.jsx("div", {}), document.getElementById("chooseContainer"));
-    },
-    blockingNext: () => true,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const comment$1 = (sentence) => {
-  logger.debug(`脚本内注释${sentence.content}`);
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const filmMode = (sentence) => {
-  if (sentence.content !== "" && sentence.content !== "none") {
-    webgalStore.dispatch(setStage({ key: "enableFilm", value: sentence.content }));
-  } else {
-    webgalStore.dispatch(setStage({ key: "enableFilm", value: "" }));
-  }
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const Choose_Main = "_Choose_Main_4xkm5_1";
-const Choose_item = "_Choose_item_4xkm5_13";
-const glabalDialog_container_inner$1 = "_glabalDialog_container_inner_4xkm5_28";
-const glabalDialog_container$1 = "_glabalDialog_container_4xkm5_28";
-const title$2 = "_title_4xkm5_47";
-const button$2 = "_button_4xkm5_59";
-const styles$l = {
-  Choose_Main,
-  Choose_item,
-  glabalDialog_container_inner: glabalDialog_container_inner$1,
-  glabalDialog_container: glabalDialog_container$1,
-  title: title$2,
-  button: button$2
-};
-const getUserInput = (sentence) => {
-  const varKey = sentence.content.toString().trim();
-  const titleFromArgs = getSentenceArgByKey(sentence, "title");
-  const title2 = (titleFromArgs === 0 ? "Please Input" : titleFromArgs) ?? "Please Input";
-  const buttonTextFromArgs = getSentenceArgByKey(sentence, "buttonText");
-  const buttonText = (buttonTextFromArgs === 0 ? "OK" : buttonTextFromArgs) ?? "OK";
-  const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
-  const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
-  const { playSeEnter, playSeClick } = useSEByWebgalStore();
-  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$l.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$l.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.title, children: title2 }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$l.Choose_item }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        onMouseEnter: playSeEnter,
-        onClick: () => {
-          const userInput = document.getElementById("user-input");
-          if (userInput) {
-            webgalStore.dispatch(
-              setStageVar({ key: varKey, value: ((userInput == null ? void 0 : userInput.value) ?? "") === "" ? " " : (userInput == null ? void 0 : userInput.value) ?? "" })
-            );
-          }
-          playSeClick();
-          WebGAL.gameplay.performController.unmountPerform("userInput");
-          nextSentence();
-        },
-        className: styles$l.button,
-        children: buttonText
-      }
-    )
-  ] }) });
-  ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.Choose_Main, children: chooseElements }),
-    document.getElementById("chooseContainer")
-  );
-  return {
-    performName: "userInput",
-    duration: 1e3 * 60 * 60 * 24,
-    isHoldOn: false,
-    stopFunction: () => {
-      ReactDOM.render(/* @__PURE__ */ jsxRuntimeExports.jsx("div", {}), document.getElementById("chooseContainer"));
-    },
-    blockingNext: () => true,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const FullScreenPerform_main = "_FullScreenPerform_main_7er8a_2";
-const FullScreenPerform_element = "_FullScreenPerform_element_7er8a_9";
-const fullScreen_video = "_fullScreen_video_7er8a_17";
-const fadeIn = "_fadeIn_7er8a_74";
-const intro_showSoftly = "_intro_showSoftly_7er8a_1";
-const slideIn = "_slideIn_7er8a_80";
-const typingEffect = "_typingEffect_7er8a_86";
-const typing = "_typing_7er8a_86";
-const blinkCursor = "_blinkCursor_7er8a_1";
-const pixelateEffect = "_pixelateEffect_7er8a_95";
-const pixelateAnimation = "_pixelateAnimation_7er8a_1";
-const revealAnimation = "_revealAnimation_7er8a_101";
-const videoContainer = "_videoContainer_7er8a_115";
-const styles$k = {
-  FullScreenPerform_main,
-  FullScreenPerform_element,
-  fullScreen_video,
-  fadeIn,
-  intro_showSoftly,
-  slideIn,
-  typingEffect,
-  typing,
-  blinkCursor,
-  pixelateEffect,
-  pixelateAnimation,
-  revealAnimation,
-  videoContainer
-};
-const intro = (sentence) => {
-  const performName = `introPerform${Math.random().toString()}`;
-  let fontSize;
-  let backgroundColor = "rgba(0, 0, 0, 1)";
-  let color2 = "rgba(255, 255, 255, 1)";
-  const animationClass = (type2, length2 = 0) => {
-    switch (type2) {
-      case "fadeIn":
-        return styles$k.fadeIn;
-      case "slideIn":
-        return styles$k.slideIn;
-      case "typingEffect":
-        return `${styles$k.typingEffect} ${length2}`;
-      case "pixelateEffect":
-        return styles$k.pixelateEffect;
-      case "revealAnimation":
-        return styles$k.revealAnimation;
-      default:
-        return styles$k.fadeIn;
-    }
-  };
-  let chosenAnimationClass = styles$k.fadeIn;
-  let delayTime = 1500;
-  let isHold = false;
-  for (const e2 of sentence.args) {
-    if (e2.key === "backgroundColor") {
-      backgroundColor = e2.value || "rgba(0, 0, 0, 1)";
-    }
-    if (e2.key === "fontColor") {
-      color2 = e2.value || "rgba(255, 255, 255, 1)";
-    }
-    if (e2.key === "fontSize") {
-      switch (e2.value) {
-        case "small":
-          fontSize = "280%";
-          break;
-        case "medium":
-          fontSize = "350%";
-          break;
-        case "large":
-          fontSize = "420%";
-          break;
-      }
-    }
-    if (e2.key === "animation") {
-      chosenAnimationClass = animationClass(e2.value);
-    }
-    if (e2.key === "delayTime") {
-      const parsedValue = parseInt(e2.value.toString(), 10);
-      delayTime = isNaN(parsedValue) ? delayTime : parsedValue;
-    }
-    if (e2.key === "hold") {
-      if (e2.value === true) {
-        isHold = true;
-      }
-    }
-  }
-  const introContainerStyle = {
-    background: backgroundColor,
-    color: color2,
-    fontSize: fontSize || "350%",
-    width: "100%",
-    height: "100%"
-  };
-  const introArray = sentence.content.split(/\|/);
-  let endWait = 1e3;
-  let baseDuration = endWait + delayTime * introArray.length;
-  const duration = isHold ? 1e3 * 60 * 60 * 24 : 1e3 + delayTime * introArray.length;
-  let isBlocking = true;
-  let setBlockingStateTimeout = setTimeout(() => {
-    isBlocking = false;
-  }, baseDuration);
-  let timeout = setTimeout(() => {
-  });
-  const toNextIntroElement = () => {
-    const introContainer22 = document.getElementById("introContainer");
-    baseDuration -= delayTime;
-    clearTimeout(setBlockingStateTimeout);
-    setBlockingStateTimeout = setTimeout(() => {
-      isBlocking = false;
-    }, baseDuration);
-    if (introContainer22) {
-      const children = introContainer22.childNodes[0].childNodes[0].childNodes;
-      const len = children.length;
-      children.forEach((node2, index2) => {
-        const currentDelay = Number(node2.style.animationDelay.split("ms")[0]);
-        if (currentDelay > 0) {
-          node2.style.animationDelay = `${currentDelay - delayTime}ms`;
-        }
-        if (index2 === len - 1) {
-          if (currentDelay === 0) {
-            clearTimeout(timeout);
-            WebGAL.gameplay.performController.unmountPerform(performName);
-          } else {
-            clearTimeout(timeout);
-            if (!isHold) {
-              timeout = setTimeout(() => {
-                WebGAL.gameplay.performController.unmountPerform(performName);
-                setTimeout(nextSentence, 0);
-              }, baseDuration);
-            }
-          }
-        }
-      });
-    }
-  };
-  WebGAL.events.userInteractNext.on(toNextIntroElement);
-  const showIntro = introArray.map((e2, i2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    "div",
-    {
-      style: { animationDelay: `${delayTime * i2}ms` },
-      className: chosenAnimationClass,
-      children: [
-        e2,
-        e2 === "" ? " " : ""
-      ]
-    },
-    "introtext" + i2 + Math.random().toString()
-  ));
-  const intro2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: introContainerStyle, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { padding: "3em 4em 3em 4em" }, children: showIntro }) });
-  ReactDOM.render(intro2, document.getElementById("introContainer"));
-  const introContainer2 = document.getElementById("introContainer");
-  if (introContainer2) {
-    introContainer2.style.display = "block";
-  }
-  return {
-    performName,
-    duration,
-    isHoldOn: false,
-    stopFunction: () => {
-      const introContainer22 = document.getElementById("introContainer");
-      if (introContainer22) {
-        introContainer22.style.display = "none";
-      }
-      WebGAL.events.userInteractNext.off(toNextIntroElement);
-    },
-    blockingNext: () => isBlocking,
-    blockingAuto: () => isBlocking,
-    stopTimeout: void 0,
-    // 暂时不用，后面会交给自动清除
-    goNextWhenOver: true
-  };
-};
-const label = (sentence) => {
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const miniAvatar = (sentence) => {
-  let content = sentence.content;
-  if (sentence.content === "none" || sentence.content === "") {
-    content = "";
-  }
-  webgalStore.dispatch(setStage({ key: "miniAvatar", value: content }));
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: true,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const scriptRel = "modulepreload";
-const assetsURL = function(dep, importerUrl) {
-  return new URL(dep, importerUrl).href;
-};
-const seen = {};
-const __vitePreload = function preload(baseModule, deps, importerUrl) {
-  if (!deps || deps.length === 0) {
-    return baseModule();
-  }
-  const links = document.getElementsByTagName("link");
-  return Promise.all(deps.map((dep) => {
-    dep = assetsURL(dep, importerUrl);
-    if (dep in seen)
-      return;
-    seen[dep] = true;
-    const isCss = dep.endsWith(".css");
-    const cssSelector = isCss ? '[rel="stylesheet"]' : "";
-    const isBaseRelative = !!importerUrl;
-    if (isBaseRelative) {
-      for (let i2 = links.length - 1; i2 >= 0; i2--) {
-        const link2 = links[i2];
-        if (link2.href === dep && (!isCss || link2.rel === "stylesheet")) {
-          return;
-        }
-      }
-    } else if (document.querySelector(`link[href="${dep}"]${cssSelector}`)) {
-      return;
-    }
-    const link = document.createElement("link");
-    link.rel = isCss ? "stylesheet" : scriptRel;
-    if (!isCss) {
-      link.as = "script";
-      link.crossOrigin = "";
-    }
-    link.href = dep;
-    document.head.appendChild(link);
-    if (isCss) {
-      return new Promise((res, rej) => {
-        link.addEventListener("load", res);
-        link.addEventListener("error", () => rej(new Error(`Unable to preload CSS for ${dep}`)));
-      });
-    }
-  })).then(() => baseModule()).catch((err) => {
-    const e2 = new Event("vite:preloadError", { cancelable: true });
-    e2.payload = err;
-    window.dispatchEvent(e2);
-    if (!e2.defaultPrevented) {
-      throw err;
-    }
-  });
-};
-const performs = /* @__PURE__ */ new Map();
-function getName(name) {
-  if (!name)
-    return null;
-  if (typeof name === "string")
-    return name;
-  return name();
-}
-function getKey(name) {
-  const key = getName(name);
-  if (!key) {
-    logger.error("Get name of perform failed. There no name of the perform.");
-    return "";
-  }
-  return key;
-}
-function registerPerform(name, callback) {
-  if (!callback || typeof callback !== "function")
-    throw new Error(`"${name}" is not a callback.`);
-  performs.set(getKey(name), callback);
-}
-function call$1(name, args = []) {
-  const callback = performs.get(getKey(name));
-  if (!callback || !(callback instanceof Function)) {
-    logger.error(`Can't call the perform named "${name}"`);
-    throw new Error(`"${name}" don't have the pixiPerform callback.`);
-  }
-  return callback(...args);
-}
-__vitePreload(() => import("./initRegister-fa04c114.js"), true ? [] : void 0, import.meta.url);
-const pixi = (sentence) => {
-  const pixiPerformName = "PixiPerform" + sentence.content;
-  WebGAL.gameplay.performController.performList.forEach((e2) => {
-    if (e2.performName === pixiPerformName) {
-      return {
-        performName: "none",
-        duration: 0,
-        isOver: false,
-        isHoldOn: true,
-        stopFunction: () => {
-        },
-        blockingNext: () => false,
-        blockingAuto: () => false,
-        stopTimeout: void 0
-        // 暂时不用，后面会交给自动清除
-      };
-    }
-  });
-  const res = call$1(sentence.content);
-  const { container: container2, tickerKey } = res;
-  return {
-    performName: pixiPerformName,
-    duration: 0,
-    isHoldOn: true,
-    stopFunction: () => {
-      var _a2, _b2;
-      logger.warn("现在正在卸载pixi演出");
-      container2.destroy({ texture: true, baseTexture: true });
-      (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.effectsContainer.removeChild(container2);
-      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.removeAnimation(tickerKey);
-    },
-    blockingNext: () => false,
-    blockingAuto: () => false,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const playEffect = (sentence) => {
+  blockingNext: () => false,
+  blockingAuto: () => true,
+  stopTimeout: void 0
+};
+const runScript = (script) => {
   var _a2;
-  logger.debug("play SE");
-  let performInitName = "effect-sound";
-  WebGAL.gameplay.performController.unmountPerform(performInitName, true);
-  let url2 = sentence.content;
-  let isLoop = false;
-  if (getSentenceArgByKey(sentence, "id")) {
-    const id2 = ((_a2 = getSentenceArgByKey(sentence, "id")) == null ? void 0 : _a2.toString()) ?? "";
-    performInitName = `effect-sound-${id2}`;
-    WebGAL.gameplay.performController.unmountPerform(performInitName, true);
-    isLoop = true;
-  }
-  let isOver = false;
-  return {
-    performName: "none",
-    blockingAuto() {
-      return false;
-    },
-    blockingNext() {
-      return false;
-    },
-    isHoldOn: false,
-    stopFunction() {
-    },
-    stopTimeout: void 0,
-    duration: 1e3 * 60 * 60,
-    arrangePerformPromise: new Promise((resolve2) => {
-      setTimeout(() => {
-        var _a3;
-        const volumeArg = getSentenceArgByKey(sentence, "volume");
-        let seElement = document.createElement("audio");
-        seElement.src = url2;
-        if (isLoop) {
-          seElement.loop = true;
-        }
-        const userDataState = webgalStore.getState().userData;
-        const mainVol = userDataState.optionData.volumeMain;
-        const volume = typeof volumeArg === "number" && volumeArg >= 0 && volumeArg <= 100 ? volumeArg : 100;
-        const seVol = mainVol * 0.01 * (((_a3 = userDataState.optionData) == null ? void 0 : _a3.seVolume) ?? 100) * 0.01 * volume * 0.01;
-        seElement.volume = seVol;
-        seElement.currentTime = 0;
-        const perform = {
-          performName: performInitName,
-          duration: 1e3 * 60 * 60,
-          isHoldOn: isLoop,
-          skipNextCollect: true,
-          stopFunction: () => {
-            seElement.pause();
-          },
-          blockingNext: () => false,
-          blockingAuto: () => {
-            if (isLoop)
-              return false;
-            return !isOver;
-          },
-          stopTimeout: void 0
-          // 暂时不用，后面会交给自动清除
-        };
-        resolve2(perform);
-        seElement == null ? void 0 : seElement.play();
-        seElement.onended = () => {
-          for (const e2 of WebGAL.gameplay.performController.performList) {
-            if (e2.performName === performInitName) {
-              isOver = true;
-              e2.stopFunction();
-              WebGAL.gameplay.performController.unmountPerform(e2.performName);
-            }
-          }
-        };
-      }, 1);
-    })
-  };
-};
-const playVideo = (sentence) => {
-  const userDataState = webgalStore.getState().userData;
-  const mainVol = userDataState.optionData.volumeMain;
-  const vocalVol = mainVol * 0.01 * userDataState.optionData.vocalVolume * 0.01;
-  const bgmVol = mainVol * 0.01 * userDataState.optionData.bgmVolume * 0.01;
-  const performInitName = getRandomPerformName();
-  let chooseContent = "";
-  let loopValue = false;
-  sentence.args.forEach((e2) => {
-    if (e2.key === "choose") {
-      chooseContent = "choose:" + e2.value;
-    }
-    if (e2.key === "loop") {
-      loopValue = e2.value === true;
-    }
-  });
-  let blockingNext = getSentenceArgByKey(sentence, "skipOff");
-  let blockingNextFlag = true;
-  if (blockingNext || loopValue || chooseContent !== "") {
-    blockingNextFlag = true;
-  }
-  WebGAL.videoManager.showVideo(sentence.content);
-  let isOver = false;
-  const performObject = {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => blockingNextFlag,
-    blockingAuto: () => true,
-    stopTimeout: void 0,
-    // 暂时不用，后面会交给自动清除
-    arrangePerformPromise: new Promise((resolve2) => {
-      const endCallback = (e2) => {
-        isOver = true;
-        e2.stopFunction();
-        WebGAL.gameplay.performController.unmountPerform(e2.performName);
-      };
-      setTimeout(() => {
-        const url2 = sentence.content;
-        WebGAL.videoManager.seek(url2, 0.03);
-        WebGAL.videoManager.setVolume(url2, bgmVol);
-        WebGAL.videoManager.setLoop(url2, loopValue);
-        const sceneList = chooseContent ? chooseContent.slice(7).split("|").map((x) => "game/scene/" + x.split(":")[1]) : [];
-        if (sceneList.length) {
-          scenePrefetcher(sceneList);
-        }
-        const endPerform = () => {
-          for (const e2 of WebGAL.gameplay.performController.performList) {
-            if (e2.performName === performInitName) {
-              if (chooseContent !== "" && !loopValue) {
-                const parsedResult = sceneParser(chooseContent, "temp.txt", "");
-                const duration = WebGAL.videoManager.getDuration(url2);
-                WebGAL.videoManager.seek(url2, (duration || 0) - 0.03);
-                WebGAL.videoManager.pauseVideo(url2);
-                const script = parsedResult.sentenceList[0];
-                const perform2 = choose(script, () => {
-                  endCallback(e2);
-                });
-                WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
-              } else {
-                endCallback(e2);
-                nextSentence();
-              }
-            }
-          }
-        };
-        const skipVideo = () => {
-          console.log("skip");
-          endPerform();
-        };
-        const perform = {
-          performName: performInitName,
-          duration: 1e3 * 60 * 60,
-          isOver: false,
-          isHoldOn: false,
-          stopFunction: () => {
-            WebGAL.events.fullscreenDbClick.off(skipVideo);
-            const bgmElement22 = document.getElementById("currentBgm");
-            if (bgmElement22) {
-              bgmElement22.volume = bgmVol.toString();
-            }
-            const vocalElement2 = document.getElementById("currentVocal");
-            if (bgmElement22) {
-              vocalElement2.volume = vocalVol.toString();
-            }
-            WebGAL.videoManager.destory(url2);
-          },
-          blockingNext: () => blockingNextFlag,
-          blockingAuto: () => {
-            return !isOver;
-          },
-          stopTimeout: void 0,
-          // 暂时不用，后面会交给自动清除
-          goNextWhenOver: true
-        };
-        resolve2(perform);
-        const vocalVol2 = 0;
-        const bgmVol2 = 0;
-        const bgmElement2 = document.getElementById("currentBgm");
-        if (bgmElement2) {
-          bgmElement2.volume = bgmVol2.toString();
-        }
-        const vocalElement = document.getElementById("currentVocal");
-        if (bgmElement2) {
-          vocalElement.volume = vocalVol2.toString();
-        }
-        WebGAL.videoManager.playVideo(url2);
-        if (chooseContent && loopValue) {
-          const parsedResult = sceneParser(chooseContent, "temp.txt", "");
-          const script = parsedResult.sentenceList[0];
-          const perform2 = choose(script, endPerform);
-          WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
-        }
-        WebGAL.videoManager.onEnded(url2, () => {
-          if (loopValue) {
-            WebGAL.videoManager.seek(url2, 0.03);
-            WebGAL.videoManager.playVideo(url2);
-          } else {
-            endPerform();
-          }
-        });
-      }, 100);
-    })
-  };
-  return performObject;
-};
-const setAnimation = (sentence) => {
-  var _a2;
-  webgalStore.getState().stage.currentDialogKey;
-  const animationName = sentence.content;
-  const animationDuration = getAnimateDuration$1(animationName);
-  const target = (((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "default_id").toString();
-  const key = `${target}-${animationName}-${animationDuration}`;
-  let stopFunction;
-  setTimeout(() => {
-    var _a3, _b2;
-    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
-    const animationObj = getAnimationObject$2(animationName, target, animationDuration);
-    if (animationObj) {
-      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
-      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj, key, target);
-    }
-  }, 0);
-  stopFunction = () => {
-    setTimeout(() => {
-      var _a3;
-      webgalStore.getState().stage.currentDialogKey;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
-    }, 0);
-  };
-  return {
-    performName: key,
-    duration: animationDuration,
-    isHoldOn: false,
-    stopFunction,
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function generateTestblurAnimationObj(targetKey, duration) {
-  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
-  function setStartState() {
-    if (target) {
-      target.pixiContainer.alpha = 0;
-      target.pixiContainer.blur = 0;
-    }
-  }
-  function setEndState() {
-    if (target) {
-      target.pixiContainer.alpha = 1;
-      target.pixiContainer.blur = 5;
-    }
-  }
-  function tickerFunc(delta) {
-    if (target) {
-      const container2 = target.pixiContainer;
-      const baseDuration = WebGAL.gameplay.pixiStage.frameDuration;
-      const currentAddOplityDelta = duration / baseDuration * delta;
-      const increasement = 1 / currentAddOplityDelta;
-      const decreasement = 5 / currentAddOplityDelta;
-      if (container2.alpha < 1) {
-        container2.alpha += increasement;
-      }
-      if (container2.blur < 5) {
-        container2.blur += decreasement;
-      }
-    }
-  }
-  return {
-    setStartState,
-    setEndState,
-    tickerFunc
-  };
-}
-const webgalAnimations = [
-  { name: "universalSoftIn", animationGenerateFunc: generateUniversalSoftInAnimationObj },
-  { name: "universalSoftOff", animationGenerateFunc: generateUniversalSoftOffAnimationObj },
-  { name: "testblur", animationGenerateFunc: generateTestblurAnimationObj }
-];
-const setComplexAnimation = (sentence) => {
-  var _a2, _b2, _c2;
-  webgalStore.getState().stage.currentDialogKey;
-  const animationName = sentence.content;
-  const animationDuration = getSentenceArgByKey(sentence, "duration") ?? 0;
-  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
-  const key = `${target}-${animationName}-${animationDuration}`;
-  const animationFunction = getAnimationObject$1(animationName);
-  let stopFunction = () => {
-  };
-  if (animationFunction) {
-    logger.debug(`动画${animationName}作用在${target}`, animationDuration);
-    const animationObj = animationFunction(target, animationDuration);
-    (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.stopPresetAnimationOnTarget(target);
-    (_c2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _c2.registerAnimation(animationObj, key, target);
-    stopFunction = () => {
-      var _a3;
-      webgalStore.getState().stage.currentDialogKey;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
-    };
-  }
-  return {
-    performName: key,
-    duration: animationDuration,
-    isHoldOn: false,
-    stopFunction,
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function getAnimationObject$1(animationName) {
-  const result = webgalAnimations.find((e2) => e2.name === animationName);
-  logger.debug("装载动画", result);
-  if (result) {
-    return result.animationGenerateFunc;
-  }
-  return null;
-}
-const setFilter = (sentence) => {
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const setTempAnimation = (sentence) => {
-  var _a2;
-  webgalStore.getState().stage.currentDialogKey;
-  const animationName = (Math.random() * 10).toString(16);
-  const animationString = sentence.content;
-  let animationObj;
-  try {
-    animationObj = JSON.parse(animationString);
-  } catch (e2) {
-    animationObj = [];
-  }
-  const newAnimation = { name: animationName, effects: animationObj };
-  WebGAL.animationManager.addAnimation(newAnimation);
-  const animationDuration = getAnimateDuration$1(animationName);
-  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
-  const key = `${target}-${animationName}-${animationDuration}`;
-  let stopFunction = () => {
-  };
-  setTimeout(() => {
-    var _a3, _b2;
-    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
-    const animationObj2 = getAnimationObject$2(animationName, target, animationDuration);
-    if (animationObj2) {
-      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
-      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj2, key, target);
-    }
-  }, 0);
-  stopFunction = () => {
-    setTimeout(() => {
-      var _a3;
-      webgalStore.getState().stage.currentDialogKey;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
-    }, 0);
-  };
-  return {
-    performName: key,
-    duration: animationDuration,
-    isHoldOn: false,
-    stopFunction,
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function setTextbox(sentence) {
-  if (sentence.content === "hide") {
-    webgalStore.dispatch(setStage({ key: "isDisableTextbox", value: true }));
+  let perform = initPerform;
+  const funcToRun = ((_a2 = scriptRegistry[script.command]) == null ? void 0 : _a2.scriptFunction) ?? SCRIPT_TAG_MAP.say.scriptFunction;
+  perform = funcToRun(script);
+  if (perform.arrangePerformPromise) {
+    perform.arrangePerformPromise.then(
+      (resolovedPerform) => WebGAL.gameplay.performController.arrangeNewPerform(resolovedPerform, script)
+    );
   } else {
-    webgalStore.dispatch(setStage({ key: "isDisableTextbox", value: false }));
+    WebGAL.gameplay.performController.arrangeNewPerform(perform, script);
   }
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-}
-const setTransform = (sentence) => {
-  var _a2;
-  webgalStore.getState().stage.currentDialogKey;
-  const animationName = (Math.random() * 10).toString(16);
-  const animationString = sentence.content;
-  let animationObj;
-  const duration = getSentenceArgByKey(sentence, "duration");
-  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
-  try {
-    const frame2 = JSON.parse(animationString);
-    animationObj = generateTransformAnimationObj(target, frame2, duration);
-  } catch (e2) {
-    animationObj = [];
-  }
-  const newAnimation = { name: animationName, effects: animationObj };
-  WebGAL.animationManager.addAnimation(newAnimation);
-  const animationDuration = getAnimateDuration(animationName);
-  const key = `${target}-${animationName}-${animationDuration}`;
-  let stopFunction = () => {
-  };
-  setTimeout(() => {
-    var _a3, _b2;
-    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
-    const animationObj2 = getAnimationObject(animationName, target, animationDuration);
-    if (animationObj2) {
-      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
-      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj2, key, target);
-    }
-  }, 0);
-  stopFunction = () => {
-    setTimeout(() => {
-      var _a3;
-      webgalStore.getState().stage.currentDialogKey;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
-    }, 0);
-  };
-  return {
-    performName: key,
-    duration: animationDuration,
-    isHoldOn: false,
-    stopFunction,
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
 };
-function getAnimationObject(animationName, target, duration) {
-  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
-  if (effect) {
-    const mappedEffects = effect.effects.map((effect2) => {
-      const newEffect = cloneDeep$1({ ...baseTransform, duration: 0 });
-      Object.assign(newEffect, effect2);
-      newEffect.duration = effect2.duration;
-      return newEffect;
-    });
-    logger.debug("装载自定义动画", mappedEffects);
-    return generateTimelineObj(mappedEffects, target, duration);
-  }
-  return null;
-}
-function getAnimateDuration(animationName) {
-  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
-  if (effect) {
-    let duration = 0;
-    effect.effects.forEach((e2) => {
-      duration += e2.duration;
-    });
-    return duration;
-  }
-  return 0;
-}
-const setTransition = (sentence) => {
-  let key = "0";
-  for (const e2 of sentence.args) {
-    if (e2.key === "target") {
-      key = e2.value.toString();
-    }
-  }
-  if (getSentenceArgByKey(sentence, "enter")) {
-    WebGAL.animationManager.nextEnterAnimationName.set(key, getSentenceArgByKey(sentence, "enter").toString());
-  }
-  if (getSentenceArgByKey(sentence, "exit")) {
-    WebGAL.animationManager.nextExitAnimationName.set(key + "-off", getSentenceArgByKey(sentence, "exit").toString());
-  }
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => false,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const unlockBgm = (sentence) => {
-  const url2 = sentence.content;
-  let name = sentence.content;
-  let series = "default";
-  sentence.args.forEach((e2) => {
-    if (e2.key === "name") {
-      name = e2.value.toString();
-    }
-    if (e2.key === "series") {
-      series = e2.value.toString();
+const restoreScene = (entry) => {
+  sceneFetcher(entry.sceneUrl).then(async (rawScene) => {
+    const scene = await WebGAL.sceneManager.setCurrentScene(rawScene, entry.sceneName, entry.sceneUrl, true);
+    if (scene) {
+      WebGAL.sceneManager.sceneData.currentSentenceId = entry.continueLine + 1;
+      logger.debug("现在恢复场景，恢复后场景：", WebGAL.sceneManager.sceneData.currentScene);
+      nextSentence();
     }
   });
-  logger.info(`解锁BGM：${name}，路径：${url2}，所属系列：${series}`);
-  webgalStore.dispatch(unlockBgmInUserData({ name, url: url2, series }));
-  const userDataState = webgalStore.getState().userData;
-  localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
-  });
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
 };
-const unlockCg = (sentence) => {
-  const url2 = sentence.content;
-  let name = sentence.content;
-  let series = "default";
-  sentence.args.forEach((e2) => {
-    if (e2.key === "name") {
-      name = e2.value.toString();
-    }
-    if (e2.key === "series") {
-      series = e2.value.toString();
-    }
-  });
-  logger.info(`解锁CG：${name}，路径：${url2}，所属系列：${series}`);
-  webgalStore.dispatch(unlockCgInUserData({ name, url: url2, series }));
-  const userDataState = webgalStore.getState().userData;
-  localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
-  });
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const resetStage = (resetBacklog, resetSceneAndVar = true, resetVideo = true) => {
-  if (resetBacklog) {
-    WebGAL.backlogManager.makeBacklogEmpty();
-  }
-  if (resetVideo) {
-    WebGAL.videoManager.destoryAll();
-  }
-  if (resetSceneAndVar) {
-    WebGAL.sceneManager.resetScene();
-  }
-  WebGAL.gameplay.performController.removeAllPerform();
-  WebGAL.gameplay.resetGamePlay();
-  const initSceneDataCopy = cloneDeep$1(initState$3);
-  const currentVars = webgalStore.getState().stage.GameVar;
-  webgalStore.dispatch(resetStageState(initSceneDataCopy));
-  if (!resetSceneAndVar) {
-    webgalStore.dispatch(setStage({ key: "GameVar", value: currentVars }));
-  }
-};
-const initState$1 = {
-  saveData: [],
-  quickSaveData: null
-};
-const saveDataSlice = createSlice({
-  name: "saveData",
-  initialState: cloneDeep$1(initState$1),
-  reducers: {
-    setFastSave: (state, action) => {
-      state.quickSaveData = action.payload;
-    },
-    resetFastSave: (state) => {
-      state.quickSaveData = null;
-    },
-    resetSaves: (state) => {
-      state.quickSaveData = null;
-      state.saveData = [];
-    },
-    saveGame: (state, action) => {
-      state.saveData[action.payload.index] = action.payload.saveData;
-    },
-    replaceSaveGame: (state, action) => {
-      state.saveData = action.payload;
-    }
-  }
-});
-const saveActions = saveDataSlice.actions;
-const savesReducer = saveDataSlice.reducer;
-const end = (sentence) => {
-  resetStage(true);
-  const dispatch = webgalStore.dispatch;
-  const sceneUrl = assetSetter("start.txt", fileType$1.scene);
-  setTimeout(() => {
-    WebGAL.sceneManager.resetScene();
-  }, 5);
-  dispatch(saveActions.resetFastSave());
-  dumpToStorageFast();
-  sceneFetcher(sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, "start.txt", sceneUrl);
-  });
-  dispatch(setVisibility({ component: "showTitle", visibility: true }));
-  playBgm(webgalStore.getState().GUI.titleBgm);
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const jumpLabel = (sentence) => {
-  jmp(sentence.content);
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const pixiInit = (sentence) => {
-  WebGAL.gameplay.performController.performList.forEach((e2) => {
-    if (e2.performName.match(/PixiPerform/)) {
-      logger.warn("pixi 被脚本重新初始化", e2.performName);
-      for (let i2 = 0; i2 < WebGAL.gameplay.performController.performList.length; i2++) {
-        const e22 = WebGAL.gameplay.performController.performList[i2];
-        if (e22.performName === e2.performName) {
-          e22.stopFunction();
-          clearTimeout(e22.stopTimeout);
-          WebGAL.gameplay.performController.performList.splice(i2, 1);
-          i2--;
-        }
-      }
-      webgalStore.dispatch(stageActions.removeAllPixiPerforms());
-    }
-  });
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const audioContextWrapper = {
-  audioContext: new AudioContext(),
-  source: null,
-  analyser: void 0,
-  dataArray: void 0,
-  audioLevelInterval: setInterval(() => {
-  }, 0),
-  // dummy interval
-  blinkTimerID: setTimeout(() => {
-  }, 0),
-  // dummy timeout
-  maxAudioLevel: 0
-};
-const updateThresholds = (audioLevel) => {
-  audioContextWrapper.maxAudioLevel = Math.max(audioLevel, audioContextWrapper.maxAudioLevel);
-  return {
-    OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.75,
-    HALF_OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.5
-  };
-};
-const performBlinkAnimation = (params) => {
-  let isBlinking = false;
-  function blink() {
-    var _a2;
-    if (isBlinking || params.animationEndTime && Date.now() > params.animationEndTime)
-      return;
-    isBlinking = true;
-    (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.performBlinkAnimation(params.key, params.animationItem, "closed", params.pos);
-    audioContextWrapper.blinkTimerID = setTimeout(() => {
-      var _a3;
-      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.performBlinkAnimation(params.key, params.animationItem, "open", params.pos);
-      isBlinking = false;
-      const nextBlinkTime = Math.random() * 300 + 3500;
-      audioContextWrapper.blinkTimerID = setTimeout(blink, nextBlinkTime);
-    }, 200);
-  }
-  blink();
-};
-const getAudioLevel = (analyser, dataArray, bufferLength) => {
-  analyser.getByteFrequencyData(dataArray);
-  let sum = 0;
-  for (let i2 = 0; i2 < bufferLength; i2++) {
-    sum += dataArray[i2];
-  }
-  return sum / bufferLength;
-};
-const performMouthAnimation = (params) => {
-  var _a2, _b2;
-  const { audioLevel, OPEN_THRESHOLD, HALF_OPEN_THRESHOLD, currentMouthValue, lerpSpeed, key, animationItem, pos } = params;
-  let targetValue;
-  if (audioLevel > OPEN_THRESHOLD) {
-    targetValue = 1;
-  } else if (audioLevel > HALF_OPEN_THRESHOLD) {
-    targetValue = 0.5;
-  } else {
-    targetValue = 0;
-  }
-  const mouthValue = currentMouthValue + (targetValue - currentMouthValue) * lerpSpeed;
-  (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.setModelMouthY(key, audioLevel);
-  let mouthState;
-  if (mouthValue > 0.75) {
-    mouthState = "open";
-  } else if (mouthValue > 0.25) {
-    mouthState = "half_open";
-  } else {
-    mouthState = "closed";
-  }
-  if (animationItem !== void 0) {
-    (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.performMouthSyncAnimation(key, animationItem, mouthState, pos);
-  }
-};
-class Matcher {
-  constructor(subject) {
-    __publicField(this, "subject");
-    __publicField(this, "result");
-    __publicField(this, "isEnd", false);
-    this.subject = subject;
-  }
-  with(pattern, fn2) {
-    if (!this.isEnd && this.subject === pattern) {
-      this.result = fn2();
-      this.isEnd = true;
-    }
-    return this;
-  }
-  endsWith(pattern, fn2) {
-    if (!this.isEnd && this.subject === pattern) {
-      this.result = fn2();
-      this.isEnd = true;
-    }
-    return this.evaluate();
-  }
-  default(fn2) {
-    if (!this.isEnd)
-      this.result = fn2();
-    return this.evaluate();
-  }
-  evaluate() {
-    return this.result;
-  }
-}
-function match$1(subject) {
-  return new Matcher(subject);
-}
-const playVocal = (sentence) => {
-  logger.debug("play vocal");
-  const performInitName = "vocal-play";
-  const url2 = getSentenceArgByKey(sentence, "vocal");
-  const volume = getSentenceArgByKey(sentence, "volume");
-  let currentStageState;
-  currentStageState = webgalStore.getState().stage;
-  let pos = "";
-  let key = "";
-  const freeFigure = currentStageState.freeFigure;
-  const figureAssociatedAnimation = currentStageState.figureAssociatedAnimation;
-  let bufferLength = 0;
-  let currentMouthValue = 0;
-  const lerpSpeed = 1;
-  let VocalControl = document.getElementById("currentVocal");
-  WebGAL.gameplay.performController.unmountPerform("vocal-play", true);
-  if (VocalControl !== null) {
-    VocalControl.currentTime = 0;
-    VocalControl.pause();
-  }
-  for (const e2 of sentence.args) {
-    if (e2.value === true) {
-      match$1(e2.key).with("left", () => {
-        pos = "left";
-      }).with("right", () => {
-        pos = "right";
-      }).endsWith("center", () => {
-        pos = "center";
-      });
-    }
-    if (e2.key === "figureId") {
-      key = `${e2.value.toString()}`;
-    }
-  }
-  webgalStore.dispatch(setStage({ key: "playVocal", value: url2 }));
-  webgalStore.dispatch(setStage({ key: "vocal", value: url2 }));
-  let isOver = false;
-  return {
-    arrangePerformPromise: new Promise((resolve2) => {
-      setTimeout(() => {
-        let VocalControl2 = document.getElementById("currentVocal");
-        typeof volume === "number" && volume >= 0 && volume <= 100 ? webgalStore.dispatch(setStage({ key: "vocalVolume", value: volume })) : webgalStore.dispatch(setStage({ key: "vocalVolume", value: 100 }));
-        if (VocalControl2 !== null) {
-          VocalControl2.currentTime = 0;
-          const perform = {
-            performName: performInitName,
-            duration: 1e3 * 60 * 60,
-            isOver: false,
-            isHoldOn: false,
-            stopFunction: () => {
-              clearInterval(audioContextWrapper.audioLevelInterval);
-              VocalControl2.pause();
-              key = key ? key : `fig-${pos}`;
-              const animationItem2 = figureAssociatedAnimation.find((tid) => tid.targetId === key);
-              performMouthAnimation({
-                audioLevel: 0,
-                OPEN_THRESHOLD: 1,
-                HALF_OPEN_THRESHOLD: 1,
-                currentMouthValue,
-                lerpSpeed,
-                key,
-                animationItem: animationItem2,
-                pos
-              });
-              clearTimeout(audioContextWrapper.blinkTimerID);
-            },
-            blockingNext: () => false,
-            blockingAuto: () => {
-              return !isOver;
-            },
-            skipNextCollect: true,
-            stopTimeout: void 0
-            // 暂时不用，后面会交给自动清除
-          };
-          WebGAL.gameplay.performController.arrangeNewPerform(perform, sentence, false);
-          key = key ? key : `fig-${pos}`;
-          const animationItem = figureAssociatedAnimation.find((tid) => tid.targetId === key);
-          if (animationItem) {
-            const foundFigure = freeFigure.find((figure) => figure.key === key);
-            if (foundFigure) {
-              pos = foundFigure.basePosition;
-            }
-            if (!audioContextWrapper.audioContext) {
-              let audioContext;
-              audioContext = new AudioContext();
-              audioContextWrapper.analyser = audioContext.createAnalyser();
-              audioContextWrapper.analyser.fftSize = 256;
-              audioContextWrapper.dataArray = new Uint8Array(audioContextWrapper.analyser.frequencyBinCount);
-            }
-            if (!audioContextWrapper.analyser) {
-              audioContextWrapper.analyser = audioContextWrapper.audioContext.createAnalyser();
-              audioContextWrapper.analyser.fftSize = 256;
-            }
-            bufferLength = audioContextWrapper.analyser.frequencyBinCount;
-            audioContextWrapper.dataArray = new Uint8Array(bufferLength);
-            let vocalControl = document.getElementById("currentVocal");
-            if (!audioContextWrapper.source) {
-              audioContextWrapper.source = audioContextWrapper.audioContext.createMediaElementSource(vocalControl);
-              audioContextWrapper.source.connect(audioContextWrapper.analyser);
-            }
-            audioContextWrapper.analyser.connect(audioContextWrapper.audioContext.destination);
-            audioContextWrapper.audioLevelInterval = setInterval(() => {
-              const audioLevel = getAudioLevel(
-                audioContextWrapper.analyser,
-                audioContextWrapper.dataArray,
-                bufferLength
-              );
-              const { OPEN_THRESHOLD, HALF_OPEN_THRESHOLD } = updateThresholds(audioLevel);
-              performMouthAnimation({
-                audioLevel,
-                OPEN_THRESHOLD,
-                HALF_OPEN_THRESHOLD,
-                currentMouthValue,
-                lerpSpeed,
-                key,
-                animationItem,
-                pos
-              });
-            }, 50);
-            let animationEndTime;
-            animationEndTime = Date.now() + 1e4;
-            performBlinkAnimation({ key, animationItem, pos, animationEndTime });
-            setTimeout(() => {
-              clearTimeout(audioContextWrapper.blinkTimerID);
-            }, 1e4);
-          }
-          VocalControl2 == null ? void 0 : VocalControl2.play();
-          VocalControl2.onended = () => {
-            for (const e2 of WebGAL.gameplay.performController.performList) {
-              if (e2.performName === performInitName) {
-                isOver = true;
-                e2.stopFunction();
-                WebGAL.gameplay.performController.unmountPerform(e2.performName);
-              }
-            }
-          };
-        }
-      }, 1);
-    })
-  };
-};
-function useTextDelay(type2) {
-  switch (type2) {
-    case playSpeed.slow:
-      return 80;
-    case playSpeed.normal:
-      return 35;
-    case playSpeed.fast:
-      return 3;
-  }
-}
-function useTextAnimationDuration(type2) {
-  switch (type2) {
-    case playSpeed.slow:
-      return 800;
-    case playSpeed.normal:
-      return 350;
-    case playSpeed.fast:
-      return 200;
-  }
-}
-const say = (sentence) => {
-  const stageState = webgalStore.getState().stage;
-  const userDataState = webgalStore.getState().userData;
-  const dispatch = webgalStore.dispatch;
-  let dialogKey = Math.random().toString();
-  let dialogToShow = sentence.content;
-  const isConcat = getSentenceArgByKey(sentence, "concat");
-  const isNotend = getSentenceArgByKey(sentence, "notend");
-  const speaker = getSentenceArgByKey(sentence, "speaker");
-  const clear2 = getSentenceArgByKey(sentence, "clear");
-  const vocal = getSentenceArgByKey(sentence, "vocal");
-  if (isConcat) {
-    dialogKey = stageState.currentDialogKey;
-    dialogToShow = stageState.showText + dialogToShow;
-    dispatch(setStage({ key: "currentConcatDialogPrev", value: stageState.showText }));
-  } else {
-    dispatch(setStage({ key: "currentConcatDialogPrev", value: "" }));
-  }
-  dispatch(setStage({ key: "showText", value: dialogToShow }));
-  dispatch(setStage({ key: "vocal", value: "" }));
-  if (!(userDataState.optionData.voiceInterruption === voiceOption.no && vocal === null)) {
-    dispatch(setStage({ key: "playVocal", value: "" }));
-    WebGAL.gameplay.performController.unmountPerform("vocal-play", true);
-  }
-  dispatch(setStage({ key: "currentDialogKey", value: dialogKey }));
-  const textDelay = useTextDelay(userDataState.optionData.textSpeed);
-  const sentenceDelay = textDelay * sentence.content.length;
-  for (const e2 of sentence.args) {
-    if (e2.key === "fontSize") {
-      switch (e2.value) {
-        case "default":
-          dispatch(setStage({ key: "showTextSize", value: -1 }));
-          break;
-        case "small":
-          dispatch(setStage({ key: "showTextSize", value: textSize.small }));
-          break;
-        case "medium":
-          dispatch(setStage({ key: "showTextSize", value: textSize.medium }));
-          break;
-        case "large":
-          dispatch(setStage({ key: "showTextSize", value: textSize.large }));
-          break;
-      }
-    }
-  }
-  let showName = stageState.showName;
-  if (speaker !== null) {
-    showName = speaker;
-  }
-  if (clear2) {
-    showName = "";
-  }
-  dispatch(setStage({ key: "showName", value: showName }));
-  if (vocal) {
-    playVocal(sentence);
-  }
-  const performInitName = getRandomPerformName();
-  let endDelay = 750 - userDataState.optionData.textSpeed * 250;
-  if (isNotend) {
-    endDelay = 0;
-  }
-  return {
-    performName: performInitName,
-    duration: sentenceDelay + endDelay,
-    isHoldOn: false,
-    stopFunction: () => {
-      WebGAL.events.textSettle.emit();
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0,
-    // 暂时不用，后面会交给自动清除
-    goNextWhenOver: isNotend
-  };
-};
-var parse$5 = {};
+var parse$6 = {};
 var window$1 = { document: {} };
-var hasOwnProperty = Object.prototype.hasOwnProperty;
+var hasOwnProperty$2 = Object.prototype.hasOwnProperty;
 var lowercase = function(string) {
-  return isString$1(string) ? string.toLowerCase() : string;
+  return isString$2(string) ? string.toLowerCase() : string;
 };
-var isArray$5 = Array.isArray;
+var isArray$b = Array.isArray;
 var manualLowercase = function(s2) {
-  return isString$1(s2) ? s2.replace(/[A-Z]/g, function(ch2) {
+  return isString$2(s2) ? s2.replace(/[A-Z]/g, function(ch2) {
     return String.fromCharCode(ch2.charCodeAt(0) | 32);
   }) : s2;
 };
 if ("i" !== "I".toLowerCase()) {
   lowercase = manualLowercase;
 }
-var jqLite, toString2 = Object.prototype.toString, getPrototypeOf = Object.getPrototypeOf, ngMinErr = minErr("ng");
+var jqLite, toString$2 = Object.prototype.toString, getPrototypeOf = Object.getPrototypeOf, ngMinErr = minErr("ng");
 window$1.angular || (window$1.angular = {});
 window$1.document.documentMode;
 function isArrayLike(obj) {
   if (obj == null || isWindow(obj))
     return false;
-  if (isArray$5(obj) || isString$1(obj) || jqLite)
+  if (isArray$b(obj) || isString$2(obj) || jqLite)
     return true;
   var length2 = "length" in Object(obj) && obj.length;
   return isNumber$1(length2) && (length2 >= 0 && (length2 - 1 in obj || obj instanceof Array) || typeof obj.item === "function");
@@ -21617,7 +17246,7 @@ function forEach3(obj, iterator, context2) {
           iterator.call(context2, obj[key], key, obj);
         }
       }
-    } else if (isArray$5(obj) || isArrayLike(obj)) {
+    } else if (isArray$b(obj) || isArrayLike(obj)) {
       var isPrimitive = typeof obj !== "object";
       for (key = 0, length2 = obj.length; key < length2; key++) {
         if (isPrimitive || key in obj) {
@@ -21638,7 +17267,7 @@ function forEach3(obj, iterator, context2) {
       }
     } else {
       for (key in obj) {
-        if (hasOwnProperty.call(obj, key)) {
+        if (hasOwnProperty$2.call(obj, key)) {
           iterator.call(context2, obj[key], key, obj);
         }
       }
@@ -21653,22 +17282,22 @@ function setHashKey(obj, h2) {
     delete obj.$$hashKey;
   }
 }
-function noop$2() {
+function noop$4() {
 }
-noop$2.$inject = [];
-function isUndefined(value) {
+noop$4.$inject = [];
+function isUndefined$2(value) {
   return typeof value === "undefined";
 }
 function isDefined(value) {
   return typeof value !== "undefined";
 }
-function isObject$3(value) {
+function isObject$5(value) {
   return value !== null && typeof value === "object";
 }
 function isBlankObject(value) {
   return value !== null && typeof value === "object" && !getPrototypeOf(value);
 }
-function isString$1(value) {
+function isString$2(value) {
   return typeof value === "string";
 }
 function isNumber$1(value) {
@@ -21684,17 +17313,17 @@ function isScope(obj) {
   return obj && obj.$evalAsync && obj.$watch;
 }
 var TYPED_ARRAY_REGEXP = /^\[object (?:Uint8|Uint8Clamped|Uint16|Uint32|Int8|Int16|Int32|Float32|Float64)Array\]$/;
-function isTypedArray(value) {
-  return value && isNumber$1(value.length) && TYPED_ARRAY_REGEXP.test(toString2.call(value));
+function isTypedArray$1(value) {
+  return value && isNumber$1(value.length) && TYPED_ARRAY_REGEXP.test(toString$2.call(value));
 }
 function isArrayBuffer(obj) {
-  return toString2.call(obj) === "[object ArrayBuffer]";
+  return toString$2.call(obj) === "[object ArrayBuffer]";
 }
 function copy$2(source, destination) {
   var stackSource = [];
   var stackDest = [];
   if (destination) {
-    if (isTypedArray(destination) || isArrayBuffer(destination)) {
+    if (isTypedArray$1(destination) || isArrayBuffer(destination)) {
       throw ngMinErr(
         "cpta",
         "Can't copy! TypedArray destination cannot be mutated."
@@ -21706,7 +17335,7 @@ function copy$2(source, destination) {
         "Can't copy! Source and destination are identical."
       );
     }
-    if (isArray$5(destination)) {
+    if (isArray$b(destination)) {
       destination.length = 0;
     } else {
       forEach3(destination, function(value, key) {
@@ -21723,7 +17352,7 @@ function copy$2(source, destination) {
   function copyRecurse(source2, destination2) {
     var h2 = destination2.$$hashKey;
     var key;
-    if (isArray$5(source2)) {
+    if (isArray$b(source2)) {
       for (var i2 = 0, ii2 = source2.length; i2 < ii2; i2++) {
         destination2.push(copyElement(source2[i2]));
       }
@@ -21739,7 +17368,7 @@ function copy$2(source, destination) {
       }
     } else {
       for (key in source2) {
-        if (hasOwnProperty.call(source2, key)) {
+        if (hasOwnProperty$2.call(source2, key)) {
           destination2[key] = copyElement(source2[key]);
         }
       }
@@ -21748,7 +17377,7 @@ function copy$2(source, destination) {
     return destination2;
   }
   function copyElement(source2) {
-    if (!isObject$3(source2)) {
+    if (!isObject$5(source2)) {
       return source2;
     }
     var index2 = stackSource.indexOf(source2);
@@ -21764,7 +17393,7 @@ function copy$2(source, destination) {
     var needsRecurse = false;
     var destination2 = copyType(source2);
     if (destination2 === void 0) {
-      destination2 = isArray$5(source2) ? [] : Object.create(getPrototypeOf(source2));
+      destination2 = isArray$b(source2) ? [] : Object.create(getPrototypeOf(source2));
       needsRecurse = true;
     }
     stackSource.push(source2);
@@ -21772,7 +17401,7 @@ function copy$2(source, destination) {
     return needsRecurse ? copyRecurse(source2, destination2) : destination2;
   }
   function copyType(source2) {
-    switch (toString2.call(source2)) {
+    switch (toString$2.call(source2)) {
       case "[object Int8Array]":
       case "[object Int16Array]":
       case "[object Int32Array]":
@@ -21849,7 +17478,7 @@ function serializeObject(obj) {
   var seen2 = [];
   return JSON.stringify(obj, function(key, val) {
     val = toJsonReplacer(key, val);
-    if (isObject$3(val)) {
+    if (isObject$5(val)) {
       if (seen2.indexOf(val) >= 0)
         return "...";
       seen2.push(val);
@@ -21860,7 +17489,7 @@ function serializeObject(obj) {
 function toDebugString(obj) {
   if (typeof obj === "function") {
     return obj.toString().replace(/ \{[\s\S]*$/, "");
-  } else if (isUndefined(obj)) {
+  } else if (isUndefined$2(obj)) {
     return "undefined";
   } else if (typeof obj !== "string") {
     return serializeObject(obj);
@@ -22713,7 +18342,7 @@ ASTCompiler.prototype = {
   },
   recurse: function(ast, intoId, nameId, recursionFn, create, skipWatchIdCheck) {
     var left, right, self2 = this, args, expression, computed;
-    recursionFn = recursionFn || noop$2;
+    recursionFn = recursionFn || noop$4;
     if (!skipWatchIdCheck && isDefined(ast.watchId)) {
       intoId = intoId || this.nextId();
       this.if_(
@@ -23184,7 +18813,7 @@ ASTCompiler.prototype = {
     return "\\u" + ("0000" + c2.charCodeAt(0).toString(16)).slice(-4);
   },
   escape: function(value) {
-    if (isString$1(value))
+    if (isString$2(value))
       return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
     if (isNumber$1(value))
       return value.toString();
@@ -23238,7 +18867,7 @@ ASTInterpreter.prototype = {
     forEach3(ast.body, function(expression2) {
       expressions.push(self2.recurse(expression2.expression));
     });
-    var fn2 = ast.body.length === 0 ? noop$2 : ast.body.length === 1 ? expressions[0] : function(scope, locals) {
+    var fn2 = ast.body.length === 0 ? noop$4 : ast.body.length === 1 ? expressions[0] : function(scope, locals) {
       var lastValue;
       forEach3(expressions, function(exp) {
         lastValue = exp(scope, locals);
@@ -23601,12 +19230,12 @@ Parser$1.prototype = {
     return this.astCompiler.compile(text2);
   }
 };
-parse$5.Lexer = Lexer$1;
-parse$5.Parser = Parser$1;
-var parse$4 = parse$5;
+parse$6.Lexer = Lexer$1;
+parse$6.Parser = Parser$1;
+var parse$5 = parse$6;
 var filters$1 = {};
-var Lexer2 = parse$4.Lexer;
-var Parser2 = parse$4.Parser;
+var Lexer2 = parse$5.Lexer;
+var Parser2 = parse$5.Parser;
 function compile$1(src, options) {
   options = options || {};
   var localFilters = options.filters || filters$1;
@@ -23738,132 +19367,6 @@ function getValueFromState(key) {
   }
   return ret;
 }
-const showVars = (sentence) => {
-  const stageState = webgalStore.getState().stage;
-  const userDataState = webgalStore.getState().userData;
-  const dispatch = webgalStore.dispatch;
-  const allVar = {
-    stageGameVar: stageState.GameVar,
-    globalGameVar: userDataState.globalGameVar
-  };
-  dispatch(setStage({ key: "showText", value: JSON.stringify(allVar) }));
-  dispatch(setStage({ key: "showName", value: "展示变量" }));
-  logger.debug("展示变量：", allVar);
-  setTimeout(() => {
-    WebGAL.events.textSettle.emit();
-  }, 0);
-  const performInitName = getRandomPerformName();
-  const endDelay = 750 - userDataState.optionData.textSpeed * 250;
-  return {
-    performName: performInitName,
-    duration: endDelay,
-    isHoldOn: false,
-    stopFunction: () => {
-      WebGAL.events.textSettle.emit();
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-function ScriptConfig(scriptType, scriptFunction, config) {
-  return { scriptType, scriptFunction, ...config };
-}
-const scriptRegistry = {};
-function defineScripts(record) {
-  const result = {};
-  for (const [scriptString, config] of Object.entries(record)) {
-    result[scriptString] = scriptRegistry[config.scriptType] = { scriptString, ...config };
-  }
-  return result;
-}
-const applyStyle = (sentence) => {
-  const { content } = sentence;
-  const applyStyleSegments = content.split(",");
-  for (const applyStyleSegment of applyStyleSegments) {
-    const splitSegment = applyStyleSegment.split("->");
-    if (splitSegment.length >= 2) {
-      const classNameToBeChange = splitSegment[0];
-      const classNameChangeTo = splitSegment[1];
-      webgalStore.dispatch(stageActions.replaceUIlable([classNameToBeChange, classNameChangeTo]));
-    }
-  }
-  return {
-    performName: "none",
-    duration: 0,
-    isHoldOn: false,
-    stopFunction: () => {
-    },
-    blockingNext: () => false,
-    blockingAuto: () => true,
-    stopTimeout: void 0
-    // 暂时不用，后面会交给自动清除
-  };
-};
-const SCRIPT_TAG_MAP = defineScripts({
-  intro: ScriptConfig(commandType$1.intro, intro),
-  changeBg: ScriptConfig(commandType$1.changeBg, changeBg),
-  changeFigure: ScriptConfig(commandType$1.changeFigure, changeFigure),
-  miniAvatar: ScriptConfig(commandType$1.miniAvatar, miniAvatar, { next: true }),
-  changeScene: ScriptConfig(commandType$1.changeScene, changeSceneScript),
-  choose: ScriptConfig(commandType$1.choose, choose),
-  end: ScriptConfig(commandType$1.end, end),
-  bgm: ScriptConfig(commandType$1.bgm, bgm, { next: true }),
-  playVideo: ScriptConfig(commandType$1.video, playVideo),
-  setComplexAnimation: ScriptConfig(commandType$1.setComplexAnimation, setComplexAnimation),
-  setFilter: ScriptConfig(commandType$1.setFilter, setFilter),
-  pixiInit: ScriptConfig(commandType$1.pixiInit, pixiInit, { next: true }),
-  pixiPerform: ScriptConfig(commandType$1.pixi, pixi, { next: true }),
-  label: ScriptConfig(commandType$1.label, label, { next: true }),
-  jumpLabel: ScriptConfig(commandType$1.jumpLabel, jumpLabel),
-  setVar: ScriptConfig(commandType$1.setVar, setVar, { next: true }),
-  showVars: ScriptConfig(commandType$1.showVars, showVars),
-  unlockCg: ScriptConfig(commandType$1.unlockCg, unlockCg, { next: true }),
-  unlockBgm: ScriptConfig(commandType$1.unlockBgm, unlockBgm, { next: true }),
-  say: ScriptConfig(commandType$1.say, say),
-  filmMode: ScriptConfig(commandType$1.filmMode, filmMode, { next: true }),
-  callScene: ScriptConfig(commandType$1.callScene, callSceneScript),
-  setTextbox: ScriptConfig(commandType$1.setTextbox, setTextbox),
-  setAnimation: ScriptConfig(commandType$1.setAnimation, setAnimation),
-  playEffect: ScriptConfig(commandType$1.playEffect, playEffect, { next: true }),
-  setTempAnimation: ScriptConfig(commandType$1.setTempAnimation, setTempAnimation),
-  __commment: ScriptConfig(commandType$1.comment, comment$1, { next: true }),
-  setTransform: ScriptConfig(commandType$1.setTransform, setTransform),
-  setTransition: ScriptConfig(commandType$1.setTransition, setTransition, { next: true }),
-  getUserInput: ScriptConfig(commandType$1.getUserInput, getUserInput),
-  applyStyle: ScriptConfig(commandType$1.applyStyle, applyStyle, { next: true })
-  // if: ScriptConfig(commandType.if, undefined, { next: true }),
-});
-const SCRIPT_CONFIG = Object.values(SCRIPT_TAG_MAP);
-const ADD_NEXT_ARG_LIST = SCRIPT_CONFIG.filter((config) => config.next).map((config) => config.scriptType);
-const WebgalParser = new SceneParser(assetsPrefetcher, assetSetter, ADD_NEXT_ARG_LIST, SCRIPT_CONFIG);
-const sceneParser = (rawScene, sceneName, sceneUrl) => {
-  const parsedScene = WebgalParser.parse(rawScene, sceneName, sceneUrl);
-  logger.info(`解析场景：${sceneName}，数据为：`, parsedScene);
-  return parsedScene;
-};
-const runScript = (script) => {
-  var _a2;
-  let perform = initPerform;
-  const funcToRun = ((_a2 = scriptRegistry[script.command]) == null ? void 0 : _a2.scriptFunction) ?? SCRIPT_TAG_MAP.say.scriptFunction;
-  perform = funcToRun(script);
-  if (perform.arrangePerformPromise) {
-    perform.arrangePerformPromise.then(
-      (resolovedPerform) => WebGAL.gameplay.performController.arrangeNewPerform(resolovedPerform, script)
-    );
-  } else {
-    WebGAL.gameplay.performController.arrangeNewPerform(perform, script);
-  }
-};
-const restoreScene = (entry) => {
-  sceneFetcher(entry.sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, entry.sceneName, entry.sceneUrl);
-    WebGAL.sceneManager.sceneData.currentSentenceId = entry.continueLine + 1;
-    logger.debug("现在恢复场景，恢复后场景：", WebGAL.sceneManager.sceneData.currentScene);
-    nextSentence();
-  });
-};
 function strIf(s2) {
   const res = compile_1(s2);
   return res();
@@ -24021,6 +19524,3471 @@ const nextSentence = () => {
     nextSentence();
   }
 };
+var HASH_UNDEFINED = "__lodash_hash_undefined__";
+function setCacheAdd$1(value) {
+  this.__data__.set(value, HASH_UNDEFINED);
+  return this;
+}
+var _setCacheAdd = setCacheAdd$1;
+function setCacheHas$1(value) {
+  return this.__data__.has(value);
+}
+var _setCacheHas = setCacheHas$1;
+var MapCache$1 = _MapCache$1, setCacheAdd = _setCacheAdd, setCacheHas = _setCacheHas;
+function SetCache$2(values) {
+  var index2 = -1, length2 = values == null ? 0 : values.length;
+  this.__data__ = new MapCache$1();
+  while (++index2 < length2) {
+    this.add(values[index2]);
+  }
+}
+SetCache$2.prototype.add = SetCache$2.prototype.push = setCacheAdd;
+SetCache$2.prototype.has = setCacheHas;
+var _SetCache = SetCache$2;
+function baseFindIndex$1(array, predicate, fromIndex, fromRight) {
+  var length2 = array.length, index2 = fromIndex + (fromRight ? 1 : -1);
+  while (fromRight ? index2-- : ++index2 < length2) {
+    if (predicate(array[index2], index2, array)) {
+      return index2;
+    }
+  }
+  return -1;
+}
+var _baseFindIndex = baseFindIndex$1;
+function baseIsNaN$1(value) {
+  return value !== value;
+}
+var _baseIsNaN = baseIsNaN$1;
+function strictIndexOf$1(array, value, fromIndex) {
+  var index2 = fromIndex - 1, length2 = array.length;
+  while (++index2 < length2) {
+    if (array[index2] === value) {
+      return index2;
+    }
+  }
+  return -1;
+}
+var _strictIndexOf = strictIndexOf$1;
+var baseFindIndex = _baseFindIndex, baseIsNaN = _baseIsNaN, strictIndexOf = _strictIndexOf;
+function baseIndexOf$1(array, value, fromIndex) {
+  return value === value ? strictIndexOf(array, value, fromIndex) : baseFindIndex(array, baseIsNaN, fromIndex);
+}
+var _baseIndexOf = baseIndexOf$1;
+var baseIndexOf = _baseIndexOf;
+function arrayIncludes$1(array, value) {
+  var length2 = array == null ? 0 : array.length;
+  return !!length2 && baseIndexOf(array, value, 0) > -1;
+}
+var _arrayIncludes = arrayIncludes$1;
+function arrayIncludesWith$1(array, value, comparator) {
+  var index2 = -1, length2 = array == null ? 0 : array.length;
+  while (++index2 < length2) {
+    if (comparator(value, array[index2])) {
+      return true;
+    }
+  }
+  return false;
+}
+var _arrayIncludesWith = arrayIncludesWith$1;
+function cacheHas$2(cache, key) {
+  return cache.has(key);
+}
+var _cacheHas = cacheHas$2;
+function noop$3() {
+}
+var noop_1 = noop$3;
+function setToArray$3(set) {
+  var index2 = -1, result = Array(set.size);
+  set.forEach(function(value) {
+    result[++index2] = value;
+  });
+  return result;
+}
+var _setToArray = setToArray$3;
+var Set$1 = _Set$1, noop$2 = noop_1, setToArray$2 = _setToArray;
+var INFINITY$2 = 1 / 0;
+var createSet$1 = !(Set$1 && 1 / setToArray$2(new Set$1([, -0]))[1] == INFINITY$2) ? noop$2 : function(values) {
+  return new Set$1(values);
+};
+var _createSet = createSet$1;
+var SetCache$1 = _SetCache, arrayIncludes = _arrayIncludes, arrayIncludesWith = _arrayIncludesWith, cacheHas$1 = _cacheHas, createSet = _createSet, setToArray$1 = _setToArray;
+var LARGE_ARRAY_SIZE = 200;
+function baseUniq$1(array, iteratee, comparator) {
+  var index2 = -1, includes = arrayIncludes, length2 = array.length, isCommon = true, result = [], seen2 = result;
+  if (comparator) {
+    isCommon = false;
+    includes = arrayIncludesWith;
+  } else if (length2 >= LARGE_ARRAY_SIZE) {
+    var set = iteratee ? null : createSet(array);
+    if (set) {
+      return setToArray$1(set);
+    }
+    isCommon = false;
+    includes = cacheHas$1;
+    seen2 = new SetCache$1();
+  } else {
+    seen2 = iteratee ? [] : result;
+  }
+  outer:
+    while (++index2 < length2) {
+      var value = array[index2], computed = iteratee ? iteratee(value) : value;
+      value = comparator || value !== 0 ? value : 0;
+      if (isCommon && computed === computed) {
+        var seenIndex = seen2.length;
+        while (seenIndex--) {
+          if (seen2[seenIndex] === computed) {
+            continue outer;
+          }
+        }
+        if (iteratee) {
+          seen2.push(computed);
+        }
+        result.push(value);
+      } else if (!includes(seen2, computed, comparator)) {
+        if (seen2 !== result) {
+          seen2.push(computed);
+        }
+        result.push(value);
+      }
+    }
+  return result;
+}
+var _baseUniq = baseUniq$1;
+var baseUniq = _baseUniq;
+function uniqWith(array, comparator) {
+  comparator = typeof comparator == "function" ? comparator : void 0;
+  return array && array.length ? baseUniq(array, void 0, comparator) : [];
+}
+var uniqWith_1 = uniqWith;
+const uniqWith$1 = /* @__PURE__ */ getDefaultExportFromCjs(uniqWith_1);
+const scenePrefetcher = (sceneList) => {
+  for (const e2 of sceneList) {
+    if (!WebGAL.sceneManager.settledScenes.includes(e2)) {
+      logger.info(`现在预加载场景${e2}`);
+      sceneFetcher(e2).then((r2) => {
+        sceneParser(r2, e2, e2);
+      });
+    } else {
+      logger.warn(`场景${e2}已经加载过，无需再次加载`);
+    }
+  }
+};
+const callScene = (sceneUrl, sceneName) => {
+  WebGAL.sceneManager.sceneData.sceneStack.push({
+    sceneName: WebGAL.sceneManager.sceneData.currentScene.sceneName,
+    sceneUrl: WebGAL.sceneManager.sceneData.currentScene.sceneUrl,
+    continueLine: WebGAL.sceneManager.sceneData.currentSentenceId
+  });
+  sceneFetcher(sceneUrl).then(async (rawScene) => {
+    const scene = await WebGAL.sceneManager.setCurrentScene(rawScene, sceneName, sceneUrl, true);
+    if (scene) {
+      WebGAL.sceneManager.sceneData.currentSentenceId = 0;
+      const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
+      WebGAL.sceneManager.settledScenes.push(sceneUrl);
+      const subSceneListUniq = uniqWith$1(subSceneList);
+      scenePrefetcher(subSceneListUniq);
+      logger.debug("现在调用场景，调用结果：", WebGAL.sceneManager.sceneData);
+      nextSentence();
+    }
+  });
+};
+const callSceneScript = (sentence) => {
+  const sceneNameArray = sentence.content.split("/");
+  const sceneName = sceneNameArray[sceneNameArray.length - 1];
+  callScene(sentence.content, sceneName);
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: true,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function generateTransformAnimationObj(target, applyFrame, duration) {
+  let animationObj;
+  const transformState = webgalStore.getState().stage.effects;
+  const targetEffect = transformState.find((effect) => effect.target === target);
+  applyFrame.duration = 500;
+  if (duration && typeof duration === "number") {
+    applyFrame.duration = duration;
+  }
+  animationObj = [applyFrame];
+  if (targetEffect) {
+    const effectWithDuration = { ...targetEffect.transform, duration: 0 };
+    animationObj.unshift(effectWithDuration);
+  } else {
+    const effectWithDuration = { ...applyFrame, alpha: 0, duration: 0 };
+    animationObj.unshift(effectWithDuration);
+  }
+  return animationObj;
+}
+function generateUniversalSoftInAnimationObj(targetKey, duration) {
+  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
+  function setStartState() {
+    if (target) {
+      target.pixiContainer.alpha = 0;
+    }
+  }
+  function setEndState() {
+    if (target) {
+      target.pixiContainer.alpha = 1;
+    }
+  }
+  function tickerFunc(delta) {
+    if (target) {
+      const sprite = target.pixiContainer;
+      const baseDuration = WebGAL.gameplay.pixiStage.frameDuration;
+      const currentAddOplityDelta = duration / baseDuration * delta;
+      const increasement = 1 / currentAddOplityDelta;
+      if (sprite.alpha < 1) {
+        sprite.alpha += increasement;
+      }
+    }
+  }
+  return {
+    setStartState,
+    setEndState,
+    tickerFunc
+  };
+}
+function generateUniversalSoftOffAnimationObj(targetKey, duration) {
+  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
+  function setStartState() {
+  }
+  function setEndState() {
+    if (target)
+      target.pixiContainer.alpha = 0;
+  }
+  function tickerFunc(delta) {
+    if (target) {
+      const sprite = target.pixiContainer;
+      const baseDuration = WebGAL.gameplay.pixiStage.frameDuration;
+      const currentAddOplityDelta = duration / baseDuration * delta;
+      const decreasement = 1 / currentAddOplityDelta;
+      if (sprite.alpha > 0) {
+        sprite.alpha -= decreasement;
+      }
+    }
+  }
+  return {
+    setStartState,
+    setEndState,
+    tickerFunc
+  };
+}
+const baseTransform = {
+  alpha: 1,
+  scale: {
+    x: 1,
+    y: 1
+  },
+  // pivot: {
+  //   x: 0.5,
+  //   y: 0.5,
+  // },
+  position: {
+    x: 0,
+    y: 0
+  },
+  rotation: 0,
+  blur: 0
+};
+function __rest$2(s2, e2) {
+  var t2 = {};
+  for (var p in s2)
+    if (Object.prototype.hasOwnProperty.call(s2, p) && e2.indexOf(p) < 0)
+      t2[p] = s2[p];
+  if (s2 != null && typeof Object.getOwnPropertySymbols === "function")
+    for (var i2 = 0, p = Object.getOwnPropertySymbols(s2); i2 < p.length; i2++) {
+      if (e2.indexOf(p[i2]) < 0 && Object.prototype.propertyIsEnumerable.call(s2, p[i2]))
+        t2[p[i2]] = s2[p[i2]];
+    }
+  return t2;
+}
+var warning = function() {
+};
+var invariant = function() {
+};
+const clamp$1 = (min, max2, v2) => Math.min(Math.max(v2, min), max2);
+const safeMin = 1e-3;
+const minDuration = 0.01;
+const maxDuration = 10;
+const minDamping = 0.05;
+const maxDamping = 1;
+function findSpring({ duration = 800, bounce = 0.25, velocity = 0, mass = 1 }) {
+  let envelope;
+  let derivative;
+  warning(duration <= maxDuration * 1e3);
+  let dampingRatio = 1 - bounce;
+  dampingRatio = clamp$1(minDamping, maxDamping, dampingRatio);
+  duration = clamp$1(minDuration, maxDuration, duration / 1e3);
+  if (dampingRatio < 1) {
+    envelope = (undampedFreq2) => {
+      const exponentialDecay = undampedFreq2 * dampingRatio;
+      const delta = exponentialDecay * duration;
+      const a2 = exponentialDecay - velocity;
+      const b2 = calcAngularFreq(undampedFreq2, dampingRatio);
+      const c2 = Math.exp(-delta);
+      return safeMin - a2 / b2 * c2;
+    };
+    derivative = (undampedFreq2) => {
+      const exponentialDecay = undampedFreq2 * dampingRatio;
+      const delta = exponentialDecay * duration;
+      const d2 = delta * velocity + velocity;
+      const e2 = Math.pow(dampingRatio, 2) * Math.pow(undampedFreq2, 2) * duration;
+      const f2 = Math.exp(-delta);
+      const g2 = calcAngularFreq(Math.pow(undampedFreq2, 2), dampingRatio);
+      const factor = -envelope(undampedFreq2) + safeMin > 0 ? -1 : 1;
+      return factor * ((d2 - e2) * f2) / g2;
+    };
+  } else {
+    envelope = (undampedFreq2) => {
+      const a2 = Math.exp(-undampedFreq2 * duration);
+      const b2 = (undampedFreq2 - velocity) * duration + 1;
+      return -safeMin + a2 * b2;
+    };
+    derivative = (undampedFreq2) => {
+      const a2 = Math.exp(-undampedFreq2 * duration);
+      const b2 = (velocity - undampedFreq2) * (duration * duration);
+      return a2 * b2;
+    };
+  }
+  const initialGuess = 5 / duration;
+  const undampedFreq = approximateRoot(envelope, derivative, initialGuess);
+  duration = duration * 1e3;
+  if (isNaN(undampedFreq)) {
+    return {
+      stiffness: 100,
+      damping: 10,
+      duration
+    };
+  } else {
+    const stiffness = Math.pow(undampedFreq, 2) * mass;
+    return {
+      stiffness,
+      damping: dampingRatio * 2 * Math.sqrt(mass * stiffness),
+      duration
+    };
+  }
+}
+const rootIterations = 12;
+function approximateRoot(envelope, derivative, initialGuess) {
+  let result = initialGuess;
+  for (let i2 = 1; i2 < rootIterations; i2++) {
+    result = result - envelope(result) / derivative(result);
+  }
+  return result;
+}
+function calcAngularFreq(undampedFreq, dampingRatio) {
+  return undampedFreq * Math.sqrt(1 - dampingRatio * dampingRatio);
+}
+const durationKeys = ["duration", "bounce"];
+const physicsKeys = ["stiffness", "damping", "mass"];
+function isSpringType(options, keys2) {
+  return keys2.some((key) => options[key] !== void 0);
+}
+function getSpringOptions(options) {
+  let springOptions = Object.assign({ velocity: 0, stiffness: 100, damping: 10, mass: 1, isResolvedFromDuration: false }, options);
+  if (!isSpringType(options, physicsKeys) && isSpringType(options, durationKeys)) {
+    const derived = findSpring(options);
+    springOptions = Object.assign(Object.assign(Object.assign({}, springOptions), derived), { velocity: 0, mass: 1 });
+    springOptions.isResolvedFromDuration = true;
+  }
+  return springOptions;
+}
+function spring(_a2) {
+  var { from: from2 = 0, to = 1, restSpeed = 2, restDelta } = _a2, options = __rest$2(_a2, ["from", "to", "restSpeed", "restDelta"]);
+  const state = { done: false, value: from2 };
+  let { stiffness, damping, mass, velocity, duration, isResolvedFromDuration } = getSpringOptions(options);
+  let resolveSpring = zero;
+  let resolveVelocity = zero;
+  function createSpring() {
+    const initialVelocity = velocity ? -(velocity / 1e3) : 0;
+    const initialDelta = to - from2;
+    const dampingRatio = damping / (2 * Math.sqrt(stiffness * mass));
+    const undampedAngularFreq = Math.sqrt(stiffness / mass) / 1e3;
+    if (restDelta === void 0) {
+      restDelta = Math.min(Math.abs(to - from2) / 100, 0.4);
+    }
+    if (dampingRatio < 1) {
+      const angularFreq = calcAngularFreq(undampedAngularFreq, dampingRatio);
+      resolveSpring = (t2) => {
+        const envelope = Math.exp(-dampingRatio * undampedAngularFreq * t2);
+        return to - envelope * ((initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) / angularFreq * Math.sin(angularFreq * t2) + initialDelta * Math.cos(angularFreq * t2));
+      };
+      resolveVelocity = (t2) => {
+        const envelope = Math.exp(-dampingRatio * undampedAngularFreq * t2);
+        return dampingRatio * undampedAngularFreq * envelope * (Math.sin(angularFreq * t2) * (initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) / angularFreq + initialDelta * Math.cos(angularFreq * t2)) - envelope * (Math.cos(angularFreq * t2) * (initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) - angularFreq * initialDelta * Math.sin(angularFreq * t2));
+      };
+    } else if (dampingRatio === 1) {
+      resolveSpring = (t2) => to - Math.exp(-undampedAngularFreq * t2) * (initialDelta + (initialVelocity + undampedAngularFreq * initialDelta) * t2);
+    } else {
+      const dampedAngularFreq = undampedAngularFreq * Math.sqrt(dampingRatio * dampingRatio - 1);
+      resolveSpring = (t2) => {
+        const envelope = Math.exp(-dampingRatio * undampedAngularFreq * t2);
+        const freqForT = Math.min(dampedAngularFreq * t2, 300);
+        return to - envelope * ((initialVelocity + dampingRatio * undampedAngularFreq * initialDelta) * Math.sinh(freqForT) + dampedAngularFreq * initialDelta * Math.cosh(freqForT)) / dampedAngularFreq;
+      };
+    }
+  }
+  createSpring();
+  return {
+    next: (t2) => {
+      const current = resolveSpring(t2);
+      if (!isResolvedFromDuration) {
+        const currentVelocity = resolveVelocity(t2) * 1e3;
+        const isBelowVelocityThreshold = Math.abs(currentVelocity) <= restSpeed;
+        const isBelowDisplacementThreshold = Math.abs(to - current) <= restDelta;
+        state.done = isBelowVelocityThreshold && isBelowDisplacementThreshold;
+      } else {
+        state.done = t2 >= duration;
+      }
+      state.value = state.done ? to : current;
+      return state;
+    },
+    flipTarget: () => {
+      velocity = -velocity;
+      [from2, to] = [to, from2];
+      createSpring();
+    }
+  };
+}
+spring.needsInterpolation = (a2, b2) => typeof a2 === "string" || typeof b2 === "string";
+const zero = (_t) => 0;
+const progress = (from2, to, value) => {
+  const toFromDifference = to - from2;
+  return toFromDifference === 0 ? 1 : (value - from2) / toFromDifference;
+};
+const mix = (from2, to, progress2) => -progress2 * from2 + progress2 * to + from2;
+const clamp = (min, max2) => (v2) => Math.max(Math.min(v2, max2), min);
+const sanitize = (v2) => v2 % 1 ? Number(v2.toFixed(5)) : v2;
+const floatRegex = /(-)?([\d]*\.?[\d])+/g;
+const colorRegex = /(#[0-9a-f]{6}|#[0-9a-f]{3}|#(?:[0-9a-f]{2}){2,4}|(rgb|hsl)a?\((-?[\d\.]+%?[,\s]+){2}(-?[\d\.]+%?)\s*[\,\/]?\s*[\d\.]*%?\))/gi;
+const singleColorRegex = /^(#[0-9a-f]{3}|#(?:[0-9a-f]{2}){2,4}|(rgb|hsl)a?\((-?[\d\.]+%?[,\s]+){2}(-?[\d\.]+%?)\s*[\,\/]?\s*[\d\.]*%?\))$/i;
+function isString$1(v2) {
+  return typeof v2 === "string";
+}
+const number = {
+  test: (v2) => typeof v2 === "number",
+  parse: parseFloat,
+  transform: (v2) => v2
+};
+const alpha = Object.assign(Object.assign({}, number), { transform: clamp(0, 1) });
+Object.assign(Object.assign({}, number), { default: 1 });
+const createUnitType = (unit) => ({
+  test: (v2) => isString$1(v2) && v2.endsWith(unit) && v2.split(" ").length === 1,
+  parse: parseFloat,
+  transform: (v2) => `${v2}${unit}`
+});
+const percent = createUnitType("%");
+Object.assign(Object.assign({}, percent), { parse: (v2) => percent.parse(v2) / 100, transform: (v2) => percent.transform(v2 * 100) });
+const isColorString = (type2, testProp) => (v2) => {
+  return Boolean(isString$1(v2) && singleColorRegex.test(v2) && v2.startsWith(type2) || testProp && Object.prototype.hasOwnProperty.call(v2, testProp));
+};
+const splitColor = (aName, bName, cName) => (v2) => {
+  if (!isString$1(v2))
+    return v2;
+  const [a2, b2, c2, alpha2] = v2.match(floatRegex);
+  return {
+    [aName]: parseFloat(a2),
+    [bName]: parseFloat(b2),
+    [cName]: parseFloat(c2),
+    alpha: alpha2 !== void 0 ? parseFloat(alpha2) : 1
+  };
+};
+const hsla = {
+  test: isColorString("hsl", "hue"),
+  parse: splitColor("hue", "saturation", "lightness"),
+  transform: ({ hue, saturation, lightness, alpha: alpha$1 = 1 }) => {
+    return "hsla(" + Math.round(hue) + ", " + percent.transform(sanitize(saturation)) + ", " + percent.transform(sanitize(lightness)) + ", " + sanitize(alpha.transform(alpha$1)) + ")";
+  }
+};
+const clampRgbUnit = clamp(0, 255);
+const rgbUnit = Object.assign(Object.assign({}, number), { transform: (v2) => Math.round(clampRgbUnit(v2)) });
+const rgba = {
+  test: isColorString("rgb", "red"),
+  parse: splitColor("red", "green", "blue"),
+  transform: ({ red: red2, green: green2, blue: blue2, alpha: alpha$1 = 1 }) => "rgba(" + rgbUnit.transform(red2) + ", " + rgbUnit.transform(green2) + ", " + rgbUnit.transform(blue2) + ", " + sanitize(alpha.transform(alpha$1)) + ")"
+};
+function parseHex(v2) {
+  let r2 = "";
+  let g2 = "";
+  let b2 = "";
+  let a2 = "";
+  if (v2.length > 5) {
+    r2 = v2.substr(1, 2);
+    g2 = v2.substr(3, 2);
+    b2 = v2.substr(5, 2);
+    a2 = v2.substr(7, 2);
+  } else {
+    r2 = v2.substr(1, 1);
+    g2 = v2.substr(2, 1);
+    b2 = v2.substr(3, 1);
+    a2 = v2.substr(4, 1);
+    r2 += r2;
+    g2 += g2;
+    b2 += b2;
+    a2 += a2;
+  }
+  return {
+    red: parseInt(r2, 16),
+    green: parseInt(g2, 16),
+    blue: parseInt(b2, 16),
+    alpha: a2 ? parseInt(a2, 16) / 255 : 1
+  };
+}
+const hex = {
+  test: isColorString("#"),
+  parse: parseHex,
+  transform: rgba.transform
+};
+const color = {
+  test: (v2) => rgba.test(v2) || hex.test(v2) || hsla.test(v2),
+  parse: (v2) => {
+    if (rgba.test(v2)) {
+      return rgba.parse(v2);
+    } else if (hsla.test(v2)) {
+      return hsla.parse(v2);
+    } else {
+      return hex.parse(v2);
+    }
+  },
+  transform: (v2) => {
+    return isString$1(v2) ? v2 : v2.hasOwnProperty("red") ? rgba.transform(v2) : hsla.transform(v2);
+  }
+};
+const colorToken = "${c}";
+const numberToken = "${n}";
+function test$1(v2) {
+  var _a2, _b2, _c2, _d;
+  return isNaN(v2) && isString$1(v2) && ((_b2 = (_a2 = v2.match(floatRegex)) === null || _a2 === void 0 ? void 0 : _a2.length) !== null && _b2 !== void 0 ? _b2 : 0) + ((_d = (_c2 = v2.match(colorRegex)) === null || _c2 === void 0 ? void 0 : _c2.length) !== null && _d !== void 0 ? _d : 0) > 0;
+}
+function analyse$1(v2) {
+  if (typeof v2 === "number")
+    v2 = `${v2}`;
+  const values = [];
+  let numColors = 0;
+  const colors = v2.match(colorRegex);
+  if (colors) {
+    numColors = colors.length;
+    v2 = v2.replace(colorRegex, colorToken);
+    values.push(...colors.map(color.parse));
+  }
+  const numbers = v2.match(floatRegex);
+  if (numbers) {
+    v2 = v2.replace(floatRegex, numberToken);
+    values.push(...numbers.map(number.parse));
+  }
+  return { values, numColors, tokenised: v2 };
+}
+function parse$4(v2) {
+  return analyse$1(v2).values;
+}
+function createTransformer(v2) {
+  const { values, numColors, tokenised } = analyse$1(v2);
+  const numValues = values.length;
+  return (v3) => {
+    let output2 = tokenised;
+    for (let i2 = 0; i2 < numValues; i2++) {
+      output2 = output2.replace(i2 < numColors ? colorToken : numberToken, i2 < numColors ? color.transform(v3[i2]) : sanitize(v3[i2]));
+    }
+    return output2;
+  };
+}
+const convertNumbersToZero = (v2) => typeof v2 === "number" ? 0 : v2;
+function getAnimatableNone(v2) {
+  const parsed = parse$4(v2);
+  const transformer = createTransformer(v2);
+  return transformer(parsed.map(convertNumbersToZero));
+}
+const complex = { test: test$1, parse: parse$4, createTransformer, getAnimatableNone };
+function hueToRgb(p, q2, t2) {
+  if (t2 < 0)
+    t2 += 1;
+  if (t2 > 1)
+    t2 -= 1;
+  if (t2 < 1 / 6)
+    return p + (q2 - p) * 6 * t2;
+  if (t2 < 1 / 2)
+    return q2;
+  if (t2 < 2 / 3)
+    return p + (q2 - p) * (2 / 3 - t2) * 6;
+  return p;
+}
+function hslaToRgba({ hue, saturation, lightness, alpha: alpha2 }) {
+  hue /= 360;
+  saturation /= 100;
+  lightness /= 100;
+  let red2 = 0;
+  let green2 = 0;
+  let blue2 = 0;
+  if (!saturation) {
+    red2 = green2 = blue2 = lightness;
+  } else {
+    const q2 = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+    const p = 2 * lightness - q2;
+    red2 = hueToRgb(p, q2, hue + 1 / 3);
+    green2 = hueToRgb(p, q2, hue);
+    blue2 = hueToRgb(p, q2, hue - 1 / 3);
+  }
+  return {
+    red: Math.round(red2 * 255),
+    green: Math.round(green2 * 255),
+    blue: Math.round(blue2 * 255),
+    alpha: alpha2
+  };
+}
+const mixLinearColor = (from2, to, v2) => {
+  const fromExpo = from2 * from2;
+  const toExpo = to * to;
+  return Math.sqrt(Math.max(0, v2 * (toExpo - fromExpo) + fromExpo));
+};
+const colorTypes = [hex, rgba, hsla];
+const getColorType = (v2) => colorTypes.find((type2) => type2.test(v2));
+const mixColor = (from2, to) => {
+  let fromColorType = getColorType(from2);
+  let toColorType = getColorType(to);
+  let fromColor = fromColorType.parse(from2);
+  let toColor = toColorType.parse(to);
+  if (fromColorType === hsla) {
+    fromColor = hslaToRgba(fromColor);
+    fromColorType = rgba;
+  }
+  if (toColorType === hsla) {
+    toColor = hslaToRgba(toColor);
+    toColorType = rgba;
+  }
+  const blended = Object.assign({}, fromColor);
+  return (v2) => {
+    for (const key in blended) {
+      if (key !== "alpha") {
+        blended[key] = mixLinearColor(fromColor[key], toColor[key], v2);
+      }
+    }
+    blended.alpha = mix(fromColor.alpha, toColor.alpha, v2);
+    return fromColorType.transform(blended);
+  };
+};
+const isNum = (v2) => typeof v2 === "number";
+const combineFunctions = (a2, b2) => (v2) => b2(a2(v2));
+const pipe = (...transformers) => transformers.reduce(combineFunctions);
+function getMixer(origin, target) {
+  if (isNum(origin)) {
+    return (v2) => mix(origin, target, v2);
+  } else if (color.test(origin)) {
+    return mixColor(origin, target);
+  } else {
+    return mixComplex(origin, target);
+  }
+}
+const mixArray = (from2, to) => {
+  const output2 = [...from2];
+  const numValues = output2.length;
+  const blendValue = from2.map((fromThis, i2) => getMixer(fromThis, to[i2]));
+  return (v2) => {
+    for (let i2 = 0; i2 < numValues; i2++) {
+      output2[i2] = blendValue[i2](v2);
+    }
+    return output2;
+  };
+};
+const mixObject = (origin, target) => {
+  const output2 = Object.assign(Object.assign({}, origin), target);
+  const blendValue = {};
+  for (const key in output2) {
+    if (origin[key] !== void 0 && target[key] !== void 0) {
+      blendValue[key] = getMixer(origin[key], target[key]);
+    }
+  }
+  return (v2) => {
+    for (const key in blendValue) {
+      output2[key] = blendValue[key](v2);
+    }
+    return output2;
+  };
+};
+function analyse(value) {
+  const parsed = complex.parse(value);
+  const numValues = parsed.length;
+  let numNumbers = 0;
+  let numRGB = 0;
+  let numHSL = 0;
+  for (let i2 = 0; i2 < numValues; i2++) {
+    if (numNumbers || typeof parsed[i2] === "number") {
+      numNumbers++;
+    } else {
+      if (parsed[i2].hue !== void 0) {
+        numHSL++;
+      } else {
+        numRGB++;
+      }
+    }
+  }
+  return { parsed, numNumbers, numRGB, numHSL };
+}
+const mixComplex = (origin, target) => {
+  const template = complex.createTransformer(target);
+  const originStats = analyse(origin);
+  const targetStats = analyse(target);
+  const canInterpolate = originStats.numHSL === targetStats.numHSL && originStats.numRGB === targetStats.numRGB && originStats.numNumbers >= targetStats.numNumbers;
+  if (canInterpolate) {
+    return pipe(mixArray(originStats.parsed, targetStats.parsed), template);
+  } else {
+    return (p) => `${p > 0 ? target : origin}`;
+  }
+};
+const mixNumber = (from2, to) => (p) => mix(from2, to, p);
+function detectMixerFactory(v2) {
+  if (typeof v2 === "number") {
+    return mixNumber;
+  } else if (typeof v2 === "string") {
+    if (color.test(v2)) {
+      return mixColor;
+    } else {
+      return mixComplex;
+    }
+  } else if (Array.isArray(v2)) {
+    return mixArray;
+  } else if (typeof v2 === "object") {
+    return mixObject;
+  }
+}
+function createMixers(output2, ease, customMixer) {
+  const mixers = [];
+  const mixerFactory = customMixer || detectMixerFactory(output2[0]);
+  const numMixers = output2.length - 1;
+  for (let i2 = 0; i2 < numMixers; i2++) {
+    let mixer = mixerFactory(output2[i2], output2[i2 + 1]);
+    if (ease) {
+      const easingFunction = Array.isArray(ease) ? ease[i2] : ease;
+      mixer = pipe(easingFunction, mixer);
+    }
+    mixers.push(mixer);
+  }
+  return mixers;
+}
+function fastInterpolate([from2, to], [mixer]) {
+  return (v2) => mixer(progress(from2, to, v2));
+}
+function slowInterpolate(input, mixers) {
+  const inputLength = input.length;
+  const lastInputIndex = inputLength - 1;
+  return (v2) => {
+    let mixerIndex = 0;
+    let foundMixerIndex = false;
+    if (v2 <= input[0]) {
+      foundMixerIndex = true;
+    } else if (v2 >= input[lastInputIndex]) {
+      mixerIndex = lastInputIndex - 1;
+      foundMixerIndex = true;
+    }
+    if (!foundMixerIndex) {
+      let i2 = 1;
+      for (; i2 < inputLength; i2++) {
+        if (input[i2] > v2 || i2 === lastInputIndex) {
+          break;
+        }
+      }
+      mixerIndex = i2 - 1;
+    }
+    const progressInRange = progress(input[mixerIndex], input[mixerIndex + 1], v2);
+    return mixers[mixerIndex](progressInRange);
+  };
+}
+function interpolate(input, output2, { clamp: isClamp = true, ease, mixer } = {}) {
+  const inputLength = input.length;
+  invariant(inputLength === output2.length);
+  invariant(!ease || !Array.isArray(ease) || ease.length === inputLength - 1);
+  if (input[0] > input[inputLength - 1]) {
+    input = [].concat(input);
+    output2 = [].concat(output2);
+    input.reverse();
+    output2.reverse();
+  }
+  const mixers = createMixers(output2, ease, mixer);
+  const interpolator = inputLength === 2 ? fastInterpolate(input, mixers) : slowInterpolate(input, mixers);
+  return isClamp ? (v2) => interpolator(clamp$1(input[0], input[inputLength - 1], v2)) : interpolator;
+}
+const mirrorEasing = (easing) => (p) => p <= 0.5 ? easing(2 * p) / 2 : (2 - easing(2 * (1 - p))) / 2;
+const createExpoIn = (power) => (p) => Math.pow(p, power);
+const createBackIn = (power) => (p) => p * p * ((power + 1) * p - power);
+const createAnticipate = (power) => {
+  const backEasing = createBackIn(power);
+  return (p) => (p *= 2) < 1 ? 0.5 * backEasing(p) : 0.5 * (2 - Math.pow(2, -10 * (p - 1)));
+};
+const DEFAULT_OVERSHOOT_STRENGTH = 1.525;
+const easeIn = createExpoIn(2);
+const easeInOut = mirrorEasing(easeIn);
+createAnticipate(DEFAULT_OVERSHOOT_STRENGTH);
+function defaultEasing(values, easing) {
+  return values.map(() => easing || easeInOut).splice(0, values.length - 1);
+}
+function defaultOffset(values) {
+  const numValues = values.length;
+  return values.map((_value, i2) => i2 !== 0 ? i2 / (numValues - 1) : 0);
+}
+function convertOffsetToTimes(offset, duration) {
+  return offset.map((o2) => o2 * duration);
+}
+function keyframes({ from: from2 = 0, to = 1, ease, offset, duration = 300 }) {
+  const state = { done: false, value: from2 };
+  const values = Array.isArray(to) ? to : [from2, to];
+  const times = convertOffsetToTimes(offset && offset.length === values.length ? offset : defaultOffset(values), duration);
+  function createInterpolator() {
+    return interpolate(times, values, {
+      ease: Array.isArray(ease) ? ease : defaultEasing(values, ease)
+    });
+  }
+  let interpolator = createInterpolator();
+  return {
+    next: (t2) => {
+      state.value = interpolator(t2);
+      state.done = t2 >= duration;
+      return state;
+    },
+    flipTarget: () => {
+      values.reverse();
+      interpolator = createInterpolator();
+    }
+  };
+}
+function decay({ velocity = 0, from: from2 = 0, power = 0.8, timeConstant = 350, restDelta = 0.5, modifyTarget }) {
+  const state = { done: false, value: from2 };
+  let amplitude = power * velocity;
+  const ideal = from2 + amplitude;
+  const target = modifyTarget === void 0 ? ideal : modifyTarget(ideal);
+  if (target !== ideal)
+    amplitude = target - from2;
+  return {
+    next: (t2) => {
+      const delta = -amplitude * Math.exp(-t2 / timeConstant);
+      state.done = !(delta > restDelta || delta < -restDelta);
+      state.value = state.done ? target : target + delta;
+      return state;
+    },
+    flipTarget: () => {
+    }
+  };
+}
+const types = { keyframes, spring, decay };
+function detectAnimationFromOptions(config) {
+  if (Array.isArray(config.to)) {
+    return keyframes;
+  } else if (types[config.type]) {
+    return types[config.type];
+  }
+  const keys2 = new Set(Object.keys(config));
+  if (keys2.has("ease") || keys2.has("duration") && !keys2.has("dampingRatio")) {
+    return keyframes;
+  } else if (keys2.has("dampingRatio") || keys2.has("stiffness") || keys2.has("mass") || keys2.has("damping") || keys2.has("restSpeed") || keys2.has("restDelta")) {
+    return spring;
+  }
+  return keyframes;
+}
+const defaultTimestep = 1 / 60 * 1e3;
+const getCurrentTime = typeof performance !== "undefined" ? () => performance.now() : () => Date.now();
+const onNextFrame = typeof window !== "undefined" ? (callback) => window.requestAnimationFrame(callback) : (callback) => setTimeout(() => callback(getCurrentTime()), defaultTimestep);
+function createRenderStep(runNextFrame2) {
+  let toRun = [];
+  let toRunNextFrame = [];
+  let numToRun = 0;
+  let isProcessing2 = false;
+  let flushNextFrame = false;
+  const toKeepAlive = /* @__PURE__ */ new WeakSet();
+  const step = {
+    schedule: (callback, keepAlive = false, immediate = false) => {
+      const addToCurrentFrame = immediate && isProcessing2;
+      const buffer = addToCurrentFrame ? toRun : toRunNextFrame;
+      if (keepAlive)
+        toKeepAlive.add(callback);
+      if (buffer.indexOf(callback) === -1) {
+        buffer.push(callback);
+        if (addToCurrentFrame && isProcessing2)
+          numToRun = toRun.length;
+      }
+      return callback;
+    },
+    cancel: (callback) => {
+      const index2 = toRunNextFrame.indexOf(callback);
+      if (index2 !== -1)
+        toRunNextFrame.splice(index2, 1);
+      toKeepAlive.delete(callback);
+    },
+    process: (frameData) => {
+      if (isProcessing2) {
+        flushNextFrame = true;
+        return;
+      }
+      isProcessing2 = true;
+      [toRun, toRunNextFrame] = [toRunNextFrame, toRun];
+      toRunNextFrame.length = 0;
+      numToRun = toRun.length;
+      if (numToRun) {
+        for (let i2 = 0; i2 < numToRun; i2++) {
+          const callback = toRun[i2];
+          callback(frameData);
+          if (toKeepAlive.has(callback)) {
+            step.schedule(callback);
+            runNextFrame2();
+          }
+        }
+      }
+      isProcessing2 = false;
+      if (flushNextFrame) {
+        flushNextFrame = false;
+        step.process(frameData);
+      }
+    }
+  };
+  return step;
+}
+const maxElapsed = 40;
+let useDefaultElapsed = true;
+let runNextFrame = false;
+let isProcessing = false;
+const frame = {
+  delta: 0,
+  timestamp: 0
+};
+const stepsOrder = [
+  "read",
+  "update",
+  "preRender",
+  "render",
+  "postRender"
+];
+const steps = stepsOrder.reduce((acc, key) => {
+  acc[key] = createRenderStep(() => runNextFrame = true);
+  return acc;
+}, {});
+const sync = stepsOrder.reduce((acc, key) => {
+  const step = steps[key];
+  acc[key] = (process2, keepAlive = false, immediate = false) => {
+    if (!runNextFrame)
+      startLoop();
+    return step.schedule(process2, keepAlive, immediate);
+  };
+  return acc;
+}, {});
+const cancelSync = stepsOrder.reduce((acc, key) => {
+  acc[key] = steps[key].cancel;
+  return acc;
+}, {});
+stepsOrder.reduce((acc, key) => {
+  acc[key] = () => steps[key].process(frame);
+  return acc;
+}, {});
+const processStep = (stepId) => steps[stepId].process(frame);
+const processFrame = (timestamp) => {
+  runNextFrame = false;
+  frame.delta = useDefaultElapsed ? defaultTimestep : Math.max(Math.min(timestamp - frame.timestamp, maxElapsed), 1);
+  frame.timestamp = timestamp;
+  isProcessing = true;
+  stepsOrder.forEach(processStep);
+  isProcessing = false;
+  if (runNextFrame) {
+    useDefaultElapsed = false;
+    onNextFrame(processFrame);
+  }
+};
+const startLoop = () => {
+  runNextFrame = true;
+  useDefaultElapsed = true;
+  if (!isProcessing)
+    onNextFrame(processFrame);
+};
+const sync$1 = sync;
+function loopElapsed(elapsed, duration, delay = 0) {
+  return elapsed - duration - delay;
+}
+function reverseElapsed(elapsed, duration, delay = 0, isForwardPlayback = true) {
+  return isForwardPlayback ? loopElapsed(duration + -elapsed, duration, delay) : duration - (elapsed - duration) + delay;
+}
+function hasRepeatDelayElapsed(elapsed, duration, delay, isForwardPlayback) {
+  return isForwardPlayback ? elapsed >= duration + delay : elapsed <= -delay;
+}
+const framesync = (update) => {
+  const passTimestamp = ({ delta }) => update(delta);
+  return {
+    start: () => sync$1.update(passTimestamp, true),
+    stop: () => cancelSync.update(passTimestamp)
+  };
+};
+function animate(_a2) {
+  var _b2, _c2;
+  var { from: from2, autoplay = true, driver = framesync, elapsed = 0, repeat: repeatMax = 0, repeatType = "loop", repeatDelay = 0, onPlay, onStop, onComplete, onRepeat, onUpdate } = _a2, options = __rest$2(_a2, ["from", "autoplay", "driver", "elapsed", "repeat", "repeatType", "repeatDelay", "onPlay", "onStop", "onComplete", "onRepeat", "onUpdate"]);
+  let { to } = options;
+  let driverControls;
+  let repeatCount = 0;
+  let computedDuration = options.duration;
+  let latest;
+  let isComplete = false;
+  let isForwardPlayback = true;
+  let interpolateFromNumber;
+  const animator = detectAnimationFromOptions(options);
+  if ((_c2 = (_b2 = animator).needsInterpolation) === null || _c2 === void 0 ? void 0 : _c2.call(_b2, from2, to)) {
+    interpolateFromNumber = interpolate([0, 100], [from2, to], {
+      clamp: false
+    });
+    from2 = 0;
+    to = 100;
+  }
+  const animation2 = animator(Object.assign(Object.assign({}, options), { from: from2, to }));
+  function repeat2() {
+    repeatCount++;
+    if (repeatType === "reverse") {
+      isForwardPlayback = repeatCount % 2 === 0;
+      elapsed = reverseElapsed(elapsed, computedDuration, repeatDelay, isForwardPlayback);
+    } else {
+      elapsed = loopElapsed(elapsed, computedDuration, repeatDelay);
+      if (repeatType === "mirror")
+        animation2.flipTarget();
+    }
+    isComplete = false;
+    onRepeat && onRepeat();
+  }
+  function complete() {
+    driverControls.stop();
+    onComplete && onComplete();
+  }
+  function update(delta) {
+    if (!isForwardPlayback)
+      delta = -delta;
+    elapsed += delta;
+    if (!isComplete) {
+      const state = animation2.next(Math.max(0, elapsed));
+      latest = state.value;
+      if (interpolateFromNumber)
+        latest = interpolateFromNumber(latest);
+      isComplete = isForwardPlayback ? state.done : elapsed <= 0;
+    }
+    onUpdate === null || onUpdate === void 0 ? void 0 : onUpdate(latest);
+    if (isComplete) {
+      if (repeatCount === 0)
+        computedDuration !== null && computedDuration !== void 0 ? computedDuration : computedDuration = elapsed;
+      if (repeatCount < repeatMax) {
+        hasRepeatDelayElapsed(elapsed, computedDuration, repeatDelay, isForwardPlayback) && repeat2();
+      } else {
+        complete();
+      }
+    }
+  }
+  function play() {
+    onPlay === null || onPlay === void 0 ? void 0 : onPlay();
+    driverControls = driver(update);
+    driverControls.start();
+  }
+  autoplay && play();
+  return {
+    stop: () => {
+      onStop === null || onStop === void 0 ? void 0 : onStop();
+      driverControls.stop();
+    }
+  };
+}
+function arraySome$1(array, predicate) {
+  var index2 = -1, length2 = array == null ? 0 : array.length;
+  while (++index2 < length2) {
+    if (predicate(array[index2], index2, array)) {
+      return true;
+    }
+  }
+  return false;
+}
+var _arraySome = arraySome$1;
+var SetCache = _SetCache, arraySome = _arraySome, cacheHas = _cacheHas;
+var COMPARE_PARTIAL_FLAG$5 = 1, COMPARE_UNORDERED_FLAG$3 = 2;
+function equalArrays$2(array, other, bitmask, customizer, equalFunc, stack) {
+  var isPartial = bitmask & COMPARE_PARTIAL_FLAG$5, arrLength = array.length, othLength = other.length;
+  if (arrLength != othLength && !(isPartial && othLength > arrLength)) {
+    return false;
+  }
+  var arrStacked = stack.get(array);
+  var othStacked = stack.get(other);
+  if (arrStacked && othStacked) {
+    return arrStacked == other && othStacked == array;
+  }
+  var index2 = -1, result = true, seen2 = bitmask & COMPARE_UNORDERED_FLAG$3 ? new SetCache() : void 0;
+  stack.set(array, other);
+  stack.set(other, array);
+  while (++index2 < arrLength) {
+    var arrValue = array[index2], othValue = other[index2];
+    if (customizer) {
+      var compared = isPartial ? customizer(othValue, arrValue, index2, other, array, stack) : customizer(arrValue, othValue, index2, array, other, stack);
+    }
+    if (compared !== void 0) {
+      if (compared) {
+        continue;
+      }
+      result = false;
+      break;
+    }
+    if (seen2) {
+      if (!arraySome(other, function(othValue2, othIndex) {
+        if (!cacheHas(seen2, othIndex) && (arrValue === othValue2 || equalFunc(arrValue, othValue2, bitmask, customizer, stack))) {
+          return seen2.push(othIndex);
+        }
+      })) {
+        result = false;
+        break;
+      }
+    } else if (!(arrValue === othValue || equalFunc(arrValue, othValue, bitmask, customizer, stack))) {
+      result = false;
+      break;
+    }
+  }
+  stack["delete"](array);
+  stack["delete"](other);
+  return result;
+}
+var _equalArrays = equalArrays$2;
+function mapToArray$1(map2) {
+  var index2 = -1, result = Array(map2.size);
+  map2.forEach(function(value, key) {
+    result[++index2] = [key, value];
+  });
+  return result;
+}
+var _mapToArray = mapToArray$1;
+var Symbol$2 = _Symbol$1, Uint8Array$1 = _Uint8Array, eq = eq_1$1, equalArrays$1 = _equalArrays, mapToArray = _mapToArray, setToArray = _setToArray;
+var COMPARE_PARTIAL_FLAG$4 = 1, COMPARE_UNORDERED_FLAG$2 = 2;
+var boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", mapTag = "[object Map]", numberTag = "[object Number]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag$1 = "[object Symbol]";
+var arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]";
+var symbolProto$1 = Symbol$2 ? Symbol$2.prototype : void 0, symbolValueOf = symbolProto$1 ? symbolProto$1.valueOf : void 0;
+function equalByTag$1(object, other, tag2, bitmask, customizer, equalFunc, stack) {
+  switch (tag2) {
+    case dataViewTag:
+      if (object.byteLength != other.byteLength || object.byteOffset != other.byteOffset) {
+        return false;
+      }
+      object = object.buffer;
+      other = other.buffer;
+    case arrayBufferTag:
+      if (object.byteLength != other.byteLength || !equalFunc(new Uint8Array$1(object), new Uint8Array$1(other))) {
+        return false;
+      }
+      return true;
+    case boolTag:
+    case dateTag:
+    case numberTag:
+      return eq(+object, +other);
+    case errorTag:
+      return object.name == other.name && object.message == other.message;
+    case regexpTag:
+    case stringTag:
+      return object == other + "";
+    case mapTag:
+      var convert = mapToArray;
+    case setTag:
+      var isPartial = bitmask & COMPARE_PARTIAL_FLAG$4;
+      convert || (convert = setToArray);
+      if (object.size != other.size && !isPartial) {
+        return false;
+      }
+      var stacked = stack.get(object);
+      if (stacked) {
+        return stacked == other;
+      }
+      bitmask |= COMPARE_UNORDERED_FLAG$2;
+      stack.set(object, other);
+      var result = equalArrays$1(convert(object), convert(other), bitmask, customizer, equalFunc, stack);
+      stack["delete"](object);
+      return result;
+    case symbolTag$1:
+      if (symbolValueOf) {
+        return symbolValueOf.call(object) == symbolValueOf.call(other);
+      }
+  }
+  return false;
+}
+var _equalByTag = equalByTag$1;
+var getAllKeys = _getAllKeys;
+var COMPARE_PARTIAL_FLAG$3 = 1;
+var objectProto$1 = Object.prototype;
+var hasOwnProperty$1 = objectProto$1.hasOwnProperty;
+function equalObjects$1(object, other, bitmask, customizer, equalFunc, stack) {
+  var isPartial = bitmask & COMPARE_PARTIAL_FLAG$3, objProps = getAllKeys(object), objLength = objProps.length, othProps = getAllKeys(other), othLength = othProps.length;
+  if (objLength != othLength && !isPartial) {
+    return false;
+  }
+  var index2 = objLength;
+  while (index2--) {
+    var key = objProps[index2];
+    if (!(isPartial ? key in other : hasOwnProperty$1.call(other, key))) {
+      return false;
+    }
+  }
+  var objStacked = stack.get(object);
+  var othStacked = stack.get(other);
+  if (objStacked && othStacked) {
+    return objStacked == other && othStacked == object;
+  }
+  var result = true;
+  stack.set(object, other);
+  stack.set(other, object);
+  var skipCtor = isPartial;
+  while (++index2 < objLength) {
+    key = objProps[index2];
+    var objValue = object[key], othValue = other[key];
+    if (customizer) {
+      var compared = isPartial ? customizer(othValue, objValue, key, other, object, stack) : customizer(objValue, othValue, key, object, other, stack);
+    }
+    if (!(compared === void 0 ? objValue === othValue || equalFunc(objValue, othValue, bitmask, customizer, stack) : compared)) {
+      result = false;
+      break;
+    }
+    skipCtor || (skipCtor = key == "constructor");
+  }
+  if (result && !skipCtor) {
+    var objCtor = object.constructor, othCtor = other.constructor;
+    if (objCtor != othCtor && ("constructor" in object && "constructor" in other) && !(typeof objCtor == "function" && objCtor instanceof objCtor && typeof othCtor == "function" && othCtor instanceof othCtor)) {
+      result = false;
+    }
+  }
+  stack["delete"](object);
+  stack["delete"](other);
+  return result;
+}
+var _equalObjects = equalObjects$1;
+var Stack$1 = _Stack, equalArrays = _equalArrays, equalByTag = _equalByTag, equalObjects = _equalObjects, getTag = _getTag, isArray$a = isArray_1, isBuffer$2 = isBufferExports, isTypedArray = isTypedArray_1;
+var COMPARE_PARTIAL_FLAG$2 = 1;
+var argsTag = "[object Arguments]", arrayTag = "[object Array]", objectTag = "[object Object]";
+var objectProto = Object.prototype;
+var hasOwnProperty = objectProto.hasOwnProperty;
+function baseIsEqualDeep$1(object, other, bitmask, customizer, equalFunc, stack) {
+  var objIsArr = isArray$a(object), othIsArr = isArray$a(other), objTag = objIsArr ? arrayTag : getTag(object), othTag = othIsArr ? arrayTag : getTag(other);
+  objTag = objTag == argsTag ? objectTag : objTag;
+  othTag = othTag == argsTag ? objectTag : othTag;
+  var objIsObj = objTag == objectTag, othIsObj = othTag == objectTag, isSameTag = objTag == othTag;
+  if (isSameTag && isBuffer$2(object)) {
+    if (!isBuffer$2(other)) {
+      return false;
+    }
+    objIsArr = true;
+    objIsObj = false;
+  }
+  if (isSameTag && !objIsObj) {
+    stack || (stack = new Stack$1());
+    return objIsArr || isTypedArray(object) ? equalArrays(object, other, bitmask, customizer, equalFunc, stack) : equalByTag(object, other, objTag, bitmask, customizer, equalFunc, stack);
+  }
+  if (!(bitmask & COMPARE_PARTIAL_FLAG$2)) {
+    var objIsWrapped = objIsObj && hasOwnProperty.call(object, "__wrapped__"), othIsWrapped = othIsObj && hasOwnProperty.call(other, "__wrapped__");
+    if (objIsWrapped || othIsWrapped) {
+      var objUnwrapped = objIsWrapped ? object.value() : object, othUnwrapped = othIsWrapped ? other.value() : other;
+      stack || (stack = new Stack$1());
+      return equalFunc(objUnwrapped, othUnwrapped, bitmask, customizer, stack);
+    }
+  }
+  if (!isSameTag) {
+    return false;
+  }
+  stack || (stack = new Stack$1());
+  return equalObjects(object, other, bitmask, customizer, equalFunc, stack);
+}
+var _baseIsEqualDeep = baseIsEqualDeep$1;
+var baseIsEqualDeep = _baseIsEqualDeep, isObjectLike$1 = isObjectLike_1;
+function baseIsEqual$2(value, other, bitmask, customizer, stack) {
+  if (value === other) {
+    return true;
+  }
+  if (value == null || other == null || !isObjectLike$1(value) && !isObjectLike$1(other)) {
+    return value !== value && other !== other;
+  }
+  return baseIsEqualDeep(value, other, bitmask, customizer, baseIsEqual$2, stack);
+}
+var _baseIsEqual = baseIsEqual$2;
+var Stack = _Stack, baseIsEqual$1 = _baseIsEqual;
+var COMPARE_PARTIAL_FLAG$1 = 1, COMPARE_UNORDERED_FLAG$1 = 2;
+function baseIsMatch$1(object, source, matchData, customizer) {
+  var index2 = matchData.length, length2 = index2, noCustomizer = !customizer;
+  if (object == null) {
+    return !length2;
+  }
+  object = Object(object);
+  while (index2--) {
+    var data2 = matchData[index2];
+    if (noCustomizer && data2[2] ? data2[1] !== object[data2[0]] : !(data2[0] in object)) {
+      return false;
+    }
+  }
+  while (++index2 < length2) {
+    data2 = matchData[index2];
+    var key = data2[0], objValue = object[key], srcValue = data2[1];
+    if (noCustomizer && data2[2]) {
+      if (objValue === void 0 && !(key in object)) {
+        return false;
+      }
+    } else {
+      var stack = new Stack();
+      if (customizer) {
+        var result = customizer(objValue, srcValue, key, object, source, stack);
+      }
+      if (!(result === void 0 ? baseIsEqual$1(srcValue, objValue, COMPARE_PARTIAL_FLAG$1 | COMPARE_UNORDERED_FLAG$1, customizer, stack) : result)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+var _baseIsMatch = baseIsMatch$1;
+var isObject$4 = isObject_1$1;
+function isStrictComparable$2(value) {
+  return value === value && !isObject$4(value);
+}
+var _isStrictComparable = isStrictComparable$2;
+var isStrictComparable$1 = _isStrictComparable, keys = keys_1;
+function getMatchData$1(object) {
+  var result = keys(object), length2 = result.length;
+  while (length2--) {
+    var key = result[length2], value = object[key];
+    result[length2] = [key, value, isStrictComparable$1(value)];
+  }
+  return result;
+}
+var _getMatchData = getMatchData$1;
+function matchesStrictComparable$2(key, srcValue) {
+  return function(object) {
+    if (object == null) {
+      return false;
+    }
+    return object[key] === srcValue && (srcValue !== void 0 || key in Object(object));
+  };
+}
+var _matchesStrictComparable = matchesStrictComparable$2;
+var baseIsMatch = _baseIsMatch, getMatchData = _getMatchData, matchesStrictComparable$1 = _matchesStrictComparable;
+function baseMatches$1(source) {
+  var matchData = getMatchData(source);
+  if (matchData.length == 1 && matchData[0][2]) {
+    return matchesStrictComparable$1(matchData[0][0], matchData[0][1]);
+  }
+  return function(object) {
+    return object === source || baseIsMatch(object, source, matchData);
+  };
+}
+var _baseMatches = baseMatches$1;
+var baseGetTag = _baseGetTag$1, isObjectLike = isObjectLike_1;
+var symbolTag = "[object Symbol]";
+function isSymbol$5(value) {
+  return typeof value == "symbol" || isObjectLike(value) && baseGetTag(value) == symbolTag;
+}
+var isSymbol_1 = isSymbol$5;
+var isArray$9 = isArray_1, isSymbol$4 = isSymbol_1;
+var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/;
+function isKey$3(value, object) {
+  if (isArray$9(value)) {
+    return false;
+  }
+  var type2 = typeof value;
+  if (type2 == "number" || type2 == "symbol" || type2 == "boolean" || value == null || isSymbol$4(value)) {
+    return true;
+  }
+  return reIsPlainProp.test(value) || !reIsDeepProp.test(value) || object != null && value in Object(object);
+}
+var _isKey = isKey$3;
+var MapCache = _MapCache$1;
+var FUNC_ERROR_TEXT$3 = "Expected a function";
+function memoize$2(func, resolver2) {
+  if (typeof func != "function" || resolver2 != null && typeof resolver2 != "function") {
+    throw new TypeError(FUNC_ERROR_TEXT$3);
+  }
+  var memoized = function() {
+    var args = arguments, key = resolver2 ? resolver2.apply(this, args) : args[0], cache = memoized.cache;
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    var result = func.apply(this, args);
+    memoized.cache = cache.set(key, result) || cache;
+    return result;
+  };
+  memoized.cache = new (memoize$2.Cache || MapCache)();
+  return memoized;
+}
+memoize$2.Cache = MapCache;
+var memoize_1 = memoize$2;
+var memoize$1 = memoize_1;
+var MAX_MEMOIZE_SIZE = 500;
+function memoizeCapped$1(func) {
+  var result = memoize$1(func, function(key) {
+    if (cache.size === MAX_MEMOIZE_SIZE) {
+      cache.clear();
+    }
+    return key;
+  });
+  var cache = result.cache;
+  return result;
+}
+var _memoizeCapped = memoizeCapped$1;
+var memoizeCapped = _memoizeCapped;
+var rePropName$1 = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+var reEscapeChar$1 = /\\(\\)?/g;
+var stringToPath$2 = memoizeCapped(function(string) {
+  var result = [];
+  if (string.charCodeAt(0) === 46) {
+    result.push("");
+  }
+  string.replace(rePropName$1, function(match2, number2, quote2, subString) {
+    result.push(quote2 ? subString.replace(reEscapeChar$1, "$1") : number2 || match2);
+  });
+  return result;
+});
+var _stringToPath = stringToPath$2;
+function arrayMap$2(array, iteratee) {
+  var index2 = -1, length2 = array == null ? 0 : array.length, result = Array(length2);
+  while (++index2 < length2) {
+    result[index2] = iteratee(array[index2], index2, array);
+  }
+  return result;
+}
+var _arrayMap = arrayMap$2;
+var Symbol$1 = _Symbol$1, arrayMap$1 = _arrayMap, isArray$8 = isArray_1, isSymbol$3 = isSymbol_1;
+var INFINITY$1 = 1 / 0;
+var symbolProto = Symbol$1 ? Symbol$1.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0;
+function baseToString$1(value) {
+  if (typeof value == "string") {
+    return value;
+  }
+  if (isArray$8(value)) {
+    return arrayMap$1(value, baseToString$1) + "";
+  }
+  if (isSymbol$3(value)) {
+    return symbolToString ? symbolToString.call(value) : "";
+  }
+  var result = value + "";
+  return result == "0" && 1 / value == -INFINITY$1 ? "-0" : result;
+}
+var _baseToString = baseToString$1;
+var baseToString = _baseToString;
+function toString$1(value) {
+  return value == null ? "" : baseToString(value);
+}
+var toString_1 = toString$1;
+var isArray$7 = isArray_1, isKey$2 = _isKey, stringToPath$1 = _stringToPath, toString2 = toString_1;
+function castPath$4(value, object) {
+  if (isArray$7(value)) {
+    return value;
+  }
+  return isKey$2(value, object) ? [value] : stringToPath$1(toString2(value));
+}
+var _castPath = castPath$4;
+var isSymbol$2 = isSymbol_1;
+var INFINITY = 1 / 0;
+function toKey$5(value) {
+  if (typeof value == "string" || isSymbol$2(value)) {
+    return value;
+  }
+  var result = value + "";
+  return result == "0" && 1 / value == -INFINITY ? "-0" : result;
+}
+var _toKey = toKey$5;
+var castPath$3 = _castPath, toKey$4 = _toKey;
+function baseGet$3(object, path2) {
+  path2 = castPath$3(path2, object);
+  var index2 = 0, length2 = path2.length;
+  while (object != null && index2 < length2) {
+    object = object[toKey$4(path2[index2++])];
+  }
+  return index2 && index2 == length2 ? object : void 0;
+}
+var _baseGet = baseGet$3;
+var baseGet$2 = _baseGet;
+function get$2(object, path2, defaultValue2) {
+  var result = object == null ? void 0 : baseGet$2(object, path2);
+  return result === void 0 ? defaultValue2 : result;
+}
+var get_1 = get$2;
+function baseHasIn$1(object, key) {
+  return object != null && key in Object(object);
+}
+var _baseHasIn = baseHasIn$1;
+var castPath$2 = _castPath, isArguments = isArguments_1, isArray$6 = isArray_1, isIndex$1 = _isIndex, isLength = isLength_1, toKey$3 = _toKey;
+function hasPath$1(object, path2, hasFunc) {
+  path2 = castPath$2(path2, object);
+  var index2 = -1, length2 = path2.length, result = false;
+  while (++index2 < length2) {
+    var key = toKey$3(path2[index2]);
+    if (!(result = object != null && hasFunc(object, key))) {
+      break;
+    }
+    object = object[key];
+  }
+  if (result || ++index2 != length2) {
+    return result;
+  }
+  length2 = object == null ? 0 : object.length;
+  return !!length2 && isLength(length2) && isIndex$1(key, length2) && (isArray$6(object) || isArguments(object));
+}
+var _hasPath = hasPath$1;
+var baseHasIn = _baseHasIn, hasPath = _hasPath;
+function hasIn$1(object, path2) {
+  return object != null && hasPath(object, path2, baseHasIn);
+}
+var hasIn_1 = hasIn$1;
+var baseIsEqual = _baseIsEqual, get$1 = get_1, hasIn = hasIn_1, isKey$1 = _isKey, isStrictComparable = _isStrictComparable, matchesStrictComparable = _matchesStrictComparable, toKey$2 = _toKey;
+var COMPARE_PARTIAL_FLAG = 1, COMPARE_UNORDERED_FLAG = 2;
+function baseMatchesProperty$1(path2, srcValue) {
+  if (isKey$1(path2) && isStrictComparable(srcValue)) {
+    return matchesStrictComparable(toKey$2(path2), srcValue);
+  }
+  return function(object) {
+    var objValue = get$1(object, path2);
+    return objValue === void 0 && objValue === srcValue ? hasIn(object, path2) : baseIsEqual(srcValue, objValue, COMPARE_PARTIAL_FLAG | COMPARE_UNORDERED_FLAG);
+  };
+}
+var _baseMatchesProperty = baseMatchesProperty$1;
+function identity$1(value) {
+  return value;
+}
+var identity_1 = identity$1;
+function baseProperty$1(key) {
+  return function(object) {
+    return object == null ? void 0 : object[key];
+  };
+}
+var _baseProperty = baseProperty$1;
+var baseGet$1 = _baseGet;
+function basePropertyDeep$1(path2) {
+  return function(object) {
+    return baseGet$1(object, path2);
+  };
+}
+var _basePropertyDeep = basePropertyDeep$1;
+var baseProperty = _baseProperty, basePropertyDeep = _basePropertyDeep, isKey = _isKey, toKey$1 = _toKey;
+function property$1(path2) {
+  return isKey(path2) ? baseProperty(toKey$1(path2)) : basePropertyDeep(path2);
+}
+var property_1 = property$1;
+var baseMatches = _baseMatches, baseMatchesProperty = _baseMatchesProperty, identity = identity_1, isArray$5 = isArray_1, property = property_1;
+function baseIteratee$2(value) {
+  if (typeof value == "function") {
+    return value;
+  }
+  if (value == null) {
+    return identity;
+  }
+  if (typeof value == "object") {
+    return isArray$5(value) ? baseMatchesProperty(value[0], value[1]) : baseMatches(value);
+  }
+  return property(value);
+}
+var _baseIteratee = baseIteratee$2;
+var FUNC_ERROR_TEXT$2 = "Expected a function";
+function negate$1(predicate) {
+  if (typeof predicate != "function") {
+    throw new TypeError(FUNC_ERROR_TEXT$2);
+  }
+  return function() {
+    var args = arguments;
+    switch (args.length) {
+      case 0:
+        return !predicate.call(this);
+      case 1:
+        return !predicate.call(this, args[0]);
+      case 2:
+        return !predicate.call(this, args[0], args[1]);
+      case 3:
+        return !predicate.call(this, args[0], args[1], args[2]);
+    }
+    return !predicate.apply(this, args);
+  };
+}
+var negate_1 = negate$1;
+var assignValue = _assignValue, castPath$1 = _castPath, isIndex = _isIndex, isObject$3 = isObject_1$1, toKey = _toKey;
+function baseSet$1(object, path2, value, customizer) {
+  if (!isObject$3(object)) {
+    return object;
+  }
+  path2 = castPath$1(path2, object);
+  var index2 = -1, length2 = path2.length, lastIndex = length2 - 1, nested = object;
+  while (nested != null && ++index2 < length2) {
+    var key = toKey(path2[index2]), newValue = value;
+    if (key === "__proto__" || key === "constructor" || key === "prototype") {
+      return object;
+    }
+    if (index2 != lastIndex) {
+      var objValue = nested[key];
+      newValue = customizer ? customizer(objValue, key, nested) : void 0;
+      if (newValue === void 0) {
+        newValue = isObject$3(objValue) ? objValue : isIndex(path2[index2 + 1]) ? [] : {};
+      }
+    }
+    assignValue(nested, key, newValue);
+    nested = nested[key];
+  }
+  return object;
+}
+var _baseSet = baseSet$1;
+var baseGet = _baseGet, baseSet = _baseSet, castPath = _castPath;
+function basePickBy$1(object, paths, predicate) {
+  var index2 = -1, length2 = paths.length, result = {};
+  while (++index2 < length2) {
+    var path2 = paths[index2], value = baseGet(object, path2);
+    if (predicate(value, path2)) {
+      baseSet(result, castPath(path2, object), value);
+    }
+  }
+  return result;
+}
+var _basePickBy = basePickBy$1;
+var arrayMap = _arrayMap, baseIteratee$1 = _baseIteratee, basePickBy = _basePickBy, getAllKeysIn = _getAllKeysIn;
+function pickBy$1(object, predicate) {
+  if (object == null) {
+    return {};
+  }
+  var props = arrayMap(getAllKeysIn(object), function(prop) {
+    return [prop];
+  });
+  predicate = baseIteratee$1(predicate);
+  return basePickBy(object, props, function(value, path2) {
+    return predicate(value, path2[0]);
+  });
+}
+var pickBy_1 = pickBy$1;
+var baseIteratee = _baseIteratee, negate = negate_1, pickBy = pickBy_1;
+function omitBy(object, predicate) {
+  return pickBy(object, negate(baseIteratee(predicate)));
+}
+var omitBy_1 = omitBy;
+const omitBy$1 = /* @__PURE__ */ getDefaultExportFromCjs(omitBy_1);
+function isUndefined(value) {
+  return value === void 0;
+}
+var isUndefined_1 = isUndefined;
+const isUndefined$1 = /* @__PURE__ */ getDefaultExportFromCjs(isUndefined_1);
+function generateTimelineObj(timeline, targetKey, duration) {
+  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
+  let currentDelay = 0;
+  const values = [];
+  const times = [];
+  for (const segment of timeline) {
+    const segmentDuration = segment.duration;
+    currentDelay += segmentDuration;
+    const { position: position2, scale, ...segmentValues } = segment;
+    values.push({ x: position2.x, y: position2.y, scaleX: scale.x, scaleY: scale.y, ...segmentValues });
+    if (duration !== 0) {
+      times.push(currentDelay / duration);
+    } else
+      times.push(0);
+  }
+  const container2 = target == null ? void 0 : target.pixiContainer;
+  let animateInstance = null;
+  if (duration > 0) {
+    animateInstance = animate({
+      to: values,
+      offset: times,
+      duration,
+      onUpdate: (updateValue) => {
+        if (container2) {
+          const { scaleX, scaleY, ...val } = updateValue;
+          Object.assign(container2, omitBy$1(val, isUndefined$1));
+          if (!isUndefined$1(scaleX))
+            container2.scale.x = scaleX;
+          if (!isUndefined$1(scaleY))
+            container2.scale.y = scaleY;
+        }
+      }
+    });
+  }
+  const { duration: sliceDuration, ...endState } = getEndStateEffect();
+  webgalStore.dispatch(stageActions.updateEffect({ target: targetKey, transform: endState }));
+  function setStartState() {
+    if (target == null ? void 0 : target.pixiContainer) {
+      const { position: position2, scale, ...state } = getStartStateEffect();
+      const assignValue2 = omitBy$1({ x: position2.x, y: position2.y, ...state }, isUndefined$1);
+      Object.assign(target == null ? void 0 : target.pixiContainer, assignValue2);
+      if (target == null ? void 0 : target.pixiContainer) {
+        if (!isUndefined$1(scale.x)) {
+          target.pixiContainer.scale.x = scale.x;
+        }
+        if (!isUndefined$1(scale == null ? void 0 : scale.y)) {
+          target.pixiContainer.scale.y = scale.y;
+        }
+      }
+    }
+  }
+  function setEndState() {
+    if (animateInstance)
+      animateInstance.stop();
+    animateInstance = null;
+    if (target == null ? void 0 : target.pixiContainer) {
+      const { position: position2, scale, ...state } = getEndStateEffect();
+      const assignValue2 = omitBy$1({ x: position2.x, y: position2.y, ...state }, isUndefined$1);
+      Object.assign(target == null ? void 0 : target.pixiContainer, assignValue2);
+      if (target == null ? void 0 : target.pixiContainer) {
+        if (!isUndefined$1(scale.x)) {
+          target.pixiContainer.scale.x = scale.x;
+        }
+        if (!isUndefined$1(scale == null ? void 0 : scale.y)) {
+          target.pixiContainer.scale.y = scale.y;
+        }
+      }
+    }
+  }
+  function tickerFunc(delta) {
+  }
+  function getStartStateEffect() {
+    return timeline[0];
+  }
+  function getEndStateEffect() {
+    return timeline[timeline.length - 1];
+  }
+  function getEndFilterEffect() {
+    const endSegment = timeline[timeline.length - 1];
+    const { alpha: alpha2, rotation, blur, duration: duration2, scale, position: position2, ...rest } = endSegment;
+    return rest;
+  }
+  return {
+    setStartState,
+    setEndState,
+    tickerFunc,
+    getEndFilterEffect
+  };
+}
+function getAnimationObject$2(animationName, target, duration) {
+  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
+  if (effect) {
+    const mappedEffects = effect.effects.map((effect2) => {
+      const targetSetEffect = webgalStore.getState().stage.effects.find((e2) => e2.target === target);
+      const newEffect = cloneDeep$1({ ...(targetSetEffect == null ? void 0 : targetSetEffect.transform) ?? baseTransform, duration: 0 });
+      Object.assign(newEffect, effect2);
+      newEffect.duration = effect2.duration;
+      return newEffect;
+    });
+    logger.debug("装载自定义动画", mappedEffects);
+    return generateTimelineObj(mappedEffects, target, duration);
+  }
+  return null;
+}
+function getAnimateDuration$1(animationName) {
+  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
+  if (effect) {
+    let duration = 0;
+    effect.effects.forEach((e2) => {
+      duration += e2.duration;
+    });
+    return duration;
+  }
+  return 0;
+}
+function getEnterExitAnimation(target, type2, isBg = false) {
+  if (type2 === "enter") {
+    let duration = 500;
+    if (isBg) {
+      duration = 1500;
+    }
+    let animation2 = generateUniversalSoftInAnimationObj(target, duration);
+    const animarionName = WebGAL.animationManager.nextEnterAnimationName.get(target);
+    if (animarionName) {
+      logger.debug("取代默认进入动画", target);
+      animation2 = getAnimationObject$2(animarionName, target, getAnimateDuration$1(animarionName));
+      duration = getAnimateDuration$1(animarionName);
+      WebGAL.animationManager.nextEnterAnimationName.delete(target);
+    }
+    return { duration, animation: animation2 };
+  } else {
+    let duration = 750;
+    if (isBg) {
+      duration = 1500;
+    }
+    let animation2 = generateUniversalSoftOffAnimationObj(target, duration);
+    const animarionName = WebGAL.animationManager.nextExitAnimationName.get(target);
+    if (animarionName) {
+      logger.debug("取代默认退出动画", target);
+      animation2 = getAnimationObject$2(animarionName, target, getAnimateDuration$1(animarionName));
+      duration = getAnimateDuration$1(animarionName);
+      WebGAL.animationManager.nextExitAnimationName.delete(target);
+    }
+    return { duration, animation: animation2 };
+  }
+}
+const changeBg = (sentence) => {
+  const url2 = sentence.content;
+  let name = "";
+  let series = "default";
+  sentence.args.forEach((e2) => {
+    if (e2.key === "unlockname") {
+      name = e2.value.toString();
+    }
+    if (e2.key === "series") {
+      series = e2.value.toString();
+    }
+  });
+  const dispatch = webgalStore.dispatch;
+  if (name !== "")
+    dispatch(unlockCgInUserData({ name, url: url2, series }));
+  dispatch(stageActions.removeEffectByTargetId(`bg-main`));
+  const transformString = getSentenceArgByKey(sentence, "transform");
+  let duration = getSentenceArgByKey(sentence, "duration");
+  if (!duration || typeof duration !== "number") {
+    duration = 1e3;
+  }
+  let animationObj;
+  if (transformString) {
+    try {
+      const frame2 = JSON.parse(transformString.toString());
+      animationObj = generateTransformAnimationObj("bg-main", frame2, duration);
+      animationObj[0].alpha = 0;
+      const animationName = (Math.random() * 10).toString(16);
+      const newAnimation = { name: animationName, effects: animationObj };
+      WebGAL.animationManager.addAnimation(newAnimation);
+      duration = getAnimateDuration$1(animationName);
+      WebGAL.animationManager.nextEnterAnimationName.set("bg-main", animationName);
+    } catch (e2) {
+      applyDefaultTransform();
+    }
+  } else {
+    applyDefaultTransform();
+  }
+  function applyDefaultTransform() {
+    const frame2 = {};
+    animationObj = generateTransformAnimationObj("bg-main", frame2, duration);
+    animationObj[0].alpha = 0;
+    const animationName = (Math.random() * 10).toString(16);
+    const newAnimation = { name: animationName, effects: animationObj };
+    WebGAL.animationManager.addAnimation(newAnimation);
+    duration = getAnimateDuration$1(animationName);
+    WebGAL.animationManager.nextEnterAnimationName.set("bg-main", animationName);
+  }
+  if (getSentenceArgByKey(sentence, "enter")) {
+    WebGAL.animationManager.nextEnterAnimationName.set("bg-main", getSentenceArgByKey(sentence, "enter").toString());
+    duration = getAnimateDuration$1(getSentenceArgByKey(sentence, "enter").toString());
+  }
+  if (getSentenceArgByKey(sentence, "exit")) {
+    WebGAL.animationManager.nextExitAnimationName.set("bg-main-off", getSentenceArgByKey(sentence, "exit").toString());
+    duration = getAnimateDuration$1(getSentenceArgByKey(sentence, "exit").toString());
+  }
+  dispatch(setStage({ key: "bgName", value: sentence.content }));
+  return {
+    performName: "none",
+    duration,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function changeFigure(sentence) {
+  let pos = "center";
+  let content = sentence.content;
+  let isFreeFigure = false;
+  let motion = "";
+  let expression = "";
+  let key = "";
+  let duration = 500;
+  let mouthOpen = "";
+  let mouthClose = "";
+  let mouthHalfOpen = "";
+  let eyesOpen = "";
+  let eyesClose = "";
+  let animationFlag = "";
+  const dispatch = webgalStore.dispatch;
+  for (const e2 of sentence.args) {
+    switch (e2.key) {
+      case "left":
+        if (e2.value === true) {
+          pos = "left";
+        }
+        break;
+      case "right":
+        if (e2.value === true) {
+          pos = "right";
+        }
+        break;
+      case "clear":
+        if (e2.value === true) {
+          content = "";
+        }
+        break;
+      case "id":
+        isFreeFigure = true;
+        key = e2.value.toString();
+        break;
+      case "motion":
+        motion = e2.value.toString();
+        break;
+      case "expression":
+        expression = e2.value.toString();
+        break;
+      case "mouthOpen":
+        mouthOpen = e2.value.toString();
+        mouthOpen = assetSetter(mouthOpen, fileType$1.figure);
+        break;
+      case "mouthClose":
+        mouthClose = e2.value.toString();
+        mouthClose = assetSetter(mouthClose, fileType$1.figure);
+        break;
+      case "mouthHalfOpen":
+        mouthHalfOpen = e2.value.toString();
+        mouthHalfOpen = assetSetter(mouthHalfOpen, fileType$1.figure);
+        break;
+      case "eyesOpen":
+        eyesOpen = e2.value.toString();
+        eyesOpen = assetSetter(eyesOpen, fileType$1.figure);
+        break;
+      case "eyesClose":
+        eyesClose = e2.value.toString();
+        eyesClose = assetSetter(eyesClose, fileType$1.figure);
+        break;
+      case "animationFlag":
+        animationFlag = e2.value.toString();
+        break;
+      case "none":
+        content = "";
+        break;
+    }
+  }
+  const id2 = key ? key : `fig-${pos}`;
+  const currentFigureAssociatedAnimation = webgalStore.getState().stage.figureAssociatedAnimation;
+  const filteredFigureAssociatedAnimation = currentFigureAssociatedAnimation.filter((item) => item.targetId !== id2);
+  const newFigureAssociatedAnimationItem = {
+    targetId: id2,
+    animationFlag,
+    mouthAnimation: {
+      open: mouthOpen,
+      close: mouthClose,
+      halfOpen: mouthHalfOpen
+    },
+    blinkAnimation: {
+      open: eyesOpen,
+      close: eyesClose
+    }
+  };
+  filteredFigureAssociatedAnimation.push(newFigureAssociatedAnimationItem);
+  dispatch(setStage({ key: "figureAssociatedAnimation", value: filteredFigureAssociatedAnimation }));
+  let isRemoveEffects = true;
+  if (key !== "") {
+    const figWithKey = webgalStore.getState().stage.freeFigure.find((e2) => e2.key === key);
+    if (figWithKey) {
+      if (figWithKey.name === sentence.content) {
+        isRemoveEffects = false;
+      }
+    }
+  } else {
+    if (pos === "center") {
+      if (webgalStore.getState().stage.figName === sentence.content) {
+        isRemoveEffects = false;
+      }
+    }
+    if (pos === "left") {
+      if (webgalStore.getState().stage.figNameLeft === sentence.content) {
+        isRemoveEffects = false;
+      }
+    }
+    if (pos === "right") {
+      if (webgalStore.getState().stage.figNameRight === sentence.content) {
+        isRemoveEffects = false;
+      }
+    }
+  }
+  if (isRemoveEffects) {
+    const deleteKey = `fig-${pos}`;
+    const deleteKey2 = `${key}`;
+    webgalStore.dispatch(stageActions.removeEffectByTargetId(deleteKey));
+    webgalStore.dispatch(stageActions.removeEffectByTargetId(deleteKey2));
+  }
+  const setAnimationNames = (key2, sentence2) => {
+    const transformString = getSentenceArgByKey(sentence2, "transform");
+    const durationFromArg = getSentenceArgByKey(sentence2, "duration");
+    if (durationFromArg && typeof durationFromArg === "number") {
+      duration = durationFromArg;
+    }
+    let animationObj;
+    if (transformString) {
+      console.log(transformString);
+      try {
+        const frame2 = JSON.parse(transformString.toString());
+        animationObj = generateTransformAnimationObj(key2, frame2, duration);
+        animationObj[0].alpha = 0;
+        const animationName = (Math.random() * 10).toString(16);
+        const newAnimation = { name: animationName, effects: animationObj };
+        WebGAL.animationManager.addAnimation(newAnimation);
+        duration = getAnimateDuration$1(animationName);
+        WebGAL.animationManager.nextEnterAnimationName.set(key2, animationName);
+      } catch (e2) {
+        applyDefaultTransform();
+      }
+    } else {
+      applyDefaultTransform();
+    }
+    function applyDefaultTransform() {
+      const frame2 = {};
+      animationObj = generateTransformAnimationObj(key2, frame2, duration);
+      animationObj[0].alpha = 0;
+      const animationName = (Math.random() * 10).toString(16);
+      const newAnimation = { name: animationName, effects: animationObj };
+      WebGAL.animationManager.addAnimation(newAnimation);
+      duration = getAnimateDuration$1(animationName);
+      WebGAL.animationManager.nextEnterAnimationName.set(key2, animationName);
+    }
+    const enterAnim = getSentenceArgByKey(sentence2, "enter");
+    const exitAnim = getSentenceArgByKey(sentence2, "exit");
+    if (enterAnim) {
+      WebGAL.animationManager.nextEnterAnimationName.set(key2, enterAnim.toString());
+      duration = getAnimateDuration$1(enterAnim.toString());
+    }
+    if (exitAnim) {
+      WebGAL.animationManager.nextExitAnimationName.set(key2 + "-off", exitAnim.toString());
+      duration = getAnimateDuration$1(exitAnim.toString());
+    }
+  };
+  if (isFreeFigure) {
+    webgalStore.getState().stage.freeFigure;
+    const freeFigureItem = { key, name: content, basePosition: pos };
+    setAnimationNames(key, sentence);
+    if (motion) {
+      dispatch(stageActions.setLive2dMotion({ target: key, motion }));
+    }
+    if (expression) {
+      dispatch(stageActions.setLive2dExpression({ target: key, expression }));
+    }
+    dispatch(stageActions.setFreeFigureByKey(freeFigureItem));
+  } else {
+    const positionMap = {
+      center: "fig-center",
+      left: "fig-left",
+      right: "fig-right"
+    };
+    const dispatchMap = {
+      center: "figName",
+      left: "figNameLeft",
+      right: "figNameRight"
+    };
+    key = positionMap[pos];
+    setAnimationNames(key, sentence);
+    if (motion) {
+      dispatch(stageActions.setLive2dMotion({ target: key, motion }));
+    }
+    if (expression) {
+      dispatch(stageActions.setLive2dExpression({ target: key, expression }));
+    }
+    dispatch(setStage({ key: dispatchMap[pos], value: content }));
+  }
+  return {
+    performName: "none",
+    duration,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => false,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+}
+const changeScene = (sceneUrl, sceneName) => {
+  sceneFetcher(sceneUrl).then(async (rawScene) => {
+    const scene = await WebGAL.sceneManager.setCurrentScene(rawScene, sceneName, sceneUrl, true);
+    if (scene) {
+      WebGAL.sceneManager.sceneData.currentSentenceId = 0;
+      const currentSceneVideos = [];
+      WebGAL.sceneManager.sceneData.currentScene.assetsList.forEach((x) => {
+        if (x.url.endsWith(".mp4") || x.url.endsWith(".flv")) {
+          currentSceneVideos.push(x.url);
+        }
+      });
+      WebGAL.videoManager.destoryExcept(currentSceneVideos);
+      const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
+      WebGAL.sceneManager.settledScenes.push(sceneUrl);
+      const subSceneListUniq = uniqWith$1(subSceneList);
+      scenePrefetcher(subSceneListUniq);
+      logger.debug("现在切换场景，切换后的结果：", WebGAL.sceneManager.sceneData);
+      nextSentence();
+    }
+  });
+};
+const changeSceneScript = (sentence) => {
+  const sceneNameArray = sentence.content.split("/");
+  const sceneName = sceneNameArray[sceneNameArray.length - 1];
+  changeScene(sentence.content, sceneName);
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: true,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const jmp = (labelName) => {
+  const currentLine = WebGAL.sceneManager.sceneData.currentSentenceId;
+  let result = currentLine;
+  WebGAL.sceneManager.sceneData.currentScene.sentenceList.forEach((sentence, index2) => {
+    if (sentence.command === commandType$1.label && sentence.content === labelName && index2 !== currentLine) {
+      result = index2;
+    }
+  });
+  WebGAL.sceneManager.sceneData.currentSentenceId = result;
+  setTimeout(nextSentence, 1);
+};
+const Choose_Main$1 = "_Choose_Main_o52on_1";
+const Choose_item$1 = "_Choose_item_o52on_13";
+const Choose_item_image = "_Choose_item_image_o52on_30";
+const Choose_item_countdown = "_Choose_item_countdown_o52on_45";
+const Choose_item_progress_bar = "_Choose_item_progress_bar_o52on_52";
+const Choose_item_disabled = "_Choose_item_disabled_o52on_61";
+const styles$n = {
+  Choose_Main: Choose_Main$1,
+  Choose_item: Choose_item$1,
+  Choose_item_image,
+  Choose_item_countdown,
+  Choose_item_progress_bar,
+  Choose_item_disabled
+};
+const page_flip_1 = "" + new URL("page-flip-1-7df32409.mp3", import.meta.url).href;
+const switch_1 = "" + new URL("switch-1-99b576bc.mp3", import.meta.url).href;
+const mouse_enter = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU3LjE0LjEwMAAAAAAAAAAAAAAA//OAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAHAAAGhgA/Pz8/Pz8/Pz8/Pz8/P19fX19fX19fX19fX19ff39/f39/f39/f39/f3+fn5+fn5+fn5+fn5+fn5+/v7+/v7+/v7+/v7+/v9/f39/f39/f39/f39/f//////////////////8AAAAATGF2YzU3LjE1AAAAAAAAAAAAAAAAJAAAAAAAAAAABoYV32R7AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/zgGQAAAABpAAAAAAAAANIAAAAACADH/+QtN3NAAAKF6IiVEl7hE0Sv/+XsgGgCgQDQFAgGg3D+yBShQzd+K0qXyBQyRQUp3hEkUMGn/8oCBQ5KOIf+sPl3//+Xf/+GP//6w+EgFgk/nOfWhA4Q4ABxjnQhDhCD3pgIQLAARlkyZ8Ew+Ud1AgUOfy7/4OeGOUORPD//wwUd/KHP//+GPykMA445BCHBIYg4ZC4AyGP+PuWtgyRb6quwuJvp+v8wQwDAKoXYMnpC0w6gAc0HLf/84JkuwnkuN6ioaAAD3CpsVVFMAAFQBkWjRnE4hYMOnIaT5sXEGFHCyMLPhfcDTHTUmRcgnQMuCfCKHjcDRlTchxFTcEHsKGiBNQ6mLhLkNImWi8PkY6s3kUWgaJmjd1igSfFzk+gLLIOcMi4gXyupR9A20G/4zAhOJ/PDgGYKI4y4LMEEBYhnUz1lpozrmZk3//lsky4s+TB4ul8ny6YOV0FmRx0ElHlMbNWYOr///1uZFQ3IGRNBRmfWlRUYkeV8mVhC5j/+UOiwF4DdcGgB//zgmTqHCnhQS/NUAGcStp6X4JQAARBgQCDIwGbMjrzxBIRk8s4+IS7mMEYN4elXLheFicbuxm88zzzHaw/G//9DCJ+eYRf8WGFtZp9ydCUvPMKGf/57ZjPRjzHtq+3//+YZ2U8817jxbb1vcn/1yAPkAgGUJuPiliw1FHilYbAAkIkV4CdGauxnChrTd+JTOW4BTlAB55YoeqaxWm7Wv8xLqLOiiZLUixqapJF5JNAcoviEoN2gAwAUcLiN5Mk6i3TRU+ikk++6KKKTqSKyBsx//OCZFMVigU/GuzMAIuQEq5fwxACNMZGRPKvoqXbR0UbJP11I0t9J/SqSrRZ0lXoqetSTnWoto0kl26LJGJqizoJmtJSSNSWk7WdTpXUkiigbVor9K6lpKSrdFNi8gnstA65dQVWxkXlGyTGRiRt9gUkBwgAggllBkQbKigffEMUfzqlL+6Ruli5Bv+4lPf//////X/////o0Wte9XLYBs4JbHGkwql7GrPNPMusqAJDUPzthoURwGi5eZyu+VuecNrURSYBU/p8//81Vf+Znkn/84JkNA4gwTcvDYYmF1lmTbAzByQpycp3ROJPn025p4SQJoSeFQoViUUAoiJFRL3c8JRUNETudLFn0MtLDwrM4lUeOiJtiztbvBk6xyPrctYdEkBpA09q2Xn9/TmkZxYMuXBUW17I4clP/nKrXbW/C6FI5G0z11z31L9fvGqoAzY1X86WwYUHIdWCvLEwkeEq3kQ7iI8MPM/ssO/8OnlHsFW1nWeCvyzwVOtEvHuyqv/8hOYSETL//NtNaySXOSsAqIiRrkS82UvXUvppbobMbv/zgmQhC0HzBAAEwpKVEO4JYAjTIJ/y/0egY3vXWaZv65cpZm36G/mMUpdalcpStzalb1KXUoUBf8pXKyGM5Sv/TRRPKoUSQMYKTJfSwiUDeW+ZhhmIXNYfiyfSbiqFFLNEQaajFVnrO9YLTodKvET9Z0FcSgq6s6eIz3uLcFQmCxJY06W/g0Cri31AqGrq56EgaXxLPCUNdBZ5USrBUse3BqpNF93yP//yMyMDWEJGQ01////MjMv//I1kcjJrLf/stlzL55SkyyOX5q0cjVrL//OCZC4KtfrOGgAjbodYBawMAEQAYf//+Rk1qGRqygo5GRq1sP/sln//cyNWCg0cj//ZZZZKh+asCHP8lAL////9n/////////GMYm3raaWKige/+sW+LesVTEFNRTMuOTkuNaqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=";
+const dialog_se = "" + new URL("dialog-d5b91235.mp3", import.meta.url).href;
+const click_se = "data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjIzLjEwMQAAAAAAAAAAAAAA//OAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAHAAAGhgA/Pz8/Pz8/Pz8/Pz8/P19fX19fX19fX19fX19ff39/f39/f39/f39/f3+fn5+fn5+fn5+fn5+fn5+/v7+/v7+/v7+/v7+/v9/f39/f39/f39/f39/f//////////////////8AAAAATGF2YzU4LjQwAAAAAAAAAAAAAAAAJAL7AAAAAAAABobgvJxkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/zgGQADLH/PRigiACM0AZ+XUAQAoAVYA9AY3IAASAgeRjeQMhP0O/nec/1cn+Qnv/8n+RuhGUhPoQDPISc6HP1Oec7+pwAROeQikI3IT////z+p3Q56VOd/nOc5JzyAAhQAAI053QDFnoQjKACGvoQ7yThzoBgZ8ADMJQURtuNAkMH4P4P+XOZD4f5d/D/64f/3co7/8H8u/wQ5R3/+sPiN8TvB95SDgYT/yjgQf+mpbd5dJrdLkpewIOA5GsDQUQZnZzSB6Q1U50Guqy9OaH/84JkIg/hbXkux6gBEfpLBx+SKAZQvxWLwbxAAoJRbMJjWBoPcgIzjpzzz2clFsxj0ITlVELLXdjzyg8Q3UoM0PPct+QCw/6D5KMrNmLdXOUnPRjXJ3nMYVFVfnfdzf//q//MR+Q/8uwB0uyB/lVHlY6YhEIGR4cHYHAcAZwSQAJAcAocdAxoAMh6L1HV969TxECi7iHlYn7jW//an//+JXU5/9v4l//6EM3f83/41j3///+ozd63/9C2p2W2W22i0Mq2OVytAvxB06nWCVQIZP/zgmQXD4W5ey/HqAEQUkbOR4koAmYRklcoUe+Yd1AuC8AHmsVSoIxFCwPh6RI8ajdB8807yw/JxoLbsai/djzjScCv+Q/lARCSFyRC8hIFYZkF06Dv//MLs5zV+edqzv6krdvP9V/yO3p66H//n73UnMetFzzx4P/MNxBOVut0AFwIAARCgysYSXL+VO2TXhMWBADVCKKhQmjLmX/////0/P+rf7f///29++FO9LfYWYp//Z9n/yHlg30VsPil34MMSQVrYqfLAYVacpCtK1Oq//OCZBUPGaFC3+e0AA8ZVoZdyxAA2az68kOa28sO3puYoqNkUTUxnD6CKnSNlGTJJositaK2TdJSb2NWSX/SSScyDlAnQ6myTv/1X0aJePGZqjnT1FL6v9SRkXW/dVaKP6VaKLOv//+r//X/ZzF06dSFLuv/1B0aZUKwhImgCMAB2aHaUe7x55QPP/rp3zyZZf/VkdS3RFZ3m/9H//iSCn/1Qaev/0CVH3+oO1P///1t+j//9KoPL7QDcAaC4x+83dEEEvXL3vljkRVf5ZqiVpT/84JkGw5BSSx+MMpOEjoual7AxBzqOG5mzBJL6c7URxGtROS/Zu8vMwc2/naKcgTgLi5R79f/ZSUVjWOSaa1aHK5xM/apQnJHJUuTbXQ5VN09HRzSUNfirDtAVBYCwdfpJmYrjDVue/9pJZFMiSvSUMuMAg40uvlBXQECFUh3VKcOGoUBJAurXLsY3+xpv///1aZAwAP///yghpkdW/5qt8OMEMKKg7/pDn///h1/Ues6P/xLEaAkoyibeSeC8E+AuhymiEos8tLHJNRoThxKnP/zgmQcDD0TFAk8xToRuh4sCGgPKooy1Y8s/q2X/ZH//6tqJAEEQwRKxjI9y1KWWqPDw8awiKqQPPob/pRUDwAioCEtX9R7/9eGlncrLPLBVgKmRZ+GpD/tqEogdIXwLlNkUnUxiamSS0W/ooqUlrot//zUCIHRc05Zrqaabod86PDZv/+b/UamAIGjTP+W/879s9liLSrmCVxXgq7xL+RKoQZ+UAAwBYQh4Rig2ZaVmytcNUuiO5/zP8jP1/+VMy/1RygyCgEMDDLv4CCZF3/S//OCZC8JaK7qfiQiTgxILdAAYYYEEhVLrP///S1HoCosaCoCCYZrZUSBkQDwESH/WkJSAZjByJI0oE4Z/////4FCQeBkVZ/xX/zIsRd/6hf7X//4qSfqwEEiLv1ciEyISQKqTEFNRTMuMTAwqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=";
+var shim = { exports: {} };
+var useSyncExternalStoreShim_production_min = {};
+/**
+ * @license React
+ * use-sync-external-store-shim.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var e$3 = reactExports;
+function h$3(a2, b2) {
+  return a2 === b2 && (0 !== a2 || 1 / a2 === 1 / b2) || a2 !== a2 && b2 !== b2;
+}
+var k$2 = "function" === typeof Object.is ? Object.is : h$3, l$2 = e$3.useState, m$2 = e$3.useEffect, n$4 = e$3.useLayoutEffect, p$4 = e$3.useDebugValue;
+function q$3(a2, b2) {
+  var d2 = b2(), f2 = l$2({ inst: { value: d2, getSnapshot: b2 } }), c2 = f2[0].inst, g2 = f2[1];
+  n$4(function() {
+    c2.value = d2;
+    c2.getSnapshot = b2;
+    r$3(c2) && g2({ inst: c2 });
+  }, [a2, d2, b2]);
+  m$2(function() {
+    r$3(c2) && g2({ inst: c2 });
+    return a2(function() {
+      r$3(c2) && g2({ inst: c2 });
+    });
+  }, [a2]);
+  p$4(d2);
+  return d2;
+}
+function r$3(a2) {
+  var b2 = a2.getSnapshot;
+  a2 = a2.value;
+  try {
+    var d2 = b2();
+    return !k$2(a2, d2);
+  } catch (f2) {
+    return true;
+  }
+}
+function t$4(a2, b2) {
+  return b2();
+}
+var u$3 = "undefined" === typeof window || "undefined" === typeof window.document || "undefined" === typeof window.document.createElement ? t$4 : q$3;
+useSyncExternalStoreShim_production_min.useSyncExternalStore = void 0 !== e$3.useSyncExternalStore ? e$3.useSyncExternalStore : u$3;
+{
+  shim.exports = useSyncExternalStoreShim_production_min;
+}
+var shimExports = shim.exports;
+var withSelector = { exports: {} };
+var withSelector_production_min = {};
+/**
+ * @license React
+ * use-sync-external-store-shim/with-selector.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var h$2 = reactExports, n$3 = shimExports;
+function p$3(a2, b2) {
+  return a2 === b2 && (0 !== a2 || 1 / a2 === 1 / b2) || a2 !== a2 && b2 !== b2;
+}
+var q$2 = "function" === typeof Object.is ? Object.is : p$3, r$2 = n$3.useSyncExternalStore, t$3 = h$2.useRef, u$2 = h$2.useEffect, v$2 = h$2.useMemo, w$1 = h$2.useDebugValue;
+withSelector_production_min.useSyncExternalStoreWithSelector = function(a2, b2, e2, l2, g2) {
+  var c2 = t$3(null);
+  if (null === c2.current) {
+    var f2 = { hasValue: false, value: null };
+    c2.current = f2;
+  } else
+    f2 = c2.current;
+  c2 = v$2(function() {
+    function a3(a4) {
+      if (!c3) {
+        c3 = true;
+        d3 = a4;
+        a4 = l2(a4);
+        if (void 0 !== g2 && f2.hasValue) {
+          var b3 = f2.value;
+          if (g2(b3, a4))
+            return k2 = b3;
+        }
+        return k2 = a4;
+      }
+      b3 = k2;
+      if (q$2(d3, a4))
+        return b3;
+      var e3 = l2(a4);
+      if (void 0 !== g2 && g2(b3, e3))
+        return b3;
+      d3 = a4;
+      return k2 = e3;
+    }
+    var c3 = false, d3, k2, m2 = void 0 === e2 ? null : e2;
+    return [function() {
+      return a3(b2());
+    }, null === m2 ? void 0 : function() {
+      return a3(m2());
+    }];
+  }, [b2, e2, l2, g2]);
+  var d2 = r$2(a2, c2[0], c2[1]);
+  u$2(function() {
+    f2.hasValue = true;
+    f2.value = d2;
+  }, [d2]);
+  w$1(d2);
+  return d2;
+};
+{
+  withSelector.exports = withSelector_production_min;
+}
+var withSelectorExports = withSelector.exports;
+function defaultNoopBatch(callback) {
+  callback();
+}
+let batch = defaultNoopBatch;
+const setBatch = (newBatch) => batch = newBatch;
+const getBatch = () => batch;
+const ContextKey = Symbol.for(`react-redux-context`);
+const gT = typeof globalThis !== "undefined" ? globalThis : (
+  /* fall back to a per-module scope (pre-8.1 behaviour) if `globalThis` is not available */
+  {}
+);
+function getContext() {
+  var _gT$ContextKey;
+  if (!reactExports.createContext)
+    return {};
+  const contextMap = (_gT$ContextKey = gT[ContextKey]) != null ? _gT$ContextKey : gT[ContextKey] = /* @__PURE__ */ new Map();
+  let realContext = contextMap.get(reactExports.createContext);
+  if (!realContext) {
+    realContext = reactExports.createContext(null);
+    contextMap.set(reactExports.createContext, realContext);
+  }
+  return realContext;
+}
+const ReactReduxContext = /* @__PURE__ */ getContext();
+function createReduxContextHook(context2 = ReactReduxContext) {
+  return function useReduxContext2() {
+    const contextValue = reactExports.useContext(context2);
+    return contextValue;
+  };
+}
+const useReduxContext = /* @__PURE__ */ createReduxContextHook();
+const notInitialized = () => {
+  throw new Error("uSES not initialized!");
+};
+let useSyncExternalStoreWithSelector = notInitialized;
+const initializeUseSelector = (fn2) => {
+  useSyncExternalStoreWithSelector = fn2;
+};
+const refEquality = (a2, b2) => a2 === b2;
+function createSelectorHook(context2 = ReactReduxContext) {
+  const useReduxContext$1 = context2 === ReactReduxContext ? useReduxContext : createReduxContextHook(context2);
+  return function useSelector2(selector, equalityFnOrOptions = {}) {
+    const {
+      equalityFn = refEquality,
+      stabilityCheck = void 0,
+      noopCheck = void 0
+    } = typeof equalityFnOrOptions === "function" ? {
+      equalityFn: equalityFnOrOptions
+    } : equalityFnOrOptions;
+    const {
+      store,
+      subscription,
+      getServerState,
+      stabilityCheck: globalStabilityCheck,
+      noopCheck: globalNoopCheck
+    } = useReduxContext$1();
+    reactExports.useRef(true);
+    const wrappedSelector = reactExports.useCallback({
+      [selector.name](state) {
+        const selected = selector(state);
+        return selected;
+      }
+    }[selector.name], [selector, globalStabilityCheck, stabilityCheck]);
+    const selectedState = useSyncExternalStoreWithSelector(subscription.addNestedSub, store.getState, getServerState || store.getState, wrappedSelector, equalityFn);
+    reactExports.useDebugValue(selectedState);
+    return selectedState;
+  };
+}
+const useSelector = /* @__PURE__ */ createSelectorHook();
+function _objectWithoutPropertiesLoose$1(source, excluded) {
+  if (source == null)
+    return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i2;
+  for (i2 = 0; i2 < sourceKeys.length; i2++) {
+    key = sourceKeys[i2];
+    if (excluded.indexOf(key) >= 0)
+      continue;
+    target[key] = source[key];
+  }
+  return target;
+}
+var reactIs$1 = { exports: {} };
+var reactIs_production_min$1 = {};
+/** @license React v16.13.1
+ * react-is.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var b$1 = "function" === typeof Symbol && Symbol.for, c$2 = b$1 ? Symbol.for("react.element") : 60103, d$1 = b$1 ? Symbol.for("react.portal") : 60106, e$2 = b$1 ? Symbol.for("react.fragment") : 60107, f$1 = b$1 ? Symbol.for("react.strict_mode") : 60108, g$1 = b$1 ? Symbol.for("react.profiler") : 60114, h$1 = b$1 ? Symbol.for("react.provider") : 60109, k$1 = b$1 ? Symbol.for("react.context") : 60110, l$1 = b$1 ? Symbol.for("react.async_mode") : 60111, m$1 = b$1 ? Symbol.for("react.concurrent_mode") : 60111, n$2 = b$1 ? Symbol.for("react.forward_ref") : 60112, p$2 = b$1 ? Symbol.for("react.suspense") : 60113, q$1 = b$1 ? Symbol.for("react.suspense_list") : 60120, r$1 = b$1 ? Symbol.for("react.memo") : 60115, t$2 = b$1 ? Symbol.for("react.lazy") : 60116, v$1 = b$1 ? Symbol.for("react.block") : 60121, w = b$1 ? Symbol.for("react.fundamental") : 60117, x$1 = b$1 ? Symbol.for("react.responder") : 60118, y = b$1 ? Symbol.for("react.scope") : 60119;
+function z(a2) {
+  if ("object" === typeof a2 && null !== a2) {
+    var u2 = a2.$$typeof;
+    switch (u2) {
+      case c$2:
+        switch (a2 = a2.type, a2) {
+          case l$1:
+          case m$1:
+          case e$2:
+          case g$1:
+          case f$1:
+          case p$2:
+            return a2;
+          default:
+            switch (a2 = a2 && a2.$$typeof, a2) {
+              case k$1:
+              case n$2:
+              case t$2:
+              case r$1:
+              case h$1:
+                return a2;
+              default:
+                return u2;
+            }
+        }
+      case d$1:
+        return u2;
+    }
+  }
+}
+function A(a2) {
+  return z(a2) === m$1;
+}
+reactIs_production_min$1.AsyncMode = l$1;
+reactIs_production_min$1.ConcurrentMode = m$1;
+reactIs_production_min$1.ContextConsumer = k$1;
+reactIs_production_min$1.ContextProvider = h$1;
+reactIs_production_min$1.Element = c$2;
+reactIs_production_min$1.ForwardRef = n$2;
+reactIs_production_min$1.Fragment = e$2;
+reactIs_production_min$1.Lazy = t$2;
+reactIs_production_min$1.Memo = r$1;
+reactIs_production_min$1.Portal = d$1;
+reactIs_production_min$1.Profiler = g$1;
+reactIs_production_min$1.StrictMode = f$1;
+reactIs_production_min$1.Suspense = p$2;
+reactIs_production_min$1.isAsyncMode = function(a2) {
+  return A(a2) || z(a2) === l$1;
+};
+reactIs_production_min$1.isConcurrentMode = A;
+reactIs_production_min$1.isContextConsumer = function(a2) {
+  return z(a2) === k$1;
+};
+reactIs_production_min$1.isContextProvider = function(a2) {
+  return z(a2) === h$1;
+};
+reactIs_production_min$1.isElement = function(a2) {
+  return "object" === typeof a2 && null !== a2 && a2.$$typeof === c$2;
+};
+reactIs_production_min$1.isForwardRef = function(a2) {
+  return z(a2) === n$2;
+};
+reactIs_production_min$1.isFragment = function(a2) {
+  return z(a2) === e$2;
+};
+reactIs_production_min$1.isLazy = function(a2) {
+  return z(a2) === t$2;
+};
+reactIs_production_min$1.isMemo = function(a2) {
+  return z(a2) === r$1;
+};
+reactIs_production_min$1.isPortal = function(a2) {
+  return z(a2) === d$1;
+};
+reactIs_production_min$1.isProfiler = function(a2) {
+  return z(a2) === g$1;
+};
+reactIs_production_min$1.isStrictMode = function(a2) {
+  return z(a2) === f$1;
+};
+reactIs_production_min$1.isSuspense = function(a2) {
+  return z(a2) === p$2;
+};
+reactIs_production_min$1.isValidElementType = function(a2) {
+  return "string" === typeof a2 || "function" === typeof a2 || a2 === e$2 || a2 === m$1 || a2 === g$1 || a2 === f$1 || a2 === p$2 || a2 === q$1 || "object" === typeof a2 && null !== a2 && (a2.$$typeof === t$2 || a2.$$typeof === r$1 || a2.$$typeof === h$1 || a2.$$typeof === k$1 || a2.$$typeof === n$2 || a2.$$typeof === w || a2.$$typeof === x$1 || a2.$$typeof === y || a2.$$typeof === v$1);
+};
+reactIs_production_min$1.typeOf = z;
+{
+  reactIs$1.exports = reactIs_production_min$1;
+}
+var reactIsExports = reactIs$1.exports;
+var reactIs = reactIsExports;
+var FORWARD_REF_STATICS = {
+  "$$typeof": true,
+  render: true,
+  defaultProps: true,
+  displayName: true,
+  propTypes: true
+};
+var MEMO_STATICS = {
+  "$$typeof": true,
+  compare: true,
+  defaultProps: true,
+  displayName: true,
+  propTypes: true,
+  type: true
+};
+var TYPE_STATICS = {};
+TYPE_STATICS[reactIs.ForwardRef] = FORWARD_REF_STATICS;
+TYPE_STATICS[reactIs.Memo] = MEMO_STATICS;
+var reactIs_production_min = {};
+/**
+ * @license React
+ * react-is.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+var b = Symbol.for("react.element"), c$1 = Symbol.for("react.portal"), d = Symbol.for("react.fragment"), e$1 = Symbol.for("react.strict_mode"), f = Symbol.for("react.profiler"), g = Symbol.for("react.provider"), h = Symbol.for("react.context"), k = Symbol.for("react.server_context"), l = Symbol.for("react.forward_ref"), m = Symbol.for("react.suspense"), n$1 = Symbol.for("react.suspense_list"), p$1 = Symbol.for("react.memo"), q = Symbol.for("react.lazy"), t$1 = Symbol.for("react.offscreen"), u$1;
+u$1 = Symbol.for("react.module.reference");
+function v(a2) {
+  if ("object" === typeof a2 && null !== a2) {
+    var r2 = a2.$$typeof;
+    switch (r2) {
+      case b:
+        switch (a2 = a2.type, a2) {
+          case d:
+          case f:
+          case e$1:
+          case m:
+          case n$1:
+            return a2;
+          default:
+            switch (a2 = a2 && a2.$$typeof, a2) {
+              case k:
+              case h:
+              case l:
+              case q:
+              case p$1:
+              case g:
+                return a2;
+              default:
+                return r2;
+            }
+        }
+      case c$1:
+        return r2;
+    }
+  }
+}
+reactIs_production_min.ContextConsumer = h;
+reactIs_production_min.ContextProvider = g;
+reactIs_production_min.Element = b;
+reactIs_production_min.ForwardRef = l;
+reactIs_production_min.Fragment = d;
+reactIs_production_min.Lazy = q;
+reactIs_production_min.Memo = p$1;
+reactIs_production_min.Portal = c$1;
+reactIs_production_min.Profiler = f;
+reactIs_production_min.StrictMode = e$1;
+reactIs_production_min.Suspense = m;
+reactIs_production_min.SuspenseList = n$1;
+reactIs_production_min.isAsyncMode = function() {
+  return false;
+};
+reactIs_production_min.isConcurrentMode = function() {
+  return false;
+};
+reactIs_production_min.isContextConsumer = function(a2) {
+  return v(a2) === h;
+};
+reactIs_production_min.isContextProvider = function(a2) {
+  return v(a2) === g;
+};
+reactIs_production_min.isElement = function(a2) {
+  return "object" === typeof a2 && null !== a2 && a2.$$typeof === b;
+};
+reactIs_production_min.isForwardRef = function(a2) {
+  return v(a2) === l;
+};
+reactIs_production_min.isFragment = function(a2) {
+  return v(a2) === d;
+};
+reactIs_production_min.isLazy = function(a2) {
+  return v(a2) === q;
+};
+reactIs_production_min.isMemo = function(a2) {
+  return v(a2) === p$1;
+};
+reactIs_production_min.isPortal = function(a2) {
+  return v(a2) === c$1;
+};
+reactIs_production_min.isProfiler = function(a2) {
+  return v(a2) === f;
+};
+reactIs_production_min.isStrictMode = function(a2) {
+  return v(a2) === e$1;
+};
+reactIs_production_min.isSuspense = function(a2) {
+  return v(a2) === m;
+};
+reactIs_production_min.isSuspenseList = function(a2) {
+  return v(a2) === n$1;
+};
+reactIs_production_min.isValidElementType = function(a2) {
+  return "string" === typeof a2 || "function" === typeof a2 || a2 === d || a2 === f || a2 === e$1 || a2 === m || a2 === n$1 || a2 === t$1 || "object" === typeof a2 && null !== a2 && (a2.$$typeof === q || a2.$$typeof === p$1 || a2.$$typeof === g || a2.$$typeof === h || a2.$$typeof === l || a2.$$typeof === u$1 || void 0 !== a2.getModuleId) ? true : false;
+};
+reactIs_production_min.typeOf = v;
+function createListenerCollection() {
+  const batch2 = getBatch();
+  let first = null;
+  let last = null;
+  return {
+    clear() {
+      first = null;
+      last = null;
+    },
+    notify() {
+      batch2(() => {
+        let listener = first;
+        while (listener) {
+          listener.callback();
+          listener = listener.next;
+        }
+      });
+    },
+    get() {
+      let listeners = [];
+      let listener = first;
+      while (listener) {
+        listeners.push(listener);
+        listener = listener.next;
+      }
+      return listeners;
+    },
+    subscribe(callback) {
+      let isSubscribed = true;
+      let listener = last = {
+        callback,
+        next: null,
+        prev: last
+      };
+      if (listener.prev) {
+        listener.prev.next = listener;
+      } else {
+        first = listener;
+      }
+      return function unsubscribe() {
+        if (!isSubscribed || first === null)
+          return;
+        isSubscribed = false;
+        if (listener.next) {
+          listener.next.prev = listener.prev;
+        } else {
+          last = listener.prev;
+        }
+        if (listener.prev) {
+          listener.prev.next = listener.next;
+        } else {
+          first = listener.next;
+        }
+      };
+    }
+  };
+}
+const nullListeners = {
+  notify() {
+  },
+  get: () => []
+};
+function createSubscription(store, parentSub) {
+  let unsubscribe;
+  let listeners = nullListeners;
+  let subscriptionsAmount = 0;
+  let selfSubscribed = false;
+  function addNestedSub(listener) {
+    trySubscribe();
+    const cleanupListener = listeners.subscribe(listener);
+    let removed = false;
+    return () => {
+      if (!removed) {
+        removed = true;
+        cleanupListener();
+        tryUnsubscribe();
+      }
+    };
+  }
+  function notifyNestedSubs() {
+    listeners.notify();
+  }
+  function handleChangeWrapper() {
+    if (subscription.onStateChange) {
+      subscription.onStateChange();
+    }
+  }
+  function isSubscribed() {
+    return selfSubscribed;
+  }
+  function trySubscribe() {
+    subscriptionsAmount++;
+    if (!unsubscribe) {
+      unsubscribe = parentSub ? parentSub.addNestedSub(handleChangeWrapper) : store.subscribe(handleChangeWrapper);
+      listeners = createListenerCollection();
+    }
+  }
+  function tryUnsubscribe() {
+    subscriptionsAmount--;
+    if (unsubscribe && subscriptionsAmount === 0) {
+      unsubscribe();
+      unsubscribe = void 0;
+      listeners.clear();
+      listeners = nullListeners;
+    }
+  }
+  function trySubscribeSelf() {
+    if (!selfSubscribed) {
+      selfSubscribed = true;
+      trySubscribe();
+    }
+  }
+  function tryUnsubscribeSelf() {
+    if (selfSubscribed) {
+      selfSubscribed = false;
+      tryUnsubscribe();
+    }
+  }
+  const subscription = {
+    addNestedSub,
+    notifyNestedSubs,
+    handleChangeWrapper,
+    isSubscribed,
+    trySubscribe: trySubscribeSelf,
+    tryUnsubscribe: tryUnsubscribeSelf,
+    getListeners: () => listeners
+  };
+  return subscription;
+}
+const canUseDOM = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
+const useIsomorphicLayoutEffect = canUseDOM ? reactExports.useLayoutEffect : reactExports.useEffect;
+function Provider({
+  store,
+  context: context2,
+  children,
+  serverState,
+  stabilityCheck = "once",
+  noopCheck = "once"
+}) {
+  const contextValue = reactExports.useMemo(() => {
+    const subscription = createSubscription(store);
+    return {
+      store,
+      subscription,
+      getServerState: serverState ? () => serverState : void 0,
+      stabilityCheck,
+      noopCheck
+    };
+  }, [store, serverState, stabilityCheck, noopCheck]);
+  const previousState = reactExports.useMemo(() => store.getState(), [store]);
+  useIsomorphicLayoutEffect(() => {
+    const {
+      subscription
+    } = contextValue;
+    subscription.onStateChange = subscription.notifyNestedSubs;
+    subscription.trySubscribe();
+    if (previousState !== store.getState()) {
+      subscription.notifyNestedSubs();
+    }
+    return () => {
+      subscription.tryUnsubscribe();
+      subscription.onStateChange = void 0;
+    };
+  }, [contextValue, previousState]);
+  const Context = context2 || ReactReduxContext;
+  return /* @__PURE__ */ reactExports.createElement(Context.Provider, {
+    value: contextValue
+  }, children);
+}
+function createStoreHook(context2 = ReactReduxContext) {
+  const useReduxContext$1 = (
+    // @ts-ignore
+    context2 === ReactReduxContext ? useReduxContext : (
+      // @ts-ignore
+      createReduxContextHook(context2)
+    )
+  );
+  return function useStore2() {
+    const {
+      store
+    } = useReduxContext$1();
+    return store;
+  };
+}
+const useStore = /* @__PURE__ */ createStoreHook();
+function createDispatchHook(context2 = ReactReduxContext) {
+  const useStore$1 = (
+    // @ts-ignore
+    context2 === ReactReduxContext ? useStore : createStoreHook(context2)
+  );
+  return function useDispatch2() {
+    const store = useStore$1();
+    return store.dispatch;
+  };
+}
+const useDispatch = /* @__PURE__ */ createDispatchHook();
+initializeUseSelector(withSelectorExports.useSyncExternalStoreWithSelector);
+setBatch(reactDomExports.unstable_batchedUpdates);
+const useSoundEffect = () => {
+  const dispatch = useDispatch();
+  const playSeEnter = () => {
+    dispatch(setStage({ key: "uiSe", value: mouse_enter }));
+  };
+  const playSeClick = () => {
+    dispatch(setStage({ key: "uiSe", value: click_se }));
+  };
+  const playSeSwitch = () => {
+    dispatch(setStage({ key: "uiSe", value: switch_1 }));
+  };
+  const playSePageChange = () => {
+    dispatch(setStage({ key: "uiSe", value: page_flip_1 }));
+  };
+  const playSeDialogOpen = () => {
+    dispatch(setStage({ key: "uiSe", value: dialog_se }));
+  };
+  return {
+    playSeEnter,
+    playSeClick,
+    playSePageChange,
+    playSeDialogOpen,
+    playSeSwitch
+  };
+};
+const useSEByWebgalStore = () => {
+  const playSeEnter = () => {
+    webgalStore.dispatch(setStage({ key: "uiSe", value: mouse_enter }));
+  };
+  const playSeClick = () => {
+    webgalStore.dispatch(setStage({ key: "uiSe", value: click_se }));
+  };
+  return {
+    playSeEnter,
+    // 鼠标进入
+    playSeClick
+    // 鼠标点击
+  };
+};
+const ProgressBarBackground = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABDoAAABqCAMAAABqMsFvAAAAXVBMVEUAAADRnfoAAADRnvvSnfq3itwbFCDQn/rSnPnVoP51Wo1oT30OCxDVqv/FkuvQnvjRnvlcRG5JOFgoHi/Qn/TQn/qdd7uCY502KT40KT7Sm/rRnPzDkunRn/nTnPeeEeHhAAAAH3RSTlNeXgBSL15eIVgMXl5eBl5HPl5eXhg1Xl5eXilYXk0SC9HCDwAABSBJREFUeNrs3dt2ojAUgOG95RBBOYioA46+/2NOzFCWtShJpxez5P8ubJ/gX8lOjLLyl5m+ri/RWQG8lXN0qerYXFf+PNNRtIeKZABv7lzF7Q+mo+jJBrAYtcl+JB0t3QAWpjb/mo4ivutGecx3zT7dCoC3sk27bpcfSx1Fc0sP8QxHkjepAHhraXNKxnjEL+MhPuFINp0AWIR9nozx+FY62kidMqcbwKJ0p3HbEpyOrBrCsWG0ASxOukvUqbOwdJgz4QAWbYhHZALSURzUIRzAcqW5OofCNx1ZpDfHvQBYsHRYeGR+6WjPapU7AbBwm7/tuPqkw+hNwi0OAB8Lj34+HbHenJhyALC2ud7EM+kYyrERAHA2k+2QqXI0AgCDZmjHi3T0apXcHgVwZ1+qZZ6n4+rKwZksgIl2tJPpGO9zUA4ADzq11tl0OoqIOQeA5/OOqJhMx4GzFQCvzlkOU+kwauUCABNOn0el8mnQkXATDMCkbeLGHV/SUavF7XMAT6SlqlaP6TAMOgC8tFOrfUiH264IADx1HE9ZxnTEbFcAzNirFd+nI4s4XQHgc0K7Lu7SEfNCB4BZ23Jcdsi46OBVMADeyw6XDsOMFEDQssOlg0UHAP9lx0c6DMcrAPyXHe2Qjtr+fxIAmJW7K6UuHZlavwQAZnXDoFQYkgIIkKhq79JRcx0MQMigtHLp4FVBAKE7Flm17FcAhO1YWpuOmPMVAGFnLAebjoq3jAH4a9ywQ1Zr7oMB8Je6C6VytX9+CwB4KlU1E2M/jwIAAY+FGYm51QEgdE7aS823ZgGEPm9cS8UXWACEaFw6LqQDQOjrxheJOJsFEHo6G8nafvJzkQC8bVV1LWoJAHhTi3QAIB0AviAdAP4HajEmBfCNMSmHs/jT3r0mpwoEARSmG5CXPKKghlL3v8wLnWQq8U7J4E853yJOzYsGeOVy9sZ4QQBrfNqTsI5JPwDWpqPl8zcAr3z+NvLRPYC1H90njPoB8Mqon4IBgwDWDhi8M9YYwPqxxvxMAcBrP1MYOCcFEO4sIgM/jgTw2o8j65wRgwBCHWWiGqkddlQRAAS+6ugsHSM7FgBr9ivZnA52LACCfcqksHRoyx0LgPD7lU4tHXbHcmXcD4BFO5lklo5JzkEpgNCvZmP9SUfCsgNA8CGpS0fNsgNA6KKj+EoHyw4AYXapiCQ6i5RlB4AwpVt0aKQmEaYbAwi4Xkn0dzrqmGFhAJbPSGN16TC9MN4YwDOVTLKHdNiT0ivTwgA82650+piOIheRlFsWAF771J2RunSYTCbnCAA8SrddMZE6g3BDC+DJQcegvnTUsTDhGIDPQSZx7UuHHXcwuQPA/45WjkI96XA3tFdehgH449jI5K6+dJiMdgB4dLFyjOpPh0mE8w4Afxxklqg/Ha4d3LMA+KXylUMj9baj5G0YgMn+7MrhT4czyizlTToAm9AxyXQ5HXqP2bQAmH00Msl7DUmHFjELDwDR8STuPUdIOrQexJTEA9isfSVmqDUoHSb7XngwwQPYpn3VyCzP1CtSv6KT73iw8gA2Zw6HaQtdkQ638DBnvmoBNuVSNmLiXjU8HU7yE4+05G06sBGXKpUveVLr6nSYwuJh0vOBnQvw5naHMhV/OMLTYYosFqc5lR+Xy46HpsCb2e+Oh4/y1IiEhcPSsSTrBMCW5G2vSyJdVlAPYDPydqx1WaRh+qTNBcBby9uhrzVIpOHuWdK1t5iEAG8mj29dN2aFhvsHJeNTSzL9K1cAAAAASUVORK5CYII=";
+const ProgressBar = "" + new URL("progress-bar-01049335.png", import.meta.url).href;
+class ChooseOption {
+  constructor(text2, jump) {
+    __publicField(this, "text");
+    __publicField(this, "jump");
+    __publicField(this, "jumpToScene");
+    __publicField(this, "showCondition");
+    __publicField(this, "enableCondition");
+    __publicField(this, "style");
+    this.text = text2;
+    this.jump = jump;
+    this.jumpToScene = jump.match(/\./) !== null;
+  }
+  /**
+   * 格式：
+   * (showConditionVar>1)[enableConditionVar>2]->${x=1,y=1,scale=1,image=./assets/baidu.png,fontSize:24,fontColor:#fff}text:jump
+   */
+  static parse(script) {
+    const parts = script.split("->");
+    const conditonPart = parts.length > 1 ? parts[0] : null;
+    const mainPart = parts.length > 1 ? parts[1] : parts[0];
+    const mainPartNodes = mainPart.split(":");
+    const text2 = mainPartNodes[0].replace(/\${[^{}]*}/, "");
+    const option = new ChooseOption(text2, mainPartNodes[1]);
+    const styleRegex = /\$\{(.*?)\}/;
+    const styleMatch = mainPart.match(styleRegex);
+    if (styleMatch) {
+      const styleStr = styleMatch[1];
+      const styleProps = styleStr.split(",");
+      const style = {};
+      styleProps.forEach((prop) => {
+        const [key, value] = prop.split("=");
+        if (key && value) {
+          style[key.trim()] = isNaN(Number(value.trim())) ? value.trim() : Number(value.trim());
+        }
+      });
+      option.style = style;
+    }
+    if (conditonPart !== null) {
+      const showConditionPart = conditonPart.match(/\((.*)\)/);
+      if (showConditionPart) {
+        option.showCondition = showConditionPart[1];
+      }
+      const enableConditionPart = conditonPart.match(/\[(.*)\]/);
+      if (enableConditionPart) {
+        option.enableCondition = enableConditionPart[1];
+      }
+    }
+    return option;
+  }
+}
+const choose = (sentence, chooseCallback) => {
+  const chooseOptionScripts = sentence.content.split("|");
+  const chooseOptions = chooseOptionScripts.map((e2) => ChooseOption.parse(e2));
+  const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
+  const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
+  const { playSeEnter, playSeClick } = useSEByWebgalStore();
+  let timer = {
+    current: null
+  };
+  const runtimeBuildList = (chooseListFull) => {
+    return chooseListFull.filter((e2, i2) => whenChecker(e2.showCondition)).map((e2, i2) => {
+      var _a2, _b2;
+      const enable = whenChecker(e2.enableCondition);
+      let className = enable ? styles$n.Choose_item : styles$n.Choose_item_disabled;
+      const onClick = enable ? () => {
+        playSeClick();
+        chooseCallback == null ? void 0 : chooseCallback();
+        if (timer.current) {
+          clearTimeout(timer.current);
+          timer.current = null;
+        }
+        if (e2.jumpToScene) {
+          changeScene(e2.jump, e2.text);
+        } else {
+          jmp(e2.jump);
+        }
+        WebGAL.gameplay.performController.unmountPerform("choose");
+      } : () => {
+      };
+      const styleObj = {
+        fontFamily: font
+      };
+      console.log(33333, e2);
+      if (e2.style) {
+        if (typeof e2.style.x === "number") {
+          styleObj.position = "absolute";
+          styleObj["left"] = e2.style.x * 1.33333 + "px";
+          styleObj["transform"] = "translateX(-50%)";
+        }
+        if (typeof e2.style.y === "number") {
+          styleObj.position = "absolute";
+          styleObj["top"] = e2.style.y * 1.33333 + "px";
+          if (styleObj["transform"]) {
+            styleObj["transform"] += " translateY(-50%)";
+          } else {
+            styleObj["transform"] = "translateY(-50%)";
+          }
+        }
+        if (typeof e2.style.scale === "number") {
+          if (styleObj["transform"]) {
+            styleObj["transform"] += " scale(" + e2.style.scale + ")";
+          } else {
+            styleObj["transform"] = "scale(" + e2.style.scale + ")";
+          }
+        }
+        if (typeof e2.style.fontSize === "number") {
+          styleObj["fontSize"] = e2.style.fontSize + "px";
+        }
+        if (typeof e2.style.fontColor === "string" && e2.style.fontColor[0] === "#") {
+          styleObj["color"] = e2.style.fontColor;
+        }
+      }
+      if (typeof ((_a2 = e2.style) == null ? void 0 : _a2.countdown) === "number") {
+        className = styles$n.Choose_item_countdown;
+        let time = e2.style.countdown;
+        let width = 1082;
+        let unit = 1082 / (time * 1e3 / 16);
+        const countdown = () => {
+          if (time <= 0 && timer.current) {
+            clearTimeout(timer);
+            timer.current = null;
+            onClick();
+          } else {
+            timer.current = setTimeout(() => {
+              time -= 0.016;
+              width -= unit;
+              let rect = document.getElementById("rect");
+              rect == null ? void 0 : rect.setAttribute("width", Math.max(0, width).toString());
+              countdown();
+            }, 16);
+          }
+        };
+        countdown();
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBarBackground, alt: e2.text, style: { width: "1082px", height: "106px" } }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$n.Choose_item_progress_bar })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "0", height: "0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("clipPath", { id: "myClip", children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { id: "rect", width: "1082", height: "106", rx: "53", ry: "53", style: { fill: "#fff" } }) }) }) })
+        ] }, e2.jump + i2);
+      }
+      if ((_b2 = e2.style) == null ? void 0 : _b2.image) {
+        className = styles$n.Choose_item_image;
+        const imgUrl = assetSetter(e2.style.image, fileType$1.ui);
+        const id2 = `img-option-${i2}`;
+        const img = new Image();
+        img.src = imgUrl;
+        img.onload = function() {
+          let ele = document.getElementById(id2);
+          img.style.width = img.naturalWidth + "px";
+          img.style.height = img.naturalHeight + "px";
+          img.alt = e2.text;
+          if (ele) {
+            ele.style.width = img.naturalWidth + "px";
+            ele.style.height = img.naturalHeight + "px";
+            setTimeout(() => {
+              ele == null ? void 0 : ele.prepend(img);
+              ele = null;
+            }, 32);
+          }
+        };
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: id2,
+            className,
+            style: styleObj,
+            onClick,
+            onMouseEnter: playSeEnter,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: e2.text })
+          },
+          e2.jump + i2
+        );
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: e2.text }, e2.jump + i2);
+    });
+  };
+  ReactDOM.render(
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$n.Choose_Main, children: runtimeBuildList(chooseOptions) }),
+    document.getElementById("chooseContainer")
+  );
+  return {
+    performName: "choose",
+    duration: 1e3 * 60 * 60 * 24,
+    isHoldOn: false,
+    stopFunction: () => {
+      ReactDOM.render(/* @__PURE__ */ jsxRuntimeExports.jsx("div", {}), document.getElementById("chooseContainer"));
+    },
+    blockingNext: () => true,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const comment$1 = (sentence) => {
+  logger.debug(`脚本内注释${sentence.content}`);
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const filmMode = (sentence) => {
+  if (sentence.content !== "" && sentence.content !== "none") {
+    webgalStore.dispatch(setStage({ key: "enableFilm", value: sentence.content }));
+  } else {
+    webgalStore.dispatch(setStage({ key: "enableFilm", value: "" }));
+  }
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const Choose_Main = "_Choose_Main_4xkm5_1";
+const Choose_item = "_Choose_item_4xkm5_13";
+const glabalDialog_container_inner$1 = "_glabalDialog_container_inner_4xkm5_28";
+const glabalDialog_container$1 = "_glabalDialog_container_4xkm5_28";
+const title$2 = "_title_4xkm5_47";
+const button$2 = "_button_4xkm5_59";
+const styles$m = {
+  Choose_Main,
+  Choose_item,
+  glabalDialog_container_inner: glabalDialog_container_inner$1,
+  glabalDialog_container: glabalDialog_container$1,
+  title: title$2,
+  button: button$2
+};
+const getUserInput = (sentence) => {
+  const varKey = sentence.content.toString().trim();
+  const titleFromArgs = getSentenceArgByKey(sentence, "title");
+  const title2 = (titleFromArgs === 0 ? "Please Input" : titleFromArgs) ?? "Please Input";
+  const buttonTextFromArgs = getSentenceArgByKey(sentence, "buttonText");
+  const buttonText = (buttonTextFromArgs === 0 ? "OK" : buttonTextFromArgs) ?? "OK";
+  const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
+  const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
+  const { playSeEnter, playSeClick } = useSEByWebgalStore();
+  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$m.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$m.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$m.title, children: title2 }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$m.Choose_item }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        onMouseEnter: playSeEnter,
+        onClick: () => {
+          const userInput = document.getElementById("user-input");
+          if (userInput) {
+            webgalStore.dispatch(
+              setStageVar({ key: varKey, value: ((userInput == null ? void 0 : userInput.value) ?? "") === "" ? " " : (userInput == null ? void 0 : userInput.value) ?? "" })
+            );
+          }
+          playSeClick();
+          WebGAL.gameplay.performController.unmountPerform("userInput");
+          nextSentence();
+        },
+        className: styles$m.button,
+        children: buttonText
+      }
+    )
+  ] }) });
+  ReactDOM.render(
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$m.Choose_Main, children: chooseElements }),
+    document.getElementById("chooseContainer")
+  );
+  return {
+    performName: "userInput",
+    duration: 1e3 * 60 * 60 * 24,
+    isHoldOn: false,
+    stopFunction: () => {
+      ReactDOM.render(/* @__PURE__ */ jsxRuntimeExports.jsx("div", {}), document.getElementById("chooseContainer"));
+    },
+    blockingNext: () => true,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const FullScreenPerform_main = "_FullScreenPerform_main_7er8a_2";
+const FullScreenPerform_element = "_FullScreenPerform_element_7er8a_9";
+const fullScreen_video = "_fullScreen_video_7er8a_17";
+const fadeIn = "_fadeIn_7er8a_74";
+const intro_showSoftly = "_intro_showSoftly_7er8a_1";
+const slideIn = "_slideIn_7er8a_80";
+const typingEffect = "_typingEffect_7er8a_86";
+const typing = "_typing_7er8a_86";
+const blinkCursor = "_blinkCursor_7er8a_1";
+const pixelateEffect = "_pixelateEffect_7er8a_95";
+const pixelateAnimation = "_pixelateAnimation_7er8a_1";
+const revealAnimation = "_revealAnimation_7er8a_101";
+const videoContainer = "_videoContainer_7er8a_115";
+const styles$l = {
+  FullScreenPerform_main,
+  FullScreenPerform_element,
+  fullScreen_video,
+  fadeIn,
+  intro_showSoftly,
+  slideIn,
+  typingEffect,
+  typing,
+  blinkCursor,
+  pixelateEffect,
+  pixelateAnimation,
+  revealAnimation,
+  videoContainer
+};
+const intro = (sentence) => {
+  const performName = `introPerform${Math.random().toString()}`;
+  let fontSize;
+  let backgroundColor = "rgba(0, 0, 0, 1)";
+  let color2 = "rgba(255, 255, 255, 1)";
+  const animationClass = (type2, length2 = 0) => {
+    switch (type2) {
+      case "fadeIn":
+        return styles$l.fadeIn;
+      case "slideIn":
+        return styles$l.slideIn;
+      case "typingEffect":
+        return `${styles$l.typingEffect} ${length2}`;
+      case "pixelateEffect":
+        return styles$l.pixelateEffect;
+      case "revealAnimation":
+        return styles$l.revealAnimation;
+      default:
+        return styles$l.fadeIn;
+    }
+  };
+  let chosenAnimationClass = styles$l.fadeIn;
+  let delayTime = 1500;
+  let isHold = false;
+  for (const e2 of sentence.args) {
+    if (e2.key === "backgroundColor") {
+      backgroundColor = e2.value || "rgba(0, 0, 0, 1)";
+    }
+    if (e2.key === "fontColor") {
+      color2 = e2.value || "rgba(255, 255, 255, 1)";
+    }
+    if (e2.key === "fontSize") {
+      switch (e2.value) {
+        case "small":
+          fontSize = "280%";
+          break;
+        case "medium":
+          fontSize = "350%";
+          break;
+        case "large":
+          fontSize = "420%";
+          break;
+      }
+    }
+    if (e2.key === "animation") {
+      chosenAnimationClass = animationClass(e2.value);
+    }
+    if (e2.key === "delayTime") {
+      const parsedValue = parseInt(e2.value.toString(), 10);
+      delayTime = isNaN(parsedValue) ? delayTime : parsedValue;
+    }
+    if (e2.key === "hold") {
+      if (e2.value === true) {
+        isHold = true;
+      }
+    }
+  }
+  const introContainerStyle = {
+    background: backgroundColor,
+    color: color2,
+    fontSize: fontSize || "350%",
+    width: "100%",
+    height: "100%"
+  };
+  const introArray = sentence.content.split(/\|/);
+  let endWait = 1e3;
+  let baseDuration = endWait + delayTime * introArray.length;
+  const duration = isHold ? 1e3 * 60 * 60 * 24 : 1e3 + delayTime * introArray.length;
+  let isBlocking = true;
+  let setBlockingStateTimeout = setTimeout(() => {
+    isBlocking = false;
+  }, baseDuration);
+  let timeout = setTimeout(() => {
+  });
+  const toNextIntroElement = () => {
+    const introContainer22 = document.getElementById("introContainer");
+    baseDuration -= delayTime;
+    clearTimeout(setBlockingStateTimeout);
+    setBlockingStateTimeout = setTimeout(() => {
+      isBlocking = false;
+    }, baseDuration);
+    if (introContainer22) {
+      const children = introContainer22.childNodes[0].childNodes[0].childNodes;
+      const len = children.length;
+      children.forEach((node2, index2) => {
+        const currentDelay = Number(node2.style.animationDelay.split("ms")[0]);
+        if (currentDelay > 0) {
+          node2.style.animationDelay = `${currentDelay - delayTime}ms`;
+        }
+        if (index2 === len - 1) {
+          if (currentDelay === 0) {
+            clearTimeout(timeout);
+            WebGAL.gameplay.performController.unmountPerform(performName);
+          } else {
+            clearTimeout(timeout);
+            if (!isHold) {
+              timeout = setTimeout(() => {
+                WebGAL.gameplay.performController.unmountPerform(performName);
+                setTimeout(nextSentence, 0);
+              }, baseDuration);
+            }
+          }
+        }
+      });
+    }
+  };
+  WebGAL.events.userInteractNext.on(toNextIntroElement);
+  const showIntro = introArray.map((e2, i2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      style: { animationDelay: `${delayTime * i2}ms` },
+      className: chosenAnimationClass,
+      children: [
+        e2,
+        e2 === "" ? " " : ""
+      ]
+    },
+    "introtext" + i2 + Math.random().toString()
+  ));
+  const intro2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: introContainerStyle, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { padding: "3em 4em 3em 4em" }, children: showIntro }) });
+  ReactDOM.render(intro2, document.getElementById("introContainer"));
+  const introContainer2 = document.getElementById("introContainer");
+  if (introContainer2) {
+    introContainer2.style.display = "block";
+  }
+  return {
+    performName,
+    duration,
+    isHoldOn: false,
+    stopFunction: () => {
+      const introContainer22 = document.getElementById("introContainer");
+      if (introContainer22) {
+        introContainer22.style.display = "none";
+      }
+      WebGAL.events.userInteractNext.off(toNextIntroElement);
+    },
+    blockingNext: () => isBlocking,
+    blockingAuto: () => isBlocking,
+    stopTimeout: void 0,
+    // 暂时不用，后面会交给自动清除
+    goNextWhenOver: true
+  };
+};
+const label = (sentence) => {
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const miniAvatar = (sentence) => {
+  let content = sentence.content;
+  if (sentence.content === "none" || sentence.content === "") {
+    content = "";
+  }
+  webgalStore.dispatch(setStage({ key: "miniAvatar", value: content }));
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: true,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const scriptRel = "modulepreload";
+const assetsURL = function(dep, importerUrl) {
+  return new URL(dep, importerUrl).href;
+};
+const seen = {};
+const __vitePreload = function preload(baseModule, deps, importerUrl) {
+  if (!deps || deps.length === 0) {
+    return baseModule();
+  }
+  const links = document.getElementsByTagName("link");
+  return Promise.all(deps.map((dep) => {
+    dep = assetsURL(dep, importerUrl);
+    if (dep in seen)
+      return;
+    seen[dep] = true;
+    const isCss = dep.endsWith(".css");
+    const cssSelector = isCss ? '[rel="stylesheet"]' : "";
+    const isBaseRelative = !!importerUrl;
+    if (isBaseRelative) {
+      for (let i2 = links.length - 1; i2 >= 0; i2--) {
+        const link2 = links[i2];
+        if (link2.href === dep && (!isCss || link2.rel === "stylesheet")) {
+          return;
+        }
+      }
+    } else if (document.querySelector(`link[href="${dep}"]${cssSelector}`)) {
+      return;
+    }
+    const link = document.createElement("link");
+    link.rel = isCss ? "stylesheet" : scriptRel;
+    if (!isCss) {
+      link.as = "script";
+      link.crossOrigin = "";
+    }
+    link.href = dep;
+    document.head.appendChild(link);
+    if (isCss) {
+      return new Promise((res, rej) => {
+        link.addEventListener("load", res);
+        link.addEventListener("error", () => rej(new Error(`Unable to preload CSS for ${dep}`)));
+      });
+    }
+  })).then(() => baseModule()).catch((err) => {
+    const e2 = new Event("vite:preloadError", { cancelable: true });
+    e2.payload = err;
+    window.dispatchEvent(e2);
+    if (!e2.defaultPrevented) {
+      throw err;
+    }
+  });
+};
+const performs = /* @__PURE__ */ new Map();
+function getName(name) {
+  if (!name)
+    return null;
+  if (typeof name === "string")
+    return name;
+  return name();
+}
+function getKey(name) {
+  const key = getName(name);
+  if (!key) {
+    logger.error("Get name of perform failed. There no name of the perform.");
+    return "";
+  }
+  return key;
+}
+function registerPerform(name, callback) {
+  if (!callback || typeof callback !== "function")
+    throw new Error(`"${name}" is not a callback.`);
+  performs.set(getKey(name), callback);
+}
+function call$1(name, args = []) {
+  const callback = performs.get(getKey(name));
+  if (!callback || !(callback instanceof Function)) {
+    logger.error(`Can't call the perform named "${name}"`);
+    throw new Error(`"${name}" don't have the pixiPerform callback.`);
+  }
+  return callback(...args);
+}
+__vitePreload(() => import("./initRegister-ce6dc821.js"), true ? [] : void 0, import.meta.url);
+const pixi = (sentence) => {
+  const pixiPerformName = "PixiPerform" + sentence.content;
+  WebGAL.gameplay.performController.performList.forEach((e2) => {
+    if (e2.performName === pixiPerformName) {
+      return {
+        performName: "none",
+        duration: 0,
+        isOver: false,
+        isHoldOn: true,
+        stopFunction: () => {
+        },
+        blockingNext: () => false,
+        blockingAuto: () => false,
+        stopTimeout: void 0
+        // 暂时不用，后面会交给自动清除
+      };
+    }
+  });
+  const res = call$1(sentence.content);
+  const { container: container2, tickerKey } = res;
+  return {
+    performName: pixiPerformName,
+    duration: 0,
+    isHoldOn: true,
+    stopFunction: () => {
+      var _a2, _b2;
+      logger.warn("现在正在卸载pixi演出");
+      container2.destroy({ texture: true, baseTexture: true });
+      (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.effectsContainer.removeChild(container2);
+      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.removeAnimation(tickerKey);
+    },
+    blockingNext: () => false,
+    blockingAuto: () => false,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const playEffect = (sentence) => {
+  var _a2;
+  logger.debug("play SE");
+  let performInitName = "effect-sound";
+  WebGAL.gameplay.performController.unmountPerform(performInitName, true);
+  let url2 = sentence.content;
+  let isLoop = false;
+  if (getSentenceArgByKey(sentence, "id")) {
+    const id2 = ((_a2 = getSentenceArgByKey(sentence, "id")) == null ? void 0 : _a2.toString()) ?? "";
+    performInitName = `effect-sound-${id2}`;
+    WebGAL.gameplay.performController.unmountPerform(performInitName, true);
+    isLoop = true;
+  }
+  let isOver = false;
+  return {
+    performName: "none",
+    blockingAuto() {
+      return false;
+    },
+    blockingNext() {
+      return false;
+    },
+    isHoldOn: false,
+    stopFunction() {
+    },
+    stopTimeout: void 0,
+    duration: 1e3 * 60 * 60,
+    arrangePerformPromise: new Promise((resolve2) => {
+      setTimeout(() => {
+        var _a3;
+        const volumeArg = getSentenceArgByKey(sentence, "volume");
+        let seElement = document.createElement("audio");
+        seElement.src = url2;
+        if (isLoop) {
+          seElement.loop = true;
+        }
+        const userDataState = webgalStore.getState().userData;
+        const mainVol = userDataState.optionData.volumeMain;
+        const volume = typeof volumeArg === "number" && volumeArg >= 0 && volumeArg <= 100 ? volumeArg : 100;
+        const seVol = mainVol * 0.01 * (((_a3 = userDataState.optionData) == null ? void 0 : _a3.seVolume) ?? 100) * 0.01 * volume * 0.01;
+        seElement.volume = seVol;
+        seElement.currentTime = 0;
+        const perform = {
+          performName: performInitName,
+          duration: 1e3 * 60 * 60,
+          isHoldOn: isLoop,
+          skipNextCollect: true,
+          stopFunction: () => {
+            seElement.pause();
+          },
+          blockingNext: () => false,
+          blockingAuto: () => {
+            if (isLoop)
+              return false;
+            return !isOver;
+          },
+          stopTimeout: void 0
+          // 暂时不用，后面会交给自动清除
+        };
+        resolve2(perform);
+        seElement == null ? void 0 : seElement.play();
+        seElement.onended = () => {
+          for (const e2 of WebGAL.gameplay.performController.performList) {
+            if (e2.performName === performInitName) {
+              isOver = true;
+              e2.stopFunction();
+              WebGAL.gameplay.performController.unmountPerform(e2.performName);
+            }
+          }
+        };
+      }, 1);
+    })
+  };
+};
 const getRandomPerformName = () => {
   return Math.random().toString().substring(0, 10);
 };
@@ -24094,6 +23062,1118 @@ class PerformController {
     } else {
       nextSentence();
     }
+  }
+}
+const playVideo = (sentence) => {
+  const userDataState = webgalStore.getState().userData;
+  const mainVol = userDataState.optionData.volumeMain;
+  const vocalVol = mainVol * 0.01 * userDataState.optionData.vocalVolume * 0.01;
+  const bgmVol = mainVol * 0.01 * userDataState.optionData.bgmVolume * 0.01;
+  const performInitName = getRandomPerformName();
+  let chooseContent = "";
+  let loopValue = false;
+  const optionId = Date.now();
+  sentence.args.forEach((e2) => {
+    if (e2.key === "choose") {
+      chooseContent = "choose:" + e2.value;
+    }
+    if (e2.key === "loop") {
+      loopValue = e2.value === true;
+    }
+  });
+  let blockingNext = getSentenceArgByKey(sentence, "skipOff");
+  let blockingNextFlag = true;
+  if (blockingNext || loopValue || chooseContent !== "") {
+    blockingNextFlag = true;
+  }
+  WebGAL.videoManager.showVideo(sentence.content);
+  let isOver = false;
+  const performObject = {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => blockingNextFlag,
+    blockingAuto: () => true,
+    stopTimeout: void 0,
+    // 暂时不用，后面会交给自动清除
+    arrangePerformPromise: new Promise((resolve2) => {
+      const endCallback = (e2) => {
+        isOver = true;
+        e2.stopFunction();
+        WebGAL.gameplay.performController.unmountPerform(e2.performName);
+      };
+      setTimeout(() => {
+        const url2 = sentence.content;
+        WebGAL.videoManager.seek(url2, 0.03);
+        WebGAL.videoManager.setVolume(url2, bgmVol);
+        WebGAL.videoManager.setLoop(url2, loopValue);
+        const sceneList = chooseContent ? chooseContent.slice(7).split("|").map((x) => "game/scene/" + x.split(":")[1]) : [];
+        if (sceneList.length) {
+          scenePrefetcher(sceneList);
+        }
+        const endPerform = () => {
+          for (const e2 of WebGAL.gameplay.performController.performList) {
+            if (e2.performName === performInitName) {
+              if (chooseContent !== "" && !loopValue) {
+                const parsedResult = sceneParser(chooseContent, `${optionId}.txt`, "");
+                const duration = WebGAL.videoManager.getDuration(url2);
+                WebGAL.videoManager.seek(url2, (duration || 0) - 0.03);
+                WebGAL.videoManager.pauseVideo(url2);
+                const script = parsedResult.sentenceList[0];
+                const perform2 = choose(script, () => {
+                  endCallback(e2);
+                });
+                WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
+              } else {
+                endCallback(e2);
+                nextSentence();
+              }
+            }
+          }
+        };
+        const skipVideo = () => {
+          console.log("skip");
+          endPerform();
+        };
+        const perform = {
+          performName: performInitName,
+          duration: 1e3 * 60 * 60,
+          isOver: false,
+          isHoldOn: false,
+          stopFunction: () => {
+            WebGAL.events.fullscreenDbClick.off(skipVideo);
+            const bgmElement22 = document.getElementById("currentBgm");
+            if (bgmElement22) {
+              bgmElement22.volume = bgmVol.toString();
+            }
+            const vocalElement2 = document.getElementById("currentVocal");
+            if (bgmElement22) {
+              vocalElement2.volume = vocalVol.toString();
+            }
+            WebGAL.videoManager.destory(url2);
+          },
+          blockingNext: () => blockingNextFlag,
+          blockingAuto: () => {
+            return !isOver;
+          },
+          stopTimeout: void 0,
+          // 暂时不用，后面会交给自动清除
+          goNextWhenOver: true
+        };
+        resolve2(perform);
+        const vocalVol2 = 0;
+        const bgmVol2 = 0;
+        const bgmElement2 = document.getElementById("currentBgm");
+        if (bgmElement2) {
+          bgmElement2.volume = bgmVol2.toString();
+        }
+        const vocalElement = document.getElementById("currentVocal");
+        if (bgmElement2) {
+          vocalElement.volume = vocalVol2.toString();
+        }
+        WebGAL.videoManager.playVideo(url2);
+        if (chooseContent && loopValue) {
+          const parsedResult = sceneParser(chooseContent, `${optionId}.txt`, "");
+          const script = parsedResult.sentenceList[0];
+          const perform2 = choose(script, endPerform);
+          WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
+        }
+        WebGAL.videoManager.onEnded(url2, () => {
+          if (loopValue) {
+            WebGAL.videoManager.seek(url2, 0.03);
+            WebGAL.videoManager.playVideo(url2);
+          } else {
+            endPerform();
+          }
+        });
+      }, 100);
+    })
+  };
+  return performObject;
+};
+const setAnimation = (sentence) => {
+  var _a2;
+  webgalStore.getState().stage.currentDialogKey;
+  const animationName = sentence.content;
+  const animationDuration = getAnimateDuration$1(animationName);
+  const target = (((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "default_id").toString();
+  const key = `${target}-${animationName}-${animationDuration}`;
+  let stopFunction;
+  setTimeout(() => {
+    var _a3, _b2;
+    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
+    const animationObj = getAnimationObject$2(animationName, target, animationDuration);
+    if (animationObj) {
+      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
+      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj, key, target);
+    }
+  }, 0);
+  stopFunction = () => {
+    setTimeout(() => {
+      var _a3;
+      webgalStore.getState().stage.currentDialogKey;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
+    }, 0);
+  };
+  return {
+    performName: key,
+    duration: animationDuration,
+    isHoldOn: false,
+    stopFunction,
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function generateTestblurAnimationObj(targetKey, duration) {
+  const target = WebGAL.gameplay.pixiStage.getStageObjByKey(targetKey);
+  function setStartState() {
+    if (target) {
+      target.pixiContainer.alpha = 0;
+      target.pixiContainer.blur = 0;
+    }
+  }
+  function setEndState() {
+    if (target) {
+      target.pixiContainer.alpha = 1;
+      target.pixiContainer.blur = 5;
+    }
+  }
+  function tickerFunc(delta) {
+    if (target) {
+      const container2 = target.pixiContainer;
+      const baseDuration = WebGAL.gameplay.pixiStage.frameDuration;
+      const currentAddOplityDelta = duration / baseDuration * delta;
+      const increasement = 1 / currentAddOplityDelta;
+      const decreasement = 5 / currentAddOplityDelta;
+      if (container2.alpha < 1) {
+        container2.alpha += increasement;
+      }
+      if (container2.blur < 5) {
+        container2.blur += decreasement;
+      }
+    }
+  }
+  return {
+    setStartState,
+    setEndState,
+    tickerFunc
+  };
+}
+const webgalAnimations = [
+  { name: "universalSoftIn", animationGenerateFunc: generateUniversalSoftInAnimationObj },
+  { name: "universalSoftOff", animationGenerateFunc: generateUniversalSoftOffAnimationObj },
+  { name: "testblur", animationGenerateFunc: generateTestblurAnimationObj }
+];
+const setComplexAnimation = (sentence) => {
+  var _a2, _b2, _c2;
+  webgalStore.getState().stage.currentDialogKey;
+  const animationName = sentence.content;
+  const animationDuration = getSentenceArgByKey(sentence, "duration") ?? 0;
+  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
+  const key = `${target}-${animationName}-${animationDuration}`;
+  const animationFunction = getAnimationObject$1(animationName);
+  let stopFunction = () => {
+  };
+  if (animationFunction) {
+    logger.debug(`动画${animationName}作用在${target}`, animationDuration);
+    const animationObj = animationFunction(target, animationDuration);
+    (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.stopPresetAnimationOnTarget(target);
+    (_c2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _c2.registerAnimation(animationObj, key, target);
+    stopFunction = () => {
+      var _a3;
+      webgalStore.getState().stage.currentDialogKey;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
+    };
+  }
+  return {
+    performName: key,
+    duration: animationDuration,
+    isHoldOn: false,
+    stopFunction,
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function getAnimationObject$1(animationName) {
+  const result = webgalAnimations.find((e2) => e2.name === animationName);
+  logger.debug("装载动画", result);
+  if (result) {
+    return result.animationGenerateFunc;
+  }
+  return null;
+}
+const setFilter = (sentence) => {
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const setTempAnimation = (sentence) => {
+  var _a2;
+  webgalStore.getState().stage.currentDialogKey;
+  const animationName = (Math.random() * 10).toString(16);
+  const animationString = sentence.content;
+  let animationObj;
+  try {
+    animationObj = JSON.parse(animationString);
+  } catch (e2) {
+    animationObj = [];
+  }
+  const newAnimation = { name: animationName, effects: animationObj };
+  WebGAL.animationManager.addAnimation(newAnimation);
+  const animationDuration = getAnimateDuration$1(animationName);
+  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
+  const key = `${target}-${animationName}-${animationDuration}`;
+  let stopFunction = () => {
+  };
+  setTimeout(() => {
+    var _a3, _b2;
+    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
+    const animationObj2 = getAnimationObject$2(animationName, target, animationDuration);
+    if (animationObj2) {
+      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
+      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj2, key, target);
+    }
+  }, 0);
+  stopFunction = () => {
+    setTimeout(() => {
+      var _a3;
+      webgalStore.getState().stage.currentDialogKey;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
+    }, 0);
+  };
+  return {
+    performName: key,
+    duration: animationDuration,
+    isHoldOn: false,
+    stopFunction,
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function setTextbox(sentence) {
+  if (sentence.content === "hide") {
+    webgalStore.dispatch(setStage({ key: "isDisableTextbox", value: true }));
+  } else {
+    webgalStore.dispatch(setStage({ key: "isDisableTextbox", value: false }));
+  }
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+}
+const setTransform = (sentence) => {
+  var _a2;
+  webgalStore.getState().stage.currentDialogKey;
+  const animationName = (Math.random() * 10).toString(16);
+  const animationString = sentence.content;
+  let animationObj;
+  const duration = getSentenceArgByKey(sentence, "duration");
+  const target = ((_a2 = getSentenceArgByKey(sentence, "target")) == null ? void 0 : _a2.toString()) ?? "0";
+  try {
+    const frame2 = JSON.parse(animationString);
+    animationObj = generateTransformAnimationObj(target, frame2, duration);
+  } catch (e2) {
+    animationObj = [];
+  }
+  const newAnimation = { name: animationName, effects: animationObj };
+  WebGAL.animationManager.addAnimation(newAnimation);
+  const animationDuration = getAnimateDuration(animationName);
+  const key = `${target}-${animationName}-${animationDuration}`;
+  let stopFunction = () => {
+  };
+  setTimeout(() => {
+    var _a3, _b2;
+    (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.stopPresetAnimationOnTarget(target);
+    const animationObj2 = getAnimationObject(animationName, target, animationDuration);
+    if (animationObj2) {
+      logger.debug(`动画${animationName}作用在${target}`, animationDuration);
+      (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.registerAnimation(animationObj2, key, target);
+    }
+  }, 0);
+  stopFunction = () => {
+    setTimeout(() => {
+      var _a3;
+      webgalStore.getState().stage.currentDialogKey;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.removeAnimationWithSetEffects(key);
+    }, 0);
+  };
+  return {
+    performName: key,
+    duration: animationDuration,
+    isHoldOn: false,
+    stopFunction,
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function getAnimationObject(animationName, target, duration) {
+  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
+  if (effect) {
+    const mappedEffects = effect.effects.map((effect2) => {
+      const newEffect = cloneDeep$1({ ...baseTransform, duration: 0 });
+      Object.assign(newEffect, effect2);
+      newEffect.duration = effect2.duration;
+      return newEffect;
+    });
+    logger.debug("装载自定义动画", mappedEffects);
+    return generateTimelineObj(mappedEffects, target, duration);
+  }
+  return null;
+}
+function getAnimateDuration(animationName) {
+  const effect = WebGAL.animationManager.getAnimations().find((ani) => ani.name === animationName);
+  if (effect) {
+    let duration = 0;
+    effect.effects.forEach((e2) => {
+      duration += e2.duration;
+    });
+    return duration;
+  }
+  return 0;
+}
+const setTransition = (sentence) => {
+  let key = "0";
+  for (const e2 of sentence.args) {
+    if (e2.key === "target") {
+      key = e2.value.toString();
+    }
+  }
+  if (getSentenceArgByKey(sentence, "enter")) {
+    WebGAL.animationManager.nextEnterAnimationName.set(key, getSentenceArgByKey(sentence, "enter").toString());
+  }
+  if (getSentenceArgByKey(sentence, "exit")) {
+    WebGAL.animationManager.nextExitAnimationName.set(key + "-off", getSentenceArgByKey(sentence, "exit").toString());
+  }
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => false,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const unlockBgm = (sentence) => {
+  const url2 = sentence.content;
+  let name = sentence.content;
+  let series = "default";
+  sentence.args.forEach((e2) => {
+    if (e2.key === "name") {
+      name = e2.value.toString();
+    }
+    if (e2.key === "series") {
+      series = e2.value.toString();
+    }
+  });
+  logger.info(`解锁BGM：${name}，路径：${url2}，所属系列：${series}`);
+  webgalStore.dispatch(unlockBgmInUserData({ name, url: url2, series }));
+  const userDataState = webgalStore.getState().userData;
+  localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
+  });
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const unlockCg = (sentence) => {
+  const url2 = sentence.content;
+  let name = sentence.content;
+  let series = "default";
+  sentence.args.forEach((e2) => {
+    if (e2.key === "name") {
+      name = e2.value.toString();
+    }
+    if (e2.key === "series") {
+      series = e2.value.toString();
+    }
+  });
+  logger.info(`解锁CG：${name}，路径：${url2}，所属系列：${series}`);
+  webgalStore.dispatch(unlockCgInUserData({ name, url: url2, series }));
+  const userDataState = webgalStore.getState().userData;
+  localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
+  });
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const resetStage = (resetBacklog, resetSceneAndVar = true, resetVideo = true) => {
+  if (resetBacklog) {
+    WebGAL.backlogManager.makeBacklogEmpty();
+  }
+  if (resetVideo) {
+    WebGAL.videoManager.destoryAll();
+  }
+  if (resetSceneAndVar) {
+    WebGAL.sceneManager.resetScene();
+  }
+  WebGAL.gameplay.performController.removeAllPerform();
+  WebGAL.gameplay.resetGamePlay();
+  const initSceneDataCopy = cloneDeep$1(initState$3);
+  const currentVars = webgalStore.getState().stage.GameVar;
+  webgalStore.dispatch(resetStageState(initSceneDataCopy));
+  if (!resetSceneAndVar) {
+    webgalStore.dispatch(setStage({ key: "GameVar", value: currentVars }));
+  }
+};
+const initState$1 = {
+  saveData: [],
+  quickSaveData: null
+};
+const saveDataSlice = createSlice({
+  name: "saveData",
+  initialState: cloneDeep$1(initState$1),
+  reducers: {
+    setFastSave: (state, action) => {
+      state.quickSaveData = action.payload;
+    },
+    resetFastSave: (state) => {
+      state.quickSaveData = null;
+    },
+    resetSaves: (state) => {
+      state.quickSaveData = null;
+      state.saveData = [];
+    },
+    saveGame: (state, action) => {
+      state.saveData[action.payload.index] = action.payload.saveData;
+    },
+    replaceSaveGame: (state, action) => {
+      state.saveData = action.payload;
+    }
+  }
+});
+const saveActions = saveDataSlice.actions;
+const savesReducer = saveDataSlice.reducer;
+const end = (sentence) => {
+  resetStage(true);
+  const dispatch = webgalStore.dispatch;
+  const sceneUrl = assetSetter("start.txt", fileType$1.scene);
+  setTimeout(() => {
+    WebGAL.sceneManager.resetScene();
+  }, 5);
+  dispatch(saveActions.resetFastSave());
+  dumpToStorageFast();
+  sceneFetcher(sceneUrl).then((rawScene) => {
+    WebGAL.sceneManager.setCurrentScene(rawScene, "start.txt", sceneUrl);
+  });
+  dispatch(setVisibility({ component: "showTitle", visibility: true }));
+  playBgm(webgalStore.getState().GUI.titleBgm);
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const jumpLabel = (sentence) => {
+  jmp(sentence.content);
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const pixiInit = (sentence) => {
+  WebGAL.gameplay.performController.performList.forEach((e2) => {
+    if (e2.performName.match(/PixiPerform/)) {
+      logger.warn("pixi 被脚本重新初始化", e2.performName);
+      for (let i2 = 0; i2 < WebGAL.gameplay.performController.performList.length; i2++) {
+        const e22 = WebGAL.gameplay.performController.performList[i2];
+        if (e22.performName === e2.performName) {
+          e22.stopFunction();
+          clearTimeout(e22.stopTimeout);
+          WebGAL.gameplay.performController.performList.splice(i2, 1);
+          i2--;
+        }
+      }
+      webgalStore.dispatch(stageActions.removeAllPixiPerforms());
+    }
+  });
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const audioContextWrapper = {
+  audioContext: new AudioContext(),
+  source: null,
+  analyser: void 0,
+  dataArray: void 0,
+  audioLevelInterval: setInterval(() => {
+  }, 0),
+  // dummy interval
+  blinkTimerID: setTimeout(() => {
+  }, 0),
+  // dummy timeout
+  maxAudioLevel: 0
+};
+const updateThresholds = (audioLevel) => {
+  audioContextWrapper.maxAudioLevel = Math.max(audioLevel, audioContextWrapper.maxAudioLevel);
+  return {
+    OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.75,
+    HALF_OPEN_THRESHOLD: audioContextWrapper.maxAudioLevel * 0.5
+  };
+};
+const performBlinkAnimation = (params) => {
+  let isBlinking = false;
+  function blink() {
+    var _a2;
+    if (isBlinking || params.animationEndTime && Date.now() > params.animationEndTime)
+      return;
+    isBlinking = true;
+    (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.performBlinkAnimation(params.key, params.animationItem, "closed", params.pos);
+    audioContextWrapper.blinkTimerID = setTimeout(() => {
+      var _a3;
+      (_a3 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a3.performBlinkAnimation(params.key, params.animationItem, "open", params.pos);
+      isBlinking = false;
+      const nextBlinkTime = Math.random() * 300 + 3500;
+      audioContextWrapper.blinkTimerID = setTimeout(blink, nextBlinkTime);
+    }, 200);
+  }
+  blink();
+};
+const getAudioLevel = (analyser, dataArray, bufferLength) => {
+  analyser.getByteFrequencyData(dataArray);
+  let sum = 0;
+  for (let i2 = 0; i2 < bufferLength; i2++) {
+    sum += dataArray[i2];
+  }
+  return sum / bufferLength;
+};
+const performMouthAnimation = (params) => {
+  var _a2, _b2;
+  const { audioLevel, OPEN_THRESHOLD, HALF_OPEN_THRESHOLD, currentMouthValue, lerpSpeed, key, animationItem, pos } = params;
+  let targetValue;
+  if (audioLevel > OPEN_THRESHOLD) {
+    targetValue = 1;
+  } else if (audioLevel > HALF_OPEN_THRESHOLD) {
+    targetValue = 0.5;
+  } else {
+    targetValue = 0;
+  }
+  const mouthValue = currentMouthValue + (targetValue - currentMouthValue) * lerpSpeed;
+  (_a2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _a2.setModelMouthY(key, audioLevel);
+  let mouthState;
+  if (mouthValue > 0.75) {
+    mouthState = "open";
+  } else if (mouthValue > 0.25) {
+    mouthState = "half_open";
+  } else {
+    mouthState = "closed";
+  }
+  if (animationItem !== void 0) {
+    (_b2 = WebGAL.gameplay.pixiStage) == null ? void 0 : _b2.performMouthSyncAnimation(key, animationItem, mouthState, pos);
+  }
+};
+class Matcher {
+  constructor(subject) {
+    __publicField(this, "subject");
+    __publicField(this, "result");
+    __publicField(this, "isEnd", false);
+    this.subject = subject;
+  }
+  with(pattern, fn2) {
+    if (!this.isEnd && this.subject === pattern) {
+      this.result = fn2();
+      this.isEnd = true;
+    }
+    return this;
+  }
+  endsWith(pattern, fn2) {
+    if (!this.isEnd && this.subject === pattern) {
+      this.result = fn2();
+      this.isEnd = true;
+    }
+    return this.evaluate();
+  }
+  default(fn2) {
+    if (!this.isEnd)
+      this.result = fn2();
+    return this.evaluate();
+  }
+  evaluate() {
+    return this.result;
+  }
+}
+function match$1(subject) {
+  return new Matcher(subject);
+}
+const playVocal = (sentence) => {
+  logger.debug("play vocal");
+  const performInitName = "vocal-play";
+  const url2 = getSentenceArgByKey(sentence, "vocal");
+  const volume = getSentenceArgByKey(sentence, "volume");
+  let currentStageState;
+  currentStageState = webgalStore.getState().stage;
+  let pos = "";
+  let key = "";
+  const freeFigure = currentStageState.freeFigure;
+  const figureAssociatedAnimation = currentStageState.figureAssociatedAnimation;
+  let bufferLength = 0;
+  let currentMouthValue = 0;
+  const lerpSpeed = 1;
+  let VocalControl = document.getElementById("currentVocal");
+  WebGAL.gameplay.performController.unmountPerform("vocal-play", true);
+  if (VocalControl !== null) {
+    VocalControl.currentTime = 0;
+    VocalControl.pause();
+  }
+  for (const e2 of sentence.args) {
+    if (e2.value === true) {
+      match$1(e2.key).with("left", () => {
+        pos = "left";
+      }).with("right", () => {
+        pos = "right";
+      }).endsWith("center", () => {
+        pos = "center";
+      });
+    }
+    if (e2.key === "figureId") {
+      key = `${e2.value.toString()}`;
+    }
+  }
+  webgalStore.dispatch(setStage({ key: "playVocal", value: url2 }));
+  webgalStore.dispatch(setStage({ key: "vocal", value: url2 }));
+  let isOver = false;
+  return {
+    arrangePerformPromise: new Promise((resolve2) => {
+      setTimeout(() => {
+        let VocalControl2 = document.getElementById("currentVocal");
+        typeof volume === "number" && volume >= 0 && volume <= 100 ? webgalStore.dispatch(setStage({ key: "vocalVolume", value: volume })) : webgalStore.dispatch(setStage({ key: "vocalVolume", value: 100 }));
+        if (VocalControl2 !== null) {
+          VocalControl2.currentTime = 0;
+          const perform = {
+            performName: performInitName,
+            duration: 1e3 * 60 * 60,
+            isOver: false,
+            isHoldOn: false,
+            stopFunction: () => {
+              clearInterval(audioContextWrapper.audioLevelInterval);
+              VocalControl2.pause();
+              key = key ? key : `fig-${pos}`;
+              const animationItem2 = figureAssociatedAnimation.find((tid) => tid.targetId === key);
+              performMouthAnimation({
+                audioLevel: 0,
+                OPEN_THRESHOLD: 1,
+                HALF_OPEN_THRESHOLD: 1,
+                currentMouthValue,
+                lerpSpeed,
+                key,
+                animationItem: animationItem2,
+                pos
+              });
+              clearTimeout(audioContextWrapper.blinkTimerID);
+            },
+            blockingNext: () => false,
+            blockingAuto: () => {
+              return !isOver;
+            },
+            skipNextCollect: true,
+            stopTimeout: void 0
+            // 暂时不用，后面会交给自动清除
+          };
+          WebGAL.gameplay.performController.arrangeNewPerform(perform, sentence, false);
+          key = key ? key : `fig-${pos}`;
+          const animationItem = figureAssociatedAnimation.find((tid) => tid.targetId === key);
+          if (animationItem) {
+            const foundFigure = freeFigure.find((figure) => figure.key === key);
+            if (foundFigure) {
+              pos = foundFigure.basePosition;
+            }
+            if (!audioContextWrapper.audioContext) {
+              let audioContext;
+              audioContext = new AudioContext();
+              audioContextWrapper.analyser = audioContext.createAnalyser();
+              audioContextWrapper.analyser.fftSize = 256;
+              audioContextWrapper.dataArray = new Uint8Array(audioContextWrapper.analyser.frequencyBinCount);
+            }
+            if (!audioContextWrapper.analyser) {
+              audioContextWrapper.analyser = audioContextWrapper.audioContext.createAnalyser();
+              audioContextWrapper.analyser.fftSize = 256;
+            }
+            bufferLength = audioContextWrapper.analyser.frequencyBinCount;
+            audioContextWrapper.dataArray = new Uint8Array(bufferLength);
+            let vocalControl = document.getElementById("currentVocal");
+            if (!audioContextWrapper.source) {
+              audioContextWrapper.source = audioContextWrapper.audioContext.createMediaElementSource(vocalControl);
+              audioContextWrapper.source.connect(audioContextWrapper.analyser);
+            }
+            audioContextWrapper.analyser.connect(audioContextWrapper.audioContext.destination);
+            audioContextWrapper.audioLevelInterval = setInterval(() => {
+              const audioLevel = getAudioLevel(
+                audioContextWrapper.analyser,
+                audioContextWrapper.dataArray,
+                bufferLength
+              );
+              const { OPEN_THRESHOLD, HALF_OPEN_THRESHOLD } = updateThresholds(audioLevel);
+              performMouthAnimation({
+                audioLevel,
+                OPEN_THRESHOLD,
+                HALF_OPEN_THRESHOLD,
+                currentMouthValue,
+                lerpSpeed,
+                key,
+                animationItem,
+                pos
+              });
+            }, 50);
+            let animationEndTime;
+            animationEndTime = Date.now() + 1e4;
+            performBlinkAnimation({ key, animationItem, pos, animationEndTime });
+            setTimeout(() => {
+              clearTimeout(audioContextWrapper.blinkTimerID);
+            }, 1e4);
+          }
+          VocalControl2 == null ? void 0 : VocalControl2.play();
+          VocalControl2.onended = () => {
+            for (const e2 of WebGAL.gameplay.performController.performList) {
+              if (e2.performName === performInitName) {
+                isOver = true;
+                e2.stopFunction();
+                WebGAL.gameplay.performController.unmountPerform(e2.performName);
+              }
+            }
+          };
+        }
+      }, 1);
+    })
+  };
+};
+function useTextDelay(type2) {
+  switch (type2) {
+    case playSpeed.slow:
+      return 80;
+    case playSpeed.normal:
+      return 35;
+    case playSpeed.fast:
+      return 3;
+  }
+}
+function useTextAnimationDuration(type2) {
+  switch (type2) {
+    case playSpeed.slow:
+      return 800;
+    case playSpeed.normal:
+      return 350;
+    case playSpeed.fast:
+      return 200;
+  }
+}
+const say = (sentence) => {
+  const stageState = webgalStore.getState().stage;
+  const userDataState = webgalStore.getState().userData;
+  const dispatch = webgalStore.dispatch;
+  let dialogKey = Math.random().toString();
+  let dialogToShow = sentence.content;
+  const isConcat = getSentenceArgByKey(sentence, "concat");
+  const isNotend = getSentenceArgByKey(sentence, "notend");
+  const speaker = getSentenceArgByKey(sentence, "speaker");
+  const clear2 = getSentenceArgByKey(sentence, "clear");
+  const vocal = getSentenceArgByKey(sentence, "vocal");
+  if (isConcat) {
+    dialogKey = stageState.currentDialogKey;
+    dialogToShow = stageState.showText + dialogToShow;
+    dispatch(setStage({ key: "currentConcatDialogPrev", value: stageState.showText }));
+  } else {
+    dispatch(setStage({ key: "currentConcatDialogPrev", value: "" }));
+  }
+  dispatch(setStage({ key: "showText", value: dialogToShow }));
+  dispatch(setStage({ key: "vocal", value: "" }));
+  if (!(userDataState.optionData.voiceInterruption === voiceOption.no && vocal === null)) {
+    dispatch(setStage({ key: "playVocal", value: "" }));
+    WebGAL.gameplay.performController.unmountPerform("vocal-play", true);
+  }
+  dispatch(setStage({ key: "currentDialogKey", value: dialogKey }));
+  const textDelay = useTextDelay(userDataState.optionData.textSpeed);
+  const sentenceDelay = textDelay * sentence.content.length;
+  for (const e2 of sentence.args) {
+    if (e2.key === "fontSize") {
+      switch (e2.value) {
+        case "default":
+          dispatch(setStage({ key: "showTextSize", value: -1 }));
+          break;
+        case "small":
+          dispatch(setStage({ key: "showTextSize", value: textSize.small }));
+          break;
+        case "medium":
+          dispatch(setStage({ key: "showTextSize", value: textSize.medium }));
+          break;
+        case "large":
+          dispatch(setStage({ key: "showTextSize", value: textSize.large }));
+          break;
+      }
+    }
+  }
+  let showName = stageState.showName;
+  if (speaker !== null) {
+    showName = speaker;
+  }
+  if (clear2) {
+    showName = "";
+  }
+  dispatch(setStage({ key: "showName", value: showName }));
+  if (vocal) {
+    playVocal(sentence);
+  }
+  const performInitName = getRandomPerformName();
+  let endDelay = 750 - userDataState.optionData.textSpeed * 250;
+  if (isNotend) {
+    endDelay = 0;
+  }
+  return {
+    performName: performInitName,
+    duration: sentenceDelay + endDelay,
+    isHoldOn: false,
+    stopFunction: () => {
+      WebGAL.events.textSettle.emit();
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0,
+    // 暂时不用，后面会交给自动清除
+    goNextWhenOver: isNotend
+  };
+};
+const showVars = (sentence) => {
+  const stageState = webgalStore.getState().stage;
+  const userDataState = webgalStore.getState().userData;
+  const dispatch = webgalStore.dispatch;
+  const allVar = {
+    stageGameVar: stageState.GameVar,
+    globalGameVar: userDataState.globalGameVar
+  };
+  dispatch(setStage({ key: "showText", value: JSON.stringify(allVar) }));
+  dispatch(setStage({ key: "showName", value: "展示变量" }));
+  logger.debug("展示变量：", allVar);
+  setTimeout(() => {
+    WebGAL.events.textSettle.emit();
+  }, 0);
+  const performInitName = getRandomPerformName();
+  const endDelay = 750 - userDataState.optionData.textSpeed * 250;
+  return {
+    performName: performInitName,
+    duration: endDelay,
+    isHoldOn: false,
+    stopFunction: () => {
+      WebGAL.events.textSettle.emit();
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+function ScriptConfig(scriptType, scriptFunction, config) {
+  return { scriptType, scriptFunction, ...config };
+}
+const scriptRegistry = {};
+function defineScripts(record) {
+  const result = {};
+  for (const [scriptString, config] of Object.entries(record)) {
+    result[scriptString] = scriptRegistry[config.scriptType] = { scriptString, ...config };
+  }
+  return result;
+}
+const applyStyle = (sentence) => {
+  const { content } = sentence;
+  const applyStyleSegments = content.split(",");
+  for (const applyStyleSegment of applyStyleSegments) {
+    const splitSegment = applyStyleSegment.split("->");
+    if (splitSegment.length >= 2) {
+      const classNameToBeChange = splitSegment[0];
+      const classNameChangeTo = splitSegment[1];
+      webgalStore.dispatch(stageActions.replaceUIlable([classNameToBeChange, classNameChangeTo]));
+    }
+  }
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const SCRIPT_TAG_MAP = defineScripts({
+  intro: ScriptConfig(commandType$1.intro, intro),
+  changeBg: ScriptConfig(commandType$1.changeBg, changeBg),
+  changeFigure: ScriptConfig(commandType$1.changeFigure, changeFigure),
+  miniAvatar: ScriptConfig(commandType$1.miniAvatar, miniAvatar, { next: true }),
+  changeScene: ScriptConfig(commandType$1.changeScene, changeSceneScript),
+  choose: ScriptConfig(commandType$1.choose, choose),
+  end: ScriptConfig(commandType$1.end, end),
+  bgm: ScriptConfig(commandType$1.bgm, bgm, { next: true }),
+  playVideo: ScriptConfig(commandType$1.video, playVideo),
+  setComplexAnimation: ScriptConfig(commandType$1.setComplexAnimation, setComplexAnimation),
+  setFilter: ScriptConfig(commandType$1.setFilter, setFilter),
+  pixiInit: ScriptConfig(commandType$1.pixiInit, pixiInit, { next: true }),
+  pixiPerform: ScriptConfig(commandType$1.pixi, pixi, { next: true }),
+  label: ScriptConfig(commandType$1.label, label, { next: true }),
+  jumpLabel: ScriptConfig(commandType$1.jumpLabel, jumpLabel),
+  setVar: ScriptConfig(commandType$1.setVar, setVar, { next: true }),
+  showVars: ScriptConfig(commandType$1.showVars, showVars),
+  unlockCg: ScriptConfig(commandType$1.unlockCg, unlockCg, { next: true }),
+  unlockBgm: ScriptConfig(commandType$1.unlockBgm, unlockBgm, { next: true }),
+  say: ScriptConfig(commandType$1.say, say),
+  filmMode: ScriptConfig(commandType$1.filmMode, filmMode, { next: true }),
+  callScene: ScriptConfig(commandType$1.callScene, callSceneScript),
+  setTextbox: ScriptConfig(commandType$1.setTextbox, setTextbox),
+  setAnimation: ScriptConfig(commandType$1.setAnimation, setAnimation),
+  playEffect: ScriptConfig(commandType$1.playEffect, playEffect, { next: true }),
+  setTempAnimation: ScriptConfig(commandType$1.setTempAnimation, setTempAnimation),
+  __commment: ScriptConfig(commandType$1.comment, comment$1, { next: true }),
+  setTransform: ScriptConfig(commandType$1.setTransform, setTransform),
+  setTransition: ScriptConfig(commandType$1.setTransition, setTransition, { next: true }),
+  getUserInput: ScriptConfig(commandType$1.getUserInput, getUserInput),
+  applyStyle: ScriptConfig(commandType$1.applyStyle, applyStyle, { next: true })
+  // if: ScriptConfig(commandType.if, undefined, { next: true }),
+});
+const SCRIPT_CONFIG = Object.values(SCRIPT_TAG_MAP);
+const ADD_NEXT_ARG_LIST = SCRIPT_CONFIG.filter((config) => config.next).map((config) => config.scriptType);
+const WebgalParser = new SceneParser(assetsPrefetcher, assetSetter, ADD_NEXT_ARG_LIST, SCRIPT_CONFIG);
+const sceneParser = (rawScene, sceneName, sceneUrl) => {
+  const parsedScene = WebgalParser.parse(rawScene, sceneName, sceneUrl);
+  logger.info(`解析场景：${sceneName}，数据为：`, parsedScene);
+  return parsedScene;
+};
+const initSceneData = {
+  currentSentenceId: 0,
+  // 当前语句ID
+  sceneStack: [],
+  // 初始场景，没有数据
+  currentScene: {
+    sceneName: "",
+    // 场景名称
+    sceneUrl: "",
+    // 场景url
+    sentenceList: [],
+    // 语句列表
+    assetsList: [],
+    // 资源列表
+    subSceneList: []
+    // 子场景列表
+  }
+};
+class SceneManager {
+  constructor() {
+    __publicField(this, "settledScenes", []);
+    __publicField(this, "settledAssets", []);
+    __publicField(this, "sceneData", cloneDeep$1(initSceneData));
+    __publicField(this, "sceneAssetsList", {});
+    __publicField(this, "sceneAssetsLoadedList", {});
+  }
+  resetScene() {
+    this.sceneData.currentSentenceId = 0;
+    this.sceneData.sceneStack = [];
+    this.sceneData.currentScene = cloneDeep$1(initSceneData.currentScene);
+  }
+  // eslint-disable-next-line max-params
+  setCurrentScene(rawScene, scenaName, sceneUrl, loading = false) {
+    return new Promise((r2) => {
+      let parsedScene = { current: null };
+      let timer = null;
+      if (loading && !this.sceneAssetsLoadedList[scenaName]) {
+        timer = setTimeout(() => {
+          window.pubsub.publish("loading", { loading: true });
+        }, 1e3);
+      }
+      const dispose = window.pubsub.subscribe(
+        "sceneAssetsLoaded",
+        ({ sceneName: _sceneName }) => {
+          setTimeout(() => {
+            if (scenaName === _sceneName) {
+              if (parsedScene.current) {
+                this.sceneData.currentScene = parsedScene.current;
+              }
+              if (loading) {
+                window.pubsub.publish("loading", { loading: false });
+              }
+              timer && clearTimeout(timer);
+              r2(parsedScene);
+              parsedScene.current = null;
+              dispose();
+            }
+          }, 16);
+        }
+      );
+      parsedScene.current = sceneParser(rawScene, scenaName, sceneUrl);
+    });
+  }
+}
+class AnimationManager {
+  constructor() {
+    __publicField(this, "nextEnterAnimationName", /* @__PURE__ */ new Map());
+    __publicField(this, "nextExitAnimationName", /* @__PURE__ */ new Map());
+    __publicField(this, "animations", []);
+  }
+  addAnimation(animation2) {
+    this.animations.push(animation2);
+  }
+  getAnimations() {
+    return this.animations;
   }
 }
 class Gameplay {
@@ -33961,16 +34041,18 @@ const jumpFromBacklog = (index2) => {
   const dispatch = webgalStore.dispatch;
   const backlogFile = WebGAL.backlogManager.getBacklog()[index2];
   logger.debug("读取的backlog数据", backlogFile);
-  sceneFetcher(backlogFile.saveScene.sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(
+  sceneFetcher(backlogFile.saveScene.sceneUrl).then(async (rawScene) => {
+    const scene = await WebGAL.sceneManager.setCurrentScene(
       rawScene,
       backlogFile.saveScene.sceneName,
       backlogFile.saveScene.sceneUrl
     );
-    const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
-    WebGAL.sceneManager.settledScenes.push(WebGAL.sceneManager.sceneData.currentScene.sceneUrl);
-    const subSceneListUniq = uniqWith$1(subSceneList);
-    scenePrefetcher(subSceneListUniq);
+    if (scene) {
+      const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
+      WebGAL.sceneManager.settledScenes.push(WebGAL.sceneManager.sceneData.currentScene.sceneUrl);
+      const subSceneListUniq = uniqWith$1(subSceneList);
+      scenePrefetcher(subSceneListUniq);
+    }
   });
   WebGAL.sceneManager.sceneData.currentSentenceId = backlogFile.saveScene.currentSentenceId;
   WebGAL.sceneManager.sceneData.sceneStack = cloneDeep$1(backlogFile.saveScene.sceneStack);
@@ -33997,12 +34079,15 @@ function loadGameFromStageData(stageData) {
     return;
   }
   const loadFile = stageData;
-  sceneFetcher(loadFile.sceneData.sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(
+  sceneFetcher(loadFile.sceneData.sceneUrl).then(async (rawScene) => {
+    const scene = await WebGAL.sceneManager.setCurrentScene(
       rawScene,
       loadFile.sceneData.sceneName,
-      loadFile.sceneData.sceneUrl
+      loadFile.sceneData.sceneUrl,
+      true
     );
+    if (!scene)
+      return;
     const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
     WebGAL.sceneManager.settledScenes.push(WebGAL.sceneManager.sceneData.currentScene.sceneUrl);
     const subSceneListUniq = uniqWith$1(subSceneList);
@@ -34106,8 +34191,11 @@ const startGame = () => {
   resetStage(true, true, false);
   const sceneUrl = assetSetter("start.txt", fileType$1.scene);
   sceneFetcher(sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, "start.txt", sceneUrl);
-    nextSentence();
+    WebGAL.sceneManager.setCurrentScene(rawScene, "start.txt", sceneUrl).then((scene) => {
+      if (scene) {
+        nextSentence();
+      }
+    });
   });
   webgalStore.dispatch(setVisibility({ component: "showTitle", visibility: false }));
 };
@@ -36170,7 +36258,7 @@ const fastLPreview = "_fastLPreview_15mmi_77";
 const slPreviewMain = "_slPreviewMain_15mmi_89";
 const imgContainer = "_imgContainer_15mmi_97";
 const textContainer = "_textContainer_15mmi_105";
-const styles$j = {
+const styles$k = {
   main,
   button: button$1,
   button_text: button_text$1,
@@ -36190,9 +36278,9 @@ const setButton$1 = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_auto");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$j.button_on;
+      autoIcon.className = styles$k.button_on;
     } else
-      autoIcon.className = styles$j.singleButton;
+      autoIcon.className = styles$k.singleButton;
   }
 };
 const stopAuto = () => {
@@ -36239,9 +36327,9 @@ const setButton = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_fast");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$j.button_on;
+      autoIcon.className = styles$k.button_on;
     } else
-      autoIcon.className = styles$j.singleButton;
+      autoIcon.className = styles$k.singleButton;
   }
 };
 const stopFast = () => {
@@ -36299,7 +36387,7 @@ const backlog_item_content = "_backlog_item_content_zwyao_113";
 const backlog_item_button_list = "_backlog_item_button_list_zwyao_137";
 const backlog_item_button_element = "_backlog_item_button_element_zwyao_144";
 const backlog_item_content_text = "_backlog_item_content_text_zwyao_157";
-const styles$i = {
+const styles$j = {
   Backlog_main,
   backlog_soft_in,
   Backlog_main_out,
@@ -36536,7 +36624,7 @@ function useMouseWheel() {
       return;
     const direction = ev.wheelDelta && (ev.wheelDelta > 0 ? "up" : "down") || ev.detail && (ev.detail < 0 ? "up" : "down") || "down";
     const ctrlKey = ev.ctrlKey;
-    const dom = document.querySelector(`.${styles$i.backlog_content}`);
+    const dom = document.querySelector(`.${styles$j.backlog_content}`);
     if (isGameActive() && direction === "up" && !ctrlKey) {
       setComponentVisibility("showBacklog", true);
       setComponentVisibility("showTextBox", false);
@@ -36754,7 +36842,7 @@ const Title = () => {
   const { playSeEnter, playSeClick } = useSoundEffect();
   const applyStyle2 = useApplyStyle("UI/Title/title.scss");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$n.Title_backup_background) }),
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$o.Title_backup_background) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -36774,21 +36862,21 @@ const Title = () => {
     GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: applyStyle2("Title_main", styles$n.Title_main),
+        className: applyStyle2("Title_main", styles$o.Title_main),
         style: {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$o.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
-            className: applyStyle2("Title_button", styles$n.Title_button),
+            className: applyStyle2("Title_button", styles$o.Title_button),
             onClick: () => {
               startGame();
               playSeClick();
             },
             onMouseEnter: playSeEnter,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$o.Title_button_text), children: t2("start.title") })
           }
         ) })
       }
@@ -36799,7 +36887,7 @@ const Logo_main = "_Logo_main_1bne2_1";
 const Logo_Back = "_Logo_Back_1bne2_32";
 const animationActive = "_animationActive_1bne2_46";
 const fadeout = "_fadeout_1bne2_1";
-const styles$h = {
+const styles$i = {
   Logo_main,
   "change-img-anim": "_change-img-anim_1bne2_1",
   Logo_Back,
@@ -36833,7 +36921,7 @@ const Logo = () => {
     currentLogoIndex.value !== -1 && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$h.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$h.animationActive : ""),
+        className: styles$i.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$i.animationActive : ""),
         style: {
           animationDuration: `${animationDuration}ms`
         }
@@ -36843,7 +36931,7 @@ const Logo = () => {
     currentLogoUrl !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$h.Logo_main,
+        className: styles$i.Logo_main,
         onClick: nextImg,
         style: { backgroundImage: `url("${currentLogoUrl}")`, animationDuration: `${animationDuration}ms` }
       },
@@ -36911,8 +36999,10 @@ const syncWithOrigine = (sceneName, sentenceId) => {
   }
   resetStage(true);
   const sceneUrl = assetSetter(sceneName, fileType$1.scene);
-  sceneFetcher(sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, "start.txt", sceneUrl);
+  sceneFetcher(sceneUrl).then(async (rawScene) => {
+    const scene = await WebGAL.sceneManager.setCurrentScene(rawScene, "start.txt", sceneUrl);
+    if (!scene)
+      return;
     const currentSceneName = WebGAL.sceneManager.sceneData.currentScene.sceneName;
     WebGAL.gameplay.isFast = true;
     syncFast(sentenceId, currentSceneName);
@@ -94842,8 +94932,10 @@ const initializeScript = () => {
   getUserAnimation();
   infoFetcher("./game/config.txt");
   const sceneUrl = assetSetter("start.txt", fileType$1.scene);
-  sceneFetcher(sceneUrl).then((rawScene) => {
-    WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, "start.txt", sceneUrl);
+  sceneFetcher(sceneUrl).then(async (rawScene) => {
+    const scene = await WebGAL.sceneManager.setCurrentScene(rawScene, "start.txt", sceneUrl);
+    if (!scene)
+      return;
     const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
     WebGAL.sceneManager.settledScenes.push(sceneUrl);
     const subSceneListUniq = uniqWith$1(subSceneList);
@@ -94880,7 +94972,7 @@ function getUserAnimation() {
 const Menu_main = "_Menu_main_1a7i6_1";
 const Menu_ShowSoftly = "_Menu_ShowSoftly_1a7i6_1";
 const Menu_TagContent = "_Menu_TagContent_1a7i6_10";
-const styles$g = {
+const styles$h = {
   Menu_main,
   Menu_ShowSoftly,
   Menu_TagContent
@@ -94889,7 +94981,7 @@ const MenuPanel_main = "_MenuPanel_main_1c9ky_1";
 const MenuPanel_button = "_MenuPanel_button_1c9ky_10";
 const MenuPanel_button_icon = "_MenuPanel_button_icon_1c9ky_38";
 const MenuPanel_button_hl = "_MenuPanel_button_hl_1c9ky_44";
-const styles$f = {
+const styles$g = {
   MenuPanel_main,
   MenuPanel_button,
   MenuPanel_button_icon,
@@ -95032,7 +95124,7 @@ var IconContext = /* @__PURE__ */ reactExports.createContext(DEFAULT_ICON_CONFIG
 IconContext.Provider;
 function IconWrapper(name, rtl, render) {
   return function(props) {
-    var size = props.size, strokeWidth = props.strokeWidth, strokeLinecap = props.strokeLinecap, strokeLinejoin = props.strokeLinejoin, theme = props.theme, fill = props.fill, className = props.className, spin = props.spin, extra2 = _objectWithoutProperties(props, _excluded);
+    var size = props.size, strokeWidth = props.strokeWidth, strokeLinecap = props.strokeLinecap, strokeLinejoin = props.strokeLinejoin, theme = props.theme, fill = props.fill, className = props.className, spin2 = props.spin, extra2 = _objectWithoutProperties(props, _excluded);
     var ICON_CONFIGS = reactExports.useContext(IconContext);
     var id2 = reactExports.useMemo(guid, []);
     var svgProps = IconConverter(id2, {
@@ -95048,7 +95140,7 @@ function IconWrapper(name, rtl, render) {
     if (rtl && ICON_CONFIGS.rtl) {
       cls.push(ICON_CONFIGS.prefix + "-icon-rtl");
     }
-    if (spin) {
+    if (spin2) {
       cls.push(ICON_CONFIGS.prefix + "-icon-spin");
     }
     if (className) {
@@ -95653,7 +95745,7 @@ const MenuIconMap = (props) => {
 };
 const MenuPanelButton = (props) => {
   const { playSePageChange, playSeEnter } = useSoundEffect();
-  let buttonClassName = styles$f.MenuPanel_button;
+  let buttonClassName = styles$g.MenuPanel_button;
   if (props.hasOwnProperty("buttonOnClassName")) {
     buttonClassName = buttonClassName + props.buttonOnClassName;
   }
@@ -95667,7 +95759,7 @@ const MenuPanelButton = (props) => {
       onMouseEnter: playSeEnter,
       style: { ...props.style, color: props.tagColor },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
         props.tagName
       ]
     }
@@ -95689,7 +95781,7 @@ const glabalDialog_container = "_glabalDialog_container_101j8_17";
 const title$1 = "_title_101j8_36";
 const button_list = "_button_list_101j8_41";
 const button = "_button_101j8_41";
-const styles$e = {
+const styles$f = {
   GlobalDialog_main,
   showGlobalDialog,
   glabalDialog_container_inner,
@@ -95715,11 +95807,11 @@ function showGlogalDialog(props) {
     props.rightFunc();
     hideGlobalDialog();
   };
-  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.button_list, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
+  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.title, children: props.title }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.button_list, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.button, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.button, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
     ] })
   ] }) }) });
   setTimeout(() => {
@@ -95747,16 +95839,16 @@ const MenuPanel = () => {
   const { playSeClick, playSeDialogOpen, playSePageChange } = useSoundEffect();
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
-  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$f.MenuPanel_button_hl}` : ``;
-  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$f.MenuPanel_button_hl}` : ``;
-  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$f.MenuPanel_button_hl}` : ``;
+  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$g.MenuPanel_button_hl}` : ``;
+  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$g.MenuPanel_button_hl}` : ``;
+  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$g.MenuPanel_button_hl}` : ``;
   const SaveTagColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadTagColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionTagColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
   const SaveIconColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadIconColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionIconColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.MenuPanel_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.MenuPanel_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       MenuPanelButton,
       {
@@ -95875,7 +95967,7 @@ const Save_Load_content_miniRen_bg = "_Save_Load_content_miniRen_bg_a3o8b_208";
 const Save_Load_content_miniRen_figure = "_Save_Load_content_miniRen_figure_a3o8b_215";
 const Save_Load_content_miniRen_figLeft = "_Save_Load_content_miniRen_figLeft_a3o8b_223";
 const Save_Load_content_miniRen_figRight = "_Save_Load_content_miniRen_figRight_a3o8b_228";
-const styles$d = {
+const styles$e = {
   Save_Load_main,
   Save_Load_top,
   Elements_in: Elements_in$2,
@@ -95914,9 +96006,9 @@ const Save = () => {
   const dispatch = useDispatch();
   const page = [];
   for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$d.Save_Load_top_button;
+    let classNameOfElement = styles$e.Save_Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$e.Save_Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -95928,7 +96020,7 @@ const Save = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_button_text, children: i2 })
       },
       "Save_element_page" + i2
     );
@@ -95949,14 +96041,14 @@ const Save = () => {
     if (saveData) {
       const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date, children: saveData.saveTime })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_content_element_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top_index, children: saveData.index }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top_date, children: saveData.saveTime })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$e.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_content_text, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_speaker, children: speaker }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
         ] })
       ] });
     }
@@ -95983,7 +96075,7 @@ const Save = () => {
           }
         },
         onMouseEnter: playSeEnter,
-        className: styles$d.Save_Load_content_element,
+        className: styles$e.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -95992,12 +96084,12 @@ const Save = () => {
     showSaves.push(saveElement);
   }
   const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_title_text, children: t2("saving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_title_text, children: t2("saving.title") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_buttonList, children: page })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves })
   ] });
 };
 const Load = () => {
@@ -96007,9 +96099,9 @@ const Load = () => {
   const dispatch = useDispatch();
   const page = [];
   for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$d.Save_Load_top_button + " " + styles$d.Load_top_button;
+    let classNameOfElement = styles$e.Save_Load_top_button + " " + styles$e.Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on + " " + styles$d.Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$e.Save_Load_top_button_on + " " + styles$e.Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -96021,7 +96113,7 @@ const Load = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_button_text, children: i2 })
       },
       "Load_element_page" + i2
     );
@@ -96041,14 +96133,14 @@ const Load = () => {
     if (saveData) {
       const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index + " " + styles$d.Load_content_elememt_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date + " " + styles$d.Load_content_element_top_date, children: saveData.saveTime })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_content_element_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top_index + " " + styles$e.Load_content_elememt_top_index, children: saveData.index }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top_date + " " + styles$e.Load_content_element_top_date, children: saveData.saveTime })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker + " " + styles$d.Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$e.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_content_text, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_speaker + " " + styles$e.Load_content_speaker, children: speaker }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
         ] })
       ] });
     }
@@ -96060,7 +96152,7 @@ const Load = () => {
           playSeClick();
         },
         onMouseEnter: playSeEnter,
-        className: styles$d.Save_Load_content_element,
+        className: styles$e.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -96069,12 +96161,12 @@ const Load = () => {
     showSaves.push(saveElement);
   }
   const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Load_title_text, children: t2("loadSaving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Load_title_text, children: t2("loadSaving.title") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_buttonList, children: page })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
   ] });
 };
 const Options_main = "_Options_main_u5orq_2";
@@ -96092,7 +96184,7 @@ const Options_page_container = "_Options_page_container_u5orq_92";
 const Options_button_list = "_Options_button_list_u5orq_98";
 const Options_page_button = "_Options_page_button_u5orq_102";
 const Options_page_button_active = "_Options_page_button_active_u5orq_114";
-const styles$c = {
+const styles$d = {
   Options_main,
   Options_top,
   Options_title,
@@ -96115,7 +96207,7 @@ const NormalOption_title = "_NormalOption_title_ogzuv_10";
 const NormalOption_title_bef = "_NormalOption_title_bef_ogzuv_19";
 const NormalOption_title_sd = "_NormalOption_title_sd_ogzuv_29";
 const NormalOption_buttonList = "_NormalOption_buttonList_ogzuv_39";
-const styles$b = {
+const styles$c = {
   NormalOption: NormalOption$1,
   Elements_in,
   NormalOption_title,
@@ -96124,14 +96216,14 @@ const styles$b = {
   NormalOption_buttonList
 };
 const NormalOption = (props) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.NormalOption, style: { width: props.full ? "100%" : "auto" }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_buttonList, style: { width: props.full ? "100%" : "auto" }, children: props.children })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.NormalOption, style: { width: props.full ? "100%" : "auto" }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.NormalOption_title, children: props.title }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.NormalOption_buttonList, style: { width: props.full ? "100%" : "auto" }, children: props.children })
   ] });
 };
 const NormalButton$1 = "_NormalButton_1qk3b_1";
 const NormalButtonChecked = "_NormalButtonChecked_1qk3b_18";
-const styles$a = {
+const styles$b = {
   NormalButton: NormalButton$1,
   NormalButtonChecked
 };
@@ -96144,7 +96236,7 @@ const NormalButton = (props) => {
       const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: styles$a.NormalButton + " " + styles$a.NormalButtonChecked,
+          className: styles$b.NormalButton + " " + styles$b.NormalButtonChecked,
           onClick: () => {
             playSeSwitch();
             props.functionList[i2]();
@@ -96159,7 +96251,7 @@ const NormalButton = (props) => {
       const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: styles$a.NormalButton,
+          className: styles$b.NormalButton,
           onClick: () => {
             playSeSwitch();
             props.functionList[i2]();
@@ -96281,7 +96373,7 @@ function System() {
   function toggleAbout() {
     setShowAbout(!showAbout);
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main_content_half, children: [
     showAbout && /* @__PURE__ */ jsxRuntimeExports.jsx(About, { onClose: toggleAbout }),
     !showAbout && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("autoSpeed.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -96387,7 +96479,7 @@ function System() {
 }
 const textPreviewMain = "_textPreviewMain_nolr3_1";
 const textbox = "_textbox_nolr3_8";
-const styles$9 = {
+const styles$a = {
   textPreviewMain,
   textbox
 };
@@ -96429,7 +96521,7 @@ const nameContainer = "_nameContainer_1cs17_134";
 const outerName = "_outerName_1cs17_140";
 const innerName = "_innerName_1cs17_151";
 const text = "_text_1cs17_158";
-const styles$8 = {
+const styles$9 = {
   TextBox_EventHandler: TextBox_EventHandler$1,
   TextBox_Container,
   showSoftly: showSoftly$1,
@@ -96473,7 +96565,7 @@ function IMSSTextbox(props) {
       const textElements = document.querySelectorAll(".Textelement_start");
       const textArray2 = [...textElements];
       textArray2.forEach((e2) => {
-        e2.className = applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled);
+        e2.className = applyStyle2("TextBox_textElement_Settled", styles$9.TextBox_textElement_Settled);
       });
     }
     WebGAL.events.textSettle.on(settleText);
@@ -96495,12 +96587,12 @@ function IMSSTextbox(props) {
           "span",
           {
             id: `${delay}`,
-            className: applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled),
+            className: applyStyle2("TextBox_textElement_Settled", styles$9.TextBox_textElement_Settled),
             style: { animationDelay: `${delay}ms`, animationDuration: `${textDuration}ms` },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$9.zhanwei, children: [
               e2,
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
-              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$9.outer), children: e2 }),
+              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$9.inner), children: e2 })
             ] })
           },
           currentDialogKey + index22
@@ -96511,12 +96603,12 @@ function IMSSTextbox(props) {
         {
           "data-text": e2,
           id: `${delay}`,
-          className: `${applyStyle2("TextBox_textElement_start", styles$8.TextBox_textElement_start)} Textelement_start`,
+          className: `${applyStyle2("TextBox_textElement_start", styles$9.TextBox_textElement_start)} Textelement_start`,
           style: { animationDelay: `${delay}ms`, position: "relative" },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$9.zhanwei, children: [
             e2,
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
-            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$9.outer), children: e2 }),
+            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$9.inner), children: e2 })
           ] })
         },
         currentDialogKey + index22
@@ -96536,11 +96628,11 @@ function IMSSTextbox(props) {
     );
   });
   console.log(`${textboxOpacity / 100}`);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$8.TextBox_Container, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.TextBox_Container, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: applyStyle2("TextBox_main", styles$8.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$8.TextBox_Background),
+        className: applyStyle2("TextBox_main", styles$9.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$9.TextBox_Background),
         style: {
           opacity: `${textboxOpacity / 100}`,
           left: miniAvatar2 === "" ? 25 : void 0
@@ -96551,27 +96643,27 @@ function IMSSTextbox(props) {
       "div",
       {
         id: "textBoxMain",
-        className: applyStyle2("TextBox_main", styles$8.TextBox_main),
+        className: applyStyle2("TextBox_main", styles$9.TextBox_main),
         style: {
           fontFamily: font,
           left: miniAvatar2 === "" ? 25 : void 0
         },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$8.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$8.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$9.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$9.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
           showName !== "" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$8.TextBox_ShowName_Background),
+                className: applyStyle2("TextBox_showName", styles$9.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$9.TextBox_ShowName_Background),
                 style: {
                   opacity: `${textboxOpacity / 100}`,
                   fontSize: "200%"
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { opacity: 0 }, children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$9.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$9.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$9.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 }) })
               }
@@ -96579,15 +96671,15 @@ function IMSSTextbox(props) {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName),
+                className: applyStyle2("TextBox_showName", styles$9.TextBox_showName),
                 style: {
                   fontSize: "200%"
                 },
                 children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$9.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$9.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$9.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 })
               },
@@ -96597,7 +96689,7 @@ function IMSSTextbox(props) {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("text", styles$8.text),
+              className: applyStyle2("text", styles$9.text),
               style: {
                 fontSize,
                 flexFlow: "column",
@@ -96812,11 +96904,11 @@ const TextPreview = (props) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
-      className: styles$9.textPreviewMain,
+      className: styles$a.textPreviewMain,
       style: {
         background: previewBackground ? `bottom / cover no-repeat url(${previewBackground})` : "rgba(0, 0, 0, 0.1)"
       },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.textbox, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Textbox, { ...textboxProps }) }, `previewTextbox-${textDelay}`)
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.textbox, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Textbox, { ...textboxProps }) }, `previewTextbox-${textDelay}`)
     }
   );
 };
@@ -96845,7 +96937,7 @@ function Display() {
   const userDataState = useSelector((state) => state.userData);
   const dispatch = useDispatch();
   const t2 = useTrans("menu.options.pages.display.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main_content_half, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("fullScreen.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       NormalButton,
       {
@@ -96945,7 +97037,7 @@ function Sound() {
   const userDataState = useSelector((state) => state.userData);
   const dispatch = useDispatch();
   const t2 = useTrans("menu.options.pages.sound.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main_content_half, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("volumeMain.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       OptionSlider,
       {
@@ -97034,15 +97126,15 @@ const Options = () => {
   reactExports.useEffect(getStorage, []);
   function getClassName(page) {
     if (page === currentOptionPage.value) {
-      return styles$c.Options_page_button + " " + styles$c.Options_page_button_active;
+      return styles$d.Options_page_button + " " + styles$d.Options_page_button_active;
     } else
-      return styles$c.Options_page_button;
+      return styles$d.Options_page_button;
   }
   const t2 = useTrans("menu.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Option_title_text, children: t2("title") }) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_page_container, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_button_list, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Options_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Options_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Option_title_text, children: t2("title") }) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_page_container, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_button_list, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -97098,7 +97190,7 @@ const Options = () => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main_content, children: [
         currentOptionPage.value === 1 && /* @__PURE__ */ jsxRuntimeExports.jsx(Display, {}),
         currentOptionPage.value === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(System, {}),
         currentOptionPage.value === 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(Sound, {})
@@ -97120,8 +97212,8 @@ const Menu = () => {
       currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Options, {});
       break;
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.Menu_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.Menu_TagContent, children: currentTag }),
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$h.Menu_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$h.Menu_TagContent, children: currentTag }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(MenuPanel, {})
   ] }) });
 };
@@ -97135,7 +97227,7 @@ const MainStage_oldBgFadeout = "_MainStage_oldBgFadeout_9enex_1";
 const MainStage_oldBgContainer_Settled = "_MainStage_oldBgContainer_Settled_9enex_47";
 const pixiContainer = "_pixiContainer_9enex_72";
 const chooseContainer = "_chooseContainer_9enex_77";
-const styles$7 = {
+const styles$8 = {
   MainStage_main,
   MainStage_main_container,
   MainStage_bgContainer,
@@ -97250,7 +97342,7 @@ const FullScreenPerform = () => {
     stageHeight = "76%";
     top = "12%";
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
 };
 const TextBox_EventHandler = "_TextBox_EventHandler_449dq_2";
 const TextBox_main = "_TextBox_main_449dq_10";
@@ -97262,7 +97354,7 @@ const TextBox_textElement_Settled = "_TextBox_textElement_Settled_449dq_48";
 const TextBox_showName = "_TextBox_showName_449dq_52";
 const miniAvatarContainer = "_miniAvatarContainer_449dq_68";
 const miniAvatarImg = "_miniAvatarImg_449dq_76";
-const styles$6 = {
+const styles$7 = {
   TextBox_EventHandler,
   TextBox_main,
   showSoftly,
@@ -97293,7 +97385,7 @@ const TextBoxFilm = () => {
         "span",
         {
           id: `${delay}`,
-          className: styles$6.TextBox_textElement_Settled,
+          className: styles$7.TextBox_textElement_Settled,
           style: { animationDelay: `${delay}ms` },
           children: e2
         },
@@ -97304,14 +97396,14 @@ const TextBoxFilm = () => {
       "span",
       {
         id: `${delay}`,
-        className: styles$6.TextBox_textElement_start,
+        className: styles$7.TextBox_textElement_start,
         style: { animationDelay: `${delay}ms` },
         children: e2
       },
       stageState.currentDialogKey + index2
     );
   });
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "textBoxMain", className: styles$6.TextBox_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: size }, children: textElementList }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "textBoxMain", className: styles$7.TextBox_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: size }, children: textElementList }) });
 };
 function useSetBg(stageState) {
   const bgName = stageState.bgName;
@@ -97572,11 +97664,11 @@ function MainStage() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { display: "none" } });
 }
 const introContainer = "_introContainer_119k8_1";
-const styles$5 = {
+const styles$6 = {
   introContainer
 };
 function IntroContainer() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$5.introContainer, id: "introContainer" });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$6.introContainer, id: "introContainer" });
 }
 function inTextBox(event) {
   const tb2 = document.getElementById("textBoxMain");
@@ -97631,11 +97723,11 @@ const Stage = () => {
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
   useHotkey();
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$7.MainStage_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$8.MainStage_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(FullScreenPerform, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(MainStage, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$7.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$7.chooseContainer }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$8.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$8.chooseContainer }),
     GUIState.showTextBox && stageState.enableFilm === "" && !stageState.isDisableTextbox && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBox, {}),
     GUIState.showTextBox && stageState.enableFilm !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBoxFilm, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AudioContainer, {}),
@@ -97687,9 +97779,9 @@ const BottomControlPanel = () => {
   let fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "125%" }, children: t2("noSaving") }) });
   if (saveData[0]) {
     const data2 = saveData[0];
-    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.slPreviewMain, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.textContainer, children: [
+    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$k.slPreviewMain, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$k.textContainer, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data2.nowStageState.showName }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "75%", color: "rgb(55,60,56)" }, children: data2.nowStageState.showText })
       ] })
@@ -97697,11 +97789,11 @@ const BottomControlPanel = () => {
   }
   return (
     // <div className={styles.ToCenter}>
-    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$k.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
       GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", false);
@@ -97712,21 +97804,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewCloseOne,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.hide") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.hide") })
           ]
         }
       ),
       !GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", true);
@@ -97737,21 +97829,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewOpen,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.show") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.show") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showBacklog", true);
@@ -97763,21 +97855,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               AlignTextLeftOne,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.backlog") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.backlog") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             let VocalControl = document.getElementById("currentVocal");
@@ -97793,14 +97885,14 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               ReplayMusic,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.replay") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.replay") })
           ]
         }
       ),
@@ -97808,7 +97900,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_auto",
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             switchAuto();
@@ -97816,8 +97908,8 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.auto") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.auto") })
           ]
         }
       ),
@@ -97825,7 +97917,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_fast",
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             switchFast();
@@ -97836,21 +97928,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleRight,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.forward") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.forward") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton + " " + styles$j.fastsave,
+          className: styles$k.singleButton + " " + styles$k.fastsave,
           style: { fontSize },
           onClick: () => {
             saveGame(0);
@@ -97861,22 +97953,22 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleDown,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklySave") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastSPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.quicklySave") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.fastSlPreview + " " + styles$k.fastSPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton + " " + styles$j.fastload,
+          className: styles$k.singleButton + " " + styles$k.fastload,
           style: { fontSize },
           onClick: () => {
             loadGame(0);
@@ -97884,16 +97976,16 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklyLoad") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastLPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.quicklyLoad") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.fastSlPreview + " " + styles$k.fastLPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Save);
@@ -97902,15 +97994,15 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.save") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.save") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Load);
@@ -97922,21 +98014,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               FolderOpen,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.load") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.load") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Option);
@@ -97948,21 +98040,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               SettingTwo,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.options") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.options") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             playSeDialogOpen();
@@ -97979,22 +98071,22 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.title") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.title") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             switchControls();
             playSeClick();
           },
           onMouseEnter: playSeEnter,
-          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
+          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
         }
       )
     ] }) })
@@ -98028,11 +98120,11 @@ const Backlog = () => {
       const singleBacklogView = /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: styles$i.backlog_item,
+          className: styles$j.backlog_item,
           style: { animationDelay: `${20 * (WebGAL.backlogManager.getBacklog().length - i2)}ms` },
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_func_area, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_item_button_list, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.backlog_func_area, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.backlog_item_button_list, children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "div",
                   {
@@ -98043,7 +98135,7 @@ const Backlog = () => {
                       e2.stopPropagation();
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$i.backlog_item_button_element,
+                    className: styles$j.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(Return, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ),
@@ -98062,14 +98154,14 @@ const Backlog = () => {
                       }
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$i.backlog_item_button_element,
+                    className: styles$j.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(VolumeNotice, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ) : null
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content_name, children: backlogItem.currentStageState.showName })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.backlog_item_content_name, children: backlogItem.currentStageState.showName })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.backlog_item_content_text, children: showTextElementList }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.backlog_item_content_text, children: showTextElementList }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("audio", { id: "backlog_audio_play_element_" + i2, src: backlogItem.currentStageState.vocal })
           ]
         },
@@ -98104,15 +98196,15 @@ const Backlog = () => {
       "div",
       {
         className: `
-          ${GUIStore.showBacklog ? styles$i.Backlog_main : styles$i.Backlog_main_out}
-          ${indexHide ? styles$i.Backlog_main_out_IndexHide : ""}
+          ${GUIStore.showBacklog ? styles$j.Backlog_main : styles$j.Backlog_main_out}
+          ${indexHide ? styles$j.Backlog_main_out_IndexHide : ""}
           `,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.backlog_top, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               CloseSmall,
               {
-                className: styles$i.backlog_top_icon,
+                className: styles$j.backlog_top_icon,
                 onClick: () => {
                   playSeClick();
                   dispatch(setVisibility({ component: "showBacklog", visibility: false }));
@@ -98128,7 +98220,7 @@ const Backlog = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: styles$i.backlog_title,
+                className: styles$j.backlog_title,
                 onClick: () => {
                   logger.info("Rua! Testing");
                 },
@@ -98136,7 +98228,7 @@ const Backlog = () => {
               }
             )
           ] }),
-          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$i.backlog_content} ${isDisableScroll ? styles$i.Backlog_main_DisableScroll : ""}`, children: backlogList })
+          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$j.backlog_content} ${isDisableScroll ? styles$j.Backlog_main_DisableScroll : ""}`, children: backlogList })
         ]
       }
     )
@@ -98186,7 +98278,7 @@ const showFullContainer = "_showFullContainer_1tymt_232";
 const showFullCgMain = "_showFullCgMain_1tymt_245";
 const fullCgIn = "_fullCgIn_1tymt_1";
 const bgmElement_In = "_bgmElement_In_1tymt_1";
-const styles$4 = {
+const styles$5 = {
   extra,
   extra_top,
   extra_top_icon,
@@ -98240,9 +98332,9 @@ function ExtraBgm() {
     dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
   }
   const showBgmList = extraState.bgm.map((e2, i2) => {
-    let className = styles$4.bgmElement;
+    let className = styles$5.bgmElement;
     if (e2.name === currentPlayingBgmName.value) {
-      className = className + " " + styles$4.bgmElement_active;
+      className = className + " " + styles$5.bgmElement_active;
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -98262,8 +98354,8 @@ function ExtraBgm() {
       e2.name
     );
   });
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmContainer, style: { maxHeight: bgmPlayerHeight }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmPlayerMain, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$5.bgmContainer, style: { maxHeight: bgmPlayerHeight }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$5.bgmPlayerMain, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -98276,7 +98368,7 @@ function ExtraBgm() {
             }
           },
           onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
+          className: styles$5.bgmControlButton,
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoStart, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       ),
@@ -98289,7 +98381,7 @@ function ExtraBgm() {
             bgmControl == null ? void 0 : bgmControl.play().then();
           },
           onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
+          className: styles$5.bgmControlButton,
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       ),
@@ -98305,7 +98397,7 @@ function ExtraBgm() {
             }
           },
           onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
+          className: styles$5.bgmControlButton,
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoEnd, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       ),
@@ -98318,11 +98410,11 @@ function ExtraBgm() {
             bgmControl.pause();
           },
           onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
+          className: styles$5.bgmControlButton,
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(SquareSmall, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.bgmName, children: foundCurrentBgmName }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$5.bgmName, children: foundCurrentBgmName }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -98331,13 +98423,13 @@ function ExtraBgm() {
             isShowBgmList.set(!isShowBgmList.value);
           },
           onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
+          className: styles$5.bgmControlButton,
           style: { marginLeft: "auto" },
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(MusicList, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       )
     ] }),
-    isShowBgmList.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmListContainer, children: [
+    isShowBgmList.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$5.bgmListContainer, children: [
       " ",
       showBgmList
     ] })
@@ -98355,9 +98447,9 @@ function ExtraCgElement(props) {
           showFull.set(!showFull.value);
           playSeClick();
         },
-        className: styles$4.showFullContainer,
+        className: styles$5.showFullContainer,
         onMouseEnter: playSeEnter,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.showFullCgMain, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$5.showFullCgMain, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
             style: {
@@ -98383,7 +98475,7 @@ function ExtraCgElement(props) {
           // transform: `rotate(${deg}deg)`,
           animation: `cg_softIn_${props.transformDeg} 1.5s ease-out ${100 + props.index * 100}ms forwards `
         },
-        className: styles$4.cgElement,
+        className: styles$5.cgElement,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -98426,9 +98518,9 @@ function ExtraCg() {
   }
   const showNav = [];
   for (let i2 = 1; i2 <= pageNumber; i2++) {
-    let className = styles$4.cgNav;
+    let className = styles$5.cgNav;
     if (currentPage.value === i2) {
-      className = className + " " + styles$4.cgNav_active;
+      className = className + " " + styles$5.cgNav_active;
     }
     const temp2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -98445,9 +98537,9 @@ function ExtraCg() {
     );
     showNav.push(temp2);
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.cgMain, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDivWarpper, children: showNav }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgContainer, children: showCgList })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$5.cgMain, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$5.cgShowDiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$5.cgShowDivWarpper, children: showNav }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$5.cgContainer, children: showCgList })
   ] });
 }
 function Random(min, max2) {
@@ -98458,12 +98550,12 @@ function Extra() {
   const showExtra = useSelector((state) => state.GUI.showExtra);
   const dispatch = useDispatch();
   const t2 = useTrans("extra.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: showExtra && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra_top, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: showExtra && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$5.extra, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$5.extra_top, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         CloseSmall,
         {
-          className: styles$4.extra_top_icon,
+          className: styles$5.extra_top_icon,
           onClick: () => {
             dispatch(setVisibility({ component: "showExtra", visibility: false }));
             playSeClick();
@@ -98475,9 +98567,9 @@ function Extra() {
           strokeWidth: 3
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.extra_title, children: t2("title") })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$5.extra_title, children: t2("title") })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.mainContainer, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$5.mainContainer, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraCg, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraBgm, {})
     ] })
@@ -98488,7 +98580,7 @@ const container = "_container_yghix_17";
 const showContainer = "_showContainer_yghix_1";
 const singleButton = "_singleButton_yghix_33";
 const button_text = "_button_text_yghix_37";
-const styles$3 = {
+const styles$4 = {
   tag,
   container,
   showContainer,
@@ -98509,30 +98601,30 @@ const BottomControlPanelFilm = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$3.tag,
+        className: styles$4.tag,
         onClick: () => {
           showPanel.set(!showPanel.value);
         },
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(HamburgerButton, { theme: "outline", size: "32", fill: "#fff" })
       }
     ),
-    showPanel.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.container, children: [
+    showPanel.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.container, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$3.singleButton,
+          className: styles$4.singleButton,
           onClick: () => {
             setComponentVisibility("showBacklog", true);
             setComponentVisibility("showTextBox", false);
             showPanel.set(!showPanel.value);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "剧情回想 / BACKLOG" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button_text, children: "剧情回想 / BACKLOG" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$3.singleButton,
+          className: styles$4.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             let VocalControl = document.getElementById("currentVocal");
@@ -98542,78 +98634,78 @@ const BottomControlPanelFilm = () => {
               VocalControl == null ? void 0 : VocalControl.play();
             }
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "重播语音 / REPLAY VOICE" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button_text, children: "重播语音 / REPLAY VOICE" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
           id: "Button_ControlPanel_auto",
-          className: styles$3.singleButton,
+          className: styles$4.singleButton,
           onClick: () => {
             switchAuto();
             showPanel.set(!showPanel.value);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "自动模式 / AUTO" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button_text, children: "自动模式 / AUTO" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
           id: "Button_ControlPanel_fast",
-          className: styles$3.singleButton,
+          className: styles$4.singleButton,
           onClick: () => {
             switchFast();
             showPanel.set(!showPanel.value);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "快进 / FAST" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button_text, children: "快进 / FAST" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$3.singleButton,
+          className: styles$4.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             setMenuPanel(MenuPanelTag.Save);
             setComponentVisibility("showMenuPanel", true);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "存档 / SAVE" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button_text, children: "存档 / SAVE" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$3.singleButton,
+          className: styles$4.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             setMenuPanel(MenuPanelTag.Load);
             setComponentVisibility("showMenuPanel", true);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "读档 / LOAD" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button_text, children: "读档 / LOAD" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$3.singleButton,
+          className: styles$4.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             setMenuPanel(MenuPanelTag.Option);
             setComponentVisibility("showMenuPanel", true);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "选项 / OPTIONS" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button_text, children: "选项 / OPTIONS" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$3.singleButton,
+          className: styles$4.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             backToTitle();
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "标题 / TITLE" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button_text, children: "标题 / TITLE" })
         }
       )
     ] })
@@ -98621,7 +98713,7 @@ const BottomControlPanelFilm = () => {
 };
 const devPanelMain = "_devPanelMain_11x6i_1";
 const devPanelOpener = "_devPanelOpener_11x6i_13";
-const styles$2 = {
+const styles$3 = {
   devPanelMain,
   devPanelOpener
 };
@@ -98667,7 +98759,7 @@ function DevPanel() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: JSON.stringify(stageState, null, "  ") })
   ] });
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    isShow && isOpenDevPanel.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$2.devPanelMain, children: [
+    isShow && isOpenDevPanel.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.devPanelMain, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center" }, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -98681,7 +98773,7 @@ function DevPanel() {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { padding: "10px 10px 10px 10px", overflow: "auto" }, children: devMainArea })
     ] }),
-    !isOpenDevPanel.value && isShow && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => isOpenDevPanel.set(true), className: styles$2.devPanelOpener, children: "Open Dev Panel" })
+    !isOpenDevPanel.value && isShow && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => isOpenDevPanel.set(true), className: styles$3.devPanelOpener, children: "Open Dev Panel" })
   ] });
 }
 const trans = "_trans_8uz61_2";
@@ -98725,7 +98817,7 @@ function Translation() {
   ] }) }) });
 }
 const panic_overlay_main = "_panic_overlay_main_1ysz4_1";
-const styles$1 = {
+const styles$2 = {
   panic_overlay_main
 };
 const yoozle_blue = "_yoozle_blue_1r48o_1";
@@ -98739,7 +98831,7 @@ const yoozle_search = "_yoozle_search_1r48o_37";
 const yoozle_search_bar = "_yoozle_search_bar_1r48o_44";
 const yoozle_search_buttons = "_yoozle_search_buttons_1r48o_51";
 const yoozle_button = "_yoozle_button_1r48o_55";
-const styles = {
+const styles$1 = {
   yoozle_blue,
   yoozle_red,
   yoozle_yellow,
@@ -98761,20 +98853,20 @@ const PanicYoozle = () => {
       document.title = originalTitle;
     };
   }, []);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.yoozle_container, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.yoozle_title, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.yoozle_blue, style: { marginRight: "1px" }, children: "Y" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.yoozle_red, children: "o" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.yoozle_yellow, children: "o" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.yoozle_blue, children: "z" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.yoozle_green, children: "l" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `${styles.yoozle_red} ${styles.yoozle_e_rotate}`, children: "e" })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.yoozle_container, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$1.yoozle_title, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$1.yoozle_blue, style: { marginRight: "1px" }, children: "Y" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$1.yoozle_red, children: "o" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$1.yoozle_yellow, children: "o" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$1.yoozle_blue, children: "z" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$1.yoozle_green, children: "l" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `${styles$1.yoozle_red} ${styles$1.yoozle_e_rotate}`, children: "e" })
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.yoozle_search, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: styles.yoozle_search_bar, type: "text", defaultValue: "" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.yoozle_search_buttons, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: styles.yoozle_button, type: "submit", value: "Yoozle Search" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: styles.yoozle_button, type: "submit", value: "Feeling Lucky" })
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.yoozle_search, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: styles$1.yoozle_search_bar, type: "text", defaultValue: "" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.yoozle_search_buttons, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: styles$1.yoozle_button, type: "submit", value: "Yoozle Search" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: styles$1.yoozle_button, type: "submit", value: "Feeling Lucky" })
       ] })
     ] })
   ] });
@@ -98786,7 +98878,7 @@ const PanicOverlay = () => {
     setShowOverlay(GUIStore.showPanicOverlay);
   }, [GUIStore.showPanicOverlay]);
   return ReactDOM.createPortal(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: showOverlay ? styles$1.panic_overlay_main : "", children: showOverlay && /* @__PURE__ */ jsxRuntimeExports.jsx(PanicYoozle, {}) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: showOverlay ? styles$2.panic_overlay_main : "", children: showOverlay && /* @__PURE__ */ jsxRuntimeExports.jsx(PanicYoozle, {}) }),
     document.querySelector("div#panic-overlay")
   );
 };
@@ -98817,12 +98909,139 @@ function useFullScreen() {
     }
   }, [fullScreen]);
 }
+const Loading_container = "_Loading_container_4mfnk_2";
+const spin = "_spin_4mfnk_1";
+const styles = {
+  Loading_container,
+  spin
+};
+function Loading() {
+  const [loading, setLoading] = reactExports.useState(false);
+  reactExports.useEffect(() => {
+    const dispose = window.pubsub.subscribe("loading", ({ loading: loading2 }) => {
+      setLoading(loading2);
+    });
+    return dispose;
+  }, []);
+  if (!loading)
+    return null;
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.Loading_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { xmlns: "http://www.w3.org/2000/svg", width: "116", height: "116", viewBox: "0 0 116 116", fill: "none", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("g", { filter: "url(#filter0_f_84_2)", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M58 33V43", stroke: "white", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M58 73V83", stroke: "white", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M83 58H73", stroke: "white", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M43 58H33", stroke: "white", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "path",
+        {
+          d: "M40.3224 40.3224L47.3934 47.3934",
+          stroke: "white",
+          strokeWidth: "5",
+          strokeLinecap: "round",
+          strokeLinejoin: "round"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "path",
+        {
+          d: "M68.6067 68.6067L75.6777 75.6777",
+          stroke: "white",
+          strokeWidth: "5",
+          strokeLinecap: "round",
+          strokeLinejoin: "round"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "path",
+        {
+          d: "M75.6777 40.3224L68.6067 47.3934",
+          stroke: "white",
+          strokeWidth: "5",
+          strokeLinecap: "round",
+          strokeLinejoin: "round"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "path",
+        {
+          d: "M47.3934 68.6067L40.3224 75.6777",
+          stroke: "white",
+          strokeWidth: "5",
+          strokeLinecap: "round",
+          strokeLinejoin: "round"
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M58 33V43", stroke: "white", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M58 73V83", stroke: "white", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M83 58H73", stroke: "white", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("path", { d: "M43 58H33", stroke: "white", strokeWidth: "5", strokeLinecap: "round", strokeLinejoin: "round" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "path",
+      {
+        d: "M40.3224 40.3224L47.3934 47.3934",
+        stroke: "white",
+        strokeWidth: "5",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "path",
+      {
+        d: "M68.6067 68.6067L75.6777 75.6777",
+        stroke: "white",
+        strokeWidth: "5",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "path",
+      {
+        d: "M75.6777 40.3224L68.6067 47.3934",
+        stroke: "white",
+        strokeWidth: "5",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "path",
+      {
+        d: "M47.3934 68.6067L40.3224 75.6777",
+        stroke: "white",
+        strokeWidth: "5",
+        strokeLinecap: "round",
+        strokeLinejoin: "round"
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "filter",
+      {
+        id: "filter0_f_84_2",
+        x: "0.5",
+        y: "0.5",
+        width: "115",
+        height: "115",
+        filterUnits: "userSpaceOnUse",
+        colorInterpolationFilters: "sRGB",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("feFlood", { floodOpacity: "0", result: "BackgroundImageFix" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("feBlend", { mode: "normal", in: "SourceGraphic", in2: "BackgroundImageFix", result: "shape" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("feGaussianBlur", { stdDeviation: "15", result: "effect1_foregroundBlur_84_2" })
+        ]
+      }
+    ) })
+  ] }) });
+}
 function App() {
   reactExports.useEffect(() => {
     initializeScript();
   }, []);
   useFullScreen();
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "App", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Loading, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Translation, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Stage, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(BottomControlPanel, {}),

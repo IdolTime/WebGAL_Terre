@@ -1,14 +1,112 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
+
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <link rel="icon" type="image/x-icon" href="./icons/favicon.ico" />
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
   <link rel="manifest" href="./manifest.json" />
   <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
   <title>IdolTime</title>
-  <script type="module" crossorigin src="./assets/index-1451c488.js"></script>
-  <link rel="stylesheet" href="./assets/index-be743764.css">
+  <style>
+    .Progress_container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .Progress_text {
+      margin-top: 10px;
+      font-size: 32px;
+      font-weight: 500;
+      color: #555;
+      text-align: center;
+      opacity: 1;
+      animation: fade 2s ease-in-out infinite;
+    }
+
+    @keyframes fade {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .progress {
+      height: 40px;
+      width: 50%;
+      border-radius: 5px;
+
+      >svg {
+        height: 100%;
+        width: 100%;
+
+        .bg {
+          fill: lightgray;
+        }
+
+        .fill {
+          fill: orange;
+        }
+
+        .unfilled-text {
+          font-size: 24px;
+          fill: black;
+        }
+
+        .filled-text {
+          font-size: 24px;
+          fill: white;
+        }
+      }
+    }
+  </style>
+  <script>
+    function PubSub() {
+      this.subscribers = {};
+    }
+
+    PubSub.prototype.subscribe = function (topic, callback) {
+      if (!this.subscribers[topic]) {
+        this.subscribers[topic] = [];
+      }
+      this.subscribers[topic].push(callback);
+      var that = this;
+      return function () {
+        that.unsubscribe(topic, callback);
+      };
+    };
+
+    PubSub.prototype.publish = function (topic, data) {
+      if (this.subscribers[topic]) {
+        this.subscribers[topic].forEach(function (callback) {
+          callback(data);
+        });
+      }
+    };
+
+    PubSub.prototype.unsubscribe = function (topic, callback) {
+      if (this.subscribers[topic]) {
+        this.subscribers[topic] = this.subscribers[topic].filter(function (cb) {
+          return cb !== callback;
+        });
+      }
+    };
+
+    window.pubsub = new PubSub();
+  </script>
+  <script type="module" crossorigin src="./assets/index-e539e666.js"></script>
+  <link rel="stylesheet" href="./assets/index-5b213569.css">
 </head>
 
 <body>
@@ -22,8 +120,30 @@
             top: 0;
             z-index: 14;
             opacity: 1;
-            transition: opacity 1.5s;
+            transition: opacity 2s linear;
 ">
+    <div class="Progress_container">
+      <div class="progress">
+        <svg xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <mask id="mask">
+              <rect id="progress" width="100%" height="100%" x="-100%" y="0" fill="#fff" />
+            </mask>
+          </defs>
+
+          <rect class="bg" width="100%" height="100%" rx="4" />
+
+          <text class="unfilled-text" text-anchor="middle" x="50%" y="50%" dy=".3em">0%</text>
+
+          <g mask="url(#mask)">
+            <rect class="fill" width="100%" height="100%" rx="4" />
+
+            <text class="filled-text" text-anchor="middle" x="50%" y="50%" dy=".3em">0%</text>
+          </g>
+        </svg>
+      </div>
+      <div class="Progress_text">资源加载中...</div>
+    </div>
     <!--    落地页背景-->
     <div id="Title_bg_container" style="
     height: 100%;
@@ -191,6 +311,7 @@
     const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // 判断是否是 iOS终端
     if ("serviceWorker" in navigator && !isIOS) {
       navigator.serviceWorker.register("./webgal-serviceworker.js").then(function (reg) {
+        window.registered = 1;
         // registration worked
         console.log("Registration succeeded. Scope is " + reg.scope);
       }).catch(function (error) {
@@ -204,6 +325,50 @@
   <!--<script src="lib/live2d.min.js"></script>-->
   <!--<script src="lib/live2dcubismcore.min.js"></script>-->
   <script>
+    const title = document.getElementById("Title_enter_page");
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function show() {
+        title.style.opacity = 0;
+        setTimeout(() => {
+          if (title) {
+            title.style.display = "none";
+          }
+        }, 2000); // 将落地页设置为不显示
+        window.enterPromise();
+        delete window.enterPromise;
+      }
+
+    function setProgress(num) {
+      const progress = document.getElementById('progress');
+      progress.setAttribute('x', (num - 100) + '%');
+      const unfilledText = document.getElementsByClassName('unfilled-text')[0];
+      const filledText = document.getElementsByClassName('filled-text')[0];
+      unfilledText.innerHTML = num + '%';
+      filledText.innerHTML = num + '%';
+    }
+    const downloadCompleteRef = { current: 0 };
+    const progressTimerRef = { current: null }
+
+    const dispose = window.pubsub.subscribe('sceneAssetsLoaded', ({ sceneName }) => {
+      if (sceneName === 'start.txt') {
+        dispose();
+        if (!progressTimerRef.current) {
+          downloadCompleteRef.current = 1;
+        } else {
+          clearTimeout(progressTimerRef.current);
+          setProgress(100);
+          setTimeout(() => {
+            show();
+          }, 300);
+        }
+      }
+    })
+
     let enterPromise = new Promise(res => window.enterPromise = res);
     let renderPromise = new Promise(res => window.renderPromise = res);
     /**
@@ -246,27 +411,57 @@
         enterText.style.opacity = "0"; // 调整标题文字的透明度
       }
       const whiteContainer = document.getElementById("Title_white_container");
-      setTimeout(() => {
-        if (whiteContainer) {
-          whiteContainer.style.opacity = "1";
-        }
-      }, 50); // 在50ms后开始显示白色渐变
-      const title = document.getElementById("Title_enter_page");
-      setTimeout(() => {
-        if (title)
-          title.style.opacity = "0";
-      }, 500); //500ms后开始降低落地页透明度
+      // setTimeout(() => {
+      //   if (whiteContainer) {
+      //     whiteContainer.style.opacity = "1";
+      //   }
+      // }, 50); // 在50ms后开始显示白色渐变
+      // setTimeout(() => {
+      //   if (title)
+      //     title.style.opacity = "0";
+      // }, 500); //500ms后开始降低落地页透明度
       if (!isIOS && title) {
         title.style.pointerEvents = "none"; //落地页不再响应点击
         title.style.background = "linear-gradient( #a1c4fd 0%, #c2e9fb 100%)"; //改变标题渐变效果
       }
-      setTimeout(() => {
-        if (title) {
-          title.style.display = "none";
+
+      if (downloadCompleteRef.current === 1) {
+        let num = 0;
+        function countdown() {
+          if (num >= 100) {
+            clearTimeout(progressTimerRef.current);
+            show();
+          } else {
+            progressTimerRef.current = setTimeout(() => {
+              num += getRandomInt(5, 10)
+              num = Math.min(100, num);
+              setProgress(num)
+              countdown();
+            }, 200);
+          }
         }
-      }, 2000); // 将落地页设置为不显示
-      window.enterPromise();
-      delete window.enterPromise;
+        countdown()
+      } else {
+        let num = 0;
+        let increment = 0;
+        let base = 50;
+        function countdown() {
+          progressTimerRef.current = setTimeout(() => {
+            num += getRandomInt(1, 5);
+            if (num >= 50 && num < 70) {
+              increment += 0.5;
+            } else if (num >= 70 && num < 85) {
+              increment += 0.24;
+            } else if (num >= 85 && num < 98) {
+              increment += 0.1;
+            }
+            num = Math.min(50 + increment, num);
+            setProgress(num)
+            countdown();
+          }, 200);
+        }
+        countdown()
+      }
     }
   </script>
 </body>

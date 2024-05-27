@@ -133,6 +133,7 @@ code {
   overflow: hidden;
   perspective: 0;
   -webkit-overflow-scrolling: auto;
+  position: relative;
 }
 * {
   /*-webkit-overflow-scrolling: auto;*/
@@ -2440,6 +2441,32 @@ input[type=range]::-moz-range-track {
 ._yoozle_button_1r48o_55:focus {
   border: 1px solid #4285f4;
   outline: none;
+}
+._Loading_container_4mfnk_2 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.3);
+}
+._Loading_container_4mfnk_2 svg {
+  animation: _spin_4mfnk_1 2s linear infinite; /* 应用spin动画 */
+}
+
+/* 定义spin动画 */
+@keyframes _spin_4mfnk_1 {
+  0% {
+    transform: rotate(0deg); /* 初始状态 */
+  }
+  100% {
+    transform: rotate(360deg); /* 旋转一圈 */
+  }
 }
 @keyframes centerIn {
   0% {
