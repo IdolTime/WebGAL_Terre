@@ -20481,7 +20481,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-bc56337d.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-3b6b2a3a.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -33767,7 +33767,8 @@ const initState = {
   showPanicOverlay: false,
   isEnterGame: false,
   isShowLogo: true,
-  isShowGameMenu: false
+  isShowGameMenu: false,
+  isShowGameingButton: false
 };
 const GUISlice = createSlice({
   name: "gui",
@@ -33803,10 +33804,13 @@ const GUISlice = createSlice({
     },
     setLogoImage: (state, action) => {
       state.logoImage = [...action.payload];
+    },
+    setShowGameingButton: (state, action) => {
+      state.isShowGameingButton = action.payload;
     }
   }
 });
-const { setVisibility, setMenuPanelTag, setGuiAsset, setLogoImage } = GUISlice.actions;
+const { setVisibility, setMenuPanelTag, setGuiAsset, setLogoImage, setShowGameingButton } = GUISlice.actions;
 const GUIReducer = GUISlice.reducer;
 const webgalStore = configureStore({
   reducer: {
@@ -36673,6 +36677,7 @@ const Title = () => {
               onClick: () => {
                 startGame();
                 playSeClick();
+                dispatch(setShowGameingButton(true));
               },
               onMouseEnter: playSeEnter,
               children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$l.Title_button_text), children: t2("start.title") })
@@ -104194,7 +104199,7 @@ const BottomControlPanel = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs(
       "div",
       {
-        className: `${styles$h.main} ${isIOS ? styles$h.main_ios : ""}`,
+        className: `${styles$h.main} ${isIOS && GUIStore.isShowGameingButton ? styles$h.main_ios : ""}`,
         style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" },
         children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -105131,19 +105136,21 @@ function useFullScreen() {
     }
   }, [fullScreen]);
 }
-const gameMenuPanelWrapper = "_gameMenuPanelWrapper_t91vd_1";
-const gameMenuPanel = "_gameMenuPanel_t91vd_1";
-const menuButton = "_menuButton_t91vd_12";
-const gameMenuPanelContentWrapper_ios = "_gameMenuPanelContentWrapper_ios_t91vd_25";
-const gameMenuPanelContentWrapper = "_gameMenuPanelContentWrapper_t91vd_25";
-const mask = "_mask_t91vd_38";
-const gameMenuPanelContent = "_gameMenuPanelContent_t91vd_25";
-const buttonswrapper = "_buttonswrapper_t91vd_57";
-const button = "_button_t91vd_57";
+const gameMenuPanelWrapper = "_gameMenuPanelWrapper_1itsp_1";
+const gameMenuPanel = "_gameMenuPanel_1itsp_1";
+const menuButton = "_menuButton_1itsp_12";
+const gameMenuPanel_ios = "_gameMenuPanel_ios_1itsp_25";
+const gameMenuPanelContentWrapper_ios = "_gameMenuPanelContentWrapper_ios_1itsp_30";
+const gameMenuPanelContentWrapper = "_gameMenuPanelContentWrapper_1itsp_30";
+const mask = "_mask_1itsp_43";
+const gameMenuPanelContent = "_gameMenuPanelContent_1itsp_30";
+const buttonswrapper = "_buttonswrapper_1itsp_62";
+const button = "_button_1itsp_62";
 const styles = {
   gameMenuPanelWrapper,
   gameMenuPanel,
   menuButton,
+  gameMenuPanel_ios,
   gameMenuPanelContentWrapper_ios,
   gameMenuPanelContentWrapper,
   mask,
@@ -105155,6 +105162,7 @@ const GameMenuPanel = () => {
   const t2 = useTrans("gaming.");
   const { playSeEnter, playSeClick, playSeDialogOpen } = useSoundEffect();
   const GUIStore = useSelector((state) => state.GUI);
+  useSelector((state) => state.stage);
   const [show, setShow] = reactExports.useState(false);
   reactExports.useEffect(() => {
     setShow(GUIStore.isShowGameMenu);
@@ -105207,7 +105215,7 @@ const GameMenuPanel = () => {
     });
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.gameMenuPanel, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.menuButton, onClick: handleShowGameMenuPanel, onMouseEnter: playSeEnter }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles.gameMenuPanel} ${isIOS && GUIStore.isShowGameingButton ? styles.gameMenuPanel_ios : ""}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.menuButton, onClick: handleShowGameMenuPanel, onMouseEnter: playSeEnter }) }),
     show && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `${styles.gameMenuPanelContentWrapper} ${isIOS ? styles.gameMenuPanelContentWrapper_ios : ""}`, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.mask }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.gameMenuPanelContent, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.buttonswrapper, children: [

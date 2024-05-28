@@ -2608,19 +2608,19 @@ input[type=range]::-moz-range-thumb {
 ._yoozle_button_1r48o_55:focus {
   border: 1px solid #4285f4;
   outline: none;
-}._gameMenuPanelWrapper_t91vd_1 {
+}._gameMenuPanelWrapper_1itsp_1 {
   width: 100%;
   height: 100%;
 }
 
-._gameMenuPanel_t91vd_1 {
+._gameMenuPanel_1itsp_1 {
   position: absolute;
   top: 66.6666666667px;
   right: 26.6666666667px;
   z-index: 9;
 }
 
-._gameMenuPanel_t91vd_1 ._menuButton_t91vd_12 {
+._gameMenuPanel_1itsp_1 ._menuButton_1itsp_12 {
   width: 100px;
   height: 93.3333333333px;
   margin-right: 133.3333333333px;
@@ -2630,16 +2630,21 @@ input[type=range]::-moz-range-thumb {
   background-position: center;
 }
 
-._gameMenuPanel_t91vd_1 ._menuButton_t91vd_12:hover {
+._gameMenuPanel_1itsp_1 ._menuButton_1itsp_12:hover {
   cursor: pointer;
 }
 
-._gameMenuPanelContentWrapper_ios_t91vd_25 {
+._gameMenuPanel_ios_1itsp_25 {
   -webkit-transform: translateZ(0px);
   transform: translateZ(0px);
 }
 
-._gameMenuPanelContentWrapper_t91vd_25 {
+._gameMenuPanelContentWrapper_ios_1itsp_30 {
+  -webkit-transform: translateZ(0px);
+  transform: translateZ(0px);
+}
+
+._gameMenuPanelContentWrapper_1itsp_30 {
   position: fixed;
   top: 0;
   right: 0;
@@ -2648,7 +2653,7 @@ input[type=range]::-moz-range-thumb {
   z-index: 20;
 }
 
-._gameMenuPanelContentWrapper_t91vd_25 ._mask_t91vd_38 {
+._gameMenuPanelContentWrapper_1itsp_30 ._mask_1itsp_43 {
   display: block;
   width: 100%;
   height: 100%;
@@ -2656,7 +2661,7 @@ input[type=range]::-moz-range-thumb {
   z-index: 21;
 }
 
-._gameMenuPanelContentWrapper_t91vd_25 ._gameMenuPanelContent_t91vd_25 {
+._gameMenuPanelContentWrapper_1itsp_30 ._gameMenuPanelContent_1itsp_30 {
   position: absolute;
   top: 0;
   right: 0;
@@ -2669,7 +2674,7 @@ input[type=range]::-moz-range-thumb {
   background-position: center;
 }
 
-._gameMenuPanelContentWrapper_t91vd_25 ._gameMenuPanelContent_t91vd_25 ._buttonswrapper_t91vd_57 {
+._gameMenuPanelContentWrapper_1itsp_30 ._gameMenuPanelContent_1itsp_30 ._buttonswrapper_1itsp_62 {
   height: 100%;
   width: 100%;
   display: flex;
@@ -2680,7 +2685,7 @@ input[type=range]::-moz-range-thumb {
   z-index: 99;
 }
 
-._gameMenuPanelContentWrapper_t91vd_25 ._gameMenuPanelContent_t91vd_25 ._buttonswrapper_t91vd_57 ._button_t91vd_57 {
+._gameMenuPanelContentWrapper_1itsp_30 ._gameMenuPanelContent_1itsp_30 ._buttonswrapper_1itsp_62 ._button_1itsp_62 {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -2695,7 +2700,7 @@ input[type=range]::-moz-range-thumb {
   margin-bottom: 45px;
 }
 
-._gameMenuPanelContentWrapper_t91vd_25 ._gameMenuPanelContent_t91vd_25 ._buttonswrapper_t91vd_57 ._button_t91vd_57:hover {
+._gameMenuPanelContentWrapper_1itsp_30 ._gameMenuPanelContent_1itsp_30 ._buttonswrapper_1itsp_62 ._button_1itsp_62:hover {
   cursor: pointer;
   background-image: url("./menu-button-active-ecea3f63.png");
   background-repeat: no-repeat;
