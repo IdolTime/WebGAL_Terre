@@ -1,98 +1,63 @@
-// 安装事件
-self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing');
-  event.waitUntil(self.skipWaiting());
+self.addEventListener('install', (ev) => {
+  // console.log('[service worker] installing');
+  ev.waitUntil(self.skipWaiting());
 });
 
-// 激活事件
-self.addEventListener('activate', function (event) {
-  event.waitUntil(
-    caches
-      .keys()
-      .then(function (cacheNames) {
-        return Promise.all(
-          cacheNames.map(function (cacheName) {
-            console.log('[Service Worker] Removing old cache:', cacheName);
-            // 如果需要，可以在这里清理旧的缓存
-            return caches.delete(cacheName);
-          }),
-        );
-      })
-      .then(function () {
-        console.log('[Service Worker] Claiming clients');
-        return self.clients.claim();
-      }),
-  );
-});
-
-// fetch事件
-self.addEventListener('fetch', (event) => {
-  // console.log('[Service Worker] Fetching:', event.request.url);
-  const ignoreResources = ['.mp4', '.flv', '.webm', '.txt'];
-
+// fetch事件是每次页面请求资源时触发的
+self.addEventListener('fetch', function (event) {
   const url = event.request.url;
-  let shouldReturningFromCache = !!(url.match('/assets/') || url.match('/game/'));
-  const shouldIgnore = ignoreResources.some((x) => url.endsWith(x));
-
-  if (shouldReturningFromCache) {
-    console.log('%cCACHED: ' + url, 'color: #005CAF; padding: 2px;');
+  const isReturnCache = !!(url.match('/assets/') && !url.match('game'));
+  if (isReturnCache) {
+    // console.log('%cCACHED: ' + url, 'color: #005CAF; padding: 2px;');
   }
-
-  if (!shouldReturningFromCache || shouldIgnore) {
+  if (!isReturnCache) {
     event.respondWith(fetch(event.request));
   } else {
     event.respondWith(
-      caches
-        .match(event.request)
-        .then((response) => {
-          if (response) {
-            // console.log('[Service Worker] Returning from cache:', url);
-            return response;
-          }
-          // console.log('[Service Worker] Fetching from network:', url);
-          return fetch(event.request).then((networkResponse) => {
-            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-              // 处理 206 Partial Content 响应
-              return handlePartialContent(event.request, networkResponse);
+      // 检查在缓存中是否有匹配的资源
+      caches.match(event.request).then(function (response) {
+        // 如果缓存中有匹配的资源，则返回缓存资源
+        if (response) {
+          return response;
+        }
+        // 如果没有匹配的资源，则尝试从网络请求
+        // 同时将获取的资源存入缓存
+        return fetch(event.request)
+          .then(function (networkResponse) {
+            console.log('%cCACHED: ' + url, 'color: #005CAF; padding: 2px;');
+            if (networkResponse.status === 206 && event.request.headers.has('range')) {
+              // 如果是部分响应且请求带有Range头，则创建新的请求，将完整响应返回给客户端
+              // eslint-disable-next-line max-nested-callbacks
+              return fetch(event.request.url).then(function (fullNetworkResponse) {
+                const headers = {};
+                for (let entry of fullNetworkResponse.headers.entries()) {
+                  headers[entry[0]] = entry[1];
+                }
+                const fullResponse = new Response(fullNetworkResponse.body, {
+                  status: fullNetworkResponse.status,
+                  statusText: fullNetworkResponse.statusText,
+                  headers: headers,
+                });
+                const clonedResponse = fullResponse.clone();
+                // eslint-disable-next-line max-nested-callbacks
+                caches.open('my-cache').then(function (cache) {
+                  cache.put(event.request, clonedResponse);
+                });
+                return fullResponse;
+              });
             }
-
-            const responseToCache = networkResponse.clone();
-
+            const clonedResponse = networkResponse.clone();
             // eslint-disable-next-line max-nested-callbacks
-            caches.open('my-cache').then((cache) => {
-              cache.put(event.request, responseToCache);
+            caches.open('my-cache').then(function (cache) {
+              cache.put(event.request, clonedResponse);
             });
-
             return networkResponse;
+          })
+          .catch(function (error) {
+            console.error('Fetching failed:', error);
+            throw error;
           });
-        })
-        .catch((error) => {
-          console.error('[Service Worker] Fetching failed:', error);
-          throw error;
-        }),
+      }),
     );
   }
 });
-
-async function handlePartialContent(request, partialResponse) {
-  // 如果是部分响应且请求带有 Range 头，则创建新的请求，将完整响应返回给客户端
-  if (request.headers.has('range')) {
-    // 请求完整资源
-    const fullResponse = await fetch(request.url);
-
-    // 检查完整响应是否有效
-    if (!fullResponse || fullResponse.status !== 200) {
-      return partialResponse;
-    }
-
-    // 将完整响应存入缓存
-    const responseToCache = fullResponse.clone();
-    caches.open('my-cache').then((cache) => {
-      cache.put(request, responseToCache);
-    });
-
-    return fullResponse;
-  }
-
-  return partialResponse;
-}
