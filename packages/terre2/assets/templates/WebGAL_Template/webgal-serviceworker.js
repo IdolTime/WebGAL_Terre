@@ -5,9 +5,24 @@ self.addEventListener('install', (event) => {
 });
 
 // 激活事件
-self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating');
-  event.waitUntil(self.clients.claim());
+self.addEventListener('activate', function (event) {
+  event.waitUntil(
+    caches
+      .keys()
+      .then(function (cacheNames) {
+        return Promise.all(
+          cacheNames.map(function (cacheName) {
+            console.log('[Service Worker] Removing old cache:', cacheName);
+            // 如果需要，可以在这里清理旧的缓存
+            return caches.delete(cacheName);
+          }),
+        );
+      })
+      .then(function () {
+        console.log('[Service Worker] Claiming clients');
+        return self.clients.claim();
+      }),
+  );
 });
 
 // fetch事件

@@ -22881,7 +22881,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-b2a09f3a.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-338ab2a5.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -24137,33 +24137,8 @@ class SceneManager {
   // eslint-disable-next-line max-params
   setCurrentScene(rawScene, scenaName, sceneUrl, loading = false) {
     return new Promise((r2) => {
-      let parsedScene = { current: null };
-      let timer = null;
-      if (loading && !this.sceneAssetsLoadedList[scenaName]) {
-        timer = setTimeout(() => {
-          window.pubsub.publish("loading", { loading: true });
-        }, 1e3);
-      }
-      const dispose = window.pubsub.subscribe(
-        "sceneAssetsLoaded",
-        ({ sceneName: _sceneName }) => {
-          setTimeout(() => {
-            if (scenaName === _sceneName) {
-              if (parsedScene.current) {
-                this.sceneData.currentScene = parsedScene.current;
-              }
-              if (loading) {
-                window.pubsub.publish("loading", { loading: false });
-              }
-              timer && clearTimeout(timer);
-              r2(parsedScene);
-              parsedScene.current = null;
-              dispose();
-            }
-          }, 16);
-        }
-      );
-      parsedScene.current = sceneParser(rawScene, scenaName, sceneUrl);
+      this.sceneData.currentScene = sceneParser(rawScene, scenaName, sceneUrl);
+      r2(this.sceneData.currentScene);
     });
   }
 }
