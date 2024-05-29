@@ -15451,7 +15451,7 @@ const sceneParser$1 = (rawScene, sceneName, sceneUrl, assetsPrefetcher2, assetSe
     return returnSentence;
   });
   assetsList = uniqWith_1$1(assetsList);
-  assetsPrefetcher2(assetsList);
+  assetsPrefetcher2(assetsList, sceneName);
   return {
     sceneName,
     sceneUrl,
@@ -20481,7 +20481,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-3b6b2a3a.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-2eef929f.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -35986,14 +35986,20 @@ function useApplyStyle(url2) {
     return fallbackClassName;
   };
   const updateStyleFile = async () => {
-    logger.debug("更新 Scss 文件", url2);
-    const resp = await axios$1.get(`game/template/${url2}`);
-    const scssStr = resp.data;
-    styleObject.set(scss2cssinjsParser(scssStr));
+    try {
+      if (url2) {
+        logger.info("更新 Scss 文件", url2);
+        const resp = await axios$1.get(`./game/template/${url2}`);
+        const scssStr = resp.data;
+        styleObject.set(scss2cssinjsParser(scssStr));
+      }
+    } catch (error2) {
+      console.error("更新 Scss 文件 失败！");
+    }
   };
   reactExports.useEffect(() => {
     updateStyleFile();
-  }, []);
+  }, [url2]);
   reactExports.useEffect(() => {
     injectGlobal(styleObject.value.others);
   }, [styleObject.value.others]);
