@@ -22893,7 +22893,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-1e83cc1c.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-3e289b37.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -105342,9 +105342,12 @@ const GameMenuPanel = () => {
   };
   const handleSave = () => {
     playSeClick();
+    setMenuPanel(MenuPanelTag.Save);
+    setComponentVisibility("isShowGameMenu", false);
+    setComponentVisibility("showMenuPanel", true);
   };
   const handleRead = () => {
-    setMenuPanel(MenuPanelTag.Save);
+    setMenuPanel(MenuPanelTag.Load);
     setComponentVisibility("isShowGameMenu", false);
     setComponentVisibility("showMenuPanel", true);
     playSeClick();
