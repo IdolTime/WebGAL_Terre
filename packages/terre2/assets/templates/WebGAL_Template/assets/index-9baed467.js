@@ -22893,7 +22893,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-3e289b37.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-a61e289c.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -36232,32 +36232,32 @@ function useUpdated(callback) {
     callback();
   });
 }
-const main = "_main_1x2ym_1";
-const button$2 = "_button_1x2ym_16";
-const button_text$1 = "_button_text_1x2ym_23";
-const button_on = "_button_on_1x2ym_31";
-const singleButton$1 = "_singleButton_1x2ym_41";
-const autoButton = "_autoButton_1x2ym_54";
-const fastForwardButton = "_fastForwardButton_1x2ym_71";
-const flashbackButton = "_flashbackButton_1x2ym_87";
-const fastSlPreview = "_fastSlPreview_1x2ym_105";
-const fastSlEnter = "_fastSlEnter_1x2ym_1";
-const fastsave = "_fastsave_1x2ym_119";
-const fastSPreview = "_fastSPreview_1x2ym_119";
-const fastload = "_fastload_1x2ym_123";
-const fastLPreview = "_fastLPreview_1x2ym_123";
-const slPreviewMain = "_slPreviewMain_1x2ym_135";
-const imgContainer = "_imgContainer_1x2ym_143";
-const textContainer = "_textContainer_1x2ym_151";
+const main = "_main_14l22_1";
+const button$2 = "_button_14l22_16";
+const button_text$1 = "_button_text_14l22_23";
+const button_on = "_button_on_14l22_31";
+const singleButton$1 = "_singleButton_14l22_41";
+const autoIcon = "_autoIcon_14l22_54";
+const fastIcon = "_fastIcon_14l22_69";
+const historyIcon = "_historyIcon_14l22_83";
+const fastSlPreview = "_fastSlPreview_14l22_98";
+const fastSlEnter = "_fastSlEnter_14l22_1";
+const fastsave = "_fastsave_14l22_112";
+const fastSPreview = "_fastSPreview_14l22_112";
+const fastload = "_fastload_14l22_116";
+const fastLPreview = "_fastLPreview_14l22_116";
+const slPreviewMain = "_slPreviewMain_14l22_128";
+const imgContainer = "_imgContainer_14l22_136";
+const textContainer = "_textContainer_14l22_144";
 const styles$i = {
   main,
   button: button$2,
   button_text: button_text$1,
   button_on,
   singleButton: singleButton$1,
-  autoButton,
-  fastForwardButton,
-  flashbackButton,
+  autoIcon,
+  fastIcon,
+  historyIcon,
   fastSlPreview,
   fastSlEnter,
   fastsave,
@@ -36269,12 +36269,12 @@ const styles$i = {
   textContainer
 };
 const setButton$1 = (on2) => {
-  const autoIcon = document.getElementById("Button_ControlPanel_auto");
-  if (autoIcon) {
+  const autoIcon2 = document.getElementById("Button_ControlPanel_auto");
+  if (autoIcon2) {
     if (on2) {
-      autoIcon.className = styles$i.button_on;
+      autoIcon2.className = styles$i.button_on;
     } else
-      autoIcon.className = styles$i.singleButton;
+      autoIcon2.className = styles$i.singleButton;
   }
 };
 const stopAuto = () => {
@@ -36318,12 +36318,12 @@ const autoPlay = () => {
   }
 };
 const setButton = (on2) => {
-  const autoIcon = document.getElementById("Button_ControlPanel_fast");
-  if (autoIcon) {
+  const autoIcon2 = document.getElementById("Button_ControlPanel_fast");
+  if (autoIcon2) {
     if (on2) {
-      autoIcon.className = styles$i.button_on;
+      autoIcon2.className = styles$i.button_on;
     } else
-      autoIcon.className = styles$i.singleButton;
+      autoIcon2.className = styles$i.singleButton;
   }
 };
 const stopFast = () => {
@@ -104372,42 +104372,48 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_fast",
-          className: `${styles$i.singleButton} ${styles$i.fastForwardButton}`,
+          className: styles$i.singleButton,
           style: { fontSize },
           title: "快进",
           onClick: () => {
             switchFast();
             playSeClick();
           },
-          onMouseEnter: playSeEnter
+          onMouseEnter: playSeEnter,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.fastIcon })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
           id: "Button_ControlPanel_auto",
-          className: `${styles$i.singleButton} ${styles$i.autoButton}`,
+          className: styles$i.singleButton,
           style: { fontSize },
           title: "自动",
           onClick: () => {
             switchAuto();
             playSeClick();
           },
-          onMouseEnter: playSeEnter
+          onMouseEnter: playSeEnter,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.autoIcon })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: `${styles$i.singleButton} ${styles$i.flashbackButton}`,
+          className: styles$i.singleButton,
           style: { fontSize },
           title: "剧情回顾",
           onClick: () => {
+            if (WebGAL.gameplay.isAuto) {
+              stopAuto();
+            }
             setComponentVisibility("showBacklog", true);
             setComponentVisibility("showTextBox", false);
             playSeClick();
           },
-          onMouseEnter: playSeEnter
+          onMouseEnter: playSeEnter,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.historyIcon })
         }
       )
     ] }) })
