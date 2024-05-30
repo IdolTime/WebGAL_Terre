@@ -22893,7 +22893,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-a61e289c.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-32a810b9.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -36361,27 +36361,27 @@ const switchFast = () => {
     startFast();
   }
 };
-const Backlog_main = "_Backlog_main_fwj4v_2";
-const backlog_soft_in = "_backlog_soft_in_fwj4v_1";
-const Backlog_main_out = "_Backlog_main_out_fwj4v_18";
-const backlog_soft_out = "_backlog_soft_out_fwj4v_1";
-const Backlog_main_out_IndexHide = "_Backlog_main_out_IndexHide_fwj4v_31";
-const Backlog_main_DisableScroll = "_Backlog_main_DisableScroll_fwj4v_35";
-const backlog_top = "_backlog_top_fwj4v_39";
-const backlog_top_icon = "_backlog_top_icon_fwj4v_59";
-const backlog_title = "_backlog_title_fwj4v_77";
-const backlog_content = "_backlog_content_fwj4v_86";
-const backlog_item = "_backlog_item_fwj4v_111";
-const backlog_item_in = "_backlog_item_in_fwj4v_1";
-const backlog_item_content_name = "_backlog_item_content_name_fwj4v_127";
-const backlog_item_content = "_backlog_item_content_fwj4v_127";
-const backlog_item_button_element = "_backlog_item_button_element_fwj4v_133";
-const backlog_item_out = "_backlog_item_out_fwj4v_149";
-const backlog_func_area = "_backlog_func_area_fwj4v_158";
-const backlog_item_button_list = "_backlog_item_button_list_fwj4v_189";
-const sound_icon = "_sound_icon_fwj4v_207";
-const backlog_item_content_text = "_backlog_item_content_text_fwj4v_217";
-const backlog_icon_softin = "_backlog_icon_softin_fwj4v_1";
+const Backlog_main = "_Backlog_main_u5uax_2";
+const backlog_soft_in = "_backlog_soft_in_u5uax_1";
+const Backlog_main_out = "_Backlog_main_out_u5uax_18";
+const backlog_soft_out = "_backlog_soft_out_u5uax_1";
+const Backlog_main_out_IndexHide = "_Backlog_main_out_IndexHide_u5uax_31";
+const Backlog_main_DisableScroll = "_Backlog_main_DisableScroll_u5uax_35";
+const backlog_top = "_backlog_top_u5uax_39";
+const backlog_top_icon = "_backlog_top_icon_u5uax_59";
+const backlog_title = "_backlog_title_u5uax_77";
+const backlog_content = "_backlog_content_u5uax_86";
+const backlog_item = "_backlog_item_u5uax_111";
+const backlog_item_in = "_backlog_item_in_u5uax_1";
+const backlog_item_content_name = "_backlog_item_content_name_u5uax_127";
+const backlog_item_button_element = "_backlog_item_button_element_u5uax_130";
+const backlog_item_out = "_backlog_item_out_u5uax_146";
+const backlog_func_area = "_backlog_func_area_u5uax_155";
+const backlog_item_content = "_backlog_item_content_u5uax_127";
+const backlog_item_button_list = "_backlog_item_button_list_u5uax_186";
+const sound_icon = "_sound_icon_u5uax_204";
+const backlog_item_content_text = "_backlog_item_content_text_u5uax_214";
+const backlog_icon_softin = "_backlog_icon_softin_u5uax_1";
 const styles$h = {
   Backlog_main,
   backlog_soft_in,
@@ -36396,10 +36396,10 @@ const styles$h = {
   backlog_item,
   backlog_item_in,
   backlog_item_content_name,
-  backlog_item_content,
   backlog_item_button_element,
   backlog_item_out,
   backlog_func_area,
+  backlog_item_content,
   backlog_item_button_list,
   sound_icon,
   backlog_item_content_text,
