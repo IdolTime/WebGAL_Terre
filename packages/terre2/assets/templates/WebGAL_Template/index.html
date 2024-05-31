@@ -1,68 +1,146 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
+
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <link rel="icon" type="image/x-icon" href="./icons/favicon.ico" />
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
   <link rel="manifest" href="./manifest.json" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
   <title>IdolTime</title>
-  <style>
-    #Title_enter_page {
-      width: 2560px;
-      height: 1440px;
-      overflow: hidden;
-      position: absolute;
-      top: 0;
-      z-index: 14;
-      opacity: 1;
-      transition: opacity 1.5s;
+  <script>
+    function PubSub() {
+      this.subscribers = {};
     }
-    #Title_bg_container {
-      height: 100%;
-      width: 100%;
-      position: absolute;
-      top: 0;
-      opacity: 1;
-      transition: opacity 1s;
-    }
-    #Title_white_container {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-    }
-  </style>
-  <script type="module" crossorigin src="./assets/index-206d95de.js"></script>
-  <link rel="stylesheet" href="./assets/index-8e96c78d.css">
-</head>
 
-<script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-<script>
-  var vConsole = new window.VConsole();
-</script>
+    PubSub.prototype.subscribe = function (topic, callback) {
+      if (!this.subscribers[topic]) {
+        this.subscribers[topic] = [];
+      }
+      this.subscribers[topic].push(callback);
+      var that = this;
+      return function () {
+        that.unsubscribe(topic, callback);
+      };
+    };
+
+    PubSub.prototype.publish = function (topic, data) {
+      if (this.subscribers[topic]) {
+        this.subscribers[topic].forEach(function (callback) {
+          callback(data);
+        });
+      }
+    };
+
+    PubSub.prototype.unsubscribe = function (topic, callback) {
+      if (this.subscribers[topic]) {
+        this.subscribers[topic] = this.subscribers[topic].filter(function (cb) {
+          return cb !== callback;
+        });
+      }
+    };
+
+    window.pubsub = new PubSub();
+  </script>
+  <script type="module" crossorigin src="./assets/index-6ed61824.js"></script>
+  <link rel="stylesheet" href="./assets/index-74ae882e.css">
+</head>
 
 <body>
   <!--快速显示落地页，让用户感知不到加载的过程-->
   <div id="ebg"></div>
-  <div id="Title_enter_page">
+  <div id="Title_enter_page" style="
+            width: 2560px;
+            height: 1440px;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            z-index: 14;
+            opacity: 1;
+            transition: opacity 2s linear;
+">
     <!--    落地页背景-->
-    <div id="Title_bg_container"></div>
+    <div id="Title_bg_container" style="
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    opacity: 1;
+    transition: opacity 1s;
+"></div>
     <!--    点击后的白色渐变-->
-    <div id="Title_white_container"></div>
-    <!-- 落地页视频 -->
+    <div id="Title_white_container" style="
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+"></div>
+
     <div id="Title_enter_text" style="width: 100%; height: 100%;">
-      <div class="toCenter" style="width: 100%; height: 100%;">
-        <video id="loadingVideo" width="100%" autoplay muted playsinline>
-          <source src="./assets/enter_page_video-8790e1b1.mp4" type="video/mp4">
-        </video>
+      <!-- logo page -->
+      <div class="logo-page" style="
+          width: 100%;
+          height: 100%;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 999;
+          opacity: 1;
+          transition: opacity 1s;
+          background-color: #000;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+        ">
+        <img src="./assets/logo-20a20ce5.png" style="width: 400px; height: 65px; object-fit: cover;" />
+      </div>
+
+      <!-- loading page -->
+      <div class="loading-page" style="
+          width: 100%; 
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 997;
+        ">
+        <img style="display: block; width: 100%; height: 100%; object-fit: cover;"
+          src="./assets/loading-enter-ef779128.png" />
+        <img id="bar-image"
+          style="width: 90%; max-height: 100%; object-fit: cover;position: absolute;bottom: 35px; z-index: 998;clip-path: url(#clipW);"
+          src="./assets/loading-bar-94c0f1c3.png" alt="" />
+        <svg width="100%" height="0">
+          <defs>
+            <clipPath id="clipW">
+              <rect id="rectW" width="0" height="0" style="fill: #fff;" />
+            </clipPath>
+          </defs>
+        </svg>
       </div>
     </div>
   </div>
   <div id="panic-overlay"> <!-- 紧急回避 --> </div>
   <div id="root"></div>
   <script>
+    const logoPage = document.querySelector('.logo-page');
+    const loadingPage = document.querySelector('.loading-page');
+
+    if (logoPage) {
+      setTimeout(() => {
+        logoPage.style.opacity = 0;
+        enter();
+      }, 1000)
+    }
+
     /**
      * 在窗口大小改变时进行强制缩放
      */
@@ -124,12 +202,8 @@
          * iOS 不强制旋转
          */
         if (isIOSDevice) {
-          // alert('iOS 不强制旋转')
           const zoomWi = w / targetWidth;
-          console.log({ zoomWi, mw, mh })
-          transform = `translate(${-mw}px, ${-mh}px) scale(${zoomH2},${zoomH2}) rotate(90deg)`
-          // 调用函数来强制横屏显示
-          // transform = `translate(${resp.width}px, ${resp.height}px) scale(${zoomWi},${zoomWi})`
+          transform = `translate(${-mw}px, ${-mh}px) scale(${zoomWi},${zoomWi})`
         }
       }
       if (ebg) {
@@ -163,35 +237,18 @@
       };
     } else {
       // ios
-      // const meta = document.createElement('meta');
-      // meta.name = "viewport";
-      // meta.content = "width=device-width, initial-scale=0.22, minimum-scale=0.01, maximum-scale=1";
-      // document.getElementsByTagName('head')[0].appendChild(meta);
-      // const style = document.createElement('style');
-      // style.type = 'text/css';
-      // style.textContent = '* { font-synthesis: none !important; }';
-      // document.head.appendChild(style);
-      // resize();
-
       const meta = document.createElement('meta');
       meta.name = "viewport";
-      meta.content = "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
-      // 将该标签添加到 head 中
+      meta.content = "width=device-width, initial-scale=0.22, minimum-scale=0.01, maximum-scale=1";
       document.getElementsByTagName('head')[0].appendChild(meta);
-      resize();
-      window.onload = resize;
-      window.onresize = resize;
-      // 监听键盘 F11 事件，全屏时触发页面调整
-      document.onkeydown = function (event) {
-        const e = event;
-        if (e && e.key === 'F11') {
-          setTimeout(() => {
-            resize();
-          }, 100);
-        }
-      };
+      const style = document.createElement('style');
+      style.type = 'text/css';
+      style.textContent = '* { font-synthesis: none !important; }';
+      document.head.appendChild(style);
     }
 
+  </script>
+  <script>
     /**
      * 注册 Service Worker
      */
@@ -212,18 +269,59 @@
   <!--<script src="lib/live2d.min.js"></script>-->
   <!--<script src="lib/live2dcubismcore.min.js"></script>-->
   <script>
- 
-    const video = document.getElementById('loadingVideo'); 
-    if (video) {
-      video.addEventListener('ended', function() {  
-            // 当视频播放完成后执行 ,进入引擎主界面
-            enter()
-        }, false); 
+    const title = document.getElementById("Title_enter_page");
+    const barImage = document.getElementById('bar-image');
+    const barImageLayout = barImage.getBoundingClientRect();
+    const transformString = title.style.transform.split('scale')[1]
+    const matches = transformString.match(/\(([^,]+),\s*([^)]+)\)/);
+    let scaleX = 1;
+    let scaleY = 1;
+
+    if (matches) {
+      scaleX = parseFloat(matches[1]);
+      scaleY = parseFloat(matches[2]);
     }
-    
-    // setTimeout(function() {
-    //   enter()
-    // }, 1000*10)
+
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function show() {
+      title.style.opacity = 0;
+      setTimeout(() => {
+        if (title) {
+          title.style.display = "none";
+          title.remove();
+        }
+      }, 2000); // 将落地页设置为不显示
+      window.enterPromise();
+      delete window.enterPromise;
+    }
+
+    function setProgress(num, width, height) {
+      const progress = document.getElementById('rectW');
+      progress.setAttribute('width', (num / 100 * width).toFixed(2) + 'px');
+      progress.setAttribute('height', height + 'px')
+    }
+    const downloadCompleteRef = { current: 0 };
+    const progressTimerRef = { current: null }
+
+    const dispose = window.pubsub.subscribe('sceneAssetsLoaded', ({ sceneName }) => {
+      if (sceneName === 'start.txt') {
+        dispose();
+        if (!progressTimerRef.current) {
+          downloadCompleteRef.current = 1;
+        } else {
+          clearTimeout(progressTimerRef.current);
+          setProgress(100, barImageLayout.width / scaleX, barImageLayout.height / scaleY);
+          setTimeout(() => {
+            show();
+          }, 300);
+        }
+      }
+    })
 
     let enterPromise = new Promise(res => window.enterPromise = res);
     let renderPromise = new Promise(res => window.renderPromise = res);
@@ -262,32 +360,57 @@
       if (bgContainer) {
         bgContainer.style.opacity = "0"; // 调整标题背景的透明度
       }
-      const enterText = document.getElementById("Title_enter_text");
-      if (enterText) {
-        enterText.style.opacity = "0"; // 调整标题文字的透明度
-      }
       const whiteContainer = document.getElementById("Title_white_container");
-      setTimeout(() => {
-        if (whiteContainer) {
-          whiteContainer.style.opacity = "1";
-        }
-      }, 50); // 在50ms后开始显示白色渐变
-      const title = document.getElementById("Title_enter_page");
-      setTimeout(() => {
-        if (title)
-          title.style.opacity = "0";
-      }, 500); //500ms后开始降低落地页透明度
+      // setTimeout(() => {
+      //   if (whiteContainer) {
+      //     whiteContainer.style.opacity = "1";
+      //   }
+      // }, 50); // 在50ms后开始显示白色渐变
+      // setTimeout(() => {
+      //   if (title)
+      //     title.style.opacity = "0";
+      // }, 500); //500ms后开始降低落地页透明度
       if (!isIOS && title) {
-        title.style.pointerEvents = "none"; //落地页不再响应点击
         title.style.background = "linear-gradient( #a1c4fd 0%, #c2e9fb 100%)"; //改变标题渐变效果
       }
-      setTimeout(() => {
-        if (title) {
-          title.style.display = "none";
+
+      if (downloadCompleteRef.current === 1) {
+        let num = 0;
+        function countdown() {
+          if (num >= 100) {
+            clearTimeout(progressTimerRef.current);
+            show();
+          } else {
+            progressTimerRef.current = setTimeout(() => {
+              num += getRandomInt(5, 10)
+              num = Math.min(100, num);
+              setProgress(num, barImageLayout.width / scaleX, barImageLayout.height / scaleY)
+              countdown();
+            }, 200);
+          }
         }
-      }, 2000); // 将落地页设置为不显示
-      window.enterPromise();
-      delete window.enterPromise;
+        countdown()
+      } else {
+        let num = 0;
+        let increment = 0;
+        let base = 50;
+        function countdown() {
+          progressTimerRef.current = setTimeout(() => {
+            num += getRandomInt(1, 5);
+            if (num >= 50 && num < 70) {
+              increment += 0.5;
+            } else if (num >= 70 && num < 85) {
+              increment += 0.24;
+            } else if (num >= 85 && num < 98) {
+              increment += 0.1;
+            }
+            num = Math.min(50 + increment, num);
+            setProgress(num, barImageLayout.width / scaleX, barImageLayout.height / scaleY)
+            countdown();
+          }, 200);
+        }
+        countdown()
+      }
     }
   </script>
 </body>
