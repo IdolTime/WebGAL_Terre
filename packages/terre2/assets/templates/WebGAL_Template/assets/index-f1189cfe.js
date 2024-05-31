@@ -22893,7 +22893,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-32a810b9.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-232c6bfe.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -103434,27 +103434,27 @@ function getTextSize(size) {
       return 205;
   }
 }
-const TextBox_EventHandler$1 = "_TextBox_EventHandler_bok8c_1";
-const TextBox_Container = "_TextBox_Container_bok8c_9";
-const showSoftly$1 = "_showSoftly_bok8c_1";
-const TextBox_main$1 = "_TextBox_main_bok8c_22";
-const TextBox_avatarDialogue_bg = "_TextBox_avatarDialogue_bg_bok8c_46";
-const TextBox_dialogue_bg = "_TextBox_dialogue_bg_bok8c_51";
-const TextBox_Background = "_TextBox_Background_bok8c_56";
-const TextBox_textElement_start$1 = "_TextBox_textElement_start_bok8c_68";
-const TextDelayShow$1 = "_TextDelayShow_bok8c_1";
-const outer = "_outer_bok8c_74";
-const inner = "_inner_bok8c_83";
-const zhanwei = "_zhanwei_bok8c_92";
-const TextBox_textElement_Settled$1 = "_TextBox_textElement_Settled_bok8c_97";
-const TextBox_showName$1 = "_TextBox_showName_bok8c_102";
-const outerName = "_outerName_bok8c_115";
-const TextBox_ShowName_Background = "_TextBox_ShowName_Background_bok8c_119";
-const miniAvatarContainer$1 = "_miniAvatarContainer_bok8c_131";
-const miniAvatarImg$1 = "_miniAvatarImg_bok8c_141";
-const nameContainer = "_nameContainer_bok8c_149";
-const innerName = "_innerName_bok8c_162";
-const text = "_text_bok8c_169";
+const TextBox_EventHandler$1 = "_TextBox_EventHandler_1x6q8_1";
+const TextBox_Container = "_TextBox_Container_1x6q8_9";
+const showSoftly$1 = "_showSoftly_1x6q8_1";
+const TextBox_main$1 = "_TextBox_main_1x6q8_22";
+const TextBox_avatarDialogue_bg = "_TextBox_avatarDialogue_bg_1x6q8_46";
+const TextBox_dialogue_bg = "_TextBox_dialogue_bg_1x6q8_51";
+const TextBox_Background = "_TextBox_Background_1x6q8_56";
+const TextBox_textElement_start$1 = "_TextBox_textElement_start_1x6q8_68";
+const TextDelayShow$1 = "_TextDelayShow_1x6q8_1";
+const outer = "_outer_1x6q8_74";
+const inner = "_inner_1x6q8_83";
+const zhanwei = "_zhanwei_1x6q8_92";
+const TextBox_textElement_Settled$1 = "_TextBox_textElement_Settled_1x6q8_97";
+const TextBox_showName$1 = "_TextBox_showName_1x6q8_102";
+const outerName = "_outerName_1x6q8_115";
+const TextBox_ShowName_Background = "_TextBox_ShowName_Background_1x6q8_119";
+const miniAvatarContainer$1 = "_miniAvatarContainer_1x6q8_131";
+const miniAvatarImg$1 = "_miniAvatarImg_1x6q8_141";
+const nameContainer = "_nameContainer_1x6q8_149";
+const innerName = "_innerName_1x6q8_162";
+const text = "_text_1x6q8_169";
 const styles$9 = {
   TextBox_EventHandler: TextBox_EventHandler$1,
   TextBox_Container,
