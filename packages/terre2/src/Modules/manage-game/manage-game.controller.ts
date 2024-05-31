@@ -20,6 +20,7 @@ import { ManageGameService } from './manage-game.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { LspService } from '../lsp/lsp.service';
 import { logger } from 'webgal-origine-2/src/utils/logger';
+import { createCipheriv } from 'node:crypto';
 import {
   // ... (其他的导入)
   ApiTags,
@@ -301,8 +302,37 @@ export class ManageGameController {
     @UploadedFiles() files,
     @Body() uploadFilesDto: UploadFilesDto,
   ) {
+    const algorithm = 'aes-256-cbc';
+    const hexKey =
+      '40e6ad429a13020a07be290c5ef1d7dc7e45e5c4bf34d54a5664282627946e4d';
+    const hexValue = '9d6bac74c64ee8714e7959cef75271d0';
+    const key = Buffer.from(hexKey, 'hex');
+    const iv = Buffer.from(hexValue, 'hex');
+    const marker = 'ENCRYPTED';
+
+    // Encrypt video data
+    const encryptFile = (fileBuffer: Buffer) => {
+      const cipher = createCipheriv(algorithm, key, iv);
+      const encryptedBuffer = Buffer.concat([
+        cipher.update(fileBuffer),
+        cipher.final(),
+      ]);
+      const markerBuffer = Buffer.from(marker);
+      return Buffer.concat([markerBuffer, encryptedBuffer]);
+    };
+
     const fileInfos: IUploadFileInfo[] = files.map((file) => {
-      return { fileName: file.originalname, file: file.buffer };
+      let encryptedFile = file.buffer;
+      const encryptedFileFormat = ['.mp4', '.flv', '.webm', '.ogg'];
+      const shouldEncrptFile = encryptedFileFormat.some((f) =>
+        file.originalname.endsWith(f),
+      );
+
+      if (shouldEncrptFile) {
+        encryptedFile = encryptFile(file.buffer);
+      }
+
+      return { fileName: file.originalname, file: encryptedFile };
     });
     return this.webgalFs.writeFiles(uploadFilesDto.targetDirectory, fileInfos);
   }
