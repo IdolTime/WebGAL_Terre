@@ -22893,7 +22893,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-189715e0.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-1cf6df2d.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23089,6 +23089,11 @@ const playVideo = (sentence) => {
   let chooseContent = "";
   let loopValue = false;
   const optionId = Date.now();
+  const endPerformRef = {
+    current: () => {
+      console.log("快进状态尝试跳过视频");
+    }
+  };
   sentence.args.forEach((e2) => {
     if (e2.key === "choose") {
       chooseContent = "choose:" + e2.value;
@@ -23097,11 +23102,28 @@ const playVideo = (sentence) => {
       loopValue = e2.value === true;
     }
   });
-  let blockingNext = getSentenceArgByKey(sentence, "skipOff");
-  let blockingNextFlag = false;
-  if (blockingNext || loopValue || chooseContent !== "") {
-    blockingNextFlag = true;
-  }
+  const checkIfBlockingNext = () => {
+    let blockingNext = getSentenceArgByKey(sentence, "skipOff");
+    let blockingNextFlag = false;
+    let isFast2 = WebGAL.gameplay.isFast;
+    if (isFast2) {
+      if (blockingNext) {
+        blockingNextFlag = true;
+      }
+      if (loopValue) {
+        blockingNextFlag = false;
+      }
+      if (chooseContent !== "") {
+        blockingNextFlag = true;
+        endPerformRef.current();
+      }
+    } else {
+      if (blockingNext || loopValue || chooseContent !== "") {
+        blockingNextFlag = true;
+      }
+    }
+    return blockingNextFlag;
+  };
   WebGAL.videoManager.showVideo(sentence.content);
   let isOver = false;
   const performObject = {
@@ -23110,7 +23132,7 @@ const playVideo = (sentence) => {
     isHoldOn: false,
     stopFunction: () => {
     },
-    blockingNext: () => blockingNextFlag,
+    blockingNext: checkIfBlockingNext,
     blockingAuto: () => true,
     stopTimeout: void 0,
     // 暂时不用，后面会交给自动清除
@@ -23149,6 +23171,7 @@ const playVideo = (sentence) => {
             }
           }
         };
+        endPerformRef.current = endPerform;
         const skipVideo = () => {
           console.log("skip");
           endPerform();
@@ -23171,7 +23194,7 @@ const playVideo = (sentence) => {
             }
             WebGAL.videoManager.destory(url2);
           },
-          blockingNext: () => blockingNextFlag,
+          blockingNext: checkIfBlockingNext,
           blockingAuto: () => {
             return !isOver;
           },
@@ -36441,6 +36464,7 @@ const startFast = () => {
   WebGAL.gameplay.isFast = true;
   setButton(true);
   WebGAL.gameplay.fastInterval = setInterval(() => {
+    console.log("正在快进语句");
     nextSentence();
   }, SYSTEM_CONFIG.fast_timeout);
 };
