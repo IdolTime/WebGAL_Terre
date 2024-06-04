@@ -21608,7 +21608,7 @@ const changeScene = (sceneUrl, sceneName) => {
           currentSceneVideos.push(x.url);
         }
       });
-      WebGAL.videoManager.destoryExcept(currentSceneVideos);
+      WebGAL.videoManager.destroyExcept(currentSceneVideos);
       const subSceneList = WebGAL.sceneManager.sceneData.currentScene.subSceneList;
       WebGAL.sceneManager.settledScenes.push(sceneUrl);
       const subSceneListUniq = uniqWith$1(subSceneList);
@@ -22893,7 +22893,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-bff4e7ef.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-850777e2.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23192,7 +23192,7 @@ const playVideo = (sentence) => {
             if (bgmElement22) {
               vocalElement2.volume = vocalVol.toString();
             }
-            WebGAL.videoManager.destory(url2);
+            WebGAL.videoManager.destroy(url2);
           },
           blockingNext: checkIfBlockingNext,
           blockingAuto: () => {
@@ -23586,7 +23586,7 @@ const resetStage = (resetBacklog, resetSceneAndVar = true, resetVideo = true) =>
     WebGAL.backlogManager.makeBacklogEmpty();
   }
   if (resetVideo) {
-    WebGAL.videoManager.destoryAll(true);
+    WebGAL.videoManager.destroyAll(true);
   }
   if (resetSceneAndVar) {
     WebGAL.sceneManager.resetScene();
@@ -24220,6 +24220,7 @@ class Gameplay {
   constructor() {
     __publicField(this, "isAuto", false);
     __publicField(this, "isFast", false);
+    __publicField(this, "isSyncingWithOrigine", false);
     __publicField(this, "autoInterval", null);
     __publicField(this, "fastInterval", null);
     __publicField(this, "autoTimeout", null);
@@ -33947,7 +33948,7 @@ class VideoManager {
       videoItem.waitCommands.setVolume = volume;
     }
   }
-  destory(key, noWait = false) {
+  destroy(key, noWait = false) {
     const videoItem = this.videosByKey[key];
     if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.player.pause();
@@ -33980,18 +33981,18 @@ class VideoManager {
         },
         noWait ? 0 : 2e3
       );
+    } else {
+      videoItem.waitCommands.destroy = true;
     }
   }
-  destoryAll(noWait = false) {
+  destroyAll(noWait = false) {
     Object.keys(this.videosByKey).forEach((key) => {
-      this.destory(key, noWait);
+      this.destroy(key, noWait);
     });
   }
   onEnded(key, callback) {
     const videoItem = this.videosByKey[key];
-    if (videoItem == null ? void 0 : videoItem.player) {
-      videoItem.events.ended.callbacks.push(callback);
-    }
+    videoItem.events.ended.callbacks.push(callback);
   }
   getDuration(key) {
     const videoItem = this.videosByKey[key];
@@ -33999,10 +34000,10 @@ class VideoManager {
       return videoItem.player.duration;
     }
   }
-  destoryExcept(keys2) {
+  destroyExcept(keys2) {
     Object.keys(this.videosByKey).forEach((key) => {
       if (!keys2.includes(key)) {
-        this.destory(key);
+        this.destroy(key);
       }
     });
   }
@@ -37202,6 +37203,7 @@ const syncWithOrigine = (sceneName, sentenceId) => {
         return;
       const currentSceneName = WebGAL.sceneManager.sceneData.currentScene.sceneName;
       WebGAL.gameplay.isFast = true;
+      WebGAL.gameplay.isSyncingWithOrigine = true;
       syncFast(sentenceId, currentSceneName);
     });
   }, 16);
@@ -37209,8 +37211,9 @@ const syncWithOrigine = (sceneName, sentenceId) => {
 function syncFast(sentenceId, currentSceneName) {
   if (WebGAL.sceneManager.sceneData.currentSentenceId < sentenceId && WebGAL.sceneManager.sceneData.currentScene.sceneName === currentSceneName) {
     nextSentence();
-    setTimeout(() => syncFast(sentenceId, currentSceneName), 2);
+    setTimeout(() => syncFast(sentenceId, currentSceneName), 100);
   } else {
+    WebGAL.gameplay.isSyncingWithOrigine = false;
     WebGAL.gameplay.isFast = false;
   }
 }
