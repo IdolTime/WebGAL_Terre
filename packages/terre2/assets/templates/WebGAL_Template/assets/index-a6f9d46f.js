@@ -6958,11 +6958,11 @@ function checkDCE() {
 var reactDomExports = reactDom.exports;
 const ReactDOM = /* @__PURE__ */ getDefaultExportFromCjs(reactDomExports);
 const index = "";
-const Title_main = "_Title_main_tu3zs_1";
-const Title_buttonList = "_Title_buttonList_tu3zs_8";
-const Title_button = "_Title_button_tu3zs_8";
-const Title_button_text = "_Title_button_text_tu3zs_55";
-const Title_backup_background = "_Title_backup_background_tu3zs_61";
+const Title_main = "_Title_main_1thd6_1";
+const Title_buttonList = "_Title_buttonList_1thd6_8";
+const Title_button = "_Title_button_1thd6_8";
+const Title_button_text = "_Title_button_text_1thd6_55";
+const Title_backup_background = "_Title_backup_background_1thd6_61";
 const styles$m = {
   Title_main,
   Title_buttonList,
@@ -22893,7 +22893,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-1cf6df2d.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-bff4e7ef.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23586,7 +23586,7 @@ const resetStage = (resetBacklog, resetSceneAndVar = true, resetVideo = true) =>
     WebGAL.backlogManager.makeBacklogEmpty();
   }
   if (resetVideo) {
-    WebGAL.videoManager.destoryAll();
+    WebGAL.videoManager.destoryAll(true);
   }
   if (resetSceneAndVar) {
     WebGAL.sceneManager.resetScene();
@@ -33781,6 +33781,19 @@ class VideoManager {
     };
     videoContainerTag.appendChild(videoTag);
     (_a2 = document.getElementById("videoContainer")) == null ? void 0 : _a2.appendChild(videoContainerTag);
+    this.videosByKey[url2] = {
+      // @ts-ignore
+      player: null,
+      id: id2,
+      progressTimer: null,
+      waitCommands: {},
+      events: {
+        ended: {
+          callbacks: [],
+          handler: onEndedHandler
+        }
+      }
+    };
     fetch(url2).then((res) => {
       if (res.status > 200) {
         return null;
@@ -33869,65 +33882,74 @@ class VideoManager {
       flvPlayer.attachMediaElement(videoTag);
       flvPlayer.load();
       this.videosByKey[url2] = {
-        player: flvPlayer,
-        id: id2,
-        progressTimer: null,
-        events: {
-          ended: {
-            callbacks: [],
-            handler: onEndedHandler
-          }
-        }
+        ...this.videosByKey[url2],
+        player: flvPlayer
       };
+      const waitCommands = Object.keys(this.videosByKey[url2].waitCommands);
+      if (waitCommands.length) {
+        waitCommands.forEach((command) => {
+          this[command](url2, this.videosByKey[url2].waitCommands[command]);
+        });
+      }
     });
   }
   pauseVideo(key) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.player.pause();
     }
   }
   showVideo(key) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       const videoContainerTag = document.getElementById(videoItem.id);
       if (videoContainerTag) {
         videoContainerTag.style.opacity = "1";
         videoContainerTag.style.zIndex = "11";
       }
+    } else {
+      videoItem.waitCommands.showVideo = true;
     }
   }
   playVideo(key) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.player.play();
       this.checkProgress(key);
+    } else {
+      videoItem.waitCommands.playVideo = true;
     }
   }
   setLoop(key, loopValue) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       const videoTag = document.getElementById(videoItem.id);
       if (videoTag) {
         videoTag.loop = loopValue;
       }
+    } else {
+      videoItem.waitCommands.setLoop = loopValue;
     }
   }
   seek(key, time) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.player.currentTime = time;
+    } else {
+      videoItem.waitCommands.seek = time;
     }
   }
   setVolume(key, volume) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.player.volume = volume;
+    } else {
+      videoItem.waitCommands.setVolume = volume;
     }
   }
-  destory(key) {
+  destory(key, noWait = false) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.player.pause();
       videoItem.player.volume = 0;
       const videoContainer2 = document.getElementById(videoItem.id);
@@ -33938,37 +33960,42 @@ class VideoManager {
       if (videoItem.progressTimer) {
         clearTimeout(videoItem.progressTimer);
       }
-      setTimeout(() => {
-        try {
-          const video = videoContainer2 == null ? void 0 : videoContainer2.getElementsByTagName("video");
-          if (video == null ? void 0 : video.length) {
-            videoItem.player.destroy();
+      setTimeout(
+        () => {
+          try {
+            const video = videoContainer2 == null ? void 0 : videoContainer2.getElementsByTagName("video");
+            if (video == null ? void 0 : video.length) {
+              videoItem.player.destroy();
+            }
+          } catch (error2) {
+            console.warn(error2);
           }
-        } catch (error2) {
-          console.warn(error2);
-        }
-        setTimeout(() => {
-          videoContainer2 == null ? void 0 : videoContainer2.remove();
-        }, 500);
-        delete this.videosByKey[key];
-      }, 2e3);
+          setTimeout(
+            () => {
+              videoContainer2 == null ? void 0 : videoContainer2.remove();
+            },
+            noWait ? 0 : 500
+          );
+          delete this.videosByKey[key];
+        },
+        noWait ? 0 : 2e3
+      );
     }
   }
-  destoryAll() {
+  destoryAll(noWait = false) {
     Object.keys(this.videosByKey).forEach((key) => {
-      this.destory(key);
+      this.destory(key, noWait);
     });
-    this.videosByKey = {};
   }
   onEnded(key, callback) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.events.ended.callbacks.push(callback);
     }
   }
   getDuration(key) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       return videoItem.player.duration;
     }
   }
@@ -33981,7 +34008,7 @@ class VideoManager {
   }
   checkProgress(key) {
     const videoItem = this.videosByKey[key];
-    if (videoItem) {
+    if (videoItem == null ? void 0 : videoItem.player) {
       const player = videoItem.player;
       const currentTime = player.currentTime;
       const duration = player.duration;
@@ -37168,14 +37195,16 @@ const syncWithOrigine = (sceneName, sentenceId) => {
   }
   resetStage(true);
   const sceneUrl = assetSetter(sceneName, fileType$1.scene);
-  sceneFetcher(sceneUrl).then(async (rawScene) => {
-    const scene = await WebGAL.sceneManager.setCurrentScene(rawScene, "start.txt", sceneUrl);
-    if (!scene)
-      return;
-    const currentSceneName = WebGAL.sceneManager.sceneData.currentScene.sceneName;
-    WebGAL.gameplay.isFast = true;
-    syncFast(sentenceId, currentSceneName);
-  });
+  setTimeout(() => {
+    sceneFetcher(sceneUrl).then(async (rawScene) => {
+      const scene = await WebGAL.sceneManager.setCurrentScene(rawScene, "start.txt", sceneUrl);
+      if (!scene)
+        return;
+      const currentSceneName = WebGAL.sceneManager.sceneData.currentScene.sceneName;
+      WebGAL.gameplay.isFast = true;
+      syncFast(sentenceId, currentSceneName);
+    });
+  }, 16);
 };
 function syncFast(sentenceId, currentSceneName) {
   if (WebGAL.sceneManager.sceneData.currentSentenceId < sentenceId && WebGAL.sceneManager.sceneData.currentScene.sceneName === currentSceneName) {
@@ -37207,7 +37236,7 @@ const webSocketFunc = () => {
   if (protocol !== "http:" && protocol !== "https:") {
     return;
   }
-  let wsUrl = `ws://${loc}${defaultPort}/api/webgalsync`;
+  let wsUrl = `ws://${loc}:9999`;
   if (protocol === "https:") {
     wsUrl = `wss://${loc}${defaultPort}/api/webgalsync`;
   }

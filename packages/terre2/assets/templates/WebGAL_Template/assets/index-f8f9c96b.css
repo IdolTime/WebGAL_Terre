@@ -143,14 +143,14 @@ code {
 }
 #root {
   /*will-change: transform;*/
-}._Title_main_tu3zs_1 {
+}._Title_main_1thd6_1 {
   width: 100%;
   height: 100%;
   position: absolute;
   z-index: 13;
 }
 
-._Title_buttonList_tu3zs_8 {
+._Title_buttonList_1thd6_8 {
   display: flex;
   position: absolute;
   left: 0;
@@ -164,9 +164,9 @@ code {
   padding-left: 120px;
 }
 
-._Title_button_tu3zs_8 {
-  width: 236px;
-  height: 82.6666666667px;
+._Title_button_1thd6_8 {
+  width: 266.6666666667px;
+  height: 94.6666666667px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -182,29 +182,29 @@ code {
   border-radius: 4px;
   transform: skewX(-10deg);
   background: linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALEAAAA+CAMAAABTEQr6AAAAS1BMVEUAAABGJhdHJxb325f33Jj23JhIJhVeTjxrWEJkU0ByYU15Z1JxXEV8YESRcVa/oIKGcFuEa1OEZUlaSjj8jVT23Jj1tHH0y3ili3IwbXi4AAAAB3RSTlMAhvC2l6ZKe6hBEgAABk9JREFUaN7VlwmS0zAQRdkt23JIbBi4/0npvbW0NJAqqOG3LMv5Wp46chjevf+g+vLu/9D7ayFd7+nx4/c3LSZeQQb88u0ty4mvCvjrmxYRLzXwz/s/0C2Wuu1FgULiHvjt6kbEEfADtds10R5fVM90j8NsLNXFyEQswJ8NWAbuGHDboYoLesOlwRoOfEW6+L24kEiIP3TAygIB4vakwIx9sIdWUMiLWdW6a9tQkJuJW+AuBbOU3Mn3TrbJJ7VNXc7xlznwtlE9mB66b54GvZMHI0fDUFAf1DjKwkPADSU5Jn1SYD0Jm4ueYiFePP821C6YgmvyD/bRODiAQBwBUwedoEqLX2TSKQ6I0c0QUPYm0MELbG7UIdA4zoq1lNiBH5pfJ8zQDwvJeeWR37kAWbAGGc7s5CCiFO/+jRKxA7fnwYBBPFnj3fknKOf2qOPionpZye5A3jtcTs5xleF2f9m/1axJcw8G8K8V78u+RQGm2oZUwOR4w4t368ftKCL+7hlWl4V3+ciQPfLGwFDVx3Xfc045oTJGvTB7eFGDLyu6Am/GRMvxPy1M7MB5azbqb0yigTZjynfmxaOBCSi6ZrSZjZfzccQpViJ+KBbyMmJJknMp2CRmIkbgOxPz9KKUquOfki2O3o4jmPq+JUKVklQZrjrL8OCmtbQGTj8pKTkJTKnASozr8oy49cQFrkL0LN8e0gOwq+i6p17ZYipeV4bII6ErSpFjyTDZGcEEuE3yljgsxVhRkpN163BpGF0CMueVzjISagcuiCXF7QyVys2v8NpVSvbdr2g3wQoNb08F2WTmhxATMLPY0FUYXIW3t1plf7h4LaXZUuh5sxFY1qBvCIBr4lz3Q4QkAQVHiAe3rSOm/liURC5HduBYKUDWW6YdE7IS+5FwqowITCtFvbT34gEhlcwZcxbAqxUKtHhY5gMOcmI/E+uyJKzTJv0kqFpW8uyn1wRJXgAZKgwoHFbB3Hhb6Nku78nQXKwlHy9JlGtiAmYgwlbehJU22EuGuxexLOQvrRRTWgOtvWxb5U+BEkPTvzaaN2XDLBvkIS3zFsIkJ3RHyGMvBnYUFGOXxAio7wnOsBEg1drCAegl/XuOb5Zl8J7ShJgsxmUGJ86Y4XbnMgIKP3o+Yo296bjf3xUeZSHOyPsXdOH1xBisY+Yc5vi6xqvMveVZT14zuQObxOUqiV+EmHpiN9pPEFiWp3YDxsxD0kRXpUTjMKAMcjz/KmX4GHg8LK2R6cutkdgDUeXELy89cTj9qqMHwKTQQuJl5HFVkcrFnmgZEl+Tc0ebXWJrSowcI8972Pnjoig9MZ4KB77Gx/WaJPIaITtO7MmdGEkOrMSO7Dl2YgJewyRfQhx6M2JBiT3flSWY7+bNiEvQa5Liq7NcgafHM/LKbTkuNq6OeG2IV08xDhpiLX9I7G9VMK7qtlQ/yu4N3zwexqG/k1poBhwXJ/kqNQJOa+fV/Zy22d2ImPIqwPwAlfIScHE8IuCYGEhVS0zsyAa8Xq8R67FYC1VPSO0qH8FrVX0if3bTbRH1Y5vFB39WOLEei7XSdIreij3/HzM2aq9Zwb+Nnl9SvJXEycZ7xyEVehxxOjwSsSp28W4YlE5ETBw6Rf0FJCfemXhNlfht4XpJzX/PQEmCH72uvNRo0QMCLWpUE+nKJpuGz0RJnDN5VbEFhXuhKmnNA9jh0DYOk5Vy6tKgnp2Wcn+8tqP4thpiQE6BjNgBfR3rZNF6ANzKsrCOlsuN5/1h+EHEP77ux5Gpa5+SqmlgjsUN24m5IgPlwNZMRuBrlfMdx47EP358Pc8jR8LhWD2t3Ov1EWPr2E4l3ok4hs5j5iPPlobrKIIKVuy1qySIMTEfieM8PcegHGAfPH3IfKB1TIgzTmpBBSs5HzhYImdpCfuR+qCxuxI/zoORK0li8IIBXeFAK3Zpuq2ZEEQmtn0vzONsETLpfBjxKcxV2EcjjTdCHqtMr9yy9PPuXEBsBtkjYCcG5OPtC4BLYiiAXRaKk/tS8UsKe2EUskEqH+a3yj9j3oL49kCdGEWheEt6PG43Jb7dHhAAfWvC+bt4XWHn53kB2IkRGYrd/KJqGmFph0ERYfMcTnaq7Z9wUFuIv38H4ud1CkVcu0r81xX2YmLU19v/IyH+n/QLcP/bYyyWeCQAAAAASUVORK5CYII=") !important;
+  background-image: url("./game-menu-button-bg-f96de545.png") !important;
   background-repeat: no-repeat !important;
   background-size: cover !important;
 }
 
-._Title_button_tu3zs_8:not(:last-child) {
+._Title_button_1thd6_8:not(:last-child) {
   margin-right: 34px;
 }
 
-._Title_button_tu3zs_8:hover {
+._Title_button_1thd6_8:hover {
   text-shadow: 0 0 10px rgb(255, 255, 255);
-  background-image: url("data:image/png;base64,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") !important;
+  background-image: url("./game-menu-button-bg-active-e8fed592.png") !important;
   background-repeat: no-repeat !important;
   background-size: cover !important;
 }
 
-._Title_button_text_tu3zs_55 {
+._Title_button_text_1thd6_55 {
   font-size: 37.3333333333px !important;
   color: #fff;
   letter-spacing: 0.2em;
 }
 
-._Title_backup_background_tu3zs_61 {
+._Title_backup_background_1thd6_61 {
   width: 100%;
   height: 100%;
   position: absolute;
