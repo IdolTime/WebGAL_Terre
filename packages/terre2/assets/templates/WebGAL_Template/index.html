@@ -42,7 +42,7 @@
 
     window.pubsub = new PubSub();
   </script>
-  <script type="module" crossorigin src="./assets/index-70b9c966.js"></script>
+  <script type="module" crossorigin src="./assets/index-058e295d.js"></script>
   <link rel="stylesheet" href="./assets/index-f8f9c96b.css">
 </head>
 
@@ -131,21 +131,12 @@
   <div id="panic-overlay"> <!-- 紧急回避 --> </div>
   <div id="root"></div>
   <script>
-    const logoPage = document.querySelector('.logo-page');
-    const loadingPage = document.querySelector('.loading-page');
-
-    if (logoPage) {
-      setTimeout(() => {
-        logoPage.style.opacity = 0;
-        enter();
-      }, 1000)
-    }
-
     /**
      * 在窗口大小改变时进行强制缩放
      */
     const ua = navigator.userAgent;
     const isIOSDevice = !!ua.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+    window.isIOSDevice = isIOSDevice;
     function resize() {
       const targetHeight = 1440;
       const targetWidth = 2560;
@@ -254,7 +245,7 @@
      */
     const u = navigator.userAgent;
     const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // 判断是否是 iOS终端
-    if ("serviceWorker" in navigator && !isIOS) {
+    if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("./webgal-serviceworker.js").then(function (reg) {
         // registration worked
         console.log("Registration succeeded. Scope is " + reg.scope);
@@ -272,10 +263,22 @@
     const title = document.getElementById("Title_enter_page");
     const barImage = document.getElementById('bar-image');
     const barImageLayout = barImage.getBoundingClientRect();
-    const transformString = title.style.transform.split('scale')[1]
-    const matches = transformString.match(/\(([^,]+),\s*([^)]+)\)/);
+    const transformString = (title.style.transform?.split('scale') || [])[1]
+    const matches = transformString?.match(/\(([^,]+),\s*([^)]+)\)/);
+    const downloadCompleteRef = { current: 0 };
+    const progressTimerRef = { current: null }
     let scaleX = 1;
     let scaleY = 1;
+
+    const logoPage = document.querySelector('.logo-page');
+    const loadingPage = document.querySelector('.loading-page');
+
+    if (logoPage) {
+      setTimeout(() => {
+        logoPage.style.opacity = 0;
+        enter();
+      }, 1000)
+    }
 
     if (matches) {
       scaleX = parseFloat(matches[1]);
@@ -305,8 +308,6 @@
       progress.setAttribute('width', (num / 100 * width).toFixed(2) + 'px');
       progress.setAttribute('height', height + 'px')
     }
-    const downloadCompleteRef = { current: 0 };
-    const progressTimerRef = { current: null }
 
     const dispose = window.pubsub.subscribe('sceneAssetsLoaded', ({ sceneName }) => {
       if (sceneName === 'start.txt') {
