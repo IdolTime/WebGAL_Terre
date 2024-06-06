@@ -9556,7 +9556,9 @@ const initState$3 = {
   currentConcatDialogPrev: "",
   enableFilm: "",
   isDisableTextbox: false,
-  replacedUIlable: {}
+  replacedUIlable: {},
+  currentVideoIndex: 0
+  // 当前视频播放索引
 };
 const stageSlice = createSlice({
   name: "stage",
@@ -9657,10 +9659,13 @@ const stageSlice = createSlice({
     },
     replaceUIlable: (state, action) => {
       state.replacedUIlable[action.payload[0]] = action.payload[1];
+    },
+    setVideoIndex: (state, action) => {
+      state.currentVideoIndex = action.payload;
     }
   }
 });
-const { resetStageState, setStage, setStageVar } = stageSlice.actions;
+const { resetStageState, setStage, setStageVar, setVideoIndex } = stageSlice.actions;
 const stageActions = stageSlice.actions;
 const stageReducer = stageSlice.reducer;
 function commonjsRequire(path2) {
@@ -13638,6 +13643,9 @@ const zhCn = {
       title: "存档",
       isOverwrite: "是否覆盖存档？"
     },
+    extra: {
+      title: "鉴赏模式"
+    },
     loadSaving: {
       title: "读档"
     },
@@ -13689,7 +13697,9 @@ const zhCn = {
       load: "读档",
       options: "选项",
       title: "标题",
-      titleTips: "确认返回到标题界面吗"
+      titleTips: "确认返回到标题界面吗",
+      collection: "收藏",
+      collected: "已收藏"
     }
   },
   extra: {
@@ -22540,14 +22550,14 @@ const Choose_item = "_Choose_item_4xkm5_13";
 const glabalDialog_container_inner$1 = "_glabalDialog_container_inner_4xkm5_28";
 const glabalDialog_container$1 = "_glabalDialog_container_4xkm5_28";
 const title$2 = "_title_4xkm5_47";
-const button$2 = "_button_4xkm5_59";
+const button$3 = "_button_4xkm5_59";
 const styles$l = {
   Choose_Main,
   Choose_item,
   glabalDialog_container_inner: glabalDialog_container_inner$1,
   glabalDialog_container: glabalDialog_container$1,
   title: title$2,
-  button: button$2
+  button: button$3
 };
 const getUserInput = (sentence) => {
   const varKey = sentence.content.toString().trim();
@@ -22880,7 +22890,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-cfc2e589.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-a1915324.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23067,6 +23077,42 @@ class PerformController {
     }
   }
 }
+const initState$1 = {
+  saveData: [],
+  quickSaveData: null,
+  currentPayerVideoUrlKey: "",
+  isLoadVideo: false
+};
+const saveDataSlice = createSlice({
+  name: "saveData",
+  initialState: cloneDeep$1(initState$1),
+  reducers: {
+    setFastSave: (state, action) => {
+      state.quickSaveData = action.payload;
+    },
+    resetFastSave: (state) => {
+      state.quickSaveData = null;
+    },
+    resetSaves: (state) => {
+      state.quickSaveData = null;
+      state.saveData = [];
+    },
+    saveGame: (state, action) => {
+      state.saveData[action.payload.index] = action.payload.saveData;
+    },
+    replaceSaveGame: (state, action) => {
+      state.saveData = action.payload;
+    },
+    saveCurrentPayerVideoUrl: (state, action) => {
+      state.currentPayerVideoUrlKey = action.payload;
+    },
+    setLoadVideo: (state, action) => {
+      state.isLoadVideo = action.payload;
+    }
+  }
+});
+const saveActions = saveDataSlice.actions;
+const savesReducer = saveDataSlice.reducer;
 const playVideo = (sentence) => {
   const userDataState = webgalStore.getState().userData;
   const mainVol = userDataState.optionData.volumeMain;
@@ -23109,6 +23155,7 @@ const playVideo = (sentence) => {
       };
       setTimeout(() => {
         const url2 = sentence.content;
+        const isLoadVideo = webgalStore.getState().saveData.isLoadVideo;
         WebGAL.videoManager.seek(url2, 0.03);
         WebGAL.videoManager.setVolume(url2, bgmVol);
         WebGAL.videoManager.setLoop(url2, loopValue);
@@ -23117,6 +23164,9 @@ const playVideo = (sentence) => {
           scenePrefetcher(sceneList);
         }
         const endPerform = () => {
+          if (isLoadVideo) {
+            return;
+          }
           for (const e2 of WebGAL.gameplay.performController.performList) {
             if (e2.performName === performInitName) {
               if (chooseContent !== "" && !loopValue) {
@@ -23177,6 +23227,12 @@ const playVideo = (sentence) => {
           vocalElement.volume = vocalVol2.toString();
         }
         WebGAL.videoManager.playVideo(url2);
+        if (url2 && !isLoadVideo) {
+          webgalStore.dispatch(saveActions.saveCurrentPayerVideoUrl(url2));
+          const currentVideoIndex = webgalStore.getState().stage.currentVideoIndex;
+          webgalStore.dispatch(setVideoIndex(Number(currentVideoIndex) + 1));
+          webgalStore.dispatch(setshowFavorited(false));
+        }
         if (chooseContent && loopValue) {
           const parsedResult = sceneParser(chooseContent, `${optionId}.txt`, "");
           const script = parsedResult.sentenceList[0];
@@ -23561,34 +23617,6 @@ const resetStage = (resetBacklog, resetSceneAndVar = true, resetVideo = true) =>
     webgalStore.dispatch(setStage({ key: "GameVar", value: currentVars }));
   }
 };
-const initState$1 = {
-  saveData: [],
-  quickSaveData: null
-};
-const saveDataSlice = createSlice({
-  name: "saveData",
-  initialState: cloneDeep$1(initState$1),
-  reducers: {
-    setFastSave: (state, action) => {
-      state.quickSaveData = action.payload;
-    },
-    resetFastSave: (state) => {
-      state.quickSaveData = null;
-    },
-    resetSaves: (state) => {
-      state.quickSaveData = null;
-      state.saveData = [];
-    },
-    saveGame: (state, action) => {
-      state.saveData[action.payload.index] = action.payload.saveData;
-    },
-    replaceSaveGame: (state, action) => {
-      state.saveData = action.payload;
-    }
-  }
-});
-const saveActions = saveDataSlice.actions;
-const savesReducer = saveDataSlice.reducer;
 const end = (sentence) => {
   resetStage(true);
   const dispatch = webgalStore.dispatch;
@@ -34020,7 +34048,9 @@ const initState = {
   showGlobalDialog: false,
   showPanicOverlay: false,
   isEnterGame: false,
-  isShowLogo: true
+  isShowLogo: true,
+  showFavorited: false
+  // 显示收藏
 };
 const GUISlice = createSlice({
   name: "gui",
@@ -34056,10 +34086,13 @@ const GUISlice = createSlice({
     },
     setLogoImage: (state, action) => {
       state.logoImage = [...action.payload];
+    },
+    setshowFavorited: (state, action) => {
+      state.showFavorited = action.payload;
     }
   }
 });
-const { setVisibility, setMenuPanelTag, setGuiAsset, setLogoImage } = GUISlice.actions;
+const { setVisibility, setMenuPanelTag, setGuiAsset, setLogoImage, setshowFavorited } = GUISlice.actions;
 const GUIReducer = GUISlice.reducer;
 const webgalStore = configureStore({
   reducer: {
@@ -34142,13 +34175,13 @@ const jumpFromBacklog = (index2) => {
   dispatch(setVisibility({ component: "showBacklog", visibility: false }));
   dispatch(setVisibility({ component: "showTextBox", visibility: true }));
 };
-const loadGame = (index2) => {
+const loadGame = (index2, isLoadVideo = false) => {
   const userDataState = webgalStore.getState().saveData;
   const loadFile = userDataState.saveData[index2];
   logger.debug("读取的存档数据", loadFile);
-  loadGameFromStageData(loadFile);
+  loadGameFromStageData(loadFile, isLoadVideo);
 };
-function loadGameFromStageData(stageData) {
+function loadGameFromStageData(stageData, isLoadVideo = false) {
   if (!stageData) {
     logger.info("暂无存档");
     return;
@@ -34179,9 +34212,17 @@ function loadGameFromStageData(stageData) {
   const newStageState = cloneDeep$1(loadFile.nowStageState);
   const dispatch = webgalStore.dispatch;
   dispatch(resetStageState(newStageState));
-  setTimeout(restorePerform, 0);
+  if (isLoadVideo) {
+    loadFile.nowStageState.PerformList.forEach((e2) => {
+      runScript(e2.script);
+    });
+  } else {
+    setTimeout(restorePerform, 0);
+  }
   dispatch(setVisibility({ component: "showTitle", visibility: false }));
   dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
+  dispatch(setVisibility({ component: "showExtra", visibility: false }));
+  dispatch(saveActions.setLoadVideo(true));
   setEbg(webgalStore.getState().stage.bgName);
 }
 function dumpSavesToStorage(startIndex, endIndex) {
@@ -34192,12 +34233,11 @@ function dumpSavesToStorage(startIndex, endIndex) {
     });
   }
 }
-function getSavesFromStorage(startIndex, endIndex) {
+async function getSavesFromStorage(startIndex, endIndex) {
   for (let i2 = startIndex; i2 <= endIndex; i2++) {
-    localforage.getItem(`${WebGAL.gameKey}-saves${i2}`).then((save) => {
-      webgalStore.dispatch(saveActions.saveGame({ index: i2, saveData: save }));
-      logger.info(`存档${i2}读取自本地存储`);
-    });
+    const save = await localforage.getItem(`${WebGAL.gameKey}-saves${i2}`);
+    webgalStore.dispatch(saveActions.saveGame({ index: i2, saveData: save }));
+    logger.info(`存档${i2}读取自本地存储`);
   }
 }
 async function dumpFastSaveToStorage() {
@@ -34210,34 +34250,35 @@ async function getFastSaveFromStorage() {
   webgalStore.dispatch(saveActions.setFastSave(save));
   logger.info(`快速存档读取自本地存储`);
 }
-const saveGame = (index2) => {
-  const saveData = generateCurrentStageData(index2);
+const saveGame = (index2, newName) => {
+  const saveData = generateCurrentStageData(index2, true, newName);
   webgalStore.dispatch(saveActions.saveGame({ index: index2, saveData }));
   dumpSavesToStorage(index2, index2);
 };
-function generateCurrentStageData(index2, isSavePreviewImage = true) {
+function generateCurrentStageData(index2, isSavePreviewImage = true, newName) {
   const stageState = webgalStore.getState().stage;
   const saveBacklog = cloneDeep$1(WebGAL.backlogManager.getBacklog());
   let urlToSave = "";
-  if (isSavePreviewImage) {
-    const canvas = document.getElementById("pixiCanvas");
+  if (isSavePreviewImage && !newName) {
+    const video = document.querySelector(`#video-${Number(stageState.currentVideoIndex) - 1} > video`);
+    video.currentTime = 0;
     const canvas2 = document.createElement("canvas");
     const context2 = canvas2.getContext("2d");
     canvas2.width = 480;
     canvas2.height = 270;
-    context2.drawImage(canvas, 0, 0, 480, 270);
+    context2.drawImage(video, 0, 0, 480, 270);
     urlToSave = canvas2.toDataURL("image/webp", 0.5);
     canvas2.remove();
   }
+  const currentTime = (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false });
   const saveData = {
     nowStageState: cloneDeep$1(stageState),
     backlog: saveBacklog,
     // 舞台数据
     index: index2,
     // 存档的序号
-    saveTime: (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false }),
-    // 保存时间
-    // 场景数据
+    saveName: newName || currentTime,
+    saveTime: currentTime,
     sceneData: {
       currentSentenceId: WebGAL.sceneManager.sceneData.currentSentenceId,
       // 当前语句ID
@@ -36320,7 +36361,7 @@ function useUpdated(callback) {
   });
 }
 const main = "_main_15mmi_1";
-const button$1 = "_button_15mmi_16";
+const button$2 = "_button_15mmi_16";
 const button_text$1 = "_button_text_15mmi_23";
 const button_on = "_button_on_15mmi_31";
 const singleButton$1 = "_singleButton_15mmi_42";
@@ -36335,7 +36376,7 @@ const imgContainer = "_imgContainer_15mmi_97";
 const textContainer = "_textContainer_15mmi_105";
 const styles$j = {
   main,
-  button: button$1,
+  button: button$2,
   button_text: button_text$1,
   button_on,
   singleButton: singleButton$1,
@@ -36942,18 +36983,32 @@ const Title = () => {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: applyStyle2("Title_button", styles$n.Title_button),
-            onClick: () => {
-              startGame();
-              playSeClick();
-            },
-            onMouseEnter: playSeEnter,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
-          }
-        ) })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$n.Title_button),
+              onClick: () => {
+                startGame();
+                playSeClick();
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$n.Title_button),
+              onClick: () => {
+                playSeClick();
+                dispatch(setVisibility({ component: "showExtra", visibility: true }));
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("extra.title") })
+            }
+          )
+        ] })
       }
     )
   ] });
@@ -95359,46 +95414,6 @@ const FolderOpen = IconWrapper("folder-open", true, function(props) {
     strokeLinejoin: props.strokeLinejoin
   }));
 });
-const GoEnd = IconWrapper("go-end", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M14 12L26 24L14 36",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M34 12V36",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }));
-});
-const GoStart = IconWrapper("go-start", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M34 36L22 24L34 12",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M14 12V36",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }));
-});
 const HamburgerButton = IconWrapper("hamburger-button", false, function(props) {
   return /* @__PURE__ */ React.createElement("svg", {
     width: props.size,
@@ -95518,44 +95533,6 @@ const Logout = IconWrapper("logout", true, function(props) {
     stroke: props.colors[0],
     strokeWidth: props.strokeWidth,
     strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }));
-});
-const MusicList = IconWrapper("music-list", true, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M24 19H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M24 10H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M8 38H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M8 28H40",
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
-    strokeLinecap: props.strokeLinecap,
-    strokeLinejoin: props.strokeLinejoin
-  }), /* @__PURE__ */ React.createElement("path", {
-    d: "M8 10L16 15L8 20V10Z",
-    fill: props.colors[1],
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth,
     strokeLinejoin: props.strokeLinejoin
   }));
 });
@@ -95727,19 +95704,6 @@ const SettingTwo = IconWrapper("setting-two", false, function(props) {
     strokeLinejoin: props.strokeLinejoin
   }));
 });
-const SquareSmall = IconWrapper("square-small", false, function(props) {
-  return /* @__PURE__ */ React.createElement("svg", {
-    width: props.size,
-    height: props.size,
-    viewBox: "0 0 48 48",
-    fill: "none"
-  }, /* @__PURE__ */ React.createElement("path", {
-    d: "M34 12H14C12.8954 12 12 12.8954 12 14V34C12 35.1046 12.8954 36 14 36H34C35.1046 36 36 35.1046 36 34V14C36 12.8954 35.1046 12 34 12Z",
-    fill: props.colors[1],
-    stroke: props.colors[0],
-    strokeWidth: props.strokeWidth
-  }));
-});
 const Unlock = IconWrapper("unlock", true, function(props) {
   return /* @__PURE__ */ React.createElement("svg", {
     width: props.size,
@@ -95855,7 +95819,7 @@ const glabalDialog_container_inner = "_glabalDialog_container_inner_101j8_17";
 const glabalDialog_container = "_glabalDialog_container_101j8_17";
 const title$1 = "_title_101j8_36";
 const button_list = "_button_list_101j8_41";
-const button = "_button_101j8_41";
+const button$1 = "_button_101j8_41";
 const styles$e = {
   GlobalDialog_main,
   showGlobalDialog,
@@ -95863,7 +95827,7 @@ const styles$e = {
   glabalDialog_container,
   title: title$1,
   button_list,
-  button
+  button: button$1
 };
 function GlobalDialog() {
   const isGlobalDialogShow = useSelector((state) => state.GUI.showGlobalDialog);
@@ -97832,7 +97796,9 @@ const BottomControlPanel = () => {
   const t2 = useTrans("gaming.");
   const strokeWidth = 2.5;
   const { i18n } = useTranslation();
+  useSelector((state) => state.saveData.currentPayerVideoUrlKey);
   const { playSeEnter, playSeClick, playSeDialogOpen } = useSoundEffect();
+  reactExports.useState(false);
   const lang2 = i18n.language;
   const isFr = lang2 === "fr";
   let size = 42;
@@ -97862,6 +97828,31 @@ const BottomControlPanel = () => {
       ] })
     ] });
   }
+  const getSnapshotIndex = async () => {
+    for (let page = 1; page <= 20; page++) {
+      const start = (page - 1) * 10 + 1;
+      const end2 = start + 9;
+      await getSavesFromStorage(start, end2);
+      const snapshots = webgalStore.getState().saveData.saveData;
+      for (let i2 = 0; i2 < snapshots.length; i2++) {
+        const index2 = (page - 1) * 10 + i2;
+        if (!snapshots[i2]) {
+          return index2;
+        }
+      }
+    }
+    return (20 - 1) * 10 + 9;
+  };
+  const handleCollectVideo = async () => {
+    playSeClick();
+    if (GUIStore.showFavorited) {
+      return;
+    }
+    dispatch(setshowFavorited(true));
+    const index2 = await getSnapshotIndex();
+    saveGame(index2);
+    setStorage();
+  };
   return (
     // <div className={styles.ToCenter}>
     /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
@@ -98054,6 +98045,19 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklyLoad") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastLPreview, children: fastSlPreview2 })
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "span",
+        {
+          className: styles$j.singleButton,
+          style: { fontSize },
+          onClick: handleCollectVideo,
+          onMouseEnter: playSeEnter,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2(`${GUIStore.showFavorited ? "buttons.collected" : "buttons.collection"}`) })
           ]
         }
       ),
@@ -98329,30 +98333,35 @@ function mergeStringsAndKeepObjects(arr) {
   }
   return result;
 }
-const extra = "_extra_1tymt_2";
-const extra_top = "_extra_top_1tymt_14";
-const extra_top_icon = "_extra_top_icon_1tymt_20";
-const extra_icon_softin = "_extra_icon_softin_1tymt_1";
-const extra_title = "_extra_title_1tymt_40";
-const mainContainer = "_mainContainer_1tymt_51";
-const bgmContainer = "_bgmContainer_1tymt_59";
-const bgmListContainer = "_bgmListContainer_1tymt_76";
-const bgmPlayerMain = "_bgmPlayerMain_1tymt_91";
-const bgmControlButton = "_bgmControlButton_1tymt_95";
-const bgmName = "_bgmName_1tymt_110";
-const bgmElement = "_bgmElement_1tymt_118";
-const bgmElement_active = "_bgmElement_active_1tymt_148";
-const cgMain = "_cgMain_1tymt_153";
-const cgContainer = "_cgContainer_1tymt_158";
-const cgElement = "_cgElement_1tymt_170";
-const cgShowDiv = "_cgShowDiv_1tymt_185";
-const cgShowDivWarpper = "_cgShowDivWarpper_1tymt_194";
-const cgNav = "_cgNav_1tymt_203";
-const cgNav_active = "_cgNav_active_1tymt_222";
-const showFullContainer = "_showFullContainer_1tymt_232";
-const showFullCgMain = "_showFullCgMain_1tymt_245";
-const fullCgIn = "_fullCgIn_1tymt_1";
-const bgmElement_In = "_bgmElement_In_1tymt_1";
+const extra = "_extra_9yzvu_2";
+const extra_top = "_extra_top_9yzvu_14";
+const extra_top_icon = "_extra_top_icon_9yzvu_20";
+const extra_icon_softin = "_extra_icon_softin_9yzvu_1";
+const extra_title = "_extra_title_9yzvu_40";
+const mainContainer = "_mainContainer_9yzvu_51";
+const bgmContainer = "_bgmContainer_9yzvu_59";
+const bgmListContainer = "_bgmListContainer_9yzvu_76";
+const bgmPlayerMain = "_bgmPlayerMain_9yzvu_91";
+const bgmControlButton = "_bgmControlButton_9yzvu_95";
+const bgmName = "_bgmName_9yzvu_110";
+const bgmElement = "_bgmElement_9yzvu_118";
+const bgmElement_active = "_bgmElement_active_9yzvu_148";
+const cgMain = "_cgMain_9yzvu_153";
+const cgContainer = "_cgContainer_9yzvu_158";
+const cgElement = "_cgElement_9yzvu_170";
+const cgShowDiv = "_cgShowDiv_9yzvu_185";
+const cgShowDivWarpper = "_cgShowDivWarpper_9yzvu_194";
+const cgNav = "_cgNav_9yzvu_203";
+const cgNav_active = "_cgNav_active_9yzvu_222";
+const showFullContainer = "_showFullContainer_9yzvu_232";
+const showFullCgMain = "_showFullCgMain_9yzvu_245";
+const fullCgIn = "_fullCgIn_9yzvu_1";
+const editDialogMark = "_editDialogMark_9yzvu_266";
+const editDialog = "_editDialog_9yzvu_266";
+const editDialog_content = "_editDialog_content_9yzvu_288";
+const editDialog_footer = "_editDialog_footer_9yzvu_304";
+const button = "_button_9yzvu_311";
+const bgmElement_In = "_bgmElement_In_9yzvu_1";
 const styles$4 = {
   extra,
   extra_top,
@@ -98377,249 +98386,158 @@ const styles$4 = {
   showFullContainer,
   showFullCgMain,
   fullCgIn,
+  editDialogMark,
+  editDialog,
+  editDialog_content,
+  editDialog_footer,
+  button,
   bgmElement_In
 };
-function ExtraBgm() {
-  const { playSeClick, playSeEnter } = useSoundEffect();
-  const currentBgmSrc = useSelector((state) => state.GUI.titleBgm);
-  const extraState = useSelector((state) => state.userData.appreciationData);
-  const initName = "Title_BGM";
-  const isShowBgmList = useValue(false);
-  let foundCurrentBgmName = initName;
-  let foundCurrentBgmIndex = -1;
-  const iconSize = 39;
-  const bgmPlayerHeight = isShowBgmList.value ? "80%" : "10%";
-  const bgmListLen = extraState.bgm.length;
-  extraState.bgm.forEach((e2, i2) => {
-    if (e2.url === currentBgmSrc) {
-      foundCurrentBgmName = e2.name;
-      foundCurrentBgmIndex = i2;
+const EditNameDialog = (props) => {
+  const [inputValue, setInputValue] = reactExports.useState("");
+  reactExports.useEffect(() => {
+    if (props.value) {
+      setInputValue(props.value);
     }
-  });
-  const currentPlayingBgmName = useValue("");
-  if (foundCurrentBgmName !== initName && foundCurrentBgmName !== currentPlayingBgmName.value) {
-    currentPlayingBgmName.set(foundCurrentBgmName);
-  }
-  const dispatch = useDispatch();
-  function setBgmByIndex(index2) {
-    const e2 = extraState.bgm[index2];
-    currentPlayingBgmName.set(e2.name);
-    dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
-  }
-  const showBgmList = extraState.bgm.map((e2, i2) => {
-    let className = styles$4.bgmElement;
-    if (e2.name === currentPlayingBgmName.value) {
-      className = className + " " + styles$4.bgmElement_active;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        onClick: () => {
-          playSeClick();
-          currentPlayingBgmName.set(e2.name);
-          dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
-        },
-        className,
-        style: {
-          animationDelay: `${i2 * 150}ms`
-        },
-        onMouseEnter: playSeEnter,
-        children: e2.name
-      },
-      e2.name
-    );
-  });
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmContainer, style: { maxHeight: bgmPlayerHeight }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmPlayerMain, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            if (foundCurrentBgmIndex <= 0) {
-              setBgmByIndex(bgmListLen - 1);
-            } else {
-              setBgmByIndex(foundCurrentBgmIndex - 1);
-            }
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoStart, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            const bgmControl = document.getElementById("currentBgm");
-            bgmControl == null ? void 0 : bgmControl.play().then();
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            if (foundCurrentBgmIndex >= bgmListLen - 1) {
-              setBgmByIndex(0);
-            } else {
-              setBgmByIndex(foundCurrentBgmIndex + 1);
-            }
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoEnd, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            const bgmControl = document.getElementById("currentBgm");
-            bgmControl.pause();
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(SquareSmall, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.bgmName, children: foundCurrentBgmName }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "div",
-        {
-          onClick: () => {
-            playSeClick();
-            isShowBgmList.set(!isShowBgmList.value);
-          },
-          onMouseEnter: playSeEnter,
-          className: styles$4.bgmControlButton,
-          style: { marginLeft: "auto" },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(MusicList, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
-        }
-      )
-    ] }),
-    isShowBgmList.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmListContainer, children: [
-      " ",
-      showBgmList
-    ] })
-  ] });
-}
-const extraCG_animation_List = "";
-function ExtraCgElement(props) {
-  const showFull = useValue(false);
-  const { playSeEnter, playSeClick } = useSoundEffect();
+  }, []);
+  const handleConfirm = () => {
+    props.onConfirm(inputValue);
+  };
+  const handleCancel = () => {
+    props.onCancel();
+  };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    showFull.value && /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        onClick: () => {
-          showFull.set(!showFull.value);
-          playSeClick();
-        },
-        className: styles$4.showFullContainer,
-        onMouseEnter: playSeEnter,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.showFullCgMain, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.editDialogMark }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.editDialog, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.editDialog_content, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { children: "重新命名为：" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "input",
           {
-            style: {
-              backgroundImage: `url('${props.imgUrl}')`,
-              backgroundSize: `cover`,
-              backgroundPosition: "center",
-              width: "100%",
-              height: "100%"
-            }
-          }
-        ) })
-      }
-    ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "div",
-      {
-        onClick: () => {
-          showFull.set(!showFull.value);
-          playSeClick();
-        },
-        onMouseEnter: playSeEnter,
-        style: {
-          // transform: `rotate(${deg}deg)`,
-          animation: `cg_softIn_${props.transformDeg} 1.5s ease-out ${100 + props.index * 100}ms forwards `
-        },
-        className: styles$4.cgElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            style: {
-              backgroundImage: `url('${props.imgUrl}')`,
-              backgroundSize: `cover`,
-              backgroundPosition: "center",
-              width: "100%",
-              height: "100%"
+            value: inputValue,
+            onChange: (e2) => {
+              setInputValue(e2.target.value);
             }
           }
         )
-      },
-      props.name
-    )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.editDialog_footer, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button, onClick: handleConfirm, children: "确认" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$4.button, onClick: handleCancel, children: "取消" })
+      ] })
+    ] })
   ] });
-}
-function ExtraCg() {
-  const cgPerPage = 8;
-  const extraState = useSelector((state) => state.userData.appreciationData);
-  const pageNumber = Math.ceil(extraState.cg.length / cgPerPage);
-  const currentPage = useValue(1);
-  const { playSeEnter, playSeClick } = useSoundEffect();
-  const showCgList = [];
-  const len = extraState.cg.length;
-  for (let i2 = (currentPage.value - 1) * cgPerPage; i2 < Math.min(len, (currentPage.value - 1) * cgPerPage + cgPerPage); i2++) {
-    const index2 = i2 - (currentPage.value - 1) * cgPerPage;
-    const deg = Random(-5, 5);
-    const temp2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
-      ExtraCgElement,
-      {
-        name: extraState.cg[i2].name,
-        imgUrl: extraState.cg[i2].url,
-        transformDeg: deg,
-        index: index2
-      },
-      index2.toString() + extraState.cg[i2].url
-    );
-    showCgList.push(temp2);
-  }
-  const showNav = [];
-  for (let i2 = 1; i2 <= pageNumber; i2++) {
-    let className = styles$4.cgNav;
-    if (currentPage.value === i2) {
-      className = className + " " + styles$4.cgNav_active;
+};
+let editNameVal = "";
+let editNameIndex = 0;
+const ExtraVideo = () => {
+  const { playSeClick, playSeEnter, playSePageChange } = useSoundEffect();
+  const userDataState = useSelector((state) => state.userData);
+  const saveDataState = useSelector((state) => state.saveData);
+  const dispatch = useDispatch();
+  const [showEditDialog, setShowEditDialog] = reactExports.useState(false);
+  const page = [];
+  for (let i2 = 1; i2 <= 20; i2++) {
+    let classNameOfElement = styles$d.Save_Load_top_button + " " + styles$d.Load_top_button;
+    if (i2 === userDataState.optionData.slPage) {
+      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on + " " + styles$d.Load_top_button_on;
     }
-    const temp2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
+    const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
         onClick: () => {
-          currentPage.set(i2);
+          dispatch(setSlPage(i2));
+          setStorage();
+          playSePageChange();
+        },
+        onMouseEnter: playSeEnter,
+        className: classNameOfElement,
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+      },
+      "Load_element_page" + i2
+    );
+    page.push(element);
+  }
+  const showSaves = [];
+  const start = (userDataState.optionData.slPage - 1) * 10 + 1;
+  const end2 = start + 9;
+  reactExports.useEffect(() => {
+    getSavesFromStorage(start, end2);
+  }, [start, end2]);
+  const handleEditName = (e2, saveData, index2) => {
+    e2.stopPropagation();
+    editNameVal = saveData.saveName || saveData.saveTime;
+    editNameIndex = index2;
+    setTimeout(() => {
+      setShowEditDialog(true);
+    }, 100);
+  };
+  const onCancel = () => {
+    setShowEditDialog(false);
+    editNameVal = "";
+  };
+  const onConfirm = (newName) => {
+    editNameVal = "";
+    saveGame(editNameIndex, newName);
+    setStorage();
+    setShowEditDialog(false);
+  };
+  let animationIndex = 0;
+  for (let i2 = start; i2 <= end2; i2++) {
+    animationIndex++;
+    const saveData = saveDataState.saveData[i2];
+    let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", {});
+    if (saveData) {
+      saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index + " " + styles$d.Load_content_elememt_top_index, children: saveData.index }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            className: styles$d.Save_Load_content_miniRen_bg,
+            alt: "Save_img_preview",
+            src: saveData.previewImage
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: styles$d.Save_Load_content_element_top_date + " " + styles$d.Load_content_element_top_date,
+            style: { width: "100%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" },
+            onClick: (e2) => handleEditName(e2, saveData, i2),
+            title: `${saveData.saveName || saveData.saveTime}`,
+            children: saveData.saveName || saveData.saveTime
+          }
+        ) })
+      ] });
+    }
+    const saveElement = /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        onClick: () => {
+          loadGame(i2, true);
           playSeClick();
         },
         onMouseEnter: playSeEnter,
-        className,
-        children: i2
+        className: styles$d.Save_Load_content_element,
+        style: { animationDelay: `${animationIndex * 30}ms` },
+        children: saveElementContent
       },
-      "nav" + i2
+      "loadElement_" + i2
     );
-    showNav.push(temp2);
+    showSaves.push(saveElement);
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.cgMain, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDivWarpper, children: showNav }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgContainer, children: showCgList })
+  const t2 = useTrans("menu.");
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Load_title_text, children: t2("extra.title") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
+    ] }),
+    showEditDialog && /* @__PURE__ */ jsxRuntimeExports.jsx(EditNameDialog, { value: editNameVal, onCancel, onConfirm })
   ] });
-}
-function Random(min, max2) {
-  return Math.round(Math.random() * (max2 - min)) + min;
-}
+};
 function Extra() {
   const { playSeClick } = useSoundEffect();
   const showExtra = useSelector((state) => state.GUI.showExtra);
@@ -98644,10 +98562,7 @@ function Extra() {
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.extra_title, children: t2("title") })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.mainContainer, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraCg, {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraBgm, {})
-    ] })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.mainContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraVideo, {}) })
   ] }) });
 }
 const tag = "_tag_yghix_2";
