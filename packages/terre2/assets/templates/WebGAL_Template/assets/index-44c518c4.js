@@ -22890,7 +22890,7 @@ function call$1(name, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-a1915324.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-043a7cb7.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -34269,6 +34269,10 @@ function generateCurrentStageData(index2, isSavePreviewImage = true, newName) {
     context2.drawImage(video, 0, 0, 480, 270);
     urlToSave = canvas2.toDataURL("image/webp", 0.5);
     canvas2.remove();
+  } else {
+    const userDataState = webgalStore.getState().saveData;
+    const loadFile = userDataState.saveData[index2];
+    urlToSave = (loadFile == null ? void 0 : loadFile.previewImage) ?? "";
   }
   const currentTime = (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false });
   const saveData = {
@@ -36991,6 +36995,7 @@ const Title = () => {
               onClick: () => {
                 startGame();
                 playSeClick();
+                dispatch(setshowFavorited(false));
               },
               onMouseEnter: playSeEnter,
               children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
@@ -98514,6 +98519,7 @@ const ExtraVideo = () => {
       "div",
       {
         onClick: () => {
+          dispatch(setshowFavorited(true));
           loadGame(i2, true);
           playSeClick();
         },
