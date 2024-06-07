@@ -14,13 +14,15 @@ import { Button, Dropdown, Option } from "@fluentui/react-components";
 type FigurePosition = "" | "left" |  "right" | "center" | "id";
 type FontSize = "default" | "small" | "medium" | "large";
 
+const modes = new Map([['role', '角色'], ['narrator', '旁白'], ['player', '玩家']]);
+
 export default function Say(props: ISentenceEditorProps) {
   const t = useTrans('editor.graphical.sentences.say.options.');
   const currentValue = useValue(props.sentence.content.split("|"));
   const currentSpeaker = useValue(getArgByKey(props.sentence, "speaker").toString());
   const vocal = useValue(getArgByKey(props.sentence, "vocal").toString() ?? "");
   const volume = useValue(getArgByKey(props.sentence, "volume").toString() ?? "");
-  const isNoSpeaker = useValue(props.sentence.commandRaw === "");
+  const dialogueMode = useValue(getArgByKey(props.sentence, "mode").toString() || "role");
   const figureId = useValue(getArgByKey(props.sentence, "figureId").toString() ?? "");
   const figurePosition = useValue<FigurePosition>("");
   const figurePositions = new Map<FigurePosition, string>([
@@ -71,25 +73,28 @@ export default function Say(props: ISentenceEditorProps) {
     const pos = figurePosition.value !== "" ? ` -${figurePosition.value}` : "";
     const idStr = figureId.value !== "" ? ` -figureId=${figureId.value}` : "";
     const commitValue = currentValue.value.map(e=>e.replaceAll('\n','|'));
+    const mode = ` -mode=${dialogueMode.value}`;
+    let commitStr = `${dialogueMode.value === "narrator" ? "" : currentSpeaker.value}${dialogueMode.value === "narrator" || currentSpeaker.value !== "" ? ":" : ""}${commitValue.join("|")}${vocal.value === "" ? "" : " -" + vocal.value} -fontSize=${selectedFontSize}${pos}${mode}`;
+    
     if(figurePosition.value === "id"){
-      props.onSubmit(`${isNoSpeaker.value ? "" : currentSpeaker.value}${isNoSpeaker.value || currentSpeaker.value !== "" ? ":" : ""}${commitValue.join("|")}${vocal.value === "" ? "" : " -" + vocal.value} -fontSize=${selectedFontSize}${pos}${idStr};`);
-    } else {
-      props.onSubmit(`${isNoSpeaker.value ? "" : currentSpeaker.value}${isNoSpeaker.value || currentSpeaker.value !== "" ? ":" : ""}${commitValue.join("|")}${vocal.value === "" ? "" : " -" + vocal.value} -fontSize=${selectedFontSize}${pos};`);
+      commitStr += idStr;
     }
+
+    props.onSubmit(`${commitStr};`);
   };
 
   return <div className={styles.sentenceEditorContent}>
     <CommonTips text={t('tips.edit')}/>
     <div className={styles.editItem} style={{marginBottom: '4px'}}>
-      <input value={isNoSpeaker.value ? "" : currentSpeaker.value}
+      <input value={dialogueMode.value === "narrator" ? "" : currentSpeaker.value}
         onChange={(ev) => {
           const newValue = ev.target.value;
           currentSpeaker.set(newValue ?? "");
         }}
         onBlur={submit}
         className={styles.sayInput}
-        placeholder={isNoSpeaker.value ? t('speaker.placeholder.voiceover') : t('speaker.placeholder.role')}
-        disabled={isNoSpeaker.value}
+        placeholder={dialogueMode.value === "narrator" ? t('speaker.placeholder.voiceover') : dialogueMode.value === "player" ? "我" : t('speaker.placeholder.role')}
+        disabled={dialogueMode.value !== "role"}
       />
     </div>
     {currentValue.value.map((text, index) => (
@@ -123,11 +128,18 @@ export default function Say(props: ISentenceEditorProps) {
       submit();
     }}>{t('add.button')}</Button>}
     <div className={styles.editItem}>
-      <CommonOptions key="isNoDialog" title={t('voiceover.title')}>
-        <TerreToggle title="" onChange={(newValue) => {
-          isNoSpeaker.set(newValue);
-          submit();
-        }} onText={t('voiceover.on')} offText={t('voiceover.off')} isChecked={isNoSpeaker.value}/>
+      <CommonOptions key="Mode" title="模式">
+        <Dropdown
+          value={modes.get(dialogueMode.value) ?? dialogueMode.value}
+          selectedOptions={[dialogueMode.value]}
+          onOptionSelect={(event, data) => {
+            dialogueMode.set(data.optionValue ?? "");
+            submit();
+          }}
+          style={{ minWidth: 0}}
+        >
+          {Array.from(modes.entries()).map(([key, value]) => <Option key={key} value={key}>{value}</Option>) }
+        </Dropdown>
       </CommonOptions>
       <CommonOptions key="Vocal" title={t('vocal.title')}>
         <>
