@@ -1858,6 +1858,14 @@ input[type=range]::-moz-range-track {
   height: 100%;
   color: white;
   display: none;
+}._variableNameWrapper_1c90s_1 {
+  min-height: 50px;
+  min-width: 50px;
+  color: #fff;
+  font-size: 50px;
+  background-color: #08c;
+  z-index: 999;
+  padding: 20px;
 }
 ._extra_1tymt_2 {
   width: 100%;
