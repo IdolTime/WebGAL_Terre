@@ -42,7 +42,15 @@
 
     window.pubsub = new PubSub();
   </script>
-  <script type="module" crossorigin src="./assets/index-e0eedb97.js"></script>
+  <style>
+    #loading-icon {
+      position: absolute;
+      left: -30px;
+      transform: translateX(-100%);
+      transition: left 0.33s linear;
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-2e1ffed3.js"></script>
   <link rel="stylesheet" href="./assets/index-88cf2768.css">
 </head>
 
@@ -100,7 +108,7 @@
 
       <!-- loading page -->
       <div class="loading-page" style="
-          width: 100%; 
+          width: auto; 
           height: 100%;
           display: flex;
           justify-content: center;
@@ -113,18 +121,25 @@
           bottom: 0;
           z-index: 997;
         ">
-        <img style="display: block; width: 100%; height: 100%; object-fit: cover;"
-          src="./assets/loading-enter-71c28cd7.webp" />
-        <img id="bar-image"
-          style="width: 90%; max-height: 100%; object-fit: cover;position: absolute;bottom: 35px; z-index: 998;clip-path: url(#clipW);"
-          src="./assets/loading-bar-94c0f1c3.png" alt="" />
-        <svg width="100%" height="0">
-          <defs>
-            <clipPath id="clipW">
-              <rect id="rectW" width="0" height="0" style="fill: #fff;" />
-            </clipPath>
-          </defs>
-        </svg>
+        <div style="position: relative;height:100%;width: auto;">
+          <img style="display: block; width: auto; height: 100%; object-fit: cover;"
+            src="./assets/loading-enter-71c28cd7.webp" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 90 90" fill="none"
+            id="loading-icon">
+            <g filter="url(#filter0_f_198_3)">
+              <circle cx="45" cy="45" r="15" fill="white" />
+            </g>
+            <defs>
+              <filter id="filter0_f_198_3" x="0" y="0" width="90" height="90" filterUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="15" result="effect1_foregroundBlur_198_3" />
+              </filter>
+            </defs>
+            <circle cx="45" cy="45" r="15" fill="white" />
+          </svg>
+        </div>
       </div>
     </div>
   </div>
@@ -142,6 +157,10 @@
     }
     window.isSafari = isSafari();
     window.isIOSDevice = isIOSDevice;
+    const loadingIcon = document.getElementById('loading-icon');
+
+    loadingIcon.style.bottom = (window.isIOSDevice ? 130 : 96) + 'px';
+
     function resize() {
       const targetHeight = 1440;
       const targetWidth = 2560;
@@ -197,10 +216,10 @@
         /**
          * iOS 不强制旋转
          */
-        if (isIOSDevice) {
-          const zoomWi = w / targetWidth;
-          transform = `translate(${-mw}px, ${-mh}px) scale(${zoomWi},${zoomWi})`
-        }
+        // if (isIOSDevice) {
+        //   const zoomWi = w / targetWidth;
+        //   transform = `translate(${-mw}px, ${-mh}px) scale(${zoomWi},${zoomWi})`
+        // }
       }
       if (ebg) {
         ebg.style.transform = ebgTransform;
@@ -271,8 +290,6 @@
   <!--<script src="lib/live2dcubismcore.min.js"></script>-->
   <script>
     const title = document.getElementById("Title_enter_page");
-    const barImage = document.getElementById('bar-image');
-    const barImageLayout = barImage.getBoundingClientRect();
     const transformString = (title.style.transform?.split('scale') || [])[1]
     const matches = transformString?.match(/\(([^,]+),\s*([^)]+)\)/);
     const downloadCompleteRef = { current: 0 };
@@ -314,9 +331,8 @@
     }
 
     function setProgress(num, width, height) {
-      const progress = document.getElementById('rectW');
-      progress.setAttribute('width', (num / 100 * width).toFixed(2) + 'px');
-      progress.setAttribute('height', height + 'px')
+      const progress = document.getElementById('loading-icon');
+      progress.style.left=  num + '%';
     }
 
     const dispose = window.pubsub.subscribe('sceneAssetsLoaded', ({ sceneName }) => {
@@ -326,10 +342,10 @@
           downloadCompleteRef.current = 1;
         } else {
           clearTimeout(progressTimerRef.current);
-          setProgress(100, barImageLayout.width / scaleX, barImageLayout.height / scaleY);
+          setProgress(100);
           setTimeout(() => {
             show();
-          }, 300);
+          }, 500);
         }
       }
     })
@@ -395,9 +411,9 @@
             progressTimerRef.current = setTimeout(() => {
               num += getRandomInt(5, 10)
               num = Math.min(100, num);
-              setProgress(num, barImageLayout.width / scaleX, barImageLayout.height / scaleY)
+              setProgress(num)
               countdown();
-            }, 200);
+            }, 330);
           }
         }
         countdown()
@@ -416,9 +432,9 @@
               increment += 0.1;
             }
             num = Math.min(50 + increment, num);
-            setProgress(num, barImageLayout.width / scaleX, barImageLayout.height / scaleY)
+            setProgress(num)
             countdown();
-          }, 200);
+          }, 330);
         }
         countdown()
       }
