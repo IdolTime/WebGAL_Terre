@@ -657,6 +657,19 @@ export const zhCn = {
             minValue: "最小值"
           }
         },
+        showValue: {
+          title: "显示变量",
+          initText: "showValue:;",
+          descText: '显示一个变量的值',
+          options: {
+            name: "变量名称",
+          },
+          transform: {
+            title: "显示坐标",
+            x: " X",
+            y: " Y",
+          }
+        },
         unknown: {
           title: "未识别",
           options: {

@@ -60,7 +60,6 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
   function updateSentenceByIndex(newSentence: string, updateIndex: number) {
     const arr = splitToArray(sceneText.value);
     arr[updateIndex] = newSentence;
-    // debugger
     submitSceneAndUpdate(mergeToString(arr), updateIndex);
   }
 

@@ -45,6 +45,7 @@ import SetVar from "./SetVar";
 import SetTransform from "./SetTransform";
 import SetTransition from "./SetTransition";
 import GetUserInput from "./GetUserInput";
+import ShowValue from './ShowValue'
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -256,5 +257,13 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: SetVar,
     icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'setVar.descText')
+  },
+  {
+    type: commandType.showValue,
+    title: () => t(tPrefix + 'showValue.title'),
+    initialText: () => t(tPrefix + 'showValue.initText'),
+    component: ShowValue,
+    icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'showValue.descText')
   }
 ];
