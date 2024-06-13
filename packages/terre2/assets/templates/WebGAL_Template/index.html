@@ -58,8 +58,8 @@
       }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-40a6a755.js"></script>
-  <link rel="stylesheet" href="./assets/index-2faf5254.css">
+  <script type="module" crossorigin src="./assets/index-72e53855.js"></script>
+  <link rel="stylesheet" href="./assets/index-f32cf561.css">
 </head>
 
 <body>
@@ -279,17 +279,31 @@
     /**
      * 注册 Service Worker
      */
-    const u = navigator.userAgent;
-    const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // 判断是否是 iOS终端
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./webgal-serviceworker.js").then(function (reg) {
-        // registration worked
-        console.log("Registration succeeded. Scope is " + reg.scope);
-      }).catch(function (error) {
-        // registration failed
-        console.log("Registration failed with " + error);
-      });
-    }
+    window.pubsub.subscribe('isPreviewMode', (res) => {
+      if (res) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+          for (let registration of registrations) {
+            registration.unregister().then(function () {
+              console.log('Service Worker unregistered:', registration);
+            });
+          }
+        }).catch(function (error) {
+          console.error('Error getting Service Worker registrations:', error);
+        });
+      } else {
+        const u = navigator.userAgent;
+        const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // 判断是否是 iOS终端
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("./webgal-serviceworker.js").then(function (reg) {
+            // registration worked
+            console.log("Registration succeeded. Scope is " + reg.scope);
+          }).catch(function (error) {
+            // registration failed
+            console.log("Registration failed with " + error);
+          });
+        }
+      }
+    })
   </script>
   
   <!--<script type="module" src="/src/Core/util/resize.ts"></script>-->
@@ -411,7 +425,7 @@
       //   if (title)
       //     title.style.opacity = "0";
       // }, 500); //500ms后开始降低落地页透明度
-      if (!isIOS && title) {
+      if (!window.isIOSDevice && title) {
         title.style.background = "linear-gradient( #a1c4fd 0%, #c2e9fb 100%)"; //改变标题渐变效果
       }
 
