@@ -15,6 +15,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
   const isSkipOff = useValue(!!getArgByKey(props.sentence, "skipOff"));
   const isLoop = useValue(!!getArgByKey(props.sentence, "loop"));
   const isChoose = useValue(!!getArgByKey(props.sentence, "choose"));
+  const continueBgm = useValue(!!getArgByKey(props.sentence, "continueBgm"));
   const chooseValueRef = useRef((props.sentence.args.filter(ele => ele.key === 'choose')[0]?.value as string) ||'选项:选择场景文件|选项:选择场景文件');
 
   const initComanRef: any = [];
@@ -58,7 +59,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
   };
 
   // 是否选择分支
-  const submitCoose = useCallback(() => {
+  const submitChoose = useCallback(() => {
     let res: any = [];
     if (isChoose.value) {
       res = [...commandRef.current, `-choose=${chooseValueRef.current}`];
@@ -68,6 +69,17 @@ export default function PlayVideo(props: ISentenceEditorProps) {
     commandRef.current = res;
     dispacthProps(res);
   }, [isChoose]);
+
+  const submitContinueBgm = () => {
+    let res: any = [];
+    if (continueBgm.value) {
+      res = [...commandRef.current, '-continueBgm=true'];
+    } else {
+      res = commandRef.current.filter((item: string) => item !== '-continueBgm=true');
+    }
+    commandRef.current = res;
+    dispacthProps(res);
+  };
 
   const onChoose = (val: string) => {
     const idx = commandRef.current.findIndex((item: string) => item === `-choose=${chooseValueRef.current}`);
@@ -112,8 +124,14 @@ export default function PlayVideo(props: ISentenceEditorProps) {
       <CommonOptions key="4" title='开启分支选择'>
         <TerreToggle title="" onChange={(newValue) => {
           isChoose.set(newValue);
-          submitCoose();
+          submitChoose();
         }} onText='是' offText='否' isChecked={isChoose.value} />
+      </CommonOptions>
+      <CommonOptions key="5" title='继续播放BGM'>
+        <TerreToggle title="" onChange={(newValue) => {
+          continueBgm.set(newValue);
+          submitContinueBgm();
+        }} onText='继续' offText='暂停' isChecked={continueBgm.value} />
       </CommonOptions>
     </div>
     {isChoose.value &&

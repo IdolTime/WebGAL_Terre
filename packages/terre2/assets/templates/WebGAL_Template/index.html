@@ -58,8 +58,8 @@
       }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-e3c52cc5.js"></script>
-  <link rel="stylesheet" href="./assets/index-f32cf561.css">
+  <script type="module" crossorigin src="./assets/index-2904a410.js"></script>
+  <link rel="stylesheet" href="./assets/index-80e96957.css">
 </head>
 
 <body>
@@ -368,7 +368,6 @@
         if (!progressTimerRef.current) {
           downloadCompleteRef.current = 1;
         } else {
-          console.error(1111, progressTimerRef.current)
           clearTimeout(progressTimerRef.current);
           setProgress(100, barImageLayout.width / scaleX, barImageLayout.height / scaleY);
           setTimeout(() => {
