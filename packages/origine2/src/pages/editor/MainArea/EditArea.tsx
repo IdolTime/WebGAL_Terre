@@ -57,14 +57,15 @@ export default function EditArea() {
 }
 
 const imageTypes = ["png", "jpg", "jpeg", "gif", "webp"];
-const videoTypes = ["mp4", "webm", "ogg", "flv"];
-const audioTypes = ["mp3", "wav", "aac"];
+const videoTypes = ["mp4", "webm", "ogv", "flv"];
+const audioTypes = ["mp3", "wav", "aac", "ogg"];
 const animationTypes = ["json"];
 
 function getFileType(path: string): ResourceType | null {
   const parts = path.split(/[/\\]/);
   const fileName = parts[parts.length - 1];
-  const extension = fileName.split(".")[1].toLowerCase();
+  const fileNameSplit = fileName.split(".");
+  const extension = fileNameSplit[fileNameSplit.length - 1].toLowerCase();
 
   if (imageTypes.includes(extension)) {
     return ResourceType.Image;
