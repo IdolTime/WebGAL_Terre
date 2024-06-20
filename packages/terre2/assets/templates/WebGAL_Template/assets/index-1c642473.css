@@ -2354,93 +2354,41 @@ input[type=range]::-moz-range-track {
 ._langSelectButton_8uz61_35:hover {
   background: white;
   color: #93a5cf;
-}._panic_overlay_main_1ysz4_1 {
-  margin: 0;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  z-index: 256;
-}._yoozle_blue_1r48o_1 {
-  color: #4285f4;
 }
-
-._yoozle_red_1r48o_5 {
-  color: #db4437;
+._storyLine_jp7oj_2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
 }
-
-._yoozle_yellow_1r48o_9 {
-  color: #f4b400;
+._storyLine_jp7oj_2 ._storyLine_header_jp7oj_10 {
+  padding: 10px 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
 }
-
-._yoozle_green_1r48o_13 {
-  color: #0f9d58;
+._storyLine_jp7oj_2 ._storyLine_header_jp7oj_10 ._goBack_jp7oj_17 {
+  color: #666;
+  font-size: 50px;
 }
-
-._yoozle_e_rotate_1r48o_17 {
-  display: inline-block;
-  transform: rotate(-12deg);
-}
-
-._yoozle_container_1r48o_22 {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-._yoozle_title_1r48o_28 {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 80px;
-  font-family: arial, sans-serif;
-  font-size: 90px;
-}
-
-._yoozle_search_1r48o_37 {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 10px;
-}
-
-._yoozle_search_bar_1r48o_44 {
-  width: 40%;
-  line-height: 32px;
-  font-family: arial, sans-serif;
-  font-size: 18px;
-}
-
-._yoozle_search_buttons_1r48o_51 {
-  padding-top: 13px;
-}
-
-._yoozle_button_1r48o_55 {
-  background-color: #f8f9fa;
-  border: 1px solid #f8f9fa;
-  border-radius: 4px;
-  color: #3c4043;
-  font-family: arial, sans-serif;
-  font-size: 14px;
-  margin: 11px 4px;
-  padding: 0 16px;
-  line-height: 27px;
-  height: 36px;
-  min-width: 54px;
-  text-align: center;
+._storyLine_jp7oj_2 ._storyLine_header_jp7oj_10 ._goBack_jp7oj_17:hover {
   cursor: pointer;
-  user-select: none;
 }
-
-._yoozle_button_1r48o_55:hover {
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-  border: 1px solid #dadce0;
-  color: #202124;
+._storyLine_jp7oj_2 ._storyLine_header_jp7oj_10 ._title_jp7oj_24 {
+  color: #000;
+  font-size: 50px;
+  margin-left: 50px;
 }
-
-._yoozle_button_1r48o_55:focus {
-  border: 1px solid #4285f4;
-  outline: none;
+._storyLine_jp7oj_2 ._storyLine_content_jp7oj_29 {
+  height: 100%;
+  width: 100%;
+  overflow-x: scroll; /* 允许水平滚动 */
+  overflow-y: hidden; /* 禁止垂直滚动 */
+  background-repeat: no-repeat; /* 防止背景图重复 */
+  background-size: cover;
 }
 @keyframes centerIn {
   0% {
