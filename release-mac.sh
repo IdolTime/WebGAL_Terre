@@ -60,14 +60,14 @@ cd ..
 mkdir release-mac
 mv release release-mac
 cd release-mac
-mv release WebGAL
+mv release IdolTime_Editor
 cd ..
 mv release-mac release
 cd release
 
 # 写脚本
 echo 'cd "$(dirname "$0")"' >> run-idoltime-on-mac.command
-echo 'cd WebGAL' >> run-idoltime-on-mac.command
+echo 'cd IdolTime_Editor' >> run-idoltime-on-mac.command
 echo './IdolTime_Editor' >> run-idoltime-on-mac.command
 chmod +x run-idoltime-on-mac.command
 
