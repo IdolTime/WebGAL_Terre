@@ -7,7 +7,8 @@ import {
   AddMusic,
   AddPicture,
   AlignLeftTwo,
-  AlignTextBottomOne, ApplicationEffect,
+  AlignTextBottomOne, 
+  ApplicationEffect,
   AutoWidth,
   Avatar,
   Code,
@@ -21,8 +22,10 @@ import {
   Music,
   NewPicture,
   People,
-  SwitchThemes, Transform,
-  VideoTwo
+  SwitchThemes, 
+  Transform,
+  VideoTwo,
+  Unlock
 } from "@icon-park/react";
 import ChangeBg from "./ChangeBg";
 import ChangeFigure from "./ChangeFigure";
@@ -45,6 +48,8 @@ import SetVar from "./SetVar";
 import SetTransform from "./SetTransform";
 import SetTransition from "./SetTransition";
 import GetUserInput from "./GetUserInput";
+import AchieveBg from "./AchieveBg";
+import UnlockAchieve from './UnlockAchieve';
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -256,5 +261,21 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: SetVar,
     icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'setVar.descText')
-  }
+  },
+  // {
+  //   type: commandType.achieveBg,
+  //   title: () => t(tPrefix + 'achieveBg.title'),
+  //   initialText: () => t(tPrefix + 'achieveBg.initText'),
+  //   component: AchieveBg,
+  //   icon: <NewPicture theme="multi-color" className={styles.iconSvg} size="24"/>,
+  //   descText: () => t(tPrefix + 'achieveBg.descText')
+  // },
+  {
+    type: commandType.unlockAchieve,
+    title: () => t(tPrefix + 'unlockAchieve.title'),
+    initialText: () => t(tPrefix + 'unlockAchieve.initText'),
+    component: UnlockAchieve,
+    icon: <Unlock theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'unlockAchieve.descText')
+  },
 ];

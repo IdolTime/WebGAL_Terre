@@ -170,4 +170,22 @@ setVar:a=人物名称;可以设置字符串`,
     detail: `command setVar:<expression>;`,
     insertText: 'setVar:',
   },
+  {
+    label: 'achieveBg',
+    kind: CompletionItemKind.Function,
+    documentation: `更新成就背景图片
+    achieveBg:testBG03.jpg -next;`,
+    detail: `command achieveBg:<fileName> [-next];`,
+    insertText: 'achieveBg',
+  },
+  {
+    label: 'unlockAchieve',
+    kind: CompletionItemKind.Function,
+    documentation: `使用变量
+    unlockAchieve:a=1;可以设置数字
+    unlockAchieve:a=true;可以设置布尔值
+    unlockAchieve:a=人物名称;可以设置字符串`,
+    detail: `command unlockAchieve:<expression>;`,
+    insertText: 'unlockAchieve:',
+  },
 ];
