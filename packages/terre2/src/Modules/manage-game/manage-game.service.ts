@@ -55,7 +55,7 @@ export class ManageGameService {
     );
     // 递归复制
     await this.webgalFs.copy(
-      this.webgalFs.getPathFromRoot('/assets/templates/WebGAL_Template/game/'),
+      this.webgalFs.getPathFromRoot('/assets/templates/IdolTime_Template/game/'),
       this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/`),
     );
     return true;
@@ -123,7 +123,7 @@ export class ManageGameService {
 
     const electronTemplateDir = resolve(
       process.cwd(),
-      'assets/templates/WebGAL_Electron_Template/',
+      'assets/templates/IdolTime_Electron_Template/',
     );
 
     if (!(await this.webgalFs.existsDir(electronTemplateDir)))
@@ -161,12 +161,12 @@ export class ManageGameService {
         await this.webgalFs.mkdir(electronExportDir, '');
         await this.webgalFs.copy(
           this.webgalFs.getPathFromRoot(
-            `/assets/templates/WebGAL_Electron_Template/`,
+            `/assets/templates/IdolTime_Electron_Template/`,
           ),
           `${electronExportDir}/`,
         );
         await this.webgalFs.copy(
-          this.webgalFs.getPathFromRoot('/assets/templates/WebGAL_Template'),
+          this.webgalFs.getPathFromRoot('/assets/templates/IdolTime_Template'),
           `${electronExportDir}/resources/app/public/`,
         );
         // 修改 manifest.json
@@ -196,12 +196,12 @@ export class ManageGameService {
         await this.webgalFs.mkdir(electronExportDir, '');
         await this.webgalFs.copy(
           this.webgalFs.getPathFromRoot(
-            `/assets/templates/WebGAL_Electron_Template/`,
+            `/assets/templates/IdolTime_Electron_Template/`,
           ),
           `${electronExportDir}/`,
         );
         await this.webgalFs.copy(
-          this.webgalFs.getPathFromRoot('/assets/templates/WebGAL_Template'),
+          this.webgalFs.getPathFromRoot('/assets/templates/IdolTime_Template'),
           `${electronExportDir}/resources/app/public/`,
         );
         // 修改 manifest.json
@@ -231,12 +231,12 @@ export class ManageGameService {
         await this.webgalFs.mkdir(electronExportDir, '');
         await this.webgalFs.copy(
           this.webgalFs.getPathFromRoot(
-            `/assets/templates/WebGAL_Electron_Template/`,
+            `/assets/templates/IdolTime_Electron_Template/`,
           ),
           `${electronExportDir}/`,
         );
         await this.webgalFs.copy(
-          this.webgalFs.getPathFromRoot('/assets/templates/WebGAL_Template'),
+          this.webgalFs.getPathFromRoot('/assets/templates/IdolTime_Template'),
           `${electronExportDir}/Contents/Resources/app/public/`,
         );
         // 修改 manifest.json
@@ -270,12 +270,12 @@ export class ManageGameService {
       );
       await this.webgalFs.copy(
         this.webgalFs.getPathFromRoot(
-          `/assets/templates/WebGAL_Android_Template/`,
+          `/assets/templates/IdolTime_Android_Template/`,
         ),
         `${androidExportDir}/`,
       );
       await this.webgalFs.copy(
-        this.webgalFs.getPathFromRoot('/assets/templates/WebGAL_Template'),
+        this.webgalFs.getPathFromRoot('/assets/templates/IdolTime_Template'),
         `${androidExportDir}/app/src/main/assets/webgal/`,
       );
       // 修改 manifest.json
@@ -333,7 +333,7 @@ export class ManageGameService {
       const webExportDir = this.webgalFs.getPath(`${exportDir}/web`);
       await this.webgalFs.mkdir(webExportDir, '');
       await this.webgalFs.copy(
-        this.webgalFs.getPathFromRoot('/assets/templates/WebGAL_Template'),
+        this.webgalFs.getPathFromRoot('/assets/templates/IdolTime_Template'),
         `${webExportDir}/`,
       );
       // 修改 manifest.json

@@ -1,5 +1,0 @@
-Game_name:欢迎来到IdolTime！;
-Game_key:;
-Title_img:title-bg.png;
-Title_bgm:s_Title.mp3;
-Textbox_theme:imss;

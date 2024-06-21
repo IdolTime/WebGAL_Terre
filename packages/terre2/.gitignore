@@ -34,7 +34,7 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-/assets/templates/WebGAL_Electron_Template
+/assets/templates/IdolTime_Electron_Template
 
 Exported_Games/*
 public/games/*

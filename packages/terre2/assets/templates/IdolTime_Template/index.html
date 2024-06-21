@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/x-icon" href="./icons/favicon.ico" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.json" />
+  <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
+  <title>IdolTime</title>
+  <script>
+    function PubSub() {
+      this.subscribers = {};
+    }
+
+    PubSub.prototype.subscribe = function (topic, callback) {
+      if (!this.subscribers[topic]) {
+        this.subscribers[topic] = [];
+      }
+      this.subscribers[topic].push(callback);
+      var that = this;
+      return function () {
+        that.unsubscribe(topic, callback);
+      };
+    };
+
+    PubSub.prototype.publish = function (topic, data) {
+      if (this.subscribers[topic]) {
+        this.subscribers[topic].forEach(function (callback) {
+          callback(data);
+        });
+      }
+    };
+
+    PubSub.prototype.unsubscribe = function (topic, callback) {
+      if (this.subscribers[topic]) {
+        this.subscribers[topic] = this.subscribers[topic].filter(function (cb) {
+          return cb !== callback;
+        });
+      }
+    };
+
+    window.pubsub = new PubSub();
+  </script>
+<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/index.html
+  <style>
+    #updating-text {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: #fff;
+      font-size: 36px;
+      bottom: 3.5%;
+      line-height: 44px;
+
+      span {
+        margin-left: 30px;
+      }
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-8faa3828.js"></script>
+  <link rel="stylesheet" href="./assets/index-80e96957.css">
+=======
+  <script type="module" crossorigin src="./assets/index-060f2080.js"></script>
+  <link rel="stylesheet" href="./assets/index.css">
+>>>>>>> develop/idol_vg:packages/terre2/assets/templates/IdolTime_Template/index.html
+</head>
+
+<body>
+  <!--快速显示落地页，让用户感知不到加载的过程-->
+  <div id="ebg"></div>
+  <div id="Title_enter_page" style="
+            width: 2560px;
+            height: 1440px;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            z-index: 14;
+            opacity: 1;
+            transition: opacity 2s linear;
+">
+    <!--    落地页背景-->
+    <div id="Title_bg_container" style="
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    opacity: 1;
+    transition: opacity 1s;
+"></div>
+    <!--    点击后的白色渐变-->
+    <div id="Title_white_container" style="
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+"></div>
+
+    <div id="Title_enter_text" style="width: 100%; height: 100%;">
+      <!-- logo page -->
+      <div class="logo-page" style="
+          width: 100%;
+          height: 100%;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 999;
+          opacity: 1;
+          transition: opacity 1s;
+          background-color: #000;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+        ">
+        <img src="data:image/png;base64,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" style="width: 400px; height: 65px; object-fit: cover;" />
+      </div>
+
+      <!-- loading page -->
+      <div class="loading-page" style="
+          width: auto; 
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 997;
+        ">
+        <div style="position: relative;height:100%;width: auto;">
+          <div id="updating-text">
+            正在更新中... <span>0%</span>
+            <br />
+            建议在wifi环境下进行下载，资源文件较多，请耐心等待！
+          </div>
+          <img style="display: block; width: auto; height: 100%; object-fit: cover;"
+            src="./assets/loading-enter-bd055204.png" />
+          <img style="position: absolute;width: 100%;height: auto;bottom:10%;left:0;"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAAAAAFBAMAAADoP1zQAAAAHlBMVEVbW1sAAABdXV1dXV1tbW1cXFxdXV1bW1tbW1tcXFzh3LRnAAAACnRSTlNzADEqB2FjZTdkSHQp1AAAAFpJREFUSMdjoDfgjAxyFBRRHQZE0tAj1PATQY5OCQzDH7AbCgpPIEwUYCM4hx3BNqgIS4aRABoFJUaJwUk0MIwAMFoCDt5ydASUgOzDpQ2oNgmVSBoOBP3bgACcqlRBayFX2wAAAABJRU5ErkJggg==" />
+          <img id="bar-img"
+            style="position: absolute;width: 100%;height: auto;bottom:10%;left:0;clip-path: url(#clipW);"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABQAAAAAFCAMAAAAtz7HRAAAA21BMVEUAAADfz7PaxqnZxKjcy6/Yw6bg0LbZwqXcyq7i1bnezbHezbDcyazaxqnf0LXbyKzYw6baxqrh07fbyazh1Ljf0LTdy7Dbxqnfz7PZxKfg07fYwaTYwaXg07baxanYwqbXwqXj17zezLDj2L3i377cyq7g0rbi1bng0rbg0bbezrLi1brj2L3j2LzXwKTVvaDWv6LXwKPVvqHWvqHq5cvo4cbn38Xm3cPt6c/l2r/cyq7Yw6bezrLr587r5szh07jp5Mnp4sjbyKzr583g0bXaxqnk2b7l3MHj17v4aFYqAAAAL3RSTlMAEA9fXm1e195f3W5t12/XfN/cem/e2G3Y3tje/Hj6317afm4P+H7f3/j49999wxMksUQAAAGtSURBVFjD7djpVoJAFMBx911xQ1HcSMvKbF+BogiI93+iiAFBGYYZIetw+H+45/cE99xzU1fhuw3qzrfrvbohaMReFov5TMook/9Pqtdx1cdR31YaX5QtyqsaRdV+S71qelc9W9WDiEGJYRo4aoTS0FHX0hBPXZQWgZoDzTlHHFQLY2qbXmB9OT3Be4T3AO/D3bu7e7/etvt09brdM7TYL0AzdpYymrGGsmQSBEdTU9kpgWZeDYAGPsruSlU9auGrhZLcygHJUJVM5dAqocXzkarC8xWURKBCRdxfdKAKlhTaVJlWUDoNUtsjSUJoGVJlIF3ngC5g0jSubMxkAcZjAY6aKaPmiFyCELUmQAJEE5hUFVudH3XwJVtSZaiOgWRSHbnE85b4g0g8tyR6JW5pHIGUM1MnooKSQi5JwpLk1opIa0nXLekwadpqvNaTBRiTBZhcgFDJtmS4wF3lpzhfgAVbNEzxugCXyQUY5wVo/ADZP//3Yf0AwR8vtNI1tCgKV7VI1ettVKqm91Q1SA1bFa8YUjWgokk1dKnrVdtSF1dthBaB2nz52skP0OgbNZbTBDKqKXMAAAAASUVORK5CYII=" />
+          <svg width="100%" height="0">
+            <defs>
+              <clipPath id="clipW">
+                <rect id="rectW" style="fill: #fff;transition: 0.33s width linear;width:0;height:0;" />
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="panic-overlay"> <!-- 紧急回避 --> </div>
+  <div id="root"></div>
+  <script>
+    /**
+     * 在窗口大小改变时进行强制缩放
+     */
+    const ua = navigator.userAgent;
+    const isIOSDevice = !!ua.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+    function isSafari() {
+      const ua = navigator.userAgent.toLowerCase();
+      return ua.includes('safari') && !ua.includes('chrome') && !ua.includes('android');
+    }
+    window.isSafari = isSafari();
+    window.isIOSDevice = isIOSDevice;
+<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/index.html
+
+=======
+>>>>>>> develop/idol_vg:packages/terre2/assets/templates/IdolTime_Template/index.html
+    function resize() {
+      const targetHeight = 1440;
+      const targetWidth = 2560;
+
+      const h = window.innerHeight; // 窗口高度
+      const w = window.innerWidth; // 窗口宽度
+      const zoomH = h / targetHeight; // 以窗口高度为基准的变换比
+      const zoomW = w / targetWidth; // 以窗口宽度为基准的变换比
+      const zoomH2 = w / targetHeight; // 竖屏时以窗口高度为基础的变换比
+      const zoomW2 = h / targetWidth; // 竖屏时以窗口宽度为基础的变换比
+      let mh = (targetHeight - h) / 2; // y轴移动距离
+      let mw = (targetWidth - w) / 2; // x轴移动距离
+      let mh2os = targetWidth / 2 - w / 2; // 竖屏时 y轴移动距离
+      let mw2os = targetHeight / 2 - h / 2; // 竖屏时 x轴移动距离
+      let transform = '';
+      let ebgTransform = '';
+      const root = document.getElementById('root'); // 获取根元素
+      const title = document.getElementById('Title_enter_page');
+      const ebg = document.getElementById('ebg');
+      const elements = [root, title];
+      if (w > h) {
+        const ebg = document.getElementById('ebg');
+        if (ebg) {
+          ebg.style.height = `100vh`;
+          ebg.style.width = `100vw`;
+          ebgTransform = '';
+        }
+        mw = -mw;
+        mh = -mh;
+        if (w * (9 / 16) >= h) {
+          transform = `translate(${mw}px, ${mh}px) scale(${zoomH},${zoomH})`;
+        }
+        if (w * (9 / 16) < h) {
+          transform = `translate(${mw}px, ${mh}px) scale(${zoomW},${zoomW})`;
+        }
+      } else {
+        /**
+         * 旋转
+         */
+        if (ebg) {
+          ebg.style.height = `${targetHeight}px`;
+          ebg.style.width = `${targetWidth}px`;
+        }
+        mw2os = -mw2os;
+        if (h * (9 / 16) >= w) {
+          ebgTransform = `rotate(90deg) translate(${mw2os}px, ${mh2os}px) scale(${zoomH2 * 1.75},${zoomH2 * 1.75})`;
+          transform = `rotate(90deg) translate(${mw2os}px, ${mh2os}px) scale(${zoomH2},${zoomH2})`;
+        }
+        if (h * (9 / 16) < w) {
+          ebgTransform = `rotate(90deg) translate(${mw2os}px, ${mh2os}px) scale(${zoomW2 * 1.75},${zoomW2 * 1.75})`;
+          transform = `rotate(90deg) translate(${mw2os}px, ${mh2os}px) scale(${zoomW2},${zoomW2})`;
+        }
+        /**
+         * iOS 不强制旋转
+         */
+        // if (isIOSDevice) {
+        //   const zoomWi = w / targetWidth;
+        //   transform = `translate(${-mw}px, ${-mh}px) scale(${zoomWi},${zoomWi})`
+        // }
+      }
+      if (ebg) {
+        ebg.style.transform = ebgTransform;
+      }
+      for (const element of elements) {
+        if (element) {
+          element.style.transform = transform;
+        }
+      }
+    }
+
+    if (!isIOSDevice) {
+      // 创建一个新的 meta 标签
+      const meta = document.createElement('meta');
+      meta.name = "viewport";
+      meta.content = "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no";
+      // 将该标签添加到 head 中
+      document.getElementsByTagName('head')[0].appendChild(meta);
+      resize();
+      window.onload = resize;
+      window.onresize = resize;
+      // 监听键盘 F11 事件，全屏时触发页面调整
+      document.onkeydown = function (event) {
+        const e = event;
+        if (e && e.key === 'F11') {
+          setTimeout(() => {
+            resize();
+          }, 100);
+        }
+      };
+    } else {
+      // ios
+      const meta = document.createElement('meta');
+      meta.name = "viewport";
+      meta.content = "width=device-width, initial-scale=0.22, minimum-scale=0.01, maximum-scale=1";
+      document.getElementsByTagName('head')[0].appendChild(meta);
+      const style = document.createElement('style');
+      style.type = 'text/css';
+      style.textContent = '* { font-synthesis: none !important; }';
+      document.head.appendChild(style);
+      const root = document.getElementById('root');
+      root.style.position = 'absolute';
+      root.style.left = '50%';
+      root.style.top = '50%';
+      root.style.transform = 'translate(-50%,-50%)';
+    }
+
+  </script>
+  <script>
+    /**
+     * 注册 Service Worker
+     */
+    window.pubsub.subscribe('isPreviewMode', (res) => {
+      if (res) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+          for (let registration of registrations) {
+            registration.unregister().then(function () {
+              console.log('Service Worker unregistered:', registration);
+            });
+          }
+        }).catch(function (error) {
+          console.error('Error getting Service Worker registrations:', error);
+        });
+      } else {
+        const u = navigator.userAgent;
+        const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // 判断是否是 iOS终端
+        if ("serviceWorker" in navigator) {
+<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/index.html
+          navigator.serviceWorker.register("./webgal-serviceworker.js").then(function (reg) {
+=======
+          navigator.serviceWorker.register("./idoltime-serviceworker.js").then(function (reg) {
+>>>>>>> develop/idol_vg:packages/terre2/assets/templates/IdolTime_Template/index.html
+            // registration worked
+            console.log("Registration succeeded. Scope is " + reg.scope);
+          }).catch(function (error) {
+            // registration failed
+            console.log("Registration failed with " + error);
+          });
+        }
+      }
+    })
+  </script>
+  
+  <!--<script type="module" src="/src/Core/util/resize.ts"></script>-->
+  <!--<script src="lib/live2d.min.js"></script>-->
+  <!--<script src="lib/live2dcubismcore.min.js"></script>-->
+  <script>
+    const title = document.getElementById("Title_enter_page");
+    const barImage = document.getElementById('bar-img');
+    const barImageLayout = barImage.getBoundingClientRect();
+    const transformString = (title.style.transform?.split('scale') || [])[1]
+    const matches = transformString?.match(/\(([^,]+),\s*([^)]+)\)/);
+    const downloadCompleteRef = { current: 0 };
+    const progressTimerRef = { current: null }
+    let scaleX = 1;
+    let scaleY = 1;
+
+    const logoPage = document.querySelector('.logo-page');
+    const loadingPage = document.querySelector('.loading-page');
+
+    if (logoPage) {
+      setTimeout(() => {
+        logoPage.style.opacity = 0;
+        enter();
+      }, 1000)
+    }
+
+    if (matches) {
+      scaleX = parseFloat(matches[1]);
+      scaleY = parseFloat(matches[2]);
+    }
+
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function show() {
+      title.style.opacity = 0;
+      setTimeout(() => {
+        if (title) {
+          title.style.display = "none";
+          title.remove();
+        }
+      }, 2000); // 将落地页设置为不显示
+      window.enterPromise();
+      delete window.enterPromise;
+    }
+
+    function setProgress(num, width, height) {
+      const progress = document.getElementById('rectW');
+      progress.style.width = (num / 100 * width).toFixed(2) + 'px';
+      progress.style.height = height + 'px';
+      const textWrapper = document.getElementById('updating-text');
+      const percentage = textWrapper.getElementsByTagName('span')[0];
+      percentage.innerText = num.toFixed(0) + '%';
+    }
+
+    const dispose = window.pubsub.subscribe('sceneAssetsLoaded', ({ sceneName }) => {
+      if (sceneName === 'start.txt') {
+        dispose();
+        if (!progressTimerRef.current) {
+          downloadCompleteRef.current = 1;
+        } else {
+          clearTimeout(progressTimerRef.current);
+          setProgress(100, barImageLayout.width / scaleX, barImageLayout.height / scaleY);
+          setTimeout(() => {
+            show();
+          }, 500);
+        }
+      }
+    })
+
+    let enterPromise = new Promise(res => window.enterPromise = res);
+    let renderPromise = new Promise(res => window.renderPromise = res);
+    /**
+     * 将播放bgm的事件发送出去
+     */
+    Promise.all([enterPromise, renderPromise]).then(() => {
+      const event = new MouseEvent("click", {
+        "view": window,
+        "bubbles": true,
+        "cancelable": true
+      });
+      const target = document.getElementById("enter_game_target");
+      if (target) {
+        target.dispatchEvent(event);
+      }
+      if (event) {
+        const logo = document.getElementById("logo_target");
+        if (logo) {
+          logo.style.display = "contents";
+        }
+      }
+    });
+
+    function jump(event, url) {
+      // 获取点击事件，阻止点击事件冒泡触发 `enter` 事件
+      event.stopPropagation();
+      // window.location = url;
+    }
+
+    /**
+     * 点击屏幕，进入引擎主界面
+     */
+    function enter() {
+      const bgContainer = document.getElementById("Title_bg_container");
+      if (bgContainer) {
+        bgContainer.style.opacity = "0"; // 调整标题背景的透明度
+      }
+      const whiteContainer = document.getElementById("Title_white_container");
+<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/index.html
+      // setTimeout(() => {
+      //   if (whiteContainer) {
+      //     whiteContainer.style.opacity = "1";
+      //   }
+      // }, 50); // 在50ms后开始显示白色渐变
+      // setTimeout(() => {
+      //   if (title)
+      //     title.style.opacity = "0";
+      // }, 500); //500ms后开始降低落地页透明度
+      if (!window.isIOSDevice && title) {
+=======
+      setTimeout(() => {
+        if (whiteContainer) {
+          whiteContainer.style.opacity = "1";
+        }
+      }, 50); // 在50ms后开始显示白色渐变
+      const title = document.getElementById("Title_enter_page");
+      setTimeout(() => {
+        if (title)
+          title.style.opacity = "0";
+      }, 500); //500ms后开始降低落地页透明度
+      if (!window.isIOSDevice && title) {
+        title.style.pointerEvents = "none"; //落地页不再响应点击
+>>>>>>> develop/idol_vg:packages/terre2/assets/templates/IdolTime_Template/index.html
+        title.style.background = "linear-gradient( #a1c4fd 0%, #c2e9fb 100%)"; //改变标题渐变效果
+      }
+
+      if (downloadCompleteRef.current === 1) {
+        let num = 0;
+        function countdown() {
+          if (num >= 100) {
+            clearTimeout(progressTimerRef.current);
+            show();
+          } else {
+            progressTimerRef.current = setTimeout(() => {
+              num += getRandomInt(5, 10)
+              num = Math.min(100, num);
+              setProgress(num, barImageLayout.width / scaleX, barImageLayout.height / scaleY)
+              countdown();
+            }, 330);
+          }
+        }
+        countdown()
+      } else {
+        let num = 0;
+        let increment = 0;
+        let base = 50;
+        function countdown() {
+          progressTimerRef.current = setTimeout(() => {
+            num += getRandomInt(1, 5);
+            if (num >= 50 && num < 70) {
+              increment += 0.5;
+            } else if (num >= 70 && num < 85) {
+              increment += 0.24;
+            } else if (num >= 85 && num < 98) {
+              increment += 0.1;
+            }
+            num = Math.min(50 + increment, num);
+            setProgress(num, barImageLayout.width / scaleX, barImageLayout.height / scaleY)
+            countdown();
+          }, 330);
+        }
+        countdown()
+      }
+    }
+  </script>
+</body>
+
+</html>
