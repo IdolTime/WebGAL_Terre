@@ -18,7 +18,7 @@ import { LspModule } from './Modules/lsp/lsp.module';
     }),
     // 静态文件服务：引擎模板
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'assets', 'templates', 'WebGAL_Template'),
+      rootPath: join(process.cwd(), 'assets', 'templates', 'IdolTime_Template'),
       serveRoot: '/games/:gamename/',
     }),
   ],
