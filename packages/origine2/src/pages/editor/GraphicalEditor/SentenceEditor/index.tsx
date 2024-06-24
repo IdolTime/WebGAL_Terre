@@ -7,7 +7,8 @@ import {
   AddMusic,
   AddPicture,
   AlignLeftTwo,
-  AlignTextBottomOne, ApplicationEffect,
+  AlignTextBottomOne, 
+  ApplicationEffect,
   AutoWidth,
   Avatar,
   Code,
@@ -47,6 +48,7 @@ import SetTransform from "./SetTransform";
 import SetTransition from "./SetTransition";
 import GetUserInput from "./GetUserInput";
 import UnlockStoryline from './UnlockStoryline'
+import UnlockAchieve from './UnlockAchieve';
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -266,5 +268,13 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: UnlockStoryline,
     icon: <Unlock theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'unlockStoryline.descText')
-  }
+  },
+  {
+    type: commandType.unlockAchieve,
+    title: () => t(tPrefix + 'unlockAchieve.title'),
+    initialText: () => t(tPrefix + 'unlockAchieve.initText'),
+    component: UnlockAchieve,
+    icon: <Unlock theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'unlockAchieve.descText')
+  },
 ];

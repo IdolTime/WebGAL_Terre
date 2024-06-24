@@ -685,6 +685,29 @@ export const zhCn = {
             }
           }
         },
+        unlockAchieve: {
+          title: "解锁成就",
+          initText: 'unlockAchieve:;',
+          descText: '切换背景图片',
+          tips: {
+            edit: '提示：解锁后的成就将显示在成就页面中。'
+          },
+          options: {
+            file: {
+              title: '成就图片文件',
+              placeholder: '未选择'
+            },
+            name: {
+              title: "解锁名称",
+              placeholder: "请填写成就名称"
+            },
+            axis: {
+              title: '解锁按钮坐标',
+              x: 'X',
+              y: 'Y'
+            }
+          }
+        },
         unknown: {
           title: "未识别",
           options: {
@@ -693,9 +716,8 @@ export const zhCn = {
               text: '该指令没有被识别，请打开脚本编辑模式以手动编辑'
             }
           }
-        }
+        },
       },
-
       components: {
         addSentence: {
           dialogs: {
@@ -740,6 +762,7 @@ export const zhCn = {
   "场景与分支": "场景与分支",
   "鉴赏": "鉴赏",
   "游戏控制": "游戏控制",
+  "成就": "成就",
   "执行到此句": "执行到此句",
   "打开效果编辑器": "打开效果编辑器",
   "效果编辑器": "效果编辑器",

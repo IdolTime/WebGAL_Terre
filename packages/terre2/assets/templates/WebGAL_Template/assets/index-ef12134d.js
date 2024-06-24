@@ -6963,7 +6963,7 @@ const Title_buttonList = "_Title_buttonList_xpe81_8";
 const Title_button = "_Title_button_xpe81_8";
 const Title_button_text = "_Title_button_text_xpe81_41";
 const Title_backup_background = "_Title_backup_background_xpe81_48";
-const styles$m = {
+const styles$n = {
   Title_main,
   Title_buttonList,
   Title_button,
@@ -9497,7 +9497,8 @@ var commandType$1 = /* @__PURE__ */ ((commandType2) => {
   commandType2[commandType2["setTransition"] = 30] = "setTransition";
   commandType2[commandType2["getUserInput"] = 31] = "getUserInput";
   commandType2[commandType2["applyStyle"] = 32] = "applyStyle";
-  commandType2[commandType2["unlockStoryline"] = 33] = "unlockStoryline";
+  commandType2[commandType2["unlockAchieve"] = 33] = "unlockAchieve";
+  commandType2[commandType2["unlockStoryline"] = 34] = "unlockStoryline";
   return commandType2;
 })(commandType$1 || {});
 const initState$3 = {
@@ -9562,8 +9563,26 @@ const initState$3 = {
   // 故事线背景
   storyLineBgX: "",
   // 故事线背景长度
-  storyLineBgY: ""
+  storyLineBgY: "",
   // 故事线背景宽度
+  achieveBg: "",
+  // 成就背景
+  unlockAchieve: {
+    // 解锁成就
+    unlockname: "",
+    saveTime: "",
+    url: "",
+    x: 0,
+    y: 0
+  },
+  achieveBgX: "",
+  achieveBgY: "",
+  unlockAchieves: [],
+  totalAchievements: 0,
+  // 总成就数量
+  unlockedAchievements: 0
+  //已获得的成就数量
+  // isShowUnlockAchieve: false,
 };
 const stageSlice = createSlice({
   name: "stage",
@@ -9667,10 +9686,16 @@ const stageSlice = createSlice({
     },
     setStoryLineBg: (state, action) => {
       state.storyLineBg = action.payload;
+    },
+    setAchieveBg: (state, action) => {
+      state.achieveBg = action.payload;
+    },
+    setUnlockAchieve: (state, action) => {
+      state.unlockAchieves.push(action.payload);
     }
   }
 });
-const { resetStageState, setStage, setStageVar, setStoryLineBg } = stageSlice.actions;
+const { resetStageState, setStage, setStageVar, setAchieveBg, setUnlockAchieve, setStoryLineBg } = stageSlice.actions;
 const stageActions = stageSlice.actions;
 const stageReducer = stageSlice.reducer;
 function commonjsRequire(path2) {
@@ -13686,6 +13711,10 @@ const zhCn = {
     storyLine: {
       title: "故事线",
       subtitle: "STORYLINE"
+    },
+    achievement: {
+      title: "成就",
+      subtitle: "ACHIEVEMENT"
     }
   },
   gaming: {
@@ -19433,7 +19462,8 @@ const whenChecker = (whenValue) => {
   return true;
 };
 const scriptExecutor = () => {
-  if (WebGAL.sceneManager.sceneData.currentSentenceId > WebGAL.sceneManager.sceneData.currentScene.sentenceList.length - 1 && WebGAL.sceneManager.sceneData.currentScene.sceneName !== "storyline.txt") {
+  const sceneName = WebGAL.sceneManager.sceneData.currentScene.sceneName;
+  if (WebGAL.sceneManager.sceneData.currentSentenceId > WebGAL.sceneManager.sceneData.currentScene.sentenceList.length - 1 && sceneName !== "storyline.txt" && sceneName !== "achieve.txt") {
     if (WebGAL.sceneManager.sceneData.sceneStack.length !== 0) {
       const sceneToRestore = WebGAL.sceneManager.sceneData.sceneStack.pop();
       if (sceneToRestore !== void 0) {
@@ -20036,13 +20066,13 @@ const singleColorRegex = /^(#[0-9a-f]{3}|#(?:[0-9a-f]{2}){2,4}|(rgb|hsl)a?\((-?[
 function isString$1(v2) {
   return typeof v2 === "string";
 }
-const number = {
+const number$1 = {
   test: (v2) => typeof v2 === "number",
   parse: parseFloat,
   transform: (v2) => v2
 };
-const alpha = Object.assign(Object.assign({}, number), { transform: clamp(0, 1) });
-Object.assign(Object.assign({}, number), { default: 1 });
+const alpha = Object.assign(Object.assign({}, number$1), { transform: clamp(0, 1) });
+Object.assign(Object.assign({}, number$1), { default: 1 });
 const createUnitType = (unit) => ({
   test: (v2) => isString$1(v2) && v2.endsWith(unit) && v2.split(" ").length === 1,
   parse: parseFloat,
@@ -20072,7 +20102,7 @@ const hsla = {
   }
 };
 const clampRgbUnit = clamp(0, 255);
-const rgbUnit = Object.assign(Object.assign({}, number), { transform: (v2) => Math.round(clampRgbUnit(v2)) });
+const rgbUnit = Object.assign(Object.assign({}, number$1), { transform: (v2) => Math.round(clampRgbUnit(v2)) });
 const rgba = {
   test: isColorString("rgb", "red"),
   parse: splitColor("red", "green", "blue"),
@@ -20145,7 +20175,7 @@ function analyse$1(v2) {
   const numbers = v2.match(floatRegex);
   if (numbers) {
     v2 = v2.replace(floatRegex, numberToken);
-    values.push(...numbers.map(number.parse));
+    values.push(...numbers.map(number$1.parse));
   }
   return { values, numColors, tokenised: v2 };
 }
@@ -21374,11 +21404,33 @@ const changeBg = (sentence) => {
   if (webgalStore.getState().GUI.showStoryLine) {
     dispatch(setStage({ key: "storyLineBg", value: url2 }));
     sentence.args.forEach((e2) => {
-      if (e2.key === "x") {
+      if (e2.key === "x" && e2.value !== "") {
         dispatch(setStage({ key: "storyLineBgX", value: `${e2.value}px` }));
       }
-      if (e2.key === "y") {
+      if (e2.key === "y" && e2.value !== "") {
         dispatch(setStage({ key: "storyLineBgY", value: `${e2.value}px` }));
+      }
+    });
+    return {
+      performName: "none",
+      duration: 0,
+      isHoldOn: false,
+      stopFunction: () => {
+      },
+      blockingNext: () => false,
+      blockingAuto: () => true,
+      stopTimeout: void 0
+      // 暂时不用，后面会交给自动清除
+    };
+  }
+  if (webgalStore.getState().GUI.showAchievement) {
+    dispatch(setAchieveBg(url2));
+    sentence.args.forEach((e2) => {
+      if (e2.key === "x" && e2.value !== "") {
+        dispatch(setStage({ key: "achieveBgX", value: `${e2.value}px` }));
+      }
+      if (e2.key === "y" && e2.value !== "") {
+        dispatch(setStage({ key: "achieveBgY", value: `${e2.value}px` }));
       }
     });
     return {
@@ -21721,7 +21773,7 @@ const Choose_item_image = "_Choose_item_image_o52on_30";
 const Choose_item_countdown = "_Choose_item_countdown_o52on_45";
 const Choose_item_progress_bar = "_Choose_item_progress_bar_o52on_52";
 const Choose_item_disabled = "_Choose_item_disabled_o52on_61";
-const styles$l = {
+const styles$m = {
   Choose_Main: Choose_Main$1,
   Choose_item: Choose_item$1,
   Choose_item_image,
@@ -22455,7 +22507,7 @@ const choose = (sentence, chooseCallback) => {
     return chooseListFull.filter((e2, i2) => whenChecker(e2.showCondition)).map((e2, i2) => {
       var _a2, _b2;
       const enable = whenChecker(e2.enableCondition);
-      let className = enable ? styles$l.Choose_item : styles$l.Choose_item_disabled;
+      let className = enable ? styles$m.Choose_item : styles$m.Choose_item_disabled;
       const onClick = enable ? () => {
         playSeClick();
         chooseCallback == null ? void 0 : chooseCallback();
@@ -22506,18 +22558,18 @@ const choose = (sentence, chooseCallback) => {
         }
       }
       if (typeof ((_a2 = e2.style) == null ? void 0 : _a2.countdown) === "number") {
-        className = styles$l.Choose_item_countdown;
-        let time = e2.style.countdown;
+        className = styles$m.Choose_item_countdown;
+        let time2 = e2.style.countdown;
         let width = 1082;
-        let unit = 1082 / (time * 1e3 / 16);
+        let unit = 1082 / (time2 * 1e3 / 16);
         const countdown = () => {
-          if (time <= 0 && timer.current) {
+          if (time2 <= 0 && timer.current) {
             clearTimeout(timer);
             timer.current = null;
             onClick();
           } else {
             timer.current = setTimeout(() => {
-              time -= 0.016;
+              time2 -= 0.016;
               width -= unit;
               let rect = document.getElementById("rect");
               rect == null ? void 0 : rect.setAttribute("width", Math.max(0, width).toString());
@@ -22529,13 +22581,13 @@ const choose = (sentence, chooseCallback) => {
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBarBackground, alt: e2.text, style: { width: "1082px", height: "106px" } }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$l.Choose_item_progress_bar })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$m.Choose_item_progress_bar })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "0", height: "0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("clipPath", { id: "myClip", children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { id: "rect", width: "1082", height: "106", rx: "53", ry: "53", style: { fill: "#fff" } }) }) }) })
         ] }, e2.jump + i2);
       }
       if ((_b2 = e2.style) == null ? void 0 : _b2.image) {
-        className = styles$l.Choose_item_image;
+        className = styles$m.Choose_item_image;
         const imgUrl = assetSetter(e2.style.image, fileType$1.ui);
         const id2 = `img-option-${i2}`;
         const img = new Image();
@@ -22571,7 +22623,7 @@ const choose = (sentence, chooseCallback) => {
     });
   };
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.Choose_Main, children: runtimeBuildList(chooseOptions) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$m.Choose_Main, children: runtimeBuildList(chooseOptions) }),
     document.getElementById("chooseContainer")
   );
   return {
@@ -22623,14 +22675,14 @@ const Choose_Main = "_Choose_Main_4xkm5_1";
 const Choose_item = "_Choose_item_4xkm5_13";
 const glabalDialog_container_inner$1 = "_glabalDialog_container_inner_4xkm5_28";
 const glabalDialog_container$1 = "_glabalDialog_container_4xkm5_28";
-const title$3 = "_title_4xkm5_47";
+const title$4 = "_title_4xkm5_47";
 const button$2 = "_button_4xkm5_59";
-const styles$k = {
+const styles$l = {
   Choose_Main,
   Choose_item,
   glabalDialog_container_inner: glabalDialog_container_inner$1,
   glabalDialog_container: glabalDialog_container$1,
-  title: title$3,
+  title: title$4,
   button: button$2
 };
 const getUserInput = (sentence) => {
@@ -22642,9 +22694,9 @@ const getUserInput = (sentence) => {
   const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
   const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
   const { playSeEnter, playSeClick } = useSEByWebgalStore();
-  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$k.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$k.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.title, children: title2 }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$k.Choose_item }),
+  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$l.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$l.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.title, children: title2 }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$l.Choose_item }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -22660,13 +22712,13 @@ const getUserInput = (sentence) => {
           WebGAL.gameplay.performController.unmountPerform("userInput");
           nextSentence();
         },
-        className: styles$k.button,
+        className: styles$l.button,
         children: buttonText
       }
     )
   ] }) });
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.Choose_Main, children: chooseElements }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.Choose_Main, children: chooseElements }),
     document.getElementById("chooseContainer")
   );
   return {
@@ -22695,7 +22747,7 @@ const pixelateEffect = "_pixelateEffect_7er8a_95";
 const pixelateAnimation = "_pixelateAnimation_7er8a_1";
 const revealAnimation = "_revealAnimation_7er8a_101";
 const videoContainer = "_videoContainer_7er8a_115";
-const styles$j = {
+const styles$k = {
   FullScreenPerform_main,
   FullScreenPerform_element,
   fullScreen_video,
@@ -22718,20 +22770,20 @@ const intro = (sentence) => {
   const animationClass = (type2, length2 = 0) => {
     switch (type2) {
       case "fadeIn":
-        return styles$j.fadeIn;
+        return styles$k.fadeIn;
       case "slideIn":
-        return styles$j.slideIn;
+        return styles$k.slideIn;
       case "typingEffect":
-        return `${styles$j.typingEffect} ${length2}`;
+        return `${styles$k.typingEffect} ${length2}`;
       case "pixelateEffect":
-        return styles$j.pixelateEffect;
+        return styles$k.pixelateEffect;
       case "revealAnimation":
-        return styles$j.revealAnimation;
+        return styles$k.revealAnimation;
       default:
-        return styles$j.fadeIn;
+        return styles$k.fadeIn;
     }
   };
-  let chosenAnimationClass = styles$j.fadeIn;
+  let chosenAnimationClass = styles$k.fadeIn;
   let delayTime = 1500;
   let isHold = false;
   for (const e2 of sentence.args) {
@@ -22964,7 +23016,7 @@ function call$1(name2, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-17ca89cc.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-0a34afcf.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23156,7 +23208,9 @@ const initState$1 = {
   quickSaveData: null,
   unlockStorylineList: [],
   // 保存已经解锁的故事线列表
-  saveVideoData: null
+  saveVideoData: null,
+  unlockAchieveData: [],
+  isShowUnlock: false
 };
 const saveDataSlice = createSlice({
   name: "saveData",
@@ -23192,6 +23246,21 @@ const saveDataSlice = createSlice({
     },
     setSaveVideoData: (state, action) => {
       state.saveVideoData = action.payload;
+    },
+    setUnlockAchieveData: (state, action) => {
+      state.unlockAchieveData = [...action.payload];
+    },
+    resetUnlockAchieveData: (state) => {
+      state.unlockAchieveData = [];
+    },
+    addUnlockAchieveData: (state, action) => {
+      state.unlockAchieveData.push(action.payload);
+    },
+    replaceUnlockAchieveData: (state, action) => {
+      state.unlockAchieveData[action.payload.index] = action.payload.data;
+    },
+    setIsShowUnlock: (state, action) => {
+      state.isShowUnlock = action.payload;
     }
   }
 });
@@ -23232,6 +23301,16 @@ async function getStorylineFromStorage() {
   const res = await localforage.getItem(`${WebGAL.gameKey}-storyline`);
   webgalStore.dispatch(saveActions.setStorylineListFromStorage((res == null ? void 0 : res.data) ?? []));
   logger.info(`故事线 >> 读取自本地存储`);
+}
+async function dumpUnlickAchieveToStorage() {
+  const data2 = webgalStore.getState().saveData.unlockAchieveData;
+  await localforage.setItem(`${WebGAL.gameKey}-unlock-achieve`, { data: data2 });
+  logger.info(`解锁成就 >>> 写入本地存储`);
+}
+async function getUnlickAchieveFromStorage() {
+  const res = await localforage.getItem(`${WebGAL.gameKey}-unlock-achieve`);
+  webgalStore.dispatch(saveActions.setUnlockAchieveData((res == null ? void 0 : res.data) || []));
+  logger.info(`解锁成就 >>> 读取本地存储`);
 }
 const saveGame = (index2) => {
   const saveData = generateCurrentStageData(index2);
@@ -23827,6 +23906,7 @@ const resetStage = (resetBacklog, resetSceneAndVar = true, resetVideo = true) =>
   if (!resetSceneAndVar) {
     webgalStore.dispatch(setStage({ key: "GameVar", value: currentVars }));
   }
+  webgalStore.dispatch(saveActions.setIsShowUnlock(true));
 };
 const end = (sentence) => {
   resetStage(true);
@@ -24344,7 +24424,6 @@ const unlockStoryline = (sentence) => {
     x: storyLineData["x"] || 0,
     y: storyLineData["y"] || 0,
     isUnlock: true
-    // isShow: saveData.isShowUnlock || unlockItemIndex !== -1,
   };
   if (unlockItemIndex === -1) {
     webgalStore.dispatch(
@@ -24365,6 +24444,76 @@ const unlockStoryline = (sentence) => {
     );
   }
   dumpStorylineToStorage();
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
+const unlockAchieve = (sentence) => {
+  var _a2;
+  console.log("解锁成就 >>>>>>>> start : ", { sentence });
+  getUnlickAchieveFromStorage();
+  let url2 = sentence.content || "";
+  const unlockAchieveObj = {};
+  if (url2) {
+    unlockAchieveObj["url"] = assetSetter(url2, fileType$1.ui);
+  }
+  sentence.args.forEach((e2) => {
+    var _a3;
+    switch (e2.key) {
+      case "unlockname":
+        unlockAchieveObj["unlockname"] = ((_a3 = e2.value) == null ? void 0 : _a3.toString()) ?? "";
+        break;
+      case "x":
+        unlockAchieveObj["x"] = e2.value && Number(e2.value) || 0;
+        break;
+      case "y":
+        unlockAchieveObj["y"] = e2.value && Number(e2.value) || 0;
+        break;
+    }
+  });
+  if (unlockAchieveObj["unlockname"] === "" && unlockAchieveObj["url"] === "") {
+    return {
+      performName: "none",
+      duration: 0,
+      isHoldOn: false,
+      stopFunction: () => {
+      },
+      blockingNext: () => false,
+      blockingAuto: () => true,
+      stopTimeout: void 0
+    };
+  }
+  const saveData = webgalStore.getState().saveData;
+  const unlockItemIndex = (_a2 = saveData.unlockAchieveData) == null ? void 0 : _a2.findIndex(
+    (item) => item.unlockname === unlockAchieveObj["unlockname"]
+  );
+  const currentTime = (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false });
+  const payload = {
+    unlockname: unlockAchieveObj["unlockname"] || "",
+    url: unlockAchieveObj["url"] || "",
+    x: unlockAchieveObj["x"] || 0,
+    y: unlockAchieveObj["y"] || 0,
+    saveTime: currentTime,
+    isShow: saveData.isShowUnlock || unlockItemIndex !== -1
+  };
+  if (unlockItemIndex === -1) {
+    webgalStore.dispatch(
+      saveActions.addUnlockAchieveData(payload)
+    );
+  } else {
+    webgalStore.dispatch(
+      saveActions.replaceUnlockAchieveData({ index: unlockItemIndex, data: payload })
+    );
+  }
+  dumpUnlickAchieveToStorage();
   return {
     performName: "none",
     duration: 0,
@@ -24409,6 +24558,7 @@ const SCRIPT_TAG_MAP = defineScripts({
   setTransition: ScriptConfig(commandType$1.setTransition, setTransition, { next: true }),
   getUserInput: ScriptConfig(commandType$1.getUserInput, getUserInput),
   applyStyle: ScriptConfig(commandType$1.applyStyle, applyStyle, { next: true }),
+  unlockAchieve: ScriptConfig(commandType$1.unlockAchieve, unlockAchieve, { next: true }),
   unlockStoryline: ScriptConfig(commandType$1.unlockStoryline, unlockStoryline, { next: true })
   // if: ScriptConfig(commandType.if, undefined, { next: true }),
 });
@@ -28113,8 +28263,8 @@ var flv = { exports: {} };
                     var times = [];
                     var filepositions = [];
                     for (var i2 = 1; i2 < keyframes2.times.length; i2++) {
-                      var time = this._timestampBase + Math.floor(keyframes2.times[i2] * 1e3);
-                      times.push(time);
+                      var time2 = this._timestampBase + Math.floor(keyframes2.times[i2] * 1e3);
+                      times.push(time2);
                       filepositions.push(keyframes2.filepositions[i2]);
                     }
                     return {
@@ -40718,12 +40868,12 @@ class VideoManager {
       videoItem.waitCommands.setLoop = loopValue;
     }
   }
-  seek(key, time) {
+  seek(key, time2) {
     const videoItem = this.videosByKey[key];
     if (videoItem == null ? void 0 : videoItem.player) {
-      videoItem.player.currentTime = time;
+      videoItem.player.currentTime = time2;
     } else {
-      videoItem.waitCommands.seek = time;
+      videoItem.waitCommands.seek = time2;
     }
   }
   setVolume(key, volume) {
@@ -40897,7 +41047,8 @@ const initState = {
   showPanicOverlay: false,
   isEnterGame: false,
   isShowLogo: true,
-  showStoryLine: false
+  showStoryLine: false,
+  showAchievement: false
 };
 const GUISlice = createSlice({
   name: "gui",
@@ -43160,7 +43311,7 @@ const fastLPreview = "_fastLPreview_15mmi_77";
 const slPreviewMain = "_slPreviewMain_15mmi_89";
 const imgContainer = "_imgContainer_15mmi_97";
 const textContainer = "_textContainer_15mmi_105";
-const styles$i = {
+const styles$j = {
   main,
   button: button$1,
   button_text: button_text$1,
@@ -43180,9 +43331,9 @@ const setButton$1 = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_auto");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$i.button_on;
+      autoIcon.className = styles$j.button_on;
     } else
-      autoIcon.className = styles$i.singleButton;
+      autoIcon.className = styles$j.singleButton;
   }
 };
 const stopAuto = () => {
@@ -43229,9 +43380,9 @@ const setButton = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_fast");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$i.button_on;
+      autoIcon.className = styles$j.button_on;
     } else
-      autoIcon.className = styles$i.singleButton;
+      autoIcon.className = styles$j.singleButton;
   }
 };
 const stopFast = () => {
@@ -43289,7 +43440,7 @@ const backlog_item_content = "_backlog_item_content_zwyao_113";
 const backlog_item_button_list = "_backlog_item_button_list_zwyao_137";
 const backlog_item_button_element = "_backlog_item_button_element_zwyao_144";
 const backlog_item_content_text = "_backlog_item_content_text_zwyao_157";
-const styles$h = {
+const styles$i = {
   Backlog_main,
   backlog_soft_in,
   Backlog_main_out,
@@ -43370,37 +43521,37 @@ function debounce$1(func, wait, options) {
     maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
     trailing = "trailing" in options ? !!options.trailing : trailing;
   }
-  function invokeFunc(time) {
+  function invokeFunc(time2) {
     var args = lastArgs, thisArg = lastThis;
     lastArgs = lastThis = void 0;
-    lastInvokeTime = time;
+    lastInvokeTime = time2;
     result = func.apply(thisArg, args);
     return result;
   }
-  function leadingEdge(time) {
-    lastInvokeTime = time;
+  function leadingEdge(time2) {
+    lastInvokeTime = time2;
     timerId = setTimeout(timerExpired, wait);
-    return leading ? invokeFunc(time) : result;
+    return leading ? invokeFunc(time2) : result;
   }
-  function remainingWait(time) {
-    var timeSinceLastCall = time - lastCallTime, timeSinceLastInvoke = time - lastInvokeTime, timeWaiting = wait - timeSinceLastCall;
+  function remainingWait(time2) {
+    var timeSinceLastCall = time2 - lastCallTime, timeSinceLastInvoke = time2 - lastInvokeTime, timeWaiting = wait - timeSinceLastCall;
     return maxing ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
   }
-  function shouldInvoke(time) {
-    var timeSinceLastCall = time - lastCallTime, timeSinceLastInvoke = time - lastInvokeTime;
+  function shouldInvoke(time2) {
+    var timeSinceLastCall = time2 - lastCallTime, timeSinceLastInvoke = time2 - lastInvokeTime;
     return lastCallTime === void 0 || timeSinceLastCall >= wait || timeSinceLastCall < 0 || maxing && timeSinceLastInvoke >= maxWait;
   }
   function timerExpired() {
-    var time = now();
-    if (shouldInvoke(time)) {
-      return trailingEdge(time);
+    var time2 = now();
+    if (shouldInvoke(time2)) {
+      return trailingEdge(time2);
     }
-    timerId = setTimeout(timerExpired, remainingWait(time));
+    timerId = setTimeout(timerExpired, remainingWait(time2));
   }
-  function trailingEdge(time) {
+  function trailingEdge(time2) {
     timerId = void 0;
     if (trailing && lastArgs) {
-      return invokeFunc(time);
+      return invokeFunc(time2);
     }
     lastArgs = lastThis = void 0;
     return result;
@@ -43416,10 +43567,10 @@ function debounce$1(func, wait, options) {
     return timerId === void 0 ? result : trailingEdge(now());
   }
   function debounced() {
-    var time = now(), isInvoking = shouldInvoke(time);
+    var time2 = now(), isInvoking = shouldInvoke(time2);
     lastArgs = arguments;
     lastThis = this;
-    lastCallTime = time;
+    lastCallTime = time2;
     if (isInvoking) {
       if (timerId === void 0) {
         return leadingEdge(lastCallTime);
@@ -43526,7 +43677,7 @@ function useMouseWheel() {
       return;
     const direction = ev.wheelDelta && (ev.wheelDelta > 0 ? "up" : "down") || ev.detail && (ev.detail < 0 ? "up" : "down") || "down";
     const ctrlKey = ev.ctrlKey;
-    const dom = document.querySelector(`.${styles$h.backlog_content}`);
+    const dom = document.querySelector(`.${styles$i.backlog_content}`);
     if (isGameActive() && direction === "up" && !ctrlKey) {
       setComponentVisibility("showBacklog", true);
       setComponentVisibility("showTextBox", false);
@@ -43731,6 +43882,22 @@ function useToggleFullScreen() {
     };
   }, [fullScreen]);
 }
+const enterAchieve = () => {
+  webgalStore.dispatch(saveActions.setIsShowUnlock(false));
+  const sceneUrl = assetSetter("achieve.txt", fileType$1.scene);
+  WebGAL.sceneManager.resetScene();
+  sceneFetcher(sceneUrl).then((rawScene) => {
+    WebGAL.sceneManager.setCurrentScene(rawScene, "achieve.txt", sceneUrl).then((scene) => {
+      if (scene) {
+        nextSentence();
+      }
+    });
+  });
+  webgalStore.dispatch(setVisibility({ component: "showTitle", visibility: false }));
+  webgalStore.dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
+  webgalStore.dispatch(setVisibility({ component: "showTextBox", visibility: false }));
+  webgalStore.dispatch(setVisibility({ component: "showAchievement", visibility: true }));
+};
 const Title = () => {
   const userDataState = useSelector((state) => state.userData);
   const GUIState = useSelector((state) => state.GUI);
@@ -43742,7 +43909,7 @@ const Title = () => {
   const { playSeEnter, playSeClick } = useSoundEffect();
   const applyStyle2 = useApplyStyle("UI/Title/title.scss");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$m.Title_backup_background) }),
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$n.Title_backup_background) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -43762,34 +43929,46 @@ const Title = () => {
     GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: applyStyle2("Title_main", styles$m.Title_main),
+        className: applyStyle2("Title_main", styles$n.Title_main),
         style: {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: applyStyle2("Title_buttonList", styles$m.Title_buttonList), children: [
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("Title_button", styles$m.Title_button),
+              className: applyStyle2("Title_button", styles$n.Title_button),
               onClick: () => {
                 startGame();
                 playSeClick();
               },
               onMouseEnter: playSeEnter,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$m.Title_button_text), children: t2("start.title") })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("Title_button", styles$m.Title_button),
+              className: applyStyle2("Title_button", styles$n.Title_button),
+              onClick: () => {
+                enterAchieve();
+                playSeClick();
+              },
+              onMouseEnter: playSeEnter,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("achievement.title") })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$n.Title_button),
               onClick: () => {
                 enterStoryLine();
                 playSeClick();
               },
               onMouseEnter: playSeEnter,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$m.Title_button_text), children: t2("storyLine.title") })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("storyLine.title") })
             }
           )
         ] })
@@ -43801,7 +43980,7 @@ const Logo_main = "_Logo_main_1bne2_1";
 const Logo_Back = "_Logo_Back_1bne2_32";
 const animationActive = "_animationActive_1bne2_46";
 const fadeout = "_fadeout_1bne2_1";
-const styles$g = {
+const styles$h = {
   Logo_main,
   "change-img-anim": "_change-img-anim_1bne2_1",
   Logo_Back,
@@ -43835,7 +44014,7 @@ const Logo = () => {
     currentLogoIndex.value !== -1 && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$g.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$g.animationActive : ""),
+        className: styles$h.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$h.animationActive : ""),
         style: {
           animationDuration: `${animationDuration}ms`
         }
@@ -43845,7 +44024,7 @@ const Logo = () => {
     currentLogoUrl !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$g.Logo_main,
+        className: styles$h.Logo_main,
         onClick: nextImg,
         style: { backgroundImage: `url("${currentLogoUrl}")`, animationDuration: `${animationDuration}ms` }
       },
@@ -52318,10 +52497,10 @@ var Ticker = (
       this._head = new TickerListener(null, null, Infinity);
       this.deltaMS = 1 / settings$1.TARGET_FPMS;
       this.elapsedMS = 1 / settings$1.TARGET_FPMS;
-      this._tick = function(time) {
+      this._tick = function(time2) {
         _this._requestId = null;
         if (_this.started) {
-          _this.update(time);
+          _this.update(time2);
           if (_this.started && _this._requestId === null && _this._head.next) {
             _this._requestId = requestAnimationFrame(_this._tick);
           }
@@ -77289,17 +77468,17 @@ var ShockwaveFilter = (
   /** @class */
   function(_super) {
     __extends$9(ShockwaveFilter2, _super);
-    function ShockwaveFilter2(center, options, time) {
+    function ShockwaveFilter2(center, options, time2) {
       if (center === void 0) {
         center = [0, 0];
       }
-      if (time === void 0) {
-        time = 0;
+      if (time2 === void 0) {
+        time2 = 0;
       }
       var _this = _super.call(this, vertex$4, fragment$4) || this;
       _this.center = center;
       Object.assign(_this, ShockwaveFilter2.defaults, options);
-      _this.time = time;
+      _this.time = time2;
       return _this;
     }
     ShockwaveFilter2.prototype.apply = function(filterManager, input, output2, clear2) {
@@ -80674,8 +80853,8 @@ var Slot$2 = (
       this.attachmentTime = this.bone.skeleton.time;
       this.deform.length = 0;
     };
-    Slot2.prototype.setAttachmentTime = function(time) {
-      this.attachmentTime = this.bone.skeleton.time - time;
+    Slot2.prototype.setAttachmentTime = function(time2) {
+      this.attachmentTime = this.bone.skeleton.time - time2;
     };
     Slot2.prototype.getAttachmentTime = function() {
       return this.bone.skeleton.time - this.attachmentTime;
@@ -80924,17 +81103,17 @@ var Animation$2 = (
     Animation2.prototype.hasTimeline = function(id2) {
       return this.timelineIds[id2] == true;
     };
-    Animation2.prototype.apply = function(skeleton, lastTime2, time, loop, events, alpha2, blend, direction) {
+    Animation2.prototype.apply = function(skeleton, lastTime2, time2, loop, events, alpha2, blend, direction) {
       if (skeleton == null)
         throw new Error("skeleton cannot be null.");
       if (loop && this.duration != 0) {
-        time %= this.duration;
+        time2 %= this.duration;
         if (lastTime2 > 0)
           lastTime2 %= this.duration;
       }
       var timelines = this.timelines;
       for (var i2 = 0, n2 = timelines.length; i2 < n2; i2++)
-        timelines[i2].apply(skeleton, lastTime2, time, events, alpha2, blend, direction);
+        timelines[i2].apply(skeleton, lastTime2, time2, events, alpha2, blend, direction);
     };
     Animation2.binarySearch = function(values, target, step) {
       if (step === void 0) {
@@ -81077,17 +81256,17 @@ var RotateTimeline$2 = (
     RotateTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.rotate << 24) + this.boneIndex;
     };
-    RotateTimeline2.prototype.setFrame = function(frameIndex, time, degrees) {
+    RotateTimeline2.prototype.setFrame = function(frameIndex, time2, degrees) {
       frameIndex <<= 1;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + RotateTimeline2.ROTATION] = degrees;
     };
-    RotateTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    RotateTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var frames = this.frames;
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.rotation = bone.data.rotation;
@@ -81098,7 +81277,7 @@ var RotateTimeline$2 = (
         }
         return;
       }
-      if (time >= frames[frames.length - RotateTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - RotateTimeline2.ENTRIES]) {
         var r_2 = frames[frames.length + RotateTimeline2.PREV_ROTATION];
         switch (blend) {
           case MixBlend.setup:
@@ -81113,10 +81292,10 @@ var RotateTimeline$2 = (
         }
         return;
       }
-      var frame2 = Animation$2.binarySearch(frames, time, RotateTimeline2.ENTRIES);
+      var frame2 = Animation$2.binarySearch(frames, time2, RotateTimeline2.ENTRIES);
       var prevRotation = frames[frame2 + RotateTimeline2.PREV_ROTATION];
       var frameTime = frames[frame2];
-      var percent2 = this.getCurvePercent((frame2 >> 1) - 1, 1 - (time - frameTime) / (frames[frame2 + RotateTimeline2.PREV_TIME] - frameTime));
+      var percent2 = this.getCurvePercent((frame2 >> 1) - 1, 1 - (time2 - frameTime) / (frames[frame2 + RotateTimeline2.PREV_TIME] - frameTime));
       var r2 = frames[frame2 + RotateTimeline2.ROTATION] - prevRotation;
       r2 = prevRotation + (r2 - (16384 - (16384.499999999996 - r2 / 360 | 0)) * 360) * percent2;
       switch (blend) {
@@ -81149,18 +81328,18 @@ var TranslateTimeline$2 = (
     TranslateTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.translate << 24) + this.boneIndex;
     };
-    TranslateTimeline2.prototype.setFrame = function(frameIndex, time, x, y2) {
+    TranslateTimeline2.prototype.setFrame = function(frameIndex, time2, x, y2) {
       frameIndex *= TranslateTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + TranslateTimeline2.X] = x;
       this.frames[frameIndex + TranslateTimeline2.Y] = y2;
     };
-    TranslateTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    TranslateTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var frames = this.frames;
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.x = bone.data.x;
@@ -81173,15 +81352,15 @@ var TranslateTimeline$2 = (
         return;
       }
       var x = 0, y2 = 0;
-      if (time >= frames[frames.length - TranslateTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - TranslateTimeline2.ENTRIES]) {
         x = frames[frames.length + TranslateTimeline2.PREV_X];
         y2 = frames[frames.length + TranslateTimeline2.PREV_Y];
       } else {
-        var frame2 = Animation$2.binarySearch(frames, time, TranslateTimeline2.ENTRIES);
+        var frame2 = Animation$2.binarySearch(frames, time2, TranslateTimeline2.ENTRIES);
         x = frames[frame2 + TranslateTimeline2.PREV_X];
         y2 = frames[frame2 + TranslateTimeline2.PREV_Y];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / TranslateTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + TranslateTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / TranslateTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + TranslateTimeline2.PREV_TIME] - frameTime));
         x += (frames[frame2 + TranslateTimeline2.X] - x) * percent2;
         y2 += (frames[frame2 + TranslateTimeline2.Y] - y2) * percent2;
       }
@@ -81219,12 +81398,12 @@ var ScaleTimeline$2 = (
     ScaleTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.scale << 24) + this.boneIndex;
     };
-    ScaleTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ScaleTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var frames = this.frames;
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.scaleX = bone.data.scaleX;
@@ -81237,15 +81416,15 @@ var ScaleTimeline$2 = (
         return;
       }
       var x = 0, y2 = 0;
-      if (time >= frames[frames.length - ScaleTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - ScaleTimeline2.ENTRIES]) {
         x = frames[frames.length + ScaleTimeline2.PREV_X] * bone.data.scaleX;
         y2 = frames[frames.length + ScaleTimeline2.PREV_Y] * bone.data.scaleY;
       } else {
-        var frame2 = Animation$2.binarySearch(frames, time, ScaleTimeline2.ENTRIES);
+        var frame2 = Animation$2.binarySearch(frames, time2, ScaleTimeline2.ENTRIES);
         x = frames[frame2 + ScaleTimeline2.PREV_X];
         y2 = frames[frame2 + ScaleTimeline2.PREV_Y];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / ScaleTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + ScaleTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / ScaleTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + ScaleTimeline2.PREV_TIME] - frameTime));
         x = (x + (frames[frame2 + ScaleTimeline2.X] - x) * percent2) * bone.data.scaleX;
         y2 = (y2 + (frames[frame2 + ScaleTimeline2.Y] - y2) * percent2) * bone.data.scaleY;
       }
@@ -81317,12 +81496,12 @@ var ShearTimeline$2 = (
     ShearTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.shear << 24) + this.boneIndex;
     };
-    ShearTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ShearTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var frames = this.frames;
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.shearX = bone.data.shearX;
@@ -81335,15 +81514,15 @@ var ShearTimeline$2 = (
         return;
       }
       var x = 0, y2 = 0;
-      if (time >= frames[frames.length - ShearTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - ShearTimeline2.ENTRIES]) {
         x = frames[frames.length + ShearTimeline2.PREV_X];
         y2 = frames[frames.length + ShearTimeline2.PREV_Y];
       } else {
-        var frame2 = Animation$2.binarySearch(frames, time, ShearTimeline2.ENTRIES);
+        var frame2 = Animation$2.binarySearch(frames, time2, ShearTimeline2.ENTRIES);
         x = frames[frame2 + ShearTimeline2.PREV_X];
         y2 = frames[frame2 + ShearTimeline2.PREV_Y];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / ShearTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + ShearTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / ShearTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + ShearTimeline2.PREV_TIME] - frameTime));
         x = x + (frames[frame2 + ShearTimeline2.X] - x) * percent2;
         y2 = y2 + (frames[frame2 + ShearTimeline2.Y] - y2) * percent2;
       }
@@ -81377,20 +81556,20 @@ var ColorTimeline$1 = (
     ColorTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.color << 24) + this.slotIndex;
     };
-    ColorTimeline2.prototype.setFrame = function(frameIndex, time, r2, g2, b2, a2) {
+    ColorTimeline2.prototype.setFrame = function(frameIndex, time2, r2, g2, b2, a2) {
       frameIndex *= ColorTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + ColorTimeline2.R] = r2;
       this.frames[frameIndex + ColorTimeline2.G] = g2;
       this.frames[frameIndex + ColorTimeline2.B] = b2;
       this.frames[frameIndex + ColorTimeline2.A] = a2;
     };
-    ColorTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ColorTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             slot.color.setFromColor(slot.data.color);
@@ -81402,20 +81581,20 @@ var ColorTimeline$1 = (
         return;
       }
       var r2 = 0, g2 = 0, b2 = 0, a2 = 0;
-      if (time >= frames[frames.length - ColorTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - ColorTimeline2.ENTRIES]) {
         var i2 = frames.length;
         r2 = frames[i2 + ColorTimeline2.PREV_R];
         g2 = frames[i2 + ColorTimeline2.PREV_G];
         b2 = frames[i2 + ColorTimeline2.PREV_B];
         a2 = frames[i2 + ColorTimeline2.PREV_A];
       } else {
-        var frame2 = Animation$2.binarySearch(frames, time, ColorTimeline2.ENTRIES);
+        var frame2 = Animation$2.binarySearch(frames, time2, ColorTimeline2.ENTRIES);
         r2 = frames[frame2 + ColorTimeline2.PREV_R];
         g2 = frames[frame2 + ColorTimeline2.PREV_G];
         b2 = frames[frame2 + ColorTimeline2.PREV_B];
         a2 = frames[frame2 + ColorTimeline2.PREV_A];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / ColorTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + ColorTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / ColorTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + ColorTimeline2.PREV_TIME] - frameTime));
         r2 += (frames[frame2 + ColorTimeline2.R] - r2) * percent2;
         g2 += (frames[frame2 + ColorTimeline2.G] - g2) * percent2;
         b2 += (frames[frame2 + ColorTimeline2.B] - b2) * percent2;
@@ -81455,9 +81634,9 @@ var TwoColorTimeline$1 = (
     TwoColorTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.twoColor << 24) + this.slotIndex;
     };
-    TwoColorTimeline2.prototype.setFrame = function(frameIndex, time, r2, g2, b2, a2, r22, g22, b22) {
+    TwoColorTimeline2.prototype.setFrame = function(frameIndex, time2, r2, g2, b2, a2, r22, g22, b22) {
       frameIndex *= TwoColorTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + TwoColorTimeline2.R] = r2;
       this.frames[frameIndex + TwoColorTimeline2.G] = g2;
       this.frames[frameIndex + TwoColorTimeline2.B] = b2;
@@ -81466,12 +81645,12 @@ var TwoColorTimeline$1 = (
       this.frames[frameIndex + TwoColorTimeline2.G2] = g22;
       this.frames[frameIndex + TwoColorTimeline2.B2] = b22;
     };
-    TwoColorTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    TwoColorTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             slot.color.setFromColor(slot.data.color);
@@ -81485,7 +81664,7 @@ var TwoColorTimeline$1 = (
         return;
       }
       var r2 = 0, g2 = 0, b2 = 0, a2 = 0, r22 = 0, g22 = 0, b22 = 0;
-      if (time >= frames[frames.length - TwoColorTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - TwoColorTimeline2.ENTRIES]) {
         var i2 = frames.length;
         r2 = frames[i2 + TwoColorTimeline2.PREV_R];
         g2 = frames[i2 + TwoColorTimeline2.PREV_G];
@@ -81495,7 +81674,7 @@ var TwoColorTimeline$1 = (
         g22 = frames[i2 + TwoColorTimeline2.PREV_G2];
         b22 = frames[i2 + TwoColorTimeline2.PREV_B2];
       } else {
-        var frame2 = Animation$2.binarySearch(frames, time, TwoColorTimeline2.ENTRIES);
+        var frame2 = Animation$2.binarySearch(frames, time2, TwoColorTimeline2.ENTRIES);
         r2 = frames[frame2 + TwoColorTimeline2.PREV_R];
         g2 = frames[frame2 + TwoColorTimeline2.PREV_G];
         b2 = frames[frame2 + TwoColorTimeline2.PREV_B];
@@ -81504,7 +81683,7 @@ var TwoColorTimeline$1 = (
         g22 = frames[frame2 + TwoColorTimeline2.PREV_G2];
         b22 = frames[frame2 + TwoColorTimeline2.PREV_B2];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / TwoColorTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + TwoColorTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / TwoColorTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + TwoColorTimeline2.PREV_TIME] - frameTime));
         r2 += (frames[frame2 + TwoColorTimeline2.R] - r2) * percent2;
         g2 += (frames[frame2 + TwoColorTimeline2.G] - g2) * percent2;
         b2 += (frames[frame2 + TwoColorTimeline2.B] - b2) * percent2;
@@ -81558,11 +81737,11 @@ var AttachmentTimeline$2 = (
     AttachmentTimeline2.prototype.getFrameCount = function() {
       return this.frames.length;
     };
-    AttachmentTimeline2.prototype.setFrame = function(frameIndex, time, attachmentName) {
-      this.frames[frameIndex] = time;
+    AttachmentTimeline2.prototype.setFrame = function(frameIndex, time2, attachmentName) {
+      this.frames[frameIndex] = time2;
       this.attachmentNames[frameIndex] = attachmentName;
     };
-    AttachmentTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    AttachmentTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
@@ -81572,16 +81751,16 @@ var AttachmentTimeline$2 = (
         return;
       }
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         if (blend == MixBlend.setup || blend == MixBlend.first)
           this.setAttachment(skeleton, slot, slot.data.attachmentName);
         return;
       }
       var frameIndex = 0;
-      if (time >= frames[frames.length - 1])
+      if (time2 >= frames[frames.length - 1])
         frameIndex = frames.length - 1;
       else
-        frameIndex = Animation$2.binarySearch(frames, time, 1) - 1;
+        frameIndex = Animation$2.binarySearch(frames, time2, 1) - 1;
       var attachmentName = this.attachmentNames[frameIndex];
       skeleton.slots[this.slotIndex].setAttachment(attachmentName == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName));
     };
@@ -81607,11 +81786,11 @@ var DeformTimeline$2 = (
     DeformTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.deform << 27) + +this.attachment.id + this.slotIndex;
     };
-    DeformTimeline2.prototype.setFrame = function(frameIndex, time, vertices) {
-      this.frames[frameIndex] = time;
+    DeformTimeline2.prototype.setFrame = function(frameIndex, time2, vertices) {
+      this.frames[frameIndex] = time2;
       this.frameVertices[frameIndex] = vertices;
     };
-    DeformTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    DeformTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
@@ -81624,7 +81803,7 @@ var DeformTimeline$2 = (
       var frameVertices = this.frameVertices;
       var vertexCount = frameVertices[0].length;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         var vertexAttachment = slotAttachment;
         switch (blend) {
           case MixBlend.setup:
@@ -81649,7 +81828,7 @@ var DeformTimeline$2 = (
         return;
       }
       var deform = Utils.setArraySize(deformArray, vertexCount);
-      if (time >= frames[frames.length - 1]) {
+      if (time2 >= frames[frames.length - 1]) {
         var lastVertices = frameVertices[frames.length - 1];
         if (alpha2 == 1) {
           if (blend == MixBlend.add) {
@@ -81702,11 +81881,11 @@ var DeformTimeline$2 = (
         }
         return;
       }
-      var frame2 = Animation$2.binarySearch(frames, time);
+      var frame2 = Animation$2.binarySearch(frames, time2);
       var prevVertices = frameVertices[frame2 - 1];
       var nextVertices = frameVertices[frame2];
       var frameTime = frames[frame2];
-      var percent2 = this.getCurvePercent(frame2 - 1, 1 - (time - frameTime) / (frames[frame2 - 1] - frameTime));
+      var percent2 = this.getCurvePercent(frame2 - 1, 1 - (time2 - frameTime) / (frames[frame2 - 1] - frameTime));
       if (alpha2 == 1) {
         if (blend == MixBlend.add) {
           var vertexAttachment = slotAttachment;
@@ -81790,17 +81969,17 @@ var EventTimeline$2 = (
       this.frames[frameIndex] = event.time;
       this.events[frameIndex] = event;
     };
-    EventTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    EventTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       if (firedEvents == null)
         return;
       var frames = this.frames;
       var frameCount = this.frames.length;
-      if (lastTime2 > time) {
+      if (lastTime2 > time2) {
         this.apply(skeleton, lastTime2, Number.MAX_VALUE, firedEvents, alpha2, blend, direction);
         lastTime2 = -1;
       } else if (lastTime2 >= frames[frameCount - 1])
         return;
-      if (time < frames[0])
+      if (time2 < frames[0])
         return;
       var frame2 = 0;
       if (lastTime2 < frames[0])
@@ -81814,7 +81993,7 @@ var EventTimeline$2 = (
           frame2--;
         }
       }
-      for (; frame2 < frameCount && time >= frames[frame2]; frame2++)
+      for (; frame2 < frameCount && time2 >= frames[frame2]; frame2++)
         firedEvents.push(this.events[frame2]);
     };
     return EventTimeline2;
@@ -81833,11 +82012,11 @@ var DrawOrderTimeline$2 = (
     DrawOrderTimeline2.prototype.getFrameCount = function() {
       return this.frames.length;
     };
-    DrawOrderTimeline2.prototype.setFrame = function(frameIndex, time, drawOrder) {
-      this.frames[frameIndex] = time;
+    DrawOrderTimeline2.prototype.setFrame = function(frameIndex, time2, drawOrder) {
+      this.frames[frameIndex] = time2;
       this.drawOrders[frameIndex] = drawOrder;
     };
-    DrawOrderTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    DrawOrderTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var drawOrder = skeleton.drawOrder;
       var slots = skeleton.slots;
       if (direction == MixDirection.mixOut && blend == MixBlend.setup) {
@@ -81845,16 +82024,16 @@ var DrawOrderTimeline$2 = (
         return;
       }
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         if (blend == MixBlend.setup || blend == MixBlend.first)
           Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
         return;
       }
       var frame2 = 0;
-      if (time >= frames[frames.length - 1])
+      if (time2 >= frames[frames.length - 1])
         frame2 = frames.length - 1;
       else
-        frame2 = Animation$2.binarySearch(frames, time) - 1;
+        frame2 = Animation$2.binarySearch(frames, time2) - 1;
       var drawOrderToSetupIndex = this.drawOrders[frame2];
       if (drawOrderToSetupIndex == null)
         Utils.arrayCopy(slots, 0, drawOrder, 0, slots.length);
@@ -81878,21 +82057,21 @@ var IkConstraintTimeline$2 = (
     IkConstraintTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.ikConstraint << 24) + this.ikConstraintIndex;
     };
-    IkConstraintTimeline2.prototype.setFrame = function(frameIndex, time, mix2, softness, bendDirection, compress, stretch) {
+    IkConstraintTimeline2.prototype.setFrame = function(frameIndex, time2, mix2, softness, bendDirection, compress, stretch) {
       frameIndex *= IkConstraintTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + IkConstraintTimeline2.MIX] = mix2;
       this.frames[frameIndex + IkConstraintTimeline2.SOFTNESS] = softness;
       this.frames[frameIndex + IkConstraintTimeline2.BEND_DIRECTION] = bendDirection;
       this.frames[frameIndex + IkConstraintTimeline2.COMPRESS] = compress ? 1 : 0;
       this.frames[frameIndex + IkConstraintTimeline2.STRETCH] = stretch ? 1 : 0;
     };
-    IkConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    IkConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.ikConstraints[this.ikConstraintIndex];
       if (!constraint.active)
         return;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.mix = constraint.data.mix;
@@ -81910,7 +82089,7 @@ var IkConstraintTimeline$2 = (
         }
         return;
       }
-      if (time >= frames[frames.length - IkConstraintTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - IkConstraintTimeline2.ENTRIES]) {
         if (blend == MixBlend.setup) {
           constraint.mix = constraint.data.mix + (frames[frames.length + IkConstraintTimeline2.PREV_MIX] - constraint.data.mix) * alpha2;
           constraint.softness = constraint.data.softness + (frames[frames.length + IkConstraintTimeline2.PREV_SOFTNESS] - constraint.data.softness) * alpha2;
@@ -81934,11 +82113,11 @@ var IkConstraintTimeline$2 = (
         }
         return;
       }
-      var frame2 = Animation$2.binarySearch(frames, time, IkConstraintTimeline2.ENTRIES);
+      var frame2 = Animation$2.binarySearch(frames, time2, IkConstraintTimeline2.ENTRIES);
       var mix2 = frames[frame2 + IkConstraintTimeline2.PREV_MIX];
       var softness = frames[frame2 + IkConstraintTimeline2.PREV_SOFTNESS];
       var frameTime = frames[frame2];
-      var percent2 = this.getCurvePercent(frame2 / IkConstraintTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + IkConstraintTimeline2.PREV_TIME] - frameTime));
+      var percent2 = this.getCurvePercent(frame2 / IkConstraintTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + IkConstraintTimeline2.PREV_TIME] - frameTime));
       if (blend == MixBlend.setup) {
         constraint.mix = constraint.data.mix + (mix2 + (frames[frame2 + IkConstraintTimeline2.MIX] - mix2) * percent2 - constraint.data.mix) * alpha2;
         constraint.softness = constraint.data.softness + (softness + (frames[frame2 + IkConstraintTimeline2.SOFTNESS] - softness) * percent2 - constraint.data.softness) * alpha2;
@@ -81988,20 +82167,20 @@ var TransformConstraintTimeline$2 = (
     TransformConstraintTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.transformConstraint << 24) + this.transformConstraintIndex;
     };
-    TransformConstraintTimeline2.prototype.setFrame = function(frameIndex, time, rotateMix, translateMix, scaleMix, shearMix) {
+    TransformConstraintTimeline2.prototype.setFrame = function(frameIndex, time2, rotateMix, translateMix, scaleMix, shearMix) {
       frameIndex *= TransformConstraintTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + TransformConstraintTimeline2.ROTATE] = rotateMix;
       this.frames[frameIndex + TransformConstraintTimeline2.TRANSLATE] = translateMix;
       this.frames[frameIndex + TransformConstraintTimeline2.SCALE] = scaleMix;
       this.frames[frameIndex + TransformConstraintTimeline2.SHEAR] = shearMix;
     };
-    TransformConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    TransformConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.transformConstraints[this.transformConstraintIndex];
       if (!constraint.active)
         return;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         var data2 = constraint.data;
         switch (blend) {
           case MixBlend.setup:
@@ -82019,20 +82198,20 @@ var TransformConstraintTimeline$2 = (
         return;
       }
       var rotate = 0, translate = 0, scale = 0, shear = 0;
-      if (time >= frames[frames.length - TransformConstraintTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - TransformConstraintTimeline2.ENTRIES]) {
         var i2 = frames.length;
         rotate = frames[i2 + TransformConstraintTimeline2.PREV_ROTATE];
         translate = frames[i2 + TransformConstraintTimeline2.PREV_TRANSLATE];
         scale = frames[i2 + TransformConstraintTimeline2.PREV_SCALE];
         shear = frames[i2 + TransformConstraintTimeline2.PREV_SHEAR];
       } else {
-        var frame2 = Animation$2.binarySearch(frames, time, TransformConstraintTimeline2.ENTRIES);
+        var frame2 = Animation$2.binarySearch(frames, time2, TransformConstraintTimeline2.ENTRIES);
         rotate = frames[frame2 + TransformConstraintTimeline2.PREV_ROTATE];
         translate = frames[frame2 + TransformConstraintTimeline2.PREV_TRANSLATE];
         scale = frames[frame2 + TransformConstraintTimeline2.PREV_SCALE];
         shear = frames[frame2 + TransformConstraintTimeline2.PREV_SHEAR];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / TransformConstraintTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + TransformConstraintTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / TransformConstraintTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + TransformConstraintTimeline2.PREV_TIME] - frameTime));
         rotate += (frames[frame2 + TransformConstraintTimeline2.ROTATE] - rotate) * percent2;
         translate += (frames[frame2 + TransformConstraintTimeline2.TRANSLATE] - translate) * percent2;
         scale += (frames[frame2 + TransformConstraintTimeline2.SCALE] - scale) * percent2;
@@ -82076,17 +82255,17 @@ var PathConstraintPositionTimeline$2 = (
     PathConstraintPositionTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.pathConstraintPosition << 24) + this.pathConstraintIndex;
     };
-    PathConstraintPositionTimeline2.prototype.setFrame = function(frameIndex, time, value) {
+    PathConstraintPositionTimeline2.prototype.setFrame = function(frameIndex, time2, value) {
       frameIndex *= PathConstraintPositionTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + PathConstraintPositionTimeline2.VALUE] = value;
     };
-    PathConstraintPositionTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    PathConstraintPositionTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
       if (!constraint.active)
         return;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.position = constraint.data.position;
@@ -82097,13 +82276,13 @@ var PathConstraintPositionTimeline$2 = (
         return;
       }
       var position2 = 0;
-      if (time >= frames[frames.length - PathConstraintPositionTimeline2.ENTRIES])
+      if (time2 >= frames[frames.length - PathConstraintPositionTimeline2.ENTRIES])
         position2 = frames[frames.length + PathConstraintPositionTimeline2.PREV_VALUE];
       else {
-        var frame2 = Animation$2.binarySearch(frames, time, PathConstraintPositionTimeline2.ENTRIES);
+        var frame2 = Animation$2.binarySearch(frames, time2, PathConstraintPositionTimeline2.ENTRIES);
         position2 = frames[frame2 + PathConstraintPositionTimeline2.PREV_VALUE];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / PathConstraintPositionTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + PathConstraintPositionTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / PathConstraintPositionTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + PathConstraintPositionTimeline2.PREV_TIME] - frameTime));
         position2 += (frames[frame2 + PathConstraintPositionTimeline2.VALUE] - position2) * percent2;
       }
       if (blend == MixBlend.setup)
@@ -82128,12 +82307,12 @@ var PathConstraintSpacingTimeline$2 = (
     PathConstraintSpacingTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.pathConstraintSpacing << 24) + this.pathConstraintIndex;
     };
-    PathConstraintSpacingTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    PathConstraintSpacingTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
       if (!constraint.active)
         return;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.spacing = constraint.data.spacing;
@@ -82144,13 +82323,13 @@ var PathConstraintSpacingTimeline$2 = (
         return;
       }
       var spacing = 0;
-      if (time >= frames[frames.length - PathConstraintSpacingTimeline2.ENTRIES])
+      if (time2 >= frames[frames.length - PathConstraintSpacingTimeline2.ENTRIES])
         spacing = frames[frames.length + PathConstraintSpacingTimeline2.PREV_VALUE];
       else {
-        var frame2 = Animation$2.binarySearch(frames, time, PathConstraintSpacingTimeline2.ENTRIES);
+        var frame2 = Animation$2.binarySearch(frames, time2, PathConstraintSpacingTimeline2.ENTRIES);
         spacing = frames[frame2 + PathConstraintSpacingTimeline2.PREV_VALUE];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / PathConstraintSpacingTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + PathConstraintSpacingTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / PathConstraintSpacingTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + PathConstraintSpacingTimeline2.PREV_TIME] - frameTime));
         spacing += (frames[frame2 + PathConstraintSpacingTimeline2.VALUE] - spacing) * percent2;
       }
       if (blend == MixBlend.setup)
@@ -82173,18 +82352,18 @@ var PathConstraintMixTimeline$2 = (
     PathConstraintMixTimeline2.prototype.getPropertyId = function() {
       return (TimelineType$1.pathConstraintMix << 24) + this.pathConstraintIndex;
     };
-    PathConstraintMixTimeline2.prototype.setFrame = function(frameIndex, time, rotateMix, translateMix) {
+    PathConstraintMixTimeline2.prototype.setFrame = function(frameIndex, time2, rotateMix, translateMix) {
       frameIndex *= PathConstraintMixTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + PathConstraintMixTimeline2.ROTATE] = rotateMix;
       this.frames[frameIndex + PathConstraintMixTimeline2.TRANSLATE] = translateMix;
     };
-    PathConstraintMixTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    PathConstraintMixTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
       if (!constraint.active)
         return;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.rotateMix = constraint.data.rotateMix;
@@ -82197,15 +82376,15 @@ var PathConstraintMixTimeline$2 = (
         return;
       }
       var rotate = 0, translate = 0;
-      if (time >= frames[frames.length - PathConstraintMixTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - PathConstraintMixTimeline2.ENTRIES]) {
         rotate = frames[frames.length + PathConstraintMixTimeline2.PREV_ROTATE];
         translate = frames[frames.length + PathConstraintMixTimeline2.PREV_TRANSLATE];
       } else {
-        var frame2 = Animation$2.binarySearch(frames, time, PathConstraintMixTimeline2.ENTRIES);
+        var frame2 = Animation$2.binarySearch(frames, time2, PathConstraintMixTimeline2.ENTRIES);
         rotate = frames[frame2 + PathConstraintMixTimeline2.PREV_ROTATE];
         translate = frames[frame2 + PathConstraintMixTimeline2.PREV_TRANSLATE];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / PathConstraintMixTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + PathConstraintMixTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / PathConstraintMixTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + PathConstraintMixTimeline2.PREV_TIME] - frameTime));
         rotate += (frames[frame2 + PathConstraintMixTimeline2.ROTATE] - rotate) * percent2;
         translate += (frames[frame2 + PathConstraintMixTimeline2.TRANSLATE] - translate) * percent2;
       }
@@ -82466,20 +82645,20 @@ var AnimationState$2 = (
       from2.nextTrackLast = from2.trackTime;
       return mix2;
     };
-    AnimationState2.prototype.applyAttachmentTimeline = function(timeline, skeleton, time, blend, attachments) {
+    AnimationState2.prototype.applyAttachmentTimeline = function(timeline, skeleton, time2, blend, attachments) {
       var slot = skeleton.slots[timeline.slotIndex];
       if (!slot.bone.active)
         return;
       var frames = timeline.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         if (blend == MixBlend.setup || blend == MixBlend.first)
           this.setAttachment(skeleton, slot, slot.data.attachmentName, attachments);
       } else {
         var frameIndex;
-        if (time >= frames[frames.length - 1])
+        if (time2 >= frames[frames.length - 1])
           frameIndex = frames.length - 1;
         else
-          frameIndex = Animation$2.binarySearch(frames, time) - 1;
+          frameIndex = Animation$2.binarySearch(frames, time2) - 1;
         this.setAttachment(skeleton, slot, timeline.attachmentNames[frameIndex], attachments);
       }
       if (slot.attachmentState <= this.unkeyedState)
@@ -82490,11 +82669,11 @@ var AnimationState$2 = (
       if (attachments)
         slot.attachmentState = this.unkeyedState + AnimationState2.CURRENT;
     };
-    AnimationState2.prototype.applyRotateTimeline = function(timeline, skeleton, time, alpha2, blend, timelinesRotation, i2, firstFrame) {
+    AnimationState2.prototype.applyRotateTimeline = function(timeline, skeleton, time2, alpha2, blend, timelinesRotation, i2, firstFrame) {
       if (firstFrame)
         timelinesRotation[i2] = 0;
       if (alpha2 == 1) {
-        timeline.apply(skeleton, 0, time, null, 1, blend, MixDirection.mixIn);
+        timeline.apply(skeleton, 0, time2, null, 1, blend, MixDirection.mixIn);
         return;
       }
       var rotateTimeline = timeline;
@@ -82503,7 +82682,7 @@ var AnimationState$2 = (
       if (!bone.active)
         return;
       var r1 = 0, r2 = 0;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.rotation = bone.data.rotation;
@@ -82515,13 +82694,13 @@ var AnimationState$2 = (
         }
       } else {
         r1 = blend == MixBlend.setup ? bone.data.rotation : bone.rotation;
-        if (time >= frames[frames.length - RotateTimeline$2.ENTRIES])
+        if (time2 >= frames[frames.length - RotateTimeline$2.ENTRIES])
           r2 = bone.data.rotation + frames[frames.length + RotateTimeline$2.PREV_ROTATION];
         else {
-          var frame2 = Animation$2.binarySearch(frames, time, RotateTimeline$2.ENTRIES);
+          var frame2 = Animation$2.binarySearch(frames, time2, RotateTimeline$2.ENTRIES);
           var prevRotation = frames[frame2 + RotateTimeline$2.PREV_ROTATION];
           var frameTime = frames[frame2];
-          var percent2 = rotateTimeline.getCurvePercent((frame2 >> 1) - 1, 1 - (time - frameTime) / (frames[frame2 + RotateTimeline$2.PREV_TIME] - frameTime));
+          var percent2 = rotateTimeline.getCurvePercent((frame2 >> 1) - 1, 1 - (time2 - frameTime) / (frames[frame2 + RotateTimeline$2.PREV_TIME] - frameTime));
           r2 = frames[frame2 + RotateTimeline$2.ROTATION] - prevRotation;
           r2 -= (16384 - (16384.499999999996 - r2 / 360 | 0)) * 360;
           r2 = prevRotation + r2 * percent2 + bone.data.rotation;
@@ -83483,10 +83662,10 @@ var ConstraintData$1 = (
 var Event$3 = (
   /** @class */
   function() {
-    function Event2(time, data2) {
+    function Event2(time2, data2) {
       if (data2 == null)
         throw new Error("data cannot be null.");
-      this.time = time;
+      this.time = time2;
       this.data = data2;
     }
     return Event2;
@@ -85656,9 +85835,9 @@ var SkeletonBinary$1 = (
               var timeline = new ColorTimeline$1(frameCount);
               timeline.slotIndex = slotIndex;
               for (var frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-                var time = input.readFloat();
+                var time2 = input.readFloat();
                 Color.rgba8888ToColor(tempColor1, input.readInt32());
-                timeline.setFrame(frameIndex, time, tempColor1.r, tempColor1.g, tempColor1.b, tempColor1.a);
+                timeline.setFrame(frameIndex, time2, tempColor1.r, tempColor1.g, tempColor1.b, tempColor1.a);
                 if (frameIndex < frameCount - 1)
                   this.readCurve(input, frameIndex, timeline);
               }
@@ -85670,10 +85849,10 @@ var SkeletonBinary$1 = (
               var timeline = new TwoColorTimeline$1(frameCount);
               timeline.slotIndex = slotIndex;
               for (var frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-                var time = input.readFloat();
+                var time2 = input.readFloat();
                 Color.rgba8888ToColor(tempColor1, input.readInt32());
                 Color.rgb888ToColor(tempColor2, input.readInt32());
-                timeline.setFrame(frameIndex, time, tempColor1.r, tempColor1.g, tempColor1.b, tempColor1.a, tempColor2.r, tempColor2.g, tempColor2.b);
+                timeline.setFrame(frameIndex, time2, tempColor1.r, tempColor1.g, tempColor1.b, tempColor1.a, tempColor2.r, tempColor2.g, tempColor2.b);
                 if (frameIndex < frameCount - 1)
                   this.readCurve(input, frameIndex, timeline);
               }
@@ -85813,7 +85992,7 @@ var SkeletonBinary$1 = (
             timeline.slotIndex = slotIndex;
             timeline.attachment = attachment;
             for (var frameIndex = 0; frameIndex < frameCount; frameIndex++) {
-              var time = input.readFloat();
+              var time2 = input.readFloat();
               var deform = void 0;
               var end2 = input.readInt(true);
               if (end2 == 0)
@@ -85834,7 +86013,7 @@ var SkeletonBinary$1 = (
                     deform[v2] += vertices[v2];
                 }
               }
-              timeline.setFrame(frameIndex, time, deform);
+              timeline.setFrame(frameIndex, time2, deform);
               if (frameIndex < frameCount - 1)
                 this.readCurve(input, frameIndex, timeline);
             }
@@ -85848,7 +86027,7 @@ var SkeletonBinary$1 = (
         var timeline = new DrawOrderTimeline$2(drawOrderCount);
         var slotCount = skeletonData.slots.length;
         for (var i2 = 0; i2 < drawOrderCount; i2++) {
-          var time = input.readFloat();
+          var time2 = input.readFloat();
           var offsetCount = input.readInt(true);
           var drawOrder = Utils.newArray(slotCount, 0);
           for (var ii2 = slotCount - 1; ii2 >= 0; ii2--)
@@ -85866,7 +86045,7 @@ var SkeletonBinary$1 = (
           for (var ii2 = slotCount - 1; ii2 >= 0; ii2--)
             if (drawOrder[ii2] == -1)
               drawOrder[ii2] = unchanged[--unchangedIndex];
-          timeline.setFrame(i2, time, drawOrder);
+          timeline.setFrame(i2, time2, drawOrder);
         }
         timelines.push(timeline);
         duration = Math.max(duration, timeline.frames[drawOrderCount - 1]);
@@ -85875,9 +86054,9 @@ var SkeletonBinary$1 = (
       if (eventCount > 0) {
         var timeline = new EventTimeline$2(eventCount);
         for (var i2 = 0; i2 < eventCount; i2++) {
-          var time = input.readFloat();
+          var time2 = input.readFloat();
           var eventData = skeletonData.events[input.readInt(true)];
-          var event_1 = new Event$3(time, eventData);
+          var event_1 = new Event$3(time2, eventData);
           event_1.intValue = input.readInt(false);
           event_1.floatValue = input.readFloat();
           event_1.stringValue = input.readBoolean() ? input.readString() : eventData.stringValue;
@@ -87080,8 +87259,8 @@ var Slot$1 = (
       this.attachmentTime = this.bone.skeleton.time;
       this.attachmentVertices.length = 0;
     };
-    Slot2.prototype.setAttachmentTime = function(time) {
-      this.attachmentTime = this.bone.skeleton.time - time;
+    Slot2.prototype.setAttachmentTime = function(time2) {
+      this.attachmentTime = this.bone.skeleton.time - time2;
     };
     Slot2.prototype.getAttachmentTime = function() {
       return this.bone.skeleton.time - this.attachmentTime;
@@ -87307,17 +87486,17 @@ var Animation$1 = (
       this.timelines = timelines;
       this.duration = duration;
     }
-    Animation2.prototype.apply = function(skeleton, lastTime2, time, loop, events, alpha2, blend, direction) {
+    Animation2.prototype.apply = function(skeleton, lastTime2, time2, loop, events, alpha2, blend, direction) {
       if (skeleton == null)
         throw new Error("skeleton cannot be null.");
       if (loop && this.duration != 0) {
-        time %= this.duration;
+        time2 %= this.duration;
         if (lastTime2 > 0)
           lastTime2 %= this.duration;
       }
       var timelines = this.timelines;
       for (var i2 = 0, n2 = timelines.length; i2 < n2; i2++)
-        timelines[i2].apply(skeleton, lastTime2, time, events, alpha2, blend, direction);
+        timelines[i2].apply(skeleton, lastTime2, time2, events, alpha2, blend, direction);
     };
     Animation2.binarySearch = function(values, target, step) {
       if (step === void 0) {
@@ -87460,15 +87639,15 @@ var RotateTimeline$1 = (
     RotateTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.rotate << 24) + this.boneIndex;
     };
-    RotateTimeline2.prototype.setFrame = function(frameIndex, time, degrees) {
+    RotateTimeline2.prototype.setFrame = function(frameIndex, time2, degrees) {
       frameIndex <<= 1;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + RotateTimeline2.ROTATION] = degrees;
     };
-    RotateTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    RotateTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var frames = this.frames;
       var bone = skeleton.bones[this.boneIndex];
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.rotation = bone.data.rotation;
@@ -87479,7 +87658,7 @@ var RotateTimeline$1 = (
         }
         return;
       }
-      if (time >= frames[frames.length - RotateTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - RotateTimeline2.ENTRIES]) {
         var r_2 = frames[frames.length + RotateTimeline2.PREV_ROTATION];
         switch (blend) {
           case MixBlend.setup:
@@ -87494,10 +87673,10 @@ var RotateTimeline$1 = (
         }
         return;
       }
-      var frame2 = Animation$1.binarySearch(frames, time, RotateTimeline2.ENTRIES);
+      var frame2 = Animation$1.binarySearch(frames, time2, RotateTimeline2.ENTRIES);
       var prevRotation = frames[frame2 + RotateTimeline2.PREV_ROTATION];
       var frameTime = frames[frame2];
-      var percent2 = this.getCurvePercent((frame2 >> 1) - 1, 1 - (time - frameTime) / (frames[frame2 + RotateTimeline2.PREV_TIME] - frameTime));
+      var percent2 = this.getCurvePercent((frame2 >> 1) - 1, 1 - (time2 - frameTime) / (frames[frame2 + RotateTimeline2.PREV_TIME] - frameTime));
       var r2 = frames[frame2 + RotateTimeline2.ROTATION] - prevRotation;
       r2 = prevRotation + (r2 - (16384 - (16384.499999999996 - r2 / 360 | 0)) * 360) * percent2;
       switch (blend) {
@@ -87530,16 +87709,16 @@ var TranslateTimeline$1 = (
     TranslateTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.translate << 24) + this.boneIndex;
     };
-    TranslateTimeline2.prototype.setFrame = function(frameIndex, time, x, y2) {
+    TranslateTimeline2.prototype.setFrame = function(frameIndex, time2, x, y2) {
       frameIndex *= TranslateTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + TranslateTimeline2.X] = x;
       this.frames[frameIndex + TranslateTimeline2.Y] = y2;
     };
-    TranslateTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    TranslateTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var frames = this.frames;
       var bone = skeleton.bones[this.boneIndex];
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.x = bone.data.x;
@@ -87552,15 +87731,15 @@ var TranslateTimeline$1 = (
         return;
       }
       var x = 0, y2 = 0;
-      if (time >= frames[frames.length - TranslateTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - TranslateTimeline2.ENTRIES]) {
         x = frames[frames.length + TranslateTimeline2.PREV_X];
         y2 = frames[frames.length + TranslateTimeline2.PREV_Y];
       } else {
-        var frame2 = Animation$1.binarySearch(frames, time, TranslateTimeline2.ENTRIES);
+        var frame2 = Animation$1.binarySearch(frames, time2, TranslateTimeline2.ENTRIES);
         x = frames[frame2 + TranslateTimeline2.PREV_X];
         y2 = frames[frame2 + TranslateTimeline2.PREV_Y];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / TranslateTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + TranslateTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / TranslateTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + TranslateTimeline2.PREV_TIME] - frameTime));
         x += (frames[frame2 + TranslateTimeline2.X] - x) * percent2;
         y2 += (frames[frame2 + TranslateTimeline2.Y] - y2) * percent2;
       }
@@ -87598,10 +87777,10 @@ var ScaleTimeline$1 = (
     ScaleTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.scale << 24) + this.boneIndex;
     };
-    ScaleTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ScaleTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var frames = this.frames;
       var bone = skeleton.bones[this.boneIndex];
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.scaleX = bone.data.scaleX;
@@ -87614,15 +87793,15 @@ var ScaleTimeline$1 = (
         return;
       }
       var x = 0, y2 = 0;
-      if (time >= frames[frames.length - ScaleTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - ScaleTimeline2.ENTRIES]) {
         x = frames[frames.length + ScaleTimeline2.PREV_X] * bone.data.scaleX;
         y2 = frames[frames.length + ScaleTimeline2.PREV_Y] * bone.data.scaleY;
       } else {
-        var frame2 = Animation$1.binarySearch(frames, time, ScaleTimeline2.ENTRIES);
+        var frame2 = Animation$1.binarySearch(frames, time2, ScaleTimeline2.ENTRIES);
         x = frames[frame2 + ScaleTimeline2.PREV_X];
         y2 = frames[frame2 + ScaleTimeline2.PREV_Y];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / ScaleTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + ScaleTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / ScaleTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + ScaleTimeline2.PREV_TIME] - frameTime));
         x = (x + (frames[frame2 + ScaleTimeline2.X] - x) * percent2) * bone.data.scaleX;
         y2 = (y2 + (frames[frame2 + ScaleTimeline2.Y] - y2) * percent2) * bone.data.scaleY;
       }
@@ -87694,10 +87873,10 @@ var ShearTimeline$1 = (
     ShearTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.shear << 24) + this.boneIndex;
     };
-    ShearTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ShearTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var frames = this.frames;
       var bone = skeleton.bones[this.boneIndex];
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.shearX = bone.data.shearX;
@@ -87710,15 +87889,15 @@ var ShearTimeline$1 = (
         return;
       }
       var x = 0, y2 = 0;
-      if (time >= frames[frames.length - ShearTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - ShearTimeline2.ENTRIES]) {
         x = frames[frames.length + ShearTimeline2.PREV_X];
         y2 = frames[frames.length + ShearTimeline2.PREV_Y];
       } else {
-        var frame2 = Animation$1.binarySearch(frames, time, ShearTimeline2.ENTRIES);
+        var frame2 = Animation$1.binarySearch(frames, time2, ShearTimeline2.ENTRIES);
         x = frames[frame2 + ShearTimeline2.PREV_X];
         y2 = frames[frame2 + ShearTimeline2.PREV_Y];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / ShearTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + ShearTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / ShearTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + ShearTimeline2.PREV_TIME] - frameTime));
         x = x + (frames[frame2 + ShearTimeline2.X] - x) * percent2;
         y2 = y2 + (frames[frame2 + ShearTimeline2.Y] - y2) * percent2;
       }
@@ -87752,18 +87931,18 @@ var ColorTimeline = (
     ColorTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.color << 24) + this.slotIndex;
     };
-    ColorTimeline2.prototype.setFrame = function(frameIndex, time, r2, g2, b2, a2) {
+    ColorTimeline2.prototype.setFrame = function(frameIndex, time2, r2, g2, b2, a2) {
       frameIndex *= ColorTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + ColorTimeline2.R] = r2;
       this.frames[frameIndex + ColorTimeline2.G] = g2;
       this.frames[frameIndex + ColorTimeline2.B] = b2;
       this.frames[frameIndex + ColorTimeline2.A] = a2;
     };
-    ColorTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ColorTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             slot.color.setFromColor(slot.data.color);
@@ -87775,20 +87954,20 @@ var ColorTimeline = (
         return;
       }
       var r2 = 0, g2 = 0, b2 = 0, a2 = 0;
-      if (time >= frames[frames.length - ColorTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - ColorTimeline2.ENTRIES]) {
         var i2 = frames.length;
         r2 = frames[i2 + ColorTimeline2.PREV_R];
         g2 = frames[i2 + ColorTimeline2.PREV_G];
         b2 = frames[i2 + ColorTimeline2.PREV_B];
         a2 = frames[i2 + ColorTimeline2.PREV_A];
       } else {
-        var frame2 = Animation$1.binarySearch(frames, time, ColorTimeline2.ENTRIES);
+        var frame2 = Animation$1.binarySearch(frames, time2, ColorTimeline2.ENTRIES);
         r2 = frames[frame2 + ColorTimeline2.PREV_R];
         g2 = frames[frame2 + ColorTimeline2.PREV_G];
         b2 = frames[frame2 + ColorTimeline2.PREV_B];
         a2 = frames[frame2 + ColorTimeline2.PREV_A];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / ColorTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + ColorTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / ColorTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + ColorTimeline2.PREV_TIME] - frameTime));
         r2 += (frames[frame2 + ColorTimeline2.R] - r2) * percent2;
         g2 += (frames[frame2 + ColorTimeline2.G] - g2) * percent2;
         b2 += (frames[frame2 + ColorTimeline2.B] - b2) * percent2;
@@ -87828,9 +88007,9 @@ var TwoColorTimeline = (
     TwoColorTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.twoColor << 24) + this.slotIndex;
     };
-    TwoColorTimeline2.prototype.setFrame = function(frameIndex, time, r2, g2, b2, a2, r22, g22, b22) {
+    TwoColorTimeline2.prototype.setFrame = function(frameIndex, time2, r2, g2, b2, a2, r22, g22, b22) {
       frameIndex *= TwoColorTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + TwoColorTimeline2.R] = r2;
       this.frames[frameIndex + TwoColorTimeline2.G] = g2;
       this.frames[frameIndex + TwoColorTimeline2.B] = b2;
@@ -87839,10 +88018,10 @@ var TwoColorTimeline = (
       this.frames[frameIndex + TwoColorTimeline2.G2] = g22;
       this.frames[frameIndex + TwoColorTimeline2.B2] = b22;
     };
-    TwoColorTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    TwoColorTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             slot.color.setFromColor(slot.data.color);
@@ -87856,7 +88035,7 @@ var TwoColorTimeline = (
         return;
       }
       var r2 = 0, g2 = 0, b2 = 0, a2 = 0, r22 = 0, g22 = 0, b22 = 0;
-      if (time >= frames[frames.length - TwoColorTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - TwoColorTimeline2.ENTRIES]) {
         var i2 = frames.length;
         r2 = frames[i2 + TwoColorTimeline2.PREV_R];
         g2 = frames[i2 + TwoColorTimeline2.PREV_G];
@@ -87866,7 +88045,7 @@ var TwoColorTimeline = (
         g22 = frames[i2 + TwoColorTimeline2.PREV_G2];
         b22 = frames[i2 + TwoColorTimeline2.PREV_B2];
       } else {
-        var frame2 = Animation$1.binarySearch(frames, time, TwoColorTimeline2.ENTRIES);
+        var frame2 = Animation$1.binarySearch(frames, time2, TwoColorTimeline2.ENTRIES);
         r2 = frames[frame2 + TwoColorTimeline2.PREV_R];
         g2 = frames[frame2 + TwoColorTimeline2.PREV_G];
         b2 = frames[frame2 + TwoColorTimeline2.PREV_B];
@@ -87875,7 +88054,7 @@ var TwoColorTimeline = (
         g22 = frames[frame2 + TwoColorTimeline2.PREV_G2];
         b22 = frames[frame2 + TwoColorTimeline2.PREV_B2];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / TwoColorTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + TwoColorTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / TwoColorTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + TwoColorTimeline2.PREV_TIME] - frameTime));
         r2 += (frames[frame2 + TwoColorTimeline2.R] - r2) * percent2;
         g2 += (frames[frame2 + TwoColorTimeline2.G] - g2) * percent2;
         b2 += (frames[frame2 + TwoColorTimeline2.B] - b2) * percent2;
@@ -87929,11 +88108,11 @@ var AttachmentTimeline$1 = (
     AttachmentTimeline2.prototype.getFrameCount = function() {
       return this.frames.length;
     };
-    AttachmentTimeline2.prototype.setFrame = function(frameIndex, time, attachmentName) {
-      this.frames[frameIndex] = time;
+    AttachmentTimeline2.prototype.setFrame = function(frameIndex, time2, attachmentName) {
+      this.frames[frameIndex] = time2;
       this.attachmentNames[frameIndex] = attachmentName;
     };
-    AttachmentTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    AttachmentTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (direction == MixDirection.mixOut && blend == MixBlend.setup) {
         var attachmentName_1 = slot.data.attachmentName;
@@ -87941,7 +88120,7 @@ var AttachmentTimeline$1 = (
         return;
       }
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         if (blend == MixBlend.setup || blend == MixBlend.first) {
           var attachmentName_2 = slot.data.attachmentName;
           slot.setAttachment(attachmentName_2 == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName_2));
@@ -87949,10 +88128,10 @@ var AttachmentTimeline$1 = (
         return;
       }
       var frameIndex = 0;
-      if (time >= frames[frames.length - 1])
+      if (time2 >= frames[frames.length - 1])
         frameIndex = frames.length - 1;
       else
-        frameIndex = Animation$1.binarySearch(frames, time, 1) - 1;
+        frameIndex = Animation$1.binarySearch(frames, time2, 1) - 1;
       var attachmentName = this.attachmentNames[frameIndex];
       skeleton.slots[this.slotIndex].setAttachment(attachmentName == null ? null : skeleton.getAttachment(this.slotIndex, attachmentName));
     };
@@ -87975,11 +88154,11 @@ var DeformTimeline$1 = (
     DeformTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.deform << 27) + +this.attachment.id + this.slotIndex;
     };
-    DeformTimeline2.prototype.setFrame = function(frameIndex, time, vertices) {
-      this.frames[frameIndex] = time;
+    DeformTimeline2.prototype.setFrame = function(frameIndex, time2, vertices) {
+      this.frames[frameIndex] = time2;
       this.frameVertices[frameIndex] = vertices;
     };
-    DeformTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    DeformTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       var slotAttachment = slot.getAttachment();
       if (!(slotAttachment instanceof VertexAttachment$1) || !slotAttachment.applyDeform(this.attachment))
@@ -87990,7 +88169,7 @@ var DeformTimeline$1 = (
       var frameVertices = this.frameVertices;
       var vertexCount = frameVertices[0].length;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         var vertexAttachment = slotAttachment;
         switch (blend) {
           case MixBlend.setup:
@@ -88015,7 +88194,7 @@ var DeformTimeline$1 = (
         return;
       }
       var vertices = Utils.setArraySize(verticesArray, vertexCount);
-      if (time >= frames[frames.length - 1]) {
+      if (time2 >= frames[frames.length - 1]) {
         var lastVertices = frameVertices[frames.length - 1];
         if (alpha2 == 1) {
           if (blend == MixBlend.add) {
@@ -88067,11 +88246,11 @@ var DeformTimeline$1 = (
         }
         return;
       }
-      var frame2 = Animation$1.binarySearch(frames, time);
+      var frame2 = Animation$1.binarySearch(frames, time2);
       var prevVertices = frameVertices[frame2 - 1];
       var nextVertices = frameVertices[frame2];
       var frameTime = frames[frame2];
-      var percent2 = this.getCurvePercent(frame2 - 1, 1 - (time - frameTime) / (frames[frame2 - 1] - frameTime));
+      var percent2 = this.getCurvePercent(frame2 - 1, 1 - (time2 - frameTime) / (frames[frame2 - 1] - frameTime));
       if (alpha2 == 1) {
         if (blend == MixBlend.add) {
           var vertexAttachment = slotAttachment;
@@ -88155,17 +88334,17 @@ var EventTimeline$1 = (
       this.frames[frameIndex] = event.time;
       this.events[frameIndex] = event;
     };
-    EventTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    EventTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       if (firedEvents == null)
         return;
       var frames = this.frames;
       var frameCount = this.frames.length;
-      if (lastTime2 > time) {
+      if (lastTime2 > time2) {
         this.apply(skeleton, lastTime2, Number.MAX_VALUE, firedEvents, alpha2, blend, direction);
         lastTime2 = -1;
       } else if (lastTime2 >= frames[frameCount - 1])
         return;
-      if (time < frames[0])
+      if (time2 < frames[0])
         return;
       var frame2 = 0;
       if (lastTime2 < frames[0])
@@ -88179,7 +88358,7 @@ var EventTimeline$1 = (
           frame2--;
         }
       }
-      for (; frame2 < frameCount && time >= frames[frame2]; frame2++)
+      for (; frame2 < frameCount && time2 >= frames[frame2]; frame2++)
         firedEvents.push(this.events[frame2]);
     };
     return EventTimeline2;
@@ -88198,11 +88377,11 @@ var DrawOrderTimeline$1 = (
     DrawOrderTimeline2.prototype.getFrameCount = function() {
       return this.frames.length;
     };
-    DrawOrderTimeline2.prototype.setFrame = function(frameIndex, time, drawOrder) {
-      this.frames[frameIndex] = time;
+    DrawOrderTimeline2.prototype.setFrame = function(frameIndex, time2, drawOrder) {
+      this.frames[frameIndex] = time2;
       this.drawOrders[frameIndex] = drawOrder;
     };
-    DrawOrderTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    DrawOrderTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var drawOrder = skeleton.drawOrder;
       var slots = skeleton.slots;
       if (direction == MixDirection.mixOut && blend == MixBlend.setup) {
@@ -88210,16 +88389,16 @@ var DrawOrderTimeline$1 = (
         return;
       }
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         if (blend == MixBlend.setup || blend == MixBlend.first)
           Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
         return;
       }
       var frame2 = 0;
-      if (time >= frames[frames.length - 1])
+      if (time2 >= frames[frames.length - 1])
         frame2 = frames.length - 1;
       else
-        frame2 = Animation$1.binarySearch(frames, time) - 1;
+        frame2 = Animation$1.binarySearch(frames, time2) - 1;
       var drawOrderToSetupIndex = this.drawOrders[frame2];
       if (drawOrderToSetupIndex == null)
         Utils.arrayCopy(slots, 0, drawOrder, 0, slots.length);
@@ -88243,18 +88422,18 @@ var IkConstraintTimeline$1 = (
     IkConstraintTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.ikConstraint << 24) + this.ikConstraintIndex;
     };
-    IkConstraintTimeline2.prototype.setFrame = function(frameIndex, time, mix2, bendDirection, compress, stretch) {
+    IkConstraintTimeline2.prototype.setFrame = function(frameIndex, time2, mix2, bendDirection, compress, stretch) {
       frameIndex *= IkConstraintTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + IkConstraintTimeline2.MIX] = mix2;
       this.frames[frameIndex + IkConstraintTimeline2.BEND_DIRECTION] = bendDirection;
       this.frames[frameIndex + IkConstraintTimeline2.COMPRESS] = compress ? 1 : 0;
       this.frames[frameIndex + IkConstraintTimeline2.STRETCH] = stretch ? 1 : 0;
     };
-    IkConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    IkConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.ikConstraints[this.ikConstraintIndex];
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.mix = constraint.data.mix;
@@ -88270,7 +88449,7 @@ var IkConstraintTimeline$1 = (
         }
         return;
       }
-      if (time >= frames[frames.length - IkConstraintTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - IkConstraintTimeline2.ENTRIES]) {
         if (blend == MixBlend.setup) {
           constraint.mix = constraint.data.mix + (frames[frames.length + IkConstraintTimeline2.PREV_MIX] - constraint.data.mix) * alpha2;
           if (direction == MixDirection.mixOut) {
@@ -88292,10 +88471,10 @@ var IkConstraintTimeline$1 = (
         }
         return;
       }
-      var frame2 = Animation$1.binarySearch(frames, time, IkConstraintTimeline2.ENTRIES);
+      var frame2 = Animation$1.binarySearch(frames, time2, IkConstraintTimeline2.ENTRIES);
       var mix2 = frames[frame2 + IkConstraintTimeline2.PREV_MIX];
       var frameTime = frames[frame2];
-      var percent2 = this.getCurvePercent(frame2 / IkConstraintTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + IkConstraintTimeline2.PREV_TIME] - frameTime));
+      var percent2 = this.getCurvePercent(frame2 / IkConstraintTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + IkConstraintTimeline2.PREV_TIME] - frameTime));
       if (blend == MixBlend.setup) {
         constraint.mix = constraint.data.mix + (mix2 + (frames[frame2 + IkConstraintTimeline2.MIX] - mix2) * percent2 - constraint.data.mix) * alpha2;
         if (direction == MixDirection.mixOut) {
@@ -88341,18 +88520,18 @@ var TransformConstraintTimeline$1 = (
     TransformConstraintTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.transformConstraint << 24) + this.transformConstraintIndex;
     };
-    TransformConstraintTimeline2.prototype.setFrame = function(frameIndex, time, rotateMix, translateMix, scaleMix, shearMix) {
+    TransformConstraintTimeline2.prototype.setFrame = function(frameIndex, time2, rotateMix, translateMix, scaleMix, shearMix) {
       frameIndex *= TransformConstraintTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + TransformConstraintTimeline2.ROTATE] = rotateMix;
       this.frames[frameIndex + TransformConstraintTimeline2.TRANSLATE] = translateMix;
       this.frames[frameIndex + TransformConstraintTimeline2.SCALE] = scaleMix;
       this.frames[frameIndex + TransformConstraintTimeline2.SHEAR] = shearMix;
     };
-    TransformConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    TransformConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.transformConstraints[this.transformConstraintIndex];
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         var data2 = constraint.data;
         switch (blend) {
           case MixBlend.setup:
@@ -88370,20 +88549,20 @@ var TransformConstraintTimeline$1 = (
         return;
       }
       var rotate = 0, translate = 0, scale = 0, shear = 0;
-      if (time >= frames[frames.length - TransformConstraintTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - TransformConstraintTimeline2.ENTRIES]) {
         var i2 = frames.length;
         rotate = frames[i2 + TransformConstraintTimeline2.PREV_ROTATE];
         translate = frames[i2 + TransformConstraintTimeline2.PREV_TRANSLATE];
         scale = frames[i2 + TransformConstraintTimeline2.PREV_SCALE];
         shear = frames[i2 + TransformConstraintTimeline2.PREV_SHEAR];
       } else {
-        var frame2 = Animation$1.binarySearch(frames, time, TransformConstraintTimeline2.ENTRIES);
+        var frame2 = Animation$1.binarySearch(frames, time2, TransformConstraintTimeline2.ENTRIES);
         rotate = frames[frame2 + TransformConstraintTimeline2.PREV_ROTATE];
         translate = frames[frame2 + TransformConstraintTimeline2.PREV_TRANSLATE];
         scale = frames[frame2 + TransformConstraintTimeline2.PREV_SCALE];
         shear = frames[frame2 + TransformConstraintTimeline2.PREV_SHEAR];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / TransformConstraintTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + TransformConstraintTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / TransformConstraintTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + TransformConstraintTimeline2.PREV_TIME] - frameTime));
         rotate += (frames[frame2 + TransformConstraintTimeline2.ROTATE] - rotate) * percent2;
         translate += (frames[frame2 + TransformConstraintTimeline2.TRANSLATE] - translate) * percent2;
         scale += (frames[frame2 + TransformConstraintTimeline2.SCALE] - scale) * percent2;
@@ -88427,15 +88606,15 @@ var PathConstraintPositionTimeline$1 = (
     PathConstraintPositionTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.pathConstraintPosition << 24) + this.pathConstraintIndex;
     };
-    PathConstraintPositionTimeline2.prototype.setFrame = function(frameIndex, time, value) {
+    PathConstraintPositionTimeline2.prototype.setFrame = function(frameIndex, time2, value) {
       frameIndex *= PathConstraintPositionTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + PathConstraintPositionTimeline2.VALUE] = value;
     };
-    PathConstraintPositionTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    PathConstraintPositionTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.position = constraint.data.position;
@@ -88446,13 +88625,13 @@ var PathConstraintPositionTimeline$1 = (
         return;
       }
       var position2 = 0;
-      if (time >= frames[frames.length - PathConstraintPositionTimeline2.ENTRIES])
+      if (time2 >= frames[frames.length - PathConstraintPositionTimeline2.ENTRIES])
         position2 = frames[frames.length + PathConstraintPositionTimeline2.PREV_VALUE];
       else {
-        var frame2 = Animation$1.binarySearch(frames, time, PathConstraintPositionTimeline2.ENTRIES);
+        var frame2 = Animation$1.binarySearch(frames, time2, PathConstraintPositionTimeline2.ENTRIES);
         position2 = frames[frame2 + PathConstraintPositionTimeline2.PREV_VALUE];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / PathConstraintPositionTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + PathConstraintPositionTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / PathConstraintPositionTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + PathConstraintPositionTimeline2.PREV_TIME] - frameTime));
         position2 += (frames[frame2 + PathConstraintPositionTimeline2.VALUE] - position2) * percent2;
       }
       if (blend == MixBlend.setup)
@@ -88477,10 +88656,10 @@ var PathConstraintSpacingTimeline$1 = (
     PathConstraintSpacingTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.pathConstraintSpacing << 24) + this.pathConstraintIndex;
     };
-    PathConstraintSpacingTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    PathConstraintSpacingTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.spacing = constraint.data.spacing;
@@ -88491,13 +88670,13 @@ var PathConstraintSpacingTimeline$1 = (
         return;
       }
       var spacing = 0;
-      if (time >= frames[frames.length - PathConstraintSpacingTimeline2.ENTRIES])
+      if (time2 >= frames[frames.length - PathConstraintSpacingTimeline2.ENTRIES])
         spacing = frames[frames.length + PathConstraintSpacingTimeline2.PREV_VALUE];
       else {
-        var frame2 = Animation$1.binarySearch(frames, time, PathConstraintSpacingTimeline2.ENTRIES);
+        var frame2 = Animation$1.binarySearch(frames, time2, PathConstraintSpacingTimeline2.ENTRIES);
         spacing = frames[frame2 + PathConstraintSpacingTimeline2.PREV_VALUE];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / PathConstraintSpacingTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + PathConstraintSpacingTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / PathConstraintSpacingTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + PathConstraintSpacingTimeline2.PREV_TIME] - frameTime));
         spacing += (frames[frame2 + PathConstraintSpacingTimeline2.VALUE] - spacing) * percent2;
       }
       if (blend == MixBlend.setup)
@@ -88520,16 +88699,16 @@ var PathConstraintMixTimeline$1 = (
     PathConstraintMixTimeline2.prototype.getPropertyId = function() {
       return (TimelineType.pathConstraintMix << 24) + this.pathConstraintIndex;
     };
-    PathConstraintMixTimeline2.prototype.setFrame = function(frameIndex, time, rotateMix, translateMix) {
+    PathConstraintMixTimeline2.prototype.setFrame = function(frameIndex, time2, rotateMix, translateMix) {
       frameIndex *= PathConstraintMixTimeline2.ENTRIES;
-      this.frames[frameIndex] = time;
+      this.frames[frameIndex] = time2;
       this.frames[frameIndex + PathConstraintMixTimeline2.ROTATE] = rotateMix;
       this.frames[frameIndex + PathConstraintMixTimeline2.TRANSLATE] = translateMix;
     };
-    PathConstraintMixTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    PathConstraintMixTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var frames = this.frames;
       var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.rotateMix = constraint.data.rotateMix;
@@ -88542,15 +88721,15 @@ var PathConstraintMixTimeline$1 = (
         return;
       }
       var rotate = 0, translate = 0;
-      if (time >= frames[frames.length - PathConstraintMixTimeline2.ENTRIES]) {
+      if (time2 >= frames[frames.length - PathConstraintMixTimeline2.ENTRIES]) {
         rotate = frames[frames.length + PathConstraintMixTimeline2.PREV_ROTATE];
         translate = frames[frames.length + PathConstraintMixTimeline2.PREV_TRANSLATE];
       } else {
-        var frame2 = Animation$1.binarySearch(frames, time, PathConstraintMixTimeline2.ENTRIES);
+        var frame2 = Animation$1.binarySearch(frames, time2, PathConstraintMixTimeline2.ENTRIES);
         rotate = frames[frame2 + PathConstraintMixTimeline2.PREV_ROTATE];
         translate = frames[frame2 + PathConstraintMixTimeline2.PREV_TRANSLATE];
         var frameTime = frames[frame2];
-        var percent2 = this.getCurvePercent(frame2 / PathConstraintMixTimeline2.ENTRIES - 1, 1 - (time - frameTime) / (frames[frame2 + PathConstraintMixTimeline2.PREV_TIME] - frameTime));
+        var percent2 = this.getCurvePercent(frame2 / PathConstraintMixTimeline2.ENTRIES - 1, 1 - (time2 - frameTime) / (frames[frame2 + PathConstraintMixTimeline2.PREV_TIME] - frameTime));
         rotate += (frames[frame2 + PathConstraintMixTimeline2.ROTATE] - rotate) * percent2;
         translate += (frames[frame2 + PathConstraintMixTimeline2.TRANSLATE] - translate) * percent2;
       }
@@ -88797,18 +88976,18 @@ var AnimationState$1 = (
       from2.nextTrackLast = from2.trackTime;
       return mix2;
     };
-    AnimationState2.prototype.applyRotateTimeline = function(timeline, skeleton, time, alpha2, blend, timelinesRotation, i2, firstFrame) {
+    AnimationState2.prototype.applyRotateTimeline = function(timeline, skeleton, time2, alpha2, blend, timelinesRotation, i2, firstFrame) {
       if (firstFrame)
         timelinesRotation[i2] = 0;
       if (alpha2 == 1) {
-        timeline.apply(skeleton, 0, time, null, 1, blend, MixDirection.mixIn);
+        timeline.apply(skeleton, 0, time2, null, 1, blend, MixDirection.mixIn);
         return;
       }
       var rotateTimeline = timeline;
       var frames = rotateTimeline.frames;
       var bone = skeleton.bones[rotateTimeline.boneIndex];
       var r1 = 0, r2 = 0;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.rotation = bone.data.rotation;
@@ -88820,13 +88999,13 @@ var AnimationState$1 = (
         }
       } else {
         r1 = blend == MixBlend.setup ? bone.data.rotation : bone.rotation;
-        if (time >= frames[frames.length - RotateTimeline$1.ENTRIES])
+        if (time2 >= frames[frames.length - RotateTimeline$1.ENTRIES])
           r2 = bone.data.rotation + frames[frames.length + RotateTimeline$1.PREV_ROTATION];
         else {
-          var frame2 = Animation$1.binarySearch(frames, time, RotateTimeline$1.ENTRIES);
+          var frame2 = Animation$1.binarySearch(frames, time2, RotateTimeline$1.ENTRIES);
           var prevRotation = frames[frame2 + RotateTimeline$1.PREV_ROTATION];
           var frameTime = frames[frame2];
-          var percent2 = rotateTimeline.getCurvePercent((frame2 >> 1) - 1, 1 - (time - frameTime) / (frames[frame2 + RotateTimeline$1.PREV_TIME] - frameTime));
+          var percent2 = rotateTimeline.getCurvePercent((frame2 >> 1) - 1, 1 - (time2 - frameTime) / (frames[frame2 + RotateTimeline$1.PREV_TIME] - frameTime));
           r2 = frames[frame2 + RotateTimeline$1.ROTATION] - prevRotation;
           r2 -= (16384 - (16384.499999999996 - r2 / 360 | 0)) * 360;
           r2 = prevRotation + r2 * percent2 + bone.data.rotation;
@@ -89773,10 +89952,10 @@ var BoneData$1 = (
 var Event$2 = (
   /** @class */
   function() {
-    function Event2(time, data2) {
+    function Event2(time2, data2) {
       if (data2 == null)
         throw new Error("data cannot be null.");
-      this.time = time;
+      this.time = time2;
       this.data = data2;
     }
     return Event2;
@@ -92678,17 +92857,17 @@ var Animation = (
           return true;
       return false;
     };
-    Animation2.prototype.apply = function(skeleton, lastTime2, time, loop, events, alpha2, blend, direction) {
+    Animation2.prototype.apply = function(skeleton, lastTime2, time2, loop, events, alpha2, blend, direction) {
       if (!skeleton)
         throw new Error("skeleton cannot be null.");
       if (loop && this.duration != 0) {
-        time %= this.duration;
+        time2 %= this.duration;
         if (lastTime2 > 0)
           lastTime2 %= this.duration;
       }
       var timelines = this.timelines;
       for (var i2 = 0, n2 = timelines.length; i2 < n2; i2++)
-        timelines[i2].apply(skeleton, lastTime2, time, events, alpha2, blend, direction);
+        timelines[i2].apply(skeleton, lastTime2, time2, events, alpha2, blend, direction);
     };
     return Animation2;
   }()
@@ -92734,17 +92913,17 @@ var Timeline = (
     Timeline2.prototype.getDuration = function() {
       return this.frames[this.frames.length - this.getFrameEntries()];
     };
-    Timeline2.search1 = function(frames, time) {
+    Timeline2.search1 = function(frames, time2) {
       var n2 = frames.length;
       for (var i2 = 1; i2 < n2; i2++)
-        if (frames[i2] > time)
+        if (frames[i2] > time2)
           return i2 - 1;
       return n2 - 1;
     };
-    Timeline2.search = function(frames, time, step) {
+    Timeline2.search = function(frames, time2, step) {
       var n2 = frames.length;
       for (var i2 = step; i2 < n2; i2 += step)
-        if (frames[i2] > time)
+        if (frames[i2] > time2)
           return i2 - step;
       return n2 - step;
     };
@@ -92799,22 +92978,22 @@ var CurveTimeline = (
         y2 += dy;
       }
     };
-    CurveTimeline3.prototype.getBezierValue = function(time, frameIndex, valueOffset, i2) {
+    CurveTimeline3.prototype.getBezierValue = function(time2, frameIndex, valueOffset, i2) {
       var curves = this.curves;
-      if (curves[i2] > time) {
+      if (curves[i2] > time2) {
         var x_1 = this.frames[frameIndex], y_1 = this.frames[frameIndex + valueOffset];
-        return y_1 + (time - x_1) / (curves[i2] - x_1) * (curves[i2 + 1] - y_1);
+        return y_1 + (time2 - x_1) / (curves[i2] - x_1) * (curves[i2 + 1] - y_1);
       }
       var n2 = i2 + 18;
       for (i2 += 2; i2 < n2; i2 += 2) {
-        if (curves[i2] >= time) {
+        if (curves[i2] >= time2) {
           var x_2 = curves[i2 - 2], y_2 = curves[i2 - 1];
-          return y_2 + (time - x_2) / (curves[i2] - x_2) * (curves[i2 + 1] - y_2);
+          return y_2 + (time2 - x_2) / (curves[i2] - x_2) * (curves[i2 + 1] - y_2);
         }
       }
       frameIndex += this.getFrameEntries();
       var x = curves[n2 - 2], y2 = curves[n2 - 1];
-      return y2 + (time - x) / (this.frames[frameIndex] - x) * (this.frames[frameIndex + valueOffset] - y2);
+      return y2 + (time2 - x) / (this.frames[frameIndex] - x) * (this.frames[frameIndex + valueOffset] - y2);
     };
     return CurveTimeline3;
   }(Timeline)
@@ -92829,19 +93008,19 @@ var CurveTimeline1 = (
     CurveTimeline12.prototype.getFrameEntries = function() {
       return 2;
     };
-    CurveTimeline12.prototype.setFrame = function(frame2, time, value) {
+    CurveTimeline12.prototype.setFrame = function(frame2, time2, value) {
       frame2 <<= 1;
-      this.frames[frame2] = time;
+      this.frames[frame2] = time2;
       this.frames[
         frame2 + 1
         /*VALUE*/
       ] = value;
     };
-    CurveTimeline12.prototype.getCurveValue = function(time) {
+    CurveTimeline12.prototype.getCurveValue = function(time2) {
       var frames = this.frames;
       var i2 = frames.length - 2;
       for (var ii2 = 2; ii2 <= i2; ii2 += 2) {
-        if (frames[ii2] > time) {
+        if (frames[ii2] > time2) {
           i2 = ii2 - 2;
           break;
         }
@@ -92853,7 +93032,7 @@ var CurveTimeline1 = (
             i2 + 1
             /*VALUE*/
           ];
-          return value + (time - before) / (frames[
+          return value + (time2 - before) / (frames[
             i2 + 2
             /*ENTRIES*/
           ] - before) * (frames[
@@ -92867,7 +93046,7 @@ var CurveTimeline1 = (
           ];
       }
       return this.getBezierValue(
-        time,
+        time2,
         i2,
         1,
         curveType - 2
@@ -92887,9 +93066,9 @@ var CurveTimeline2 = (
     CurveTimeline22.prototype.getFrameEntries = function() {
       return 3;
     };
-    CurveTimeline22.prototype.setFrame = function(frame2, time, value1, value2) {
+    CurveTimeline22.prototype.setFrame = function(frame2, time2, value1, value2) {
       frame2 *= 3;
-      this.frames[frame2] = time;
+      this.frames[frame2] = time2;
       this.frames[
         frame2 + 1
         /*VALUE1*/
@@ -92912,12 +93091,12 @@ var RotateTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    RotateTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    RotateTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.rotation = bone.data.rotation;
@@ -92927,7 +93106,7 @@ var RotateTimeline = (
         }
         return;
       }
-      var r2 = this.getCurveValue(time);
+      var r2 = this.getCurveValue(time2);
       switch (blend) {
         case MixBlend.setup:
           bone.rotation = bone.data.rotation + r2 * alpha2;
@@ -92952,12 +93131,12 @@ var TranslateTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    TranslateTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    TranslateTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.x = bone.data.x;
@@ -92972,7 +93151,7 @@ var TranslateTimeline = (
       var x = 0, y2 = 0;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         3
         /*ENTRIES*/
       );
@@ -92991,7 +93170,7 @@ var TranslateTimeline = (
             i2 + 2
             /*VALUE2*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 3
             /*ENTRIES*/
           ] - before);
@@ -93016,14 +93195,14 @@ var TranslateTimeline = (
           break;
         default:
           x = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           y2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
@@ -93058,12 +93237,12 @@ var TranslateXTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    TranslateXTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    TranslateXTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.x = bone.data.x;
@@ -93073,7 +93252,7 @@ var TranslateXTimeline = (
         }
         return;
       }
-      var x = this.getCurveValue(time);
+      var x = this.getCurveValue(time2);
       switch (blend) {
         case MixBlend.setup:
           bone.x = bone.data.x + x * alpha2;
@@ -93099,12 +93278,12 @@ var TranslateYTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    TranslateYTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    TranslateYTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.y = bone.data.y;
@@ -93114,7 +93293,7 @@ var TranslateYTimeline = (
         }
         return;
       }
-      var y2 = this.getCurveValue(time);
+      var y2 = this.getCurveValue(time2);
       switch (blend) {
         case MixBlend.setup:
           bone.y = bone.data.y + y2 * alpha2;
@@ -93140,12 +93319,12 @@ var ScaleTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    ScaleTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ScaleTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.scaleX = bone.data.scaleX;
@@ -93160,7 +93339,7 @@ var ScaleTimeline = (
       var x, y2;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         3
         /*ENTRIES*/
       );
@@ -93179,7 +93358,7 @@ var ScaleTimeline = (
             i2 + 2
             /*VALUE2*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 3
             /*ENTRIES*/
           ] - before);
@@ -93204,14 +93383,14 @@ var ScaleTimeline = (
           break;
         default:
           x = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           y2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
@@ -93284,12 +93463,12 @@ var ScaleXTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    ScaleXTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ScaleXTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.scaleX = bone.data.scaleX;
@@ -93299,7 +93478,7 @@ var ScaleXTimeline = (
         }
         return;
       }
-      var x = this.getCurveValue(time) * bone.data.scaleX;
+      var x = this.getCurveValue(time2) * bone.data.scaleX;
       if (alpha2 == 1) {
         if (blend == MixBlend.add)
           bone.scaleX += x - bone.data.scaleX;
@@ -93351,12 +93530,12 @@ var ScaleYTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    ScaleYTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ScaleYTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.scaleY = bone.data.scaleY;
@@ -93366,7 +93545,7 @@ var ScaleYTimeline = (
         }
         return;
       }
-      var y2 = this.getCurveValue(time) * bone.data.scaleY;
+      var y2 = this.getCurveValue(time2) * bone.data.scaleY;
       if (alpha2 == 1) {
         if (blend == MixBlend.add)
           bone.scaleY += y2 - bone.data.scaleY;
@@ -93418,12 +93597,12 @@ var ShearTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    ShearTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ShearTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.shearX = bone.data.shearX;
@@ -93438,7 +93617,7 @@ var ShearTimeline = (
       var x = 0, y2 = 0;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         3
         /*ENTRIES*/
       );
@@ -93457,7 +93636,7 @@ var ShearTimeline = (
             i2 + 2
             /*VALUE2*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 3
             /*ENTRIES*/
           ] - before);
@@ -93482,14 +93661,14 @@ var ShearTimeline = (
           break;
         default:
           x = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           y2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
@@ -93524,12 +93703,12 @@ var ShearXTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    ShearXTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ShearXTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.shearX = bone.data.shearX;
@@ -93539,7 +93718,7 @@ var ShearXTimeline = (
         }
         return;
       }
-      var x = this.getCurveValue(time);
+      var x = this.getCurveValue(time2);
       switch (blend) {
         case MixBlend.setup:
           bone.shearX = bone.data.shearX + x * alpha2;
@@ -93565,12 +93744,12 @@ var ShearYTimeline = (
       _this.boneIndex = boneIndex;
       return _this;
     }
-    ShearYTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    ShearYTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var bone = skeleton.bones[this.boneIndex];
       if (!bone.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.shearY = bone.data.shearY;
@@ -93580,7 +93759,7 @@ var ShearYTimeline = (
         }
         return;
       }
-      var y2 = this.getCurveValue(time);
+      var y2 = this.getCurveValue(time2);
       switch (blend) {
         case MixBlend.setup:
           bone.shearY = bone.data.shearY + y2 * alpha2;
@@ -93612,9 +93791,9 @@ var RGBATimeline = (
     RGBATimeline2.prototype.getFrameEntries = function() {
       return 5;
     };
-    RGBATimeline2.prototype.setFrame = function(frame2, time, r2, g2, b2, a2) {
+    RGBATimeline2.prototype.setFrame = function(frame2, time2, r2, g2, b2, a2) {
       frame2 *= 5;
-      this.frames[frame2] = time;
+      this.frames[frame2] = time2;
       this.frames[
         frame2 + 1
         /*R*/
@@ -93632,13 +93811,13 @@ var RGBATimeline = (
         /*A*/
       ] = a2;
     };
-    RGBATimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    RGBATimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
       var frames = this.frames;
       var color2 = slot.color;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         var setup = slot.data.color;
         switch (blend) {
           case MixBlend.setup:
@@ -93652,7 +93831,7 @@ var RGBATimeline = (
       var r2 = 0, g2 = 0, b2 = 0, a2 = 0;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         5
         /*ENTRIES*/
       );
@@ -93679,7 +93858,7 @@ var RGBATimeline = (
             i2 + 4
             /*A*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 5
             /*ENTRIES*/
           ] - before);
@@ -93720,28 +93899,28 @@ var RGBATimeline = (
           break;
         default:
           r2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           g2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
             /*BEZIER*/
           );
           b2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             3,
             curveType + 18 * 2 - 2
             /*BEZIER*/
           );
           a2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             4,
             curveType + 18 * 3 - 2
@@ -93774,9 +93953,9 @@ var RGBTimeline = (
     RGBTimeline2.prototype.getFrameEntries = function() {
       return 4;
     };
-    RGBTimeline2.prototype.setFrame = function(frame2, time, r2, g2, b2) {
+    RGBTimeline2.prototype.setFrame = function(frame2, time2, r2, g2, b2) {
       frame2 <<= 2;
-      this.frames[frame2] = time;
+      this.frames[frame2] = time2;
       this.frames[
         frame2 + 1
         /*R*/
@@ -93790,13 +93969,13 @@ var RGBTimeline = (
         /*B*/
       ] = b2;
     };
-    RGBTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    RGBTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
       var frames = this.frames;
       var color2 = slot.color;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         var setup = slot.data.color;
         switch (blend) {
           case MixBlend.setup:
@@ -93814,7 +93993,7 @@ var RGBTimeline = (
       var r2 = 0, g2 = 0, b2 = 0;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         4
         /*ENTRIES*/
       );
@@ -93834,7 +94013,7 @@ var RGBTimeline = (
             i2 + 3
             /*B*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 4
             /*ENTRIES*/
           ] - before);
@@ -93867,21 +94046,21 @@ var RGBTimeline = (
           break;
         default:
           r2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           g2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
             /*BEZIER*/
           );
           b2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             3,
             curveType + 18 * 2 - 2
@@ -93917,12 +94096,12 @@ var AlphaTimeline = (
       _this.slotIndex = slotIndex;
       return _this;
     }
-    AlphaTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    AlphaTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
       var color2 = slot.color;
-      if (time < this.frames[0]) {
+      if (time2 < this.frames[0]) {
         var setup = slot.data.color;
         switch (blend) {
           case MixBlend.setup:
@@ -93933,7 +94112,7 @@ var AlphaTimeline = (
         }
         return;
       }
-      var a2 = this.getCurveValue(time);
+      var a2 = this.getCurveValue(time2);
       if (alpha2 == 1)
         color2.a = a2;
       else {
@@ -93962,9 +94141,9 @@ var RGBA2Timeline = (
     RGBA2Timeline2.prototype.getFrameEntries = function() {
       return 8;
     };
-    RGBA2Timeline2.prototype.setFrame = function(frame2, time, r2, g2, b2, a2, r22, g22, b22) {
+    RGBA2Timeline2.prototype.setFrame = function(frame2, time2, r2, g2, b2, a2, r22, g22, b22) {
       frame2 <<= 3;
-      this.frames[frame2] = time;
+      this.frames[frame2] = time2;
       this.frames[
         frame2 + 1
         /*R*/
@@ -93994,13 +94173,13 @@ var RGBA2Timeline = (
         /*B2*/
       ] = b22;
     };
-    RGBA2Timeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    RGBA2Timeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
       var frames = this.frames;
       var light = slot.color, dark = slot.darkColor;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         var setupLight = slot.data.color, setupDark = slot.data.darkColor;
         switch (blend) {
           case MixBlend.setup:
@@ -94020,7 +94199,7 @@ var RGBA2Timeline = (
       var r2 = 0, g2 = 0, b2 = 0, a2 = 0, r22 = 0, g22 = 0, b22 = 0;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         8
         /*ENTRIES*/
       );
@@ -94056,7 +94235,7 @@ var RGBA2Timeline = (
             i2 + 7
             /*B2*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 8
             /*ENTRIES*/
           ] - before);
@@ -94121,49 +94300,49 @@ var RGBA2Timeline = (
           break;
         default:
           r2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           g2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
             /*BEZIER*/
           );
           b2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             3,
             curveType + 18 * 2 - 2
             /*BEZIER*/
           );
           a2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             4,
             curveType + 18 * 3 - 2
             /*BEZIER*/
           );
           r22 = this.getBezierValue(
-            time,
+            time2,
             i2,
             5,
             curveType + 18 * 4 - 2
             /*BEZIER*/
           );
           g22 = this.getBezierValue(
-            time,
+            time2,
             i2,
             6,
             curveType + 18 * 5 - 2
             /*BEZIER*/
           );
           b22 = this.getBezierValue(
-            time,
+            time2,
             i2,
             7,
             curveType + 18 * 6 - 2
@@ -94208,9 +94387,9 @@ var RGB2Timeline = (
     RGB2Timeline2.prototype.getFrameEntries = function() {
       return 7;
     };
-    RGB2Timeline2.prototype.setFrame = function(frame2, time, r2, g2, b2, r22, g22, b22) {
+    RGB2Timeline2.prototype.setFrame = function(frame2, time2, r2, g2, b2, r22, g22, b22) {
       frame2 *= 7;
-      this.frames[frame2] = time;
+      this.frames[frame2] = time2;
       this.frames[
         frame2 + 1
         /*R*/
@@ -94236,13 +94415,13 @@ var RGB2Timeline = (
         /*B2*/
       ] = b22;
     };
-    RGB2Timeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    RGB2Timeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
       var frames = this.frames;
       var light = slot.color, dark = slot.darkColor;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         var setupLight = slot.data.color, setupDark = slot.data.darkColor;
         switch (blend) {
           case MixBlend.setup:
@@ -94266,7 +94445,7 @@ var RGB2Timeline = (
       var r2 = 0, g2 = 0, b2 = 0, r22 = 0, g22 = 0, b22 = 0;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         7
         /*ENTRIES*/
       );
@@ -94301,7 +94480,7 @@ var RGB2Timeline = (
             i2 + 6
             /*B2*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 7
             /*ENTRIES*/
           ] - before);
@@ -94358,42 +94537,42 @@ var RGB2Timeline = (
           break;
         default:
           r2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           g2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
             /*BEZIER*/
           );
           b2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             3,
             curveType + 18 * 2 - 2
             /*BEZIER*/
           );
           r22 = this.getBezierValue(
-            time,
+            time2,
             i2,
             4,
             curveType + 18 * 3 - 2
             /*BEZIER*/
           );
           g22 = this.getBezierValue(
-            time,
+            time2,
             i2,
             5,
             curveType + 18 * 4 - 2
             /*BEZIER*/
           );
           b22 = this.getBezierValue(
-            time,
+            time2,
             i2,
             6,
             curveType + 18 * 5 - 2
@@ -94444,11 +94623,11 @@ var AttachmentTimeline = (
     AttachmentTimeline2.prototype.getFrameCount = function() {
       return this.frames.length;
     };
-    AttachmentTimeline2.prototype.setFrame = function(frame2, time, attachmentName) {
-      this.frames[frame2] = time;
+    AttachmentTimeline2.prototype.setFrame = function(frame2, time2, attachmentName) {
+      this.frames[frame2] = time2;
       this.attachmentNames[frame2] = attachmentName;
     };
-    AttachmentTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    AttachmentTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
@@ -94457,12 +94636,12 @@ var AttachmentTimeline = (
           this.setAttachment(skeleton, slot, slot.data.attachmentName);
         return;
       }
-      if (time < this.frames[0]) {
+      if (time2 < this.frames[0]) {
         if (blend == MixBlend.setup || blend == MixBlend.first)
           this.setAttachment(skeleton, slot, slot.data.attachmentName);
         return;
       }
-      this.setAttachment(skeleton, slot, this.attachmentNames[Timeline.search1(this.frames, time)]);
+      this.setAttachment(skeleton, slot, this.attachmentNames[Timeline.search1(this.frames, time2)]);
     };
     AttachmentTimeline2.prototype.setAttachment = function(skeleton, slot, attachmentName) {
       slot.setAttachment(!attachmentName ? null : skeleton.getAttachment(this.slotIndex, attachmentName));
@@ -94487,8 +94666,8 @@ var DeformTimeline = (
     DeformTimeline2.prototype.getFrameCount = function() {
       return this.frames.length;
     };
-    DeformTimeline2.prototype.setFrame = function(frame2, time, vertices) {
-      this.frames[frame2] = time;
+    DeformTimeline2.prototype.setFrame = function(frame2, time2, vertices) {
+      this.frames[frame2] = time2;
       this.vertices[frame2] = vertices;
     };
     DeformTimeline2.prototype.setBezier = function(bezier, frame2, value, time1, value1, cx1, cy1, cx2, cy2, time2, value2) {
@@ -94512,32 +94691,32 @@ var DeformTimeline = (
         y2 += dy;
       }
     };
-    DeformTimeline2.prototype.getCurvePercent = function(time, frame2) {
+    DeformTimeline2.prototype.getCurvePercent = function(time2, frame2) {
       var curves = this.curves;
       var i2 = curves[frame2];
       switch (i2) {
         case 0:
           var x_3 = this.frames[frame2];
-          return (time - x_3) / (this.frames[frame2 + this.getFrameEntries()] - x_3);
+          return (time2 - x_3) / (this.frames[frame2 + this.getFrameEntries()] - x_3);
         case 1:
           return 0;
       }
       i2 -= 2;
-      if (curves[i2] > time) {
+      if (curves[i2] > time2) {
         var x_4 = this.frames[frame2];
-        return curves[i2 + 1] * (time - x_4) / (curves[i2] - x_4);
+        return curves[i2 + 1] * (time2 - x_4) / (curves[i2] - x_4);
       }
       var n2 = i2 + 18;
       for (i2 += 2; i2 < n2; i2 += 2) {
-        if (curves[i2] >= time) {
+        if (curves[i2] >= time2) {
           var x_5 = curves[i2 - 2], y_3 = curves[i2 - 1];
-          return y_3 + (time - x_5) / (curves[i2] - x_5) * (curves[i2 + 1] - y_3);
+          return y_3 + (time2 - x_5) / (curves[i2] - x_5) * (curves[i2 + 1] - y_3);
         }
       }
       var x = curves[n2 - 2], y2 = curves[n2 - 1];
-      return y2 + (1 - y2) * (time - x) / (this.frames[frame2 + this.getFrameEntries()] - x);
+      return y2 + (1 - y2) * (time2 - x) / (this.frames[frame2 + this.getFrameEntries()] - x);
     };
-    DeformTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    DeformTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
@@ -94552,7 +94731,7 @@ var DeformTimeline = (
       var vertices = this.vertices;
       var vertexCount = vertices[0].length;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             deform.length = 0;
@@ -94577,7 +94756,7 @@ var DeformTimeline = (
         return;
       }
       deform.length = vertexCount;
-      if (time >= frames[frames.length - 1]) {
+      if (time2 >= frames[frames.length - 1]) {
         var lastVertices = vertices[frames.length - 1];
         if (alpha2 == 1) {
           if (blend == MixBlend.add) {
@@ -94627,8 +94806,8 @@ var DeformTimeline = (
         }
         return;
       }
-      var frame2 = Timeline.search1(frames, time);
-      var percent2 = this.getCurvePercent(time, frame2);
+      var frame2 = Timeline.search1(frames, time2);
+      var percent2 = this.getCurvePercent(time2, frame2);
       var prevVertices = vertices[frame2];
       var nextVertices = vertices[frame2 + 1];
       if (alpha2 == 1) {
@@ -94713,17 +94892,17 @@ var EventTimeline = (
       this.frames[frame2] = event.time;
       this.events[frame2] = event;
     };
-    EventTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    EventTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       if (!firedEvents)
         return;
       var frames = this.frames;
       var frameCount = this.frames.length;
-      if (lastTime2 > time) {
+      if (lastTime2 > time2) {
         this.apply(skeleton, lastTime2, Number.MAX_VALUE, firedEvents, alpha2, blend, direction);
         lastTime2 = -1;
       } else if (lastTime2 >= frames[frameCount - 1])
         return;
-      if (time < frames[0])
+      if (time2 < frames[0])
         return;
       var i2 = 0;
       if (lastTime2 < frames[0])
@@ -94737,7 +94916,7 @@ var EventTimeline = (
           i2--;
         }
       }
-      for (; i2 < frameCount && time >= frames[i2]; i2++)
+      for (; i2 < frameCount && time2 >= frames[i2]; i2++)
         firedEvents.push(this.events[i2]);
     };
     EventTimeline2.propertyIds = ["" + Property.event];
@@ -94756,22 +94935,22 @@ var DrawOrderTimeline = (
     DrawOrderTimeline2.prototype.getFrameCount = function() {
       return this.frames.length;
     };
-    DrawOrderTimeline2.prototype.setFrame = function(frame2, time, drawOrder) {
-      this.frames[frame2] = time;
+    DrawOrderTimeline2.prototype.setFrame = function(frame2, time2, drawOrder) {
+      this.frames[frame2] = time2;
       this.drawOrders[frame2] = drawOrder;
     };
-    DrawOrderTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    DrawOrderTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       if (direction == MixDirection.mixOut) {
         if (blend == MixBlend.setup)
           Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
         return;
       }
-      if (time < this.frames[0]) {
+      if (time2 < this.frames[0]) {
         if (blend == MixBlend.setup || blend == MixBlend.first)
           Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
         return;
       }
-      var idx = Timeline.search1(this.frames, time);
+      var idx = Timeline.search1(this.frames, time2);
       var drawOrderToSetupIndex = this.drawOrders[idx];
       if (!drawOrderToSetupIndex)
         Utils.arrayCopy(skeleton.slots, 0, skeleton.drawOrder, 0, skeleton.slots.length);
@@ -94801,9 +94980,9 @@ var IkConstraintTimeline = (
     IkConstraintTimeline2.prototype.getFrameEntries = function() {
       return 6;
     };
-    IkConstraintTimeline2.prototype.setFrame = function(frame2, time, mix2, softness, bendDirection, compress, stretch) {
+    IkConstraintTimeline2.prototype.setFrame = function(frame2, time2, mix2, softness, bendDirection, compress, stretch) {
       frame2 *= 6;
-      this.frames[frame2] = time;
+      this.frames[frame2] = time2;
       this.frames[
         frame2 + 1
         /*MIX*/
@@ -94825,12 +95004,12 @@ var IkConstraintTimeline = (
         /*STRETCH*/
       ] = stretch ? 1 : 0;
     };
-    IkConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    IkConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var constraint = skeleton.ikConstraints[this.ikConstraintIndex];
       if (!constraint.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.mix = constraint.data.mix;
@@ -94851,7 +95030,7 @@ var IkConstraintTimeline = (
       var mix2 = 0, softness = 0;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         6
         /*ENTRIES*/
       );
@@ -94870,7 +95049,7 @@ var IkConstraintTimeline = (
             i2 + 2
             /*SOFTNESS*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 6
             /*ENTRIES*/
           ] - before);
@@ -94895,14 +95074,14 @@ var IkConstraintTimeline = (
           break;
         default:
           mix2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           softness = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
@@ -94967,10 +95146,10 @@ var TransformConstraintTimeline = (
     TransformConstraintTimeline2.prototype.getFrameEntries = function() {
       return 7;
     };
-    TransformConstraintTimeline2.prototype.setFrame = function(frame2, time, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY) {
+    TransformConstraintTimeline2.prototype.setFrame = function(frame2, time2, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY) {
       var frames = this.frames;
       frame2 *= 7;
-      frames[frame2] = time;
+      frames[frame2] = time2;
       frames[
         frame2 + 1
         /*ROTATE*/
@@ -94996,12 +95175,12 @@ var TransformConstraintTimeline = (
         /*SHEARY*/
       ] = mixShearY;
     };
-    TransformConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    TransformConstraintTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var constraint = skeleton.transformConstraints[this.transformConstraintIndex];
       if (!constraint.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         var data2 = constraint.data;
         switch (blend) {
           case MixBlend.setup:
@@ -95025,7 +95204,7 @@ var TransformConstraintTimeline = (
       var rotate, x, y2, scaleX, scaleY, shearY;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         7
         /*ENTRIES*/
       );
@@ -95060,7 +95239,7 @@ var TransformConstraintTimeline = (
             i2 + 6
             /*SHEARY*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 7
             /*ENTRIES*/
           ] - before);
@@ -95117,42 +95296,42 @@ var TransformConstraintTimeline = (
           break;
         default:
           rotate = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           x = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
             /*BEZIER*/
           );
           y2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             3,
             curveType + 18 * 2 - 2
             /*BEZIER*/
           );
           scaleX = this.getBezierValue(
-            time,
+            time2,
             i2,
             4,
             curveType + 18 * 3 - 2
             /*BEZIER*/
           );
           scaleY = this.getBezierValue(
-            time,
+            time2,
             i2,
             5,
             curveType + 18 * 4 - 2
             /*BEZIER*/
           );
           shearY = this.getBezierValue(
-            time,
+            time2,
             i2,
             6,
             curveType + 18 * 5 - 2
@@ -95189,12 +95368,12 @@ var PathConstraintPositionTimeline = (
       _this.pathConstraintIndex = pathConstraintIndex;
       return _this;
     }
-    PathConstraintPositionTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    PathConstraintPositionTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
       if (!constraint.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.position = constraint.data.position;
@@ -95204,7 +95383,7 @@ var PathConstraintPositionTimeline = (
         }
         return;
       }
-      var position2 = this.getCurveValue(time);
+      var position2 = this.getCurveValue(time2);
       if (blend == MixBlend.setup)
         constraint.position = constraint.data.position + (position2 - constraint.data.position) * alpha2;
       else
@@ -95223,12 +95402,12 @@ var PathConstraintSpacingTimeline = (
       _this.pathConstraintIndex = pathConstraintIndex;
       return _this;
     }
-    PathConstraintSpacingTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    PathConstraintSpacingTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
       if (!constraint.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.spacing = constraint.data.spacing;
@@ -95238,7 +95417,7 @@ var PathConstraintSpacingTimeline = (
         }
         return;
       }
-      var spacing = this.getCurveValue(time);
+      var spacing = this.getCurveValue(time2);
       if (blend == MixBlend.setup)
         constraint.spacing = constraint.data.spacing + (spacing - constraint.data.spacing) * alpha2;
       else
@@ -95262,10 +95441,10 @@ var PathConstraintMixTimeline = (
     PathConstraintMixTimeline2.prototype.getFrameEntries = function() {
       return 4;
     };
-    PathConstraintMixTimeline2.prototype.setFrame = function(frame2, time, mixRotate, mixX, mixY) {
+    PathConstraintMixTimeline2.prototype.setFrame = function(frame2, time2, mixRotate, mixX, mixY) {
       var frames = this.frames;
       frame2 <<= 2;
-      frames[frame2] = time;
+      frames[frame2] = time2;
       frames[
         frame2 + 1
         /*ROTATE*/
@@ -95279,12 +95458,12 @@ var PathConstraintMixTimeline = (
         /*Y*/
       ] = mixY;
     };
-    PathConstraintMixTimeline2.prototype.apply = function(skeleton, lastTime2, time, firedEvents, alpha2, blend, direction) {
+    PathConstraintMixTimeline2.prototype.apply = function(skeleton, lastTime2, time2, firedEvents, alpha2, blend, direction) {
       var constraint = skeleton.pathConstraints[this.pathConstraintIndex];
       if (!constraint.active)
         return;
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             constraint.mixRotate = constraint.data.mixRotate;
@@ -95301,7 +95480,7 @@ var PathConstraintMixTimeline = (
       var rotate, x, y2;
       var i2 = Timeline.search(
         frames,
-        time,
+        time2,
         4
         /*ENTRIES*/
       );
@@ -95321,7 +95500,7 @@ var PathConstraintMixTimeline = (
             i2 + 3
             /*Y*/
           ];
-          var t2 = (time - before) / (frames[
+          var t2 = (time2 - before) / (frames[
             i2 + 4
             /*ENTRIES*/
           ] - before);
@@ -95354,21 +95533,21 @@ var PathConstraintMixTimeline = (
           break;
         default:
           rotate = this.getBezierValue(
-            time,
+            time2,
             i2,
             1,
             curveType - 2
             /*BEZIER*/
           );
           x = this.getBezierValue(
-            time,
+            time2,
             i2,
             2,
             curveType + 18 - 2
             /*BEZIER*/
           );
           y2 = this.getBezierValue(
-            time,
+            time2,
             i2,
             3,
             curveType + 18 * 2 - 2
@@ -95410,14 +95589,14 @@ var SequenceTimeline = (
     SequenceTimeline2.prototype.getAttachment = function() {
       return this.attachment;
     };
-    SequenceTimeline2.prototype.setFrame = function(frame2, time, mode, index2, delay) {
+    SequenceTimeline2.prototype.setFrame = function(frame2, time2, mode, index2, delay) {
       var frames = this.frames;
       frame2 *= SequenceTimeline2.ENTRIES;
-      frames[frame2] = time;
+      frames[frame2] = time2;
       frames[frame2 + SequenceTimeline2.MODE] = mode | index2 << 4;
       frames[frame2 + SequenceTimeline2.DELAY] = delay;
     };
-    SequenceTimeline2.prototype.apply = function(skeleton, lastTime2, time, events, alpha2, blend, direction) {
+    SequenceTimeline2.prototype.apply = function(skeleton, lastTime2, time2, events, alpha2, blend, direction) {
       var slot = skeleton.slots[this.slotIndex];
       if (!slot.bone.active)
         return;
@@ -95428,12 +95607,12 @@ var SequenceTimeline = (
           return;
       }
       var frames = this.frames;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         if (blend == MixBlend.setup || blend == MixBlend.first)
           slot.sequenceIndex = -1;
         return;
       }
-      var i2 = Timeline.search(frames, time, SequenceTimeline2.ENTRIES);
+      var i2 = Timeline.search(frames, time2, SequenceTimeline2.ENTRIES);
       var before = frames[i2];
       var modeAndIndex = frames[i2 + SequenceTimeline2.MODE];
       var delay = frames[i2 + SequenceTimeline2.DELAY];
@@ -95442,7 +95621,7 @@ var SequenceTimeline = (
       var index2 = modeAndIndex >> 4, count = this.attachment.sequence.regions.length;
       var mode = SequenceModeValues[modeAndIndex & 15];
       if (mode != SequenceMode.hold) {
-        index2 += (time - before) / delay + 1e-5 | 0;
+        index2 += (time2 - before) / delay + 1e-5 | 0;
         switch (mode) {
           case SequenceMode.once:
             index2 = Math.min(count - 1, index2);
@@ -95731,15 +95910,15 @@ var AnimationState = (
       from2.nextTrackLast = from2.trackTime;
       return mix2;
     };
-    AnimationState2.prototype.applyAttachmentTimeline = function(timeline, skeleton, time, blend, attachments) {
+    AnimationState2.prototype.applyAttachmentTimeline = function(timeline, skeleton, time2, blend, attachments) {
       var slot = skeleton.slots[timeline.slotIndex];
       if (!slot.bone.active)
         return;
-      if (time < timeline.frames[0]) {
+      if (time2 < timeline.frames[0]) {
         if (blend == MixBlend.setup || blend == MixBlend.first)
           this.setAttachment(skeleton, slot, slot.data.attachmentName, attachments);
       } else
-        this.setAttachment(skeleton, slot, timeline.attachmentNames[Timeline.search1(timeline.frames, time)], attachments);
+        this.setAttachment(skeleton, slot, timeline.attachmentNames[Timeline.search1(timeline.frames, time2)], attachments);
       if (slot.attachmentState <= this.unkeyedState)
         slot.attachmentState = this.unkeyedState + SETUP;
     };
@@ -95748,11 +95927,11 @@ var AnimationState = (
       if (attachments)
         slot.attachmentState = this.unkeyedState + CURRENT;
     };
-    AnimationState2.prototype.applyRotateTimeline = function(timeline, skeleton, time, alpha2, blend, timelinesRotation, i2, firstFrame) {
+    AnimationState2.prototype.applyRotateTimeline = function(timeline, skeleton, time2, alpha2, blend, timelinesRotation, i2, firstFrame) {
       if (firstFrame)
         timelinesRotation[i2] = 0;
       if (alpha2 == 1) {
-        timeline.apply(skeleton, 0, time, null, 1, blend, MixDirection.mixIn);
+        timeline.apply(skeleton, 0, time2, null, 1, blend, MixDirection.mixIn);
         return;
       }
       var bone = skeleton.bones[timeline.boneIndex];
@@ -95760,7 +95939,7 @@ var AnimationState = (
         return;
       var frames = timeline.frames;
       var r1 = 0, r2 = 0;
-      if (time < frames[0]) {
+      if (time2 < frames[0]) {
         switch (blend) {
           case MixBlend.setup:
             bone.rotation = bone.data.rotation;
@@ -95772,7 +95951,7 @@ var AnimationState = (
         }
       } else {
         r1 = blend == MixBlend.setup ? bone.data.rotation : bone.rotation;
-        r2 = bone.data.rotation + timeline.getCurveValue(time);
+        r2 = bone.data.rotation + timeline.getCurveValue(time2);
       }
       var total = 0, diff = r2 - r1;
       diff -= (16384 - (16384.499999999996 - diff / 360 | 0)) * 360;
@@ -96805,7 +96984,7 @@ var ConstraintData = (
 var Event$1 = (
   /** @class */
   function() {
-    function Event2(time, data2) {
+    function Event2(time2, data2) {
       this.intValue = 0;
       this.floatValue = 0;
       this.stringValue = null;
@@ -96814,7 +96993,7 @@ var Event$1 = (
       this.balance = 0;
       if (!data2)
         throw new Error("data cannot be null.");
-      this.time = time;
+      this.time = time2;
       this.data = data2;
     }
     return Event2;
@@ -99245,16 +99424,16 @@ var SkeletonBinary = (
             case SLOT_RGBA: {
               var bezierCount = input.readInt(true);
               var timeline = new RGBATimeline(frameCount, bezierCount, slotIndex);
-              var time = input.readFloat();
+              var time2 = input.readFloat();
               var r2 = input.readUnsignedByte() / 255;
               var g2 = input.readUnsignedByte() / 255;
               var b2 = input.readUnsignedByte() / 255;
               var a2 = input.readUnsignedByte() / 255;
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, r2, g2, b2, a2);
+                timeline.setFrame(frame2, time2, r2, g2, b2, a2);
                 if (frame2 == frameLast)
                   break;
-                var time2 = input.readFloat();
+                var time22 = input.readFloat();
                 var r22 = input.readUnsignedByte() / 255;
                 var g22 = input.readUnsignedByte() / 255;
                 var b22 = input.readUnsignedByte() / 255;
@@ -99264,12 +99443,12 @@ var SkeletonBinary = (
                     timeline.setStepped(frame2);
                     break;
                   case CURVE_BEZIER:
-                    setBezier(input, timeline, bezier++, frame2, 0, time, time2, r2, r22, 1);
-                    setBezier(input, timeline, bezier++, frame2, 1, time, time2, g2, g22, 1);
-                    setBezier(input, timeline, bezier++, frame2, 2, time, time2, b2, b22, 1);
-                    setBezier(input, timeline, bezier++, frame2, 3, time, time2, a2, a22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 0, time2, time22, r2, r22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 1, time2, time22, g2, g22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 2, time2, time22, b2, b22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 3, time2, time22, a2, a22, 1);
                 }
-                time = time2;
+                time2 = time22;
                 r2 = r22;
                 g2 = g22;
                 b2 = b22;
@@ -99281,15 +99460,15 @@ var SkeletonBinary = (
             case SLOT_RGB: {
               var bezierCount = input.readInt(true);
               var timeline = new RGBTimeline(frameCount, bezierCount, slotIndex);
-              var time = input.readFloat();
+              var time2 = input.readFloat();
               var r2 = input.readUnsignedByte() / 255;
               var g2 = input.readUnsignedByte() / 255;
               var b2 = input.readUnsignedByte() / 255;
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, r2, g2, b2);
+                timeline.setFrame(frame2, time2, r2, g2, b2);
                 if (frame2 == frameLast)
                   break;
-                var time2 = input.readFloat();
+                var time22 = input.readFloat();
                 var r22 = input.readUnsignedByte() / 255;
                 var g22 = input.readUnsignedByte() / 255;
                 var b22 = input.readUnsignedByte() / 255;
@@ -99298,11 +99477,11 @@ var SkeletonBinary = (
                     timeline.setStepped(frame2);
                     break;
                   case CURVE_BEZIER:
-                    setBezier(input, timeline, bezier++, frame2, 0, time, time2, r2, r22, 1);
-                    setBezier(input, timeline, bezier++, frame2, 1, time, time2, g2, g22, 1);
-                    setBezier(input, timeline, bezier++, frame2, 2, time, time2, b2, b22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 0, time2, time22, r2, r22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 1, time2, time22, g2, g22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 2, time2, time22, b2, b22, 1);
                 }
-                time = time2;
+                time2 = time22;
                 r2 = r22;
                 g2 = g22;
                 b2 = b22;
@@ -99313,7 +99492,7 @@ var SkeletonBinary = (
             case SLOT_RGBA2: {
               var bezierCount = input.readInt(true);
               var timeline = new RGBA2Timeline(frameCount, bezierCount, slotIndex);
-              var time = input.readFloat();
+              var time2 = input.readFloat();
               var r2 = input.readUnsignedByte() / 255;
               var g2 = input.readUnsignedByte() / 255;
               var b2 = input.readUnsignedByte() / 255;
@@ -99322,10 +99501,10 @@ var SkeletonBinary = (
               var g22 = input.readUnsignedByte() / 255;
               var b22 = input.readUnsignedByte() / 255;
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, r2, g2, b2, a2, r22, g22, b22);
+                timeline.setFrame(frame2, time2, r2, g2, b2, a2, r22, g22, b22);
                 if (frame2 == frameLast)
                   break;
-                var time2 = input.readFloat();
+                var time22 = input.readFloat();
                 var nr = input.readUnsignedByte() / 255;
                 var ng2 = input.readUnsignedByte() / 255;
                 var nb2 = input.readUnsignedByte() / 255;
@@ -99338,15 +99517,15 @@ var SkeletonBinary = (
                     timeline.setStepped(frame2);
                     break;
                   case CURVE_BEZIER:
-                    setBezier(input, timeline, bezier++, frame2, 0, time, time2, r2, nr, 1);
-                    setBezier(input, timeline, bezier++, frame2, 1, time, time2, g2, ng2, 1);
-                    setBezier(input, timeline, bezier++, frame2, 2, time, time2, b2, nb2, 1);
-                    setBezier(input, timeline, bezier++, frame2, 3, time, time2, a2, na2, 1);
-                    setBezier(input, timeline, bezier++, frame2, 4, time, time2, r22, nr2, 1);
-                    setBezier(input, timeline, bezier++, frame2, 5, time, time2, g22, ng22, 1);
-                    setBezier(input, timeline, bezier++, frame2, 6, time, time2, b22, nb22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 0, time2, time22, r2, nr, 1);
+                    setBezier(input, timeline, bezier++, frame2, 1, time2, time22, g2, ng2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 2, time2, time22, b2, nb2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 3, time2, time22, a2, na2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 4, time2, time22, r22, nr2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 5, time2, time22, g22, ng22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 6, time2, time22, b22, nb22, 1);
                 }
-                time = time2;
+                time2 = time22;
                 r2 = nr;
                 g2 = ng2;
                 b2 = nb2;
@@ -99361,7 +99540,7 @@ var SkeletonBinary = (
             case SLOT_RGB2: {
               var bezierCount = input.readInt(true);
               var timeline = new RGB2Timeline(frameCount, bezierCount, slotIndex);
-              var time = input.readFloat();
+              var time2 = input.readFloat();
               var r2 = input.readUnsignedByte() / 255;
               var g2 = input.readUnsignedByte() / 255;
               var b2 = input.readUnsignedByte() / 255;
@@ -99369,10 +99548,10 @@ var SkeletonBinary = (
               var g22 = input.readUnsignedByte() / 255;
               var b22 = input.readUnsignedByte() / 255;
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, r2, g2, b2, r22, g22, b22);
+                timeline.setFrame(frame2, time2, r2, g2, b2, r22, g22, b22);
                 if (frame2 == frameLast)
                   break;
-                var time2 = input.readFloat();
+                var time22 = input.readFloat();
                 var nr = input.readUnsignedByte() / 255;
                 var ng2 = input.readUnsignedByte() / 255;
                 var nb2 = input.readUnsignedByte() / 255;
@@ -99384,14 +99563,14 @@ var SkeletonBinary = (
                     timeline.setStepped(frame2);
                     break;
                   case CURVE_BEZIER:
-                    setBezier(input, timeline, bezier++, frame2, 0, time, time2, r2, nr, 1);
-                    setBezier(input, timeline, bezier++, frame2, 1, time, time2, g2, ng2, 1);
-                    setBezier(input, timeline, bezier++, frame2, 2, time, time2, b2, nb2, 1);
-                    setBezier(input, timeline, bezier++, frame2, 3, time, time2, r22, nr2, 1);
-                    setBezier(input, timeline, bezier++, frame2, 4, time, time2, g22, ng22, 1);
-                    setBezier(input, timeline, bezier++, frame2, 5, time, time2, b22, nb22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 0, time2, time22, r2, nr, 1);
+                    setBezier(input, timeline, bezier++, frame2, 1, time2, time22, g2, ng2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 2, time2, time22, b2, nb2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 3, time2, time22, r22, nr2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 4, time2, time22, g22, ng22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 5, time2, time22, b22, nb22, 1);
                 }
-                time = time2;
+                time2 = time22;
                 r2 = nr;
                 g2 = ng2;
                 b2 = nb2;
@@ -99404,21 +99583,21 @@ var SkeletonBinary = (
             }
             case SLOT_ALPHA: {
               var timeline = new AlphaTimeline(frameCount, input.readInt(true), slotIndex);
-              var time = input.readFloat(), a2 = input.readUnsignedByte() / 255;
+              var time2 = input.readFloat(), a2 = input.readUnsignedByte() / 255;
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, a2);
+                timeline.setFrame(frame2, time2, a2);
                 if (frame2 == frameLast)
                   break;
-                var time2 = input.readFloat();
+                var time22 = input.readFloat();
                 var a22 = input.readUnsignedByte() / 255;
                 switch (input.readByte()) {
                   case CURVE_STEPPED:
                     timeline.setStepped(frame2);
                     break;
                   case CURVE_BEZIER:
-                    setBezier(input, timeline, bezier++, frame2, 0, time, time2, a2, a22, 1);
+                    setBezier(input, timeline, bezier++, frame2, 0, time2, time22, a2, a22, 1);
                 }
-                time = time2;
+                time2 = time22;
                 a2 = a22;
               }
               timelines.push(timeline);
@@ -99466,21 +99645,21 @@ var SkeletonBinary = (
       for (var i2 = 0, n2 = input.readInt(true); i2 < n2; i2++) {
         var index2 = input.readInt(true), frameCount = input.readInt(true), frameLast = frameCount - 1;
         var timeline = new IkConstraintTimeline(frameCount, input.readInt(true), index2);
-        var time = input.readFloat(), mix2 = input.readFloat(), softness = input.readFloat() * scale;
+        var time2 = input.readFloat(), mix2 = input.readFloat(), softness = input.readFloat() * scale;
         for (var frame2 = 0, bezier = 0; ; frame2++) {
-          timeline.setFrame(frame2, time, mix2, softness, input.readByte(), input.readBoolean(), input.readBoolean());
+          timeline.setFrame(frame2, time2, mix2, softness, input.readByte(), input.readBoolean(), input.readBoolean());
           if (frame2 == frameLast)
             break;
-          var time2 = input.readFloat(), mix22 = input.readFloat(), softness2 = input.readFloat() * scale;
+          var time22 = input.readFloat(), mix22 = input.readFloat(), softness2 = input.readFloat() * scale;
           switch (input.readByte()) {
             case CURVE_STEPPED:
               timeline.setStepped(frame2);
               break;
             case CURVE_BEZIER:
-              setBezier(input, timeline, bezier++, frame2, 0, time, time2, mix2, mix22, 1);
-              setBezier(input, timeline, bezier++, frame2, 1, time, time2, softness, softness2, scale);
+              setBezier(input, timeline, bezier++, frame2, 0, time2, time22, mix2, mix22, 1);
+              setBezier(input, timeline, bezier++, frame2, 1, time2, time22, softness, softness2, scale);
           }
-          time = time2;
+          time2 = time22;
           mix2 = mix22;
           softness = softness2;
         }
@@ -99489,25 +99668,25 @@ var SkeletonBinary = (
       for (var i2 = 0, n2 = input.readInt(true); i2 < n2; i2++) {
         var index2 = input.readInt(true), frameCount = input.readInt(true), frameLast = frameCount - 1;
         var timeline = new TransformConstraintTimeline(frameCount, input.readInt(true), index2);
-        var time = input.readFloat(), mixRotate = input.readFloat(), mixX = input.readFloat(), mixY = input.readFloat(), mixScaleX = input.readFloat(), mixScaleY = input.readFloat(), mixShearY = input.readFloat();
+        var time2 = input.readFloat(), mixRotate = input.readFloat(), mixX = input.readFloat(), mixY = input.readFloat(), mixScaleX = input.readFloat(), mixScaleY = input.readFloat(), mixShearY = input.readFloat();
         for (var frame2 = 0, bezier = 0; ; frame2++) {
-          timeline.setFrame(frame2, time, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY);
+          timeline.setFrame(frame2, time2, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY);
           if (frame2 == frameLast)
             break;
-          var time2 = input.readFloat(), mixRotate2 = input.readFloat(), mixX2 = input.readFloat(), mixY2 = input.readFloat(), mixScaleX2 = input.readFloat(), mixScaleY2 = input.readFloat(), mixShearY2 = input.readFloat();
+          var time22 = input.readFloat(), mixRotate2 = input.readFloat(), mixX2 = input.readFloat(), mixY2 = input.readFloat(), mixScaleX2 = input.readFloat(), mixScaleY2 = input.readFloat(), mixShearY2 = input.readFloat();
           switch (input.readByte()) {
             case CURVE_STEPPED:
               timeline.setStepped(frame2);
               break;
             case CURVE_BEZIER:
-              setBezier(input, timeline, bezier++, frame2, 0, time, time2, mixRotate, mixRotate2, 1);
-              setBezier(input, timeline, bezier++, frame2, 1, time, time2, mixX, mixX2, 1);
-              setBezier(input, timeline, bezier++, frame2, 2, time, time2, mixY, mixY2, 1);
-              setBezier(input, timeline, bezier++, frame2, 3, time, time2, mixScaleX, mixScaleX2, 1);
-              setBezier(input, timeline, bezier++, frame2, 4, time, time2, mixScaleY, mixScaleY2, 1);
-              setBezier(input, timeline, bezier++, frame2, 5, time, time2, mixShearY, mixShearY2, 1);
+              setBezier(input, timeline, bezier++, frame2, 0, time2, time22, mixRotate, mixRotate2, 1);
+              setBezier(input, timeline, bezier++, frame2, 1, time2, time22, mixX, mixX2, 1);
+              setBezier(input, timeline, bezier++, frame2, 2, time2, time22, mixY, mixY2, 1);
+              setBezier(input, timeline, bezier++, frame2, 3, time2, time22, mixScaleX, mixScaleX2, 1);
+              setBezier(input, timeline, bezier++, frame2, 4, time2, time22, mixScaleY, mixScaleY2, 1);
+              setBezier(input, timeline, bezier++, frame2, 5, time2, time22, mixShearY, mixShearY2, 1);
           }
-          time = time2;
+          time2 = time22;
           mixRotate = mixRotate2;
           mixX = mixX2;
           mixY = mixY2;
@@ -99530,22 +99709,22 @@ var SkeletonBinary = (
               break;
             case PATH_MIX:
               var timeline = new PathConstraintMixTimeline(input.readInt(true), input.readInt(true), index2);
-              var time = input.readFloat(), mixRotate = input.readFloat(), mixX = input.readFloat(), mixY = input.readFloat();
+              var time2 = input.readFloat(), mixRotate = input.readFloat(), mixX = input.readFloat(), mixY = input.readFloat();
               for (var frame2 = 0, bezier = 0, frameLast = timeline.getFrameCount() - 1; ; frame2++) {
-                timeline.setFrame(frame2, time, mixRotate, mixX, mixY);
+                timeline.setFrame(frame2, time2, mixRotate, mixX, mixY);
                 if (frame2 == frameLast)
                   break;
-                var time2 = input.readFloat(), mixRotate2 = input.readFloat(), mixX2 = input.readFloat(), mixY2 = input.readFloat();
+                var time22 = input.readFloat(), mixRotate2 = input.readFloat(), mixX2 = input.readFloat(), mixY2 = input.readFloat();
                 switch (input.readByte()) {
                   case CURVE_STEPPED:
                     timeline.setStepped(frame2);
                     break;
                   case CURVE_BEZIER:
-                    setBezier(input, timeline, bezier++, frame2, 0, time, time2, mixRotate, mixRotate2, 1);
-                    setBezier(input, timeline, bezier++, frame2, 1, time, time2, mixX, mixX2, 1);
-                    setBezier(input, timeline, bezier++, frame2, 2, time, time2, mixY, mixY2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 0, time2, time22, mixRotate, mixRotate2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 1, time2, time22, mixX, mixX2, 1);
+                    setBezier(input, timeline, bezier++, frame2, 2, time2, time22, mixY, mixY2, 1);
                 }
-                time = time2;
+                time2 = time22;
                 mixRotate = mixRotate2;
                 mixX = mixX2;
                 mixY = mixY2;
@@ -99574,7 +99753,7 @@ var SkeletonBinary = (
                 var deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
                 var bezierCount = input.readInt(true);
                 var timeline = new DeformTimeline(frameCount, bezierCount, slotIndex, vertexAttachment);
-                var time = input.readFloat();
+                var time2 = input.readFloat();
                 for (var frame2 = 0, bezier = 0; ; frame2++) {
                   var deform = void 0;
                   var end2 = input.readInt(true);
@@ -99596,18 +99775,18 @@ var SkeletonBinary = (
                         deform[v2] += vertices[v2];
                     }
                   }
-                  timeline.setFrame(frame2, time, deform);
+                  timeline.setFrame(frame2, time2, deform);
                   if (frame2 == frameLast)
                     break;
-                  var time2 = input.readFloat();
+                  var time22 = input.readFloat();
                   switch (input.readByte()) {
                     case CURVE_STEPPED:
                       timeline.setStepped(frame2);
                       break;
                     case CURVE_BEZIER:
-                      setBezier(input, timeline, bezier++, frame2, 0, time, time2, 0, 1, 1);
+                      setBezier(input, timeline, bezier++, frame2, 0, time2, time22, 0, 1, 1);
                   }
-                  time = time2;
+                  time2 = time22;
                 }
                 timelines.push(timeline);
                 break;
@@ -99615,9 +99794,9 @@ var SkeletonBinary = (
               case ATTACHMENT_SEQUENCE: {
                 var timeline = new SequenceTimeline(frameCount, slotIndex, attachment);
                 for (var frame2 = 0; frame2 < frameCount; frame2++) {
-                  var time = input.readFloat();
+                  var time2 = input.readFloat();
                   var modeAndIndex = input.readInt32();
-                  timeline.setFrame(frame2, time, SequenceModeValues[modeAndIndex & 15], modeAndIndex >> 4, input.readFloat());
+                  timeline.setFrame(frame2, time2, SequenceModeValues[modeAndIndex & 15], modeAndIndex >> 4, input.readFloat());
                 }
                 timelines.push(timeline);
                 break;
@@ -99631,7 +99810,7 @@ var SkeletonBinary = (
         var timeline = new DrawOrderTimeline(drawOrderCount);
         var slotCount = skeletonData.slots.length;
         for (var i2 = 0; i2 < drawOrderCount; i2++) {
-          var time = input.readFloat();
+          var time2 = input.readFloat();
           var offsetCount = input.readInt(true);
           var drawOrder = Utils.newArray(slotCount, 0);
           for (var ii2 = slotCount - 1; ii2 >= 0; ii2--)
@@ -99649,7 +99828,7 @@ var SkeletonBinary = (
           for (var ii2 = slotCount - 1; ii2 >= 0; ii2--)
             if (drawOrder[ii2] == -1)
               drawOrder[ii2] = unchanged[--unchangedIndex];
-          timeline.setFrame(i2, time, drawOrder);
+          timeline.setFrame(i2, time2, drawOrder);
         }
         timelines.push(timeline);
       }
@@ -99657,9 +99836,9 @@ var SkeletonBinary = (
       if (eventCount > 0) {
         var timeline = new EventTimeline(eventCount);
         for (var i2 = 0; i2 < eventCount; i2++) {
-          var time = input.readFloat();
+          var time2 = input.readFloat();
           var eventData = skeletonData.events[input.readInt(true)];
-          var event_1 = new Event$1(time, eventData);
+          var event_1 = new Event$1(time2, eventData);
           event_1.intValue = input.readInt(false);
           event_1.floatValue = input.readFloat();
           event_1.stringValue = input.readBoolean() ? input.readString() : eventData.stringValue;
@@ -99710,40 +99889,40 @@ var Vertices = (
   }()
 );
 function readTimeline1$1(input, timeline, scale) {
-  var time = input.readFloat(), value = input.readFloat() * scale;
+  var time2 = input.readFloat(), value = input.readFloat() * scale;
   for (var frame2 = 0, bezier = 0, frameLast = timeline.getFrameCount() - 1; ; frame2++) {
-    timeline.setFrame(frame2, time, value);
+    timeline.setFrame(frame2, time2, value);
     if (frame2 == frameLast)
       break;
-    var time2 = input.readFloat(), value2 = input.readFloat() * scale;
+    var time22 = input.readFloat(), value2 = input.readFloat() * scale;
     switch (input.readByte()) {
       case CURVE_STEPPED:
         timeline.setStepped(frame2);
         break;
       case CURVE_BEZIER:
-        setBezier(input, timeline, bezier++, frame2, 0, time, time2, value, value2, scale);
+        setBezier(input, timeline, bezier++, frame2, 0, time2, time22, value, value2, scale);
     }
-    time = time2;
+    time2 = time22;
     value = value2;
   }
   return timeline;
 }
 function readTimeline2$1(input, timeline, scale) {
-  var time = input.readFloat(), value1 = input.readFloat() * scale, value2 = input.readFloat() * scale;
+  var time2 = input.readFloat(), value1 = input.readFloat() * scale, value2 = input.readFloat() * scale;
   for (var frame2 = 0, bezier = 0, frameLast = timeline.getFrameCount() - 1; ; frame2++) {
-    timeline.setFrame(frame2, time, value1, value2);
+    timeline.setFrame(frame2, time2, value1, value2);
     if (frame2 == frameLast)
       break;
-    var time2 = input.readFloat(), nvalue1 = input.readFloat() * scale, nvalue2 = input.readFloat() * scale;
+    var time22 = input.readFloat(), nvalue1 = input.readFloat() * scale, nvalue2 = input.readFloat() * scale;
     switch (input.readByte()) {
       case CURVE_STEPPED:
         timeline.setStepped(frame2);
         break;
       case CURVE_BEZIER:
-        setBezier(input, timeline, bezier++, frame2, 0, time, time2, value1, nvalue1, scale);
-        setBezier(input, timeline, bezier++, frame2, 1, time, time2, value2, nvalue2, scale);
+        setBezier(input, timeline, bezier++, frame2, 0, time2, time22, value1, nvalue1, scale);
+        setBezier(input, timeline, bezier++, frame2, 1, time2, time22, value2, nvalue2, scale);
     }
-    time = time2;
+    time2 = time22;
     value1 = nvalue1;
     value2 = nvalue2;
   }
@@ -100214,25 +100393,25 @@ var SkeletonJson = (
             } else if (timelineName == "rgba") {
               var timeline = new RGBATimeline(frames_1, frames_1 << 2, slotIndex);
               var keyMap = timelineMap[0];
-              var time = getValue(keyMap, "time", 0);
+              var time2 = getValue(keyMap, "time", 0);
               var color2 = Color.fromString(keyMap.color);
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, color2.r, color2.g, color2.b, color2.a);
+                timeline.setFrame(frame2, time2, color2.r, color2.g, color2.b, color2.a);
                 var nextMap = timelineMap[frame2 + 1];
                 if (!nextMap) {
                   timeline.shrink(bezier);
                   break;
                 }
-                var time2 = getValue(nextMap, "time", 0);
+                var time22 = getValue(nextMap, "time", 0);
                 var newColor = Color.fromString(nextMap.color);
                 var curve = keyMap.curve;
                 if (curve) {
-                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time, time2, color2.r, newColor.r, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time, time2, color2.g, newColor.g, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time, time2, color2.b, newColor.b, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 3, time, time2, color2.a, newColor.a, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time2, time22, color2.r, newColor.r, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time2, time22, color2.g, newColor.g, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time2, time22, color2.b, newColor.b, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 3, time2, time22, color2.a, newColor.a, 1);
                 }
-                time = time2;
+                time2 = time22;
                 color2 = newColor;
                 keyMap = nextMap;
               }
@@ -100240,24 +100419,24 @@ var SkeletonJson = (
             } else if (timelineName == "rgb") {
               var timeline = new RGBTimeline(frames_1, frames_1 * 3, slotIndex);
               var keyMap = timelineMap[0];
-              var time = getValue(keyMap, "time", 0);
+              var time2 = getValue(keyMap, "time", 0);
               var color2 = Color.fromString(keyMap.color);
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, color2.r, color2.g, color2.b);
+                timeline.setFrame(frame2, time2, color2.r, color2.g, color2.b);
                 var nextMap = timelineMap[frame2 + 1];
                 if (!nextMap) {
                   timeline.shrink(bezier);
                   break;
                 }
-                var time2 = getValue(nextMap, "time", 0);
+                var time22 = getValue(nextMap, "time", 0);
                 var newColor = Color.fromString(nextMap.color);
                 var curve = keyMap.curve;
                 if (curve) {
-                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time, time2, color2.r, newColor.r, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time, time2, color2.g, newColor.g, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time, time2, color2.b, newColor.b, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time2, time22, color2.r, newColor.r, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time2, time22, color2.g, newColor.g, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time2, time22, color2.b, newColor.b, 1);
                 }
-                time = time2;
+                time2 = time22;
                 color2 = newColor;
                 keyMap = nextMap;
               }
@@ -100267,30 +100446,30 @@ var SkeletonJson = (
             } else if (timelineName == "rgba2") {
               var timeline = new RGBA2Timeline(frames_1, frames_1 * 7, slotIndex);
               var keyMap = timelineMap[0];
-              var time = getValue(keyMap, "time", 0);
+              var time2 = getValue(keyMap, "time", 0);
               var color2 = Color.fromString(keyMap.light);
               var color22 = Color.fromString(keyMap.dark);
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, color2.r, color2.g, color2.b, color2.a, color22.r, color22.g, color22.b);
+                timeline.setFrame(frame2, time2, color2.r, color2.g, color2.b, color2.a, color22.r, color22.g, color22.b);
                 var nextMap = timelineMap[frame2 + 1];
                 if (!nextMap) {
                   timeline.shrink(bezier);
                   break;
                 }
-                var time2 = getValue(nextMap, "time", 0);
+                var time22 = getValue(nextMap, "time", 0);
                 var newColor = Color.fromString(nextMap.light);
                 var newColor2 = Color.fromString(nextMap.dark);
                 var curve = keyMap.curve;
                 if (curve) {
-                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time, time2, color2.r, newColor.r, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time, time2, color2.g, newColor.g, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time, time2, color2.b, newColor.b, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 3, time, time2, color2.a, newColor.a, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 4, time, time2, color22.r, newColor2.r, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 5, time, time2, color22.g, newColor2.g, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 6, time, time2, color22.b, newColor2.b, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time2, time22, color2.r, newColor.r, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time2, time22, color2.g, newColor.g, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time2, time22, color2.b, newColor.b, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 3, time2, time22, color2.a, newColor.a, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 4, time2, time22, color22.r, newColor2.r, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 5, time2, time22, color22.g, newColor2.g, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 6, time2, time22, color22.b, newColor2.b, 1);
                 }
-                time = time2;
+                time2 = time22;
                 color2 = newColor;
                 color22 = newColor2;
                 keyMap = nextMap;
@@ -100299,29 +100478,29 @@ var SkeletonJson = (
             } else if (timelineName == "rgb2") {
               var timeline = new RGB2Timeline(frames_1, frames_1 * 6, slotIndex);
               var keyMap = timelineMap[0];
-              var time = getValue(keyMap, "time", 0);
+              var time2 = getValue(keyMap, "time", 0);
               var color2 = Color.fromString(keyMap.light);
               var color22 = Color.fromString(keyMap.dark);
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, color2.r, color2.g, color2.b, color22.r, color22.g, color22.b);
+                timeline.setFrame(frame2, time2, color2.r, color2.g, color2.b, color22.r, color22.g, color22.b);
                 var nextMap = timelineMap[frame2 + 1];
                 if (!nextMap) {
                   timeline.shrink(bezier);
                   break;
                 }
-                var time2 = getValue(nextMap, "time", 0);
+                var time22 = getValue(nextMap, "time", 0);
                 var newColor = Color.fromString(nextMap.light);
                 var newColor2 = Color.fromString(nextMap.dark);
                 var curve = keyMap.curve;
                 if (curve) {
-                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time, time2, color2.r, newColor.r, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time, time2, color2.g, newColor.g, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time, time2, color2.b, newColor.b, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 3, time, time2, color22.r, newColor2.r, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 4, time, time2, color22.g, newColor2.g, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 5, time, time2, color22.b, newColor2.b, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time2, time22, color2.r, newColor.r, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time2, time22, color2.g, newColor.g, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time2, time22, color2.b, newColor.b, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 3, time2, time22, color22.r, newColor2.r, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 4, time2, time22, color22.g, newColor2.g, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 5, time2, time22, color22.b, newColor2.b, 1);
                 }
-                time = time2;
+                time2 = time22;
                 color2 = newColor;
                 color22 = newColor2;
                 keyMap = nextMap;
@@ -100387,25 +100566,25 @@ var SkeletonJson = (
             throw new Error("IK Constraint not found: " + constraintName);
           var constraintIndex = skeletonData.ikConstraints.indexOf(constraint);
           var timeline = new IkConstraintTimeline(constraintMap.length, constraintMap.length << 1, constraintIndex);
-          var time = getValue(keyMap, "time", 0);
+          var time2 = getValue(keyMap, "time", 0);
           var mix2 = getValue(keyMap, "mix", 1);
           var softness = getValue(keyMap, "softness", 0) * scale;
           for (var frame2 = 0, bezier = 0; ; frame2++) {
-            timeline.setFrame(frame2, time, mix2, softness, getValue(keyMap, "bendPositive", true) ? 1 : -1, getValue(keyMap, "compress", false), getValue(keyMap, "stretch", false));
+            timeline.setFrame(frame2, time2, mix2, softness, getValue(keyMap, "bendPositive", true) ? 1 : -1, getValue(keyMap, "compress", false), getValue(keyMap, "stretch", false));
             var nextMap = constraintMap[frame2 + 1];
             if (!nextMap) {
               timeline.shrink(bezier);
               break;
             }
-            var time2 = getValue(nextMap, "time", 0);
+            var time22 = getValue(nextMap, "time", 0);
             var mix22 = getValue(nextMap, "mix", 1);
             var softness2 = getValue(nextMap, "softness", 0) * scale;
             var curve = keyMap.curve;
             if (curve) {
-              bezier = readCurve(curve, timeline, bezier, frame2, 0, time, time2, mix2, mix22, 1);
-              bezier = readCurve(curve, timeline, bezier, frame2, 1, time, time2, softness, softness2, scale);
+              bezier = readCurve(curve, timeline, bezier, frame2, 0, time2, time22, mix2, mix22, 1);
+              bezier = readCurve(curve, timeline, bezier, frame2, 1, time2, time22, softness, softness2, scale);
             }
-            time = time2;
+            time2 = time22;
             mix2 = mix22;
             softness = softness2;
             keyMap = nextMap;
@@ -100424,7 +100603,7 @@ var SkeletonJson = (
             throw new Error("Transform constraint not found: " + constraintName);
           var constraintIndex = skeletonData.transformConstraints.indexOf(constraint);
           var timeline = new TransformConstraintTimeline(timelineMap.length, timelineMap.length * 6, constraintIndex);
-          var time = getValue(keyMap, "time", 0);
+          var time2 = getValue(keyMap, "time", 0);
           var mixRotate = getValue(keyMap, "mixRotate", 1);
           var mixX = getValue(keyMap, "mixX", 1);
           var mixY = getValue(keyMap, "mixY", mixX);
@@ -100432,13 +100611,13 @@ var SkeletonJson = (
           var mixScaleY = getValue(keyMap, "mixScaleY", mixScaleX);
           var mixShearY = getValue(keyMap, "mixShearY", 1);
           for (var frame2 = 0, bezier = 0; ; frame2++) {
-            timeline.setFrame(frame2, time, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY);
+            timeline.setFrame(frame2, time2, mixRotate, mixX, mixY, mixScaleX, mixScaleY, mixShearY);
             var nextMap = timelineMap[frame2 + 1];
             if (!nextMap) {
               timeline.shrink(bezier);
               break;
             }
-            var time2 = getValue(nextMap, "time", 0);
+            var time22 = getValue(nextMap, "time", 0);
             var mixRotate2 = getValue(nextMap, "mixRotate", 1);
             var mixX2 = getValue(nextMap, "mixX", 1);
             var mixY2 = getValue(nextMap, "mixY", mixX2);
@@ -100447,14 +100626,14 @@ var SkeletonJson = (
             var mixShearY2 = getValue(nextMap, "mixShearY", 1);
             var curve = keyMap.curve;
             if (curve) {
-              bezier = readCurve(curve, timeline, bezier, frame2, 0, time, time2, mixRotate, mixRotate2, 1);
-              bezier = readCurve(curve, timeline, bezier, frame2, 1, time, time2, mixX, mixX2, 1);
-              bezier = readCurve(curve, timeline, bezier, frame2, 2, time, time2, mixY, mixY2, 1);
-              bezier = readCurve(curve, timeline, bezier, frame2, 3, time, time2, mixScaleX, mixScaleX2, 1);
-              bezier = readCurve(curve, timeline, bezier, frame2, 4, time, time2, mixScaleY, mixScaleY2, 1);
-              bezier = readCurve(curve, timeline, bezier, frame2, 5, time, time2, mixShearY, mixShearY2, 1);
+              bezier = readCurve(curve, timeline, bezier, frame2, 0, time2, time22, mixRotate, mixRotate2, 1);
+              bezier = readCurve(curve, timeline, bezier, frame2, 1, time2, time22, mixX, mixX2, 1);
+              bezier = readCurve(curve, timeline, bezier, frame2, 2, time2, time22, mixY, mixY2, 1);
+              bezier = readCurve(curve, timeline, bezier, frame2, 3, time2, time22, mixScaleX, mixScaleX2, 1);
+              bezier = readCurve(curve, timeline, bezier, frame2, 4, time2, time22, mixScaleY, mixScaleY2, 1);
+              bezier = readCurve(curve, timeline, bezier, frame2, 5, time2, time22, mixShearY, mixShearY2, 1);
             }
-            time = time2;
+            time2 = time22;
             mixRotate = mixRotate2;
             mixX = mixX2;
             mixY = mixY2;
@@ -100487,28 +100666,28 @@ var SkeletonJson = (
               timelines.push(readTimeline1(timelineMap, timeline, 0, constraint.spacingMode == SpacingMode.Length || constraint.spacingMode == SpacingMode.Fixed ? scale : 1));
             } else if (timelineName === "mix") {
               var timeline = new PathConstraintMixTimeline(frames_3, frames_3 * 3, constraintIndex);
-              var time = getValue(keyMap, "time", 0);
+              var time2 = getValue(keyMap, "time", 0);
               var mixRotate = getValue(keyMap, "mixRotate", 1);
               var mixX = getValue(keyMap, "mixX", 1);
               var mixY = getValue(keyMap, "mixY", mixX);
               for (var frame2 = 0, bezier = 0; ; frame2++) {
-                timeline.setFrame(frame2, time, mixRotate, mixX, mixY);
+                timeline.setFrame(frame2, time2, mixRotate, mixX, mixY);
                 var nextMap = timelineMap[frame2 + 1];
                 if (!nextMap) {
                   timeline.shrink(bezier);
                   break;
                 }
-                var time2 = getValue(nextMap, "time", 0);
+                var time22 = getValue(nextMap, "time", 0);
                 var mixRotate2 = getValue(nextMap, "mixRotate", 1);
                 var mixX2 = getValue(nextMap, "mixX", 1);
                 var mixY2 = getValue(nextMap, "mixY", mixX2);
                 var curve = keyMap.curve;
                 if (curve) {
-                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time, time2, mixRotate, mixRotate2, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time, time2, mixX, mixX2, 1);
-                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time, time2, mixY, mixY2, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 0, time2, time22, mixRotate, mixRotate2, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 1, time2, time22, mixX, mixX2, 1);
+                  bezier = readCurve(curve, timeline, bezier, frame2, 2, time2, time22, mixY, mixY2, 1);
                 }
-                time = time2;
+                time2 = time22;
                 mixRotate = mixRotate2;
                 mixX = mixX2;
                 mixY = mixY2;
@@ -100563,7 +100742,7 @@ var SkeletonJson = (
                   var vertices = attachment.vertices;
                   var deformLength = weighted ? vertices.length / 3 * 2 : vertices.length;
                   var timeline = new DeformTimeline(timelineMap.length, timelineMap.length, slotIndex, attachment);
-                  var time = getValue(keyMap, "time", 0);
+                  var time2 = getValue(keyMap, "time", 0);
                   for (var frame2 = 0, bezier = 0; ; frame2++) {
                     var deform = void 0;
                     var verticesValue = getValue(keyMap, "vertices", null);
@@ -100582,17 +100761,17 @@ var SkeletonJson = (
                           deform[i2] += vertices[i2];
                       }
                     }
-                    timeline.setFrame(frame2, time, deform);
+                    timeline.setFrame(frame2, time2, deform);
                     var nextMap = timelineMap[frame2 + 1];
                     if (!nextMap) {
                       timeline.shrink(bezier);
                       break;
                     }
-                    var time2 = getValue(nextMap, "time", 0);
+                    var time22 = getValue(nextMap, "time", 0);
                     var curve = keyMap.curve;
                     if (curve)
-                      bezier = readCurve(curve, timeline, bezier, frame2, 0, time, time2, 0, 1, 1);
-                    time = time2;
+                      bezier = readCurve(curve, timeline, bezier, frame2, 0, time2, time22, 0, 1, 1);
+                    time2 = time22;
                     keyMap = nextMap;
                   }
                   timelines.push(timeline);
@@ -100601,10 +100780,10 @@ var SkeletonJson = (
                   var lastDelay = 0;
                   for (var frame2 = 0; frame2 < timelineMap.length; frame2++) {
                     var delay = getValue(keyMap, "delay", lastDelay);
-                    var time = getValue(keyMap, "time", 0);
+                    var time2 = getValue(keyMap, "time", 0);
                     var mode = SequenceMode[getValue(keyMap, "mode", "hold")];
                     var index2 = getValue(keyMap, "index", 0);
-                    timeline.setFrame(frame2, time, mode, index2, delay);
+                    timeline.setFrame(frame2, time2, mode, index2, delay);
                     lastDelay = delay;
                     keyMap = timelineMap[frame2 + 1];
                   }
@@ -100705,47 +100884,47 @@ var LinkedMesh = (
 );
 function readTimeline1(keys2, timeline, defaultValue2, scale) {
   var keyMap = keys2[0];
-  var time = getValue(keyMap, "time", 0);
+  var time2 = getValue(keyMap, "time", 0);
   var value = getValue(keyMap, "value", defaultValue2) * scale;
   var bezier = 0;
   for (var frame2 = 0; ; frame2++) {
-    timeline.setFrame(frame2, time, value);
+    timeline.setFrame(frame2, time2, value);
     var nextMap = keys2[frame2 + 1];
     if (!nextMap) {
       timeline.shrink(bezier);
       return timeline;
     }
-    var time2 = getValue(nextMap, "time", 0);
+    var time22 = getValue(nextMap, "time", 0);
     var value2 = getValue(nextMap, "value", defaultValue2) * scale;
     if (keyMap.curve)
-      bezier = readCurve(keyMap.curve, timeline, bezier, frame2, 0, time, time2, value, value2, scale);
-    time = time2;
+      bezier = readCurve(keyMap.curve, timeline, bezier, frame2, 0, time2, time22, value, value2, scale);
+    time2 = time22;
     value = value2;
     keyMap = nextMap;
   }
 }
 function readTimeline2(keys2, timeline, name1, name2, defaultValue2, scale) {
   var keyMap = keys2[0];
-  var time = getValue(keyMap, "time", 0);
+  var time2 = getValue(keyMap, "time", 0);
   var value1 = getValue(keyMap, name1, defaultValue2) * scale;
   var value2 = getValue(keyMap, name2, defaultValue2) * scale;
   var bezier = 0;
   for (var frame2 = 0; ; frame2++) {
-    timeline.setFrame(frame2, time, value1, value2);
+    timeline.setFrame(frame2, time2, value1, value2);
     var nextMap = keys2[frame2 + 1];
     if (!nextMap) {
       timeline.shrink(bezier);
       return timeline;
     }
-    var time2 = getValue(nextMap, "time", 0);
+    var time22 = getValue(nextMap, "time", 0);
     var nvalue1 = getValue(nextMap, name1, defaultValue2) * scale;
     var nvalue2 = getValue(nextMap, name2, defaultValue2) * scale;
     var curve = keyMap.curve;
     if (curve) {
-      bezier = readCurve(curve, timeline, bezier, frame2, 0, time, time2, value1, nvalue1, scale);
-      bezier = readCurve(curve, timeline, bezier, frame2, 1, time, time2, value2, nvalue2, scale);
+      bezier = readCurve(curve, timeline, bezier, frame2, 0, time2, time22, value1, nvalue1, scale);
+      bezier = readCurve(curve, timeline, bezier, frame2, 1, time2, time22, value2, nvalue2, scale);
     }
-    time = time2;
+    time2 = time22;
     value1 = nvalue1;
     value2 = nvalue2;
     keyMap = nextMap;
@@ -101878,7 +102057,7 @@ function getUserAnimation() {
 const Menu_main = "_Menu_main_1a7i6_1";
 const Menu_ShowSoftly = "_Menu_ShowSoftly_1a7i6_1";
 const Menu_TagContent = "_Menu_TagContent_1a7i6_10";
-const styles$f = {
+const styles$g = {
   Menu_main,
   Menu_ShowSoftly,
   Menu_TagContent
@@ -101887,7 +102066,7 @@ const MenuPanel_main = "_MenuPanel_main_1c9ky_1";
 const MenuPanel_button = "_MenuPanel_button_1c9ky_10";
 const MenuPanel_button_icon = "_MenuPanel_button_icon_1c9ky_38";
 const MenuPanel_button_hl = "_MenuPanel_button_hl_1c9ky_44";
-const styles$e = {
+const styles$f = {
   MenuPanel_main,
   MenuPanel_button,
   MenuPanel_button_icon,
@@ -102651,7 +102830,7 @@ const MenuIconMap = (props) => {
 };
 const MenuPanelButton = (props) => {
   const { playSePageChange, playSeEnter } = useSoundEffect();
-  let buttonClassName = styles$e.MenuPanel_button;
+  let buttonClassName = styles$f.MenuPanel_button;
   if (props.hasOwnProperty("buttonOnClassName")) {
     buttonClassName = buttonClassName + props.buttonOnClassName;
   }
@@ -102665,7 +102844,7 @@ const MenuPanelButton = (props) => {
       onMouseEnter: playSeEnter,
       style: { ...props.style, color: props.tagColor },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
         props.tagName
       ]
     }
@@ -102678,21 +102857,22 @@ const backToTitle = () => {
   stopFast();
   dispatch(setStage({ key: "playVocal", value: "" }));
   dispatch(setVisibility({ component: "showTitle", visibility: true }));
+  dispatch(saveActions.setIsShowUnlock(false));
   setEbg(webgalStore.getState().GUI.titleBg);
 };
 const GlobalDialog_main = "_GlobalDialog_main_101j8_2";
 const showGlobalDialog = "_showGlobalDialog_101j8_1";
 const glabalDialog_container_inner = "_glabalDialog_container_inner_101j8_17";
 const glabalDialog_container = "_glabalDialog_container_101j8_17";
-const title$2 = "_title_101j8_36";
+const title$3 = "_title_101j8_36";
 const button_list = "_button_list_101j8_41";
 const button = "_button_101j8_41";
-const styles$d = {
+const styles$e = {
   GlobalDialog_main,
   showGlobalDialog,
   glabalDialog_container_inner,
   glabalDialog_container,
-  title: title$2,
+  title: title$3,
   button_list,
   button
 };
@@ -102713,11 +102893,11 @@ function showGlogalDialog(props) {
     props.rightFunc();
     hideGlobalDialog();
   };
-  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.button_list, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.button, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.button, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
+  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.title, children: props.title }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.button_list, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
     ] })
   ] }) }) });
   setTimeout(() => {
@@ -102745,16 +102925,16 @@ const MenuPanel = () => {
   const { playSeClick, playSeDialogOpen, playSePageChange } = useSoundEffect();
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
-  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$e.MenuPanel_button_hl}` : ``;
-  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$e.MenuPanel_button_hl}` : ``;
-  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$e.MenuPanel_button_hl}` : ``;
+  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$f.MenuPanel_button_hl}` : ``;
+  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$f.MenuPanel_button_hl}` : ``;
+  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$f.MenuPanel_button_hl}` : ``;
   const SaveTagColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadTagColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionTagColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
   const SaveIconColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadIconColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionIconColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.MenuPanel_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.MenuPanel_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       MenuPanelButton,
       {
@@ -102873,7 +103053,7 @@ const Save_Load_content_miniRen_bg = "_Save_Load_content_miniRen_bg_a3o8b_208";
 const Save_Load_content_miniRen_figure = "_Save_Load_content_miniRen_figure_a3o8b_215";
 const Save_Load_content_miniRen_figLeft = "_Save_Load_content_miniRen_figLeft_a3o8b_223";
 const Save_Load_content_miniRen_figRight = "_Save_Load_content_miniRen_figRight_a3o8b_228";
-const styles$c = {
+const styles$d = {
   Save_Load_main,
   Save_Load_top,
   Elements_in: Elements_in$2,
@@ -102912,9 +103092,9 @@ const Save = () => {
   const dispatch = useDispatch();
   const page = [];
   for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$c.Save_Load_top_button;
+    let classNameOfElement = styles$d.Save_Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$c.Save_Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -102926,7 +103106,7 @@ const Save = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
       },
       "Save_element_page" + i2
     );
@@ -102947,14 +103127,14 @@ const Save = () => {
     if (saveData) {
       const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_element_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_element_top_date, children: saveData.saveTime })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index, children: saveData.index }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date, children: saveData.saveTime })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$c.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker, children: speaker }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
         ] })
       ] });
     }
@@ -102981,7 +103161,7 @@ const Save = () => {
           }
         },
         onMouseEnter: playSeEnter,
-        className: styles$c.Save_Load_content_element,
+        className: styles$d.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -102990,12 +103170,12 @@ const Save = () => {
     showSaves.push(saveElement);
   }
   const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_title_text, children: t2("saving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_top_buttonList, children: page })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_title_text, children: t2("saving.title") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves })
   ] });
 };
 const Load = () => {
@@ -103005,9 +103185,9 @@ const Load = () => {
   const dispatch = useDispatch();
   const page = [];
   for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$c.Save_Load_top_button + " " + styles$c.Load_top_button;
+    let classNameOfElement = styles$d.Save_Load_top_button + " " + styles$d.Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$c.Save_Load_top_button_on + " " + styles$c.Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on + " " + styles$d.Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -103019,7 +103199,7 @@ const Load = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
       },
       "Load_element_page" + i2
     );
@@ -103039,14 +103219,14 @@ const Load = () => {
     if (saveData) {
       const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_element_top_index + " " + styles$c.Load_content_elememt_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_element_top_date + " " + styles$c.Load_content_element_top_date, children: saveData.saveTime })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index + " " + styles$d.Load_content_elememt_top_index, children: saveData.index }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date + " " + styles$d.Load_content_element_top_date, children: saveData.saveTime })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$c.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_speaker + " " + styles$c.Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker + " " + styles$d.Load_content_speaker, children: speaker }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
         ] })
       ] });
     }
@@ -103058,7 +103238,7 @@ const Load = () => {
           playSeClick();
         },
         onMouseEnter: playSeEnter,
-        className: styles$c.Save_Load_content_element,
+        className: styles$d.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -103067,12 +103247,12 @@ const Load = () => {
     showSaves.push(saveElement);
   }
   const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Load_title_text, children: t2("loadSaving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_top_buttonList, children: page })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Load_title_text, children: t2("loadSaving.title") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
   ] });
 };
 const Options_main = "_Options_main_u5orq_2";
@@ -103090,7 +103270,7 @@ const Options_page_container = "_Options_page_container_u5orq_92";
 const Options_button_list = "_Options_button_list_u5orq_98";
 const Options_page_button = "_Options_page_button_u5orq_102";
 const Options_page_button_active = "_Options_page_button_active_u5orq_114";
-const styles$b = {
+const styles$c = {
   Options_main,
   Options_top,
   Options_title,
@@ -103113,7 +103293,7 @@ const NormalOption_title = "_NormalOption_title_ogzuv_10";
 const NormalOption_title_bef = "_NormalOption_title_bef_ogzuv_19";
 const NormalOption_title_sd = "_NormalOption_title_sd_ogzuv_29";
 const NormalOption_buttonList = "_NormalOption_buttonList_ogzuv_39";
-const styles$a = {
+const styles$b = {
   NormalOption: NormalOption$1,
   Elements_in,
   NormalOption_title,
@@ -103122,14 +103302,14 @@ const styles$a = {
   NormalOption_buttonList
 };
 const NormalOption = (props) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$a.NormalOption, style: { width: props.full ? "100%" : "auto" }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.NormalOption_title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.NormalOption_buttonList, style: { width: props.full ? "100%" : "auto" }, children: props.children })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.NormalOption, style: { width: props.full ? "100%" : "auto" }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_title, children: props.title }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_buttonList, style: { width: props.full ? "100%" : "auto" }, children: props.children })
   ] });
 };
 const NormalButton$1 = "_NormalButton_1qk3b_1";
 const NormalButtonChecked = "_NormalButtonChecked_1qk3b_18";
-const styles$9 = {
+const styles$a = {
   NormalButton: NormalButton$1,
   NormalButtonChecked
 };
@@ -103142,7 +103322,7 @@ const NormalButton = (props) => {
       const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: styles$9.NormalButton + " " + styles$9.NormalButtonChecked,
+          className: styles$a.NormalButton + " " + styles$a.NormalButtonChecked,
           onClick: () => {
             playSeSwitch();
             props.functionList[i2]();
@@ -103157,7 +103337,7 @@ const NormalButton = (props) => {
       const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: styles$9.NormalButton,
+          className: styles$a.NormalButton,
           onClick: () => {
             playSeSwitch();
             props.functionList[i2]();
@@ -103195,15 +103375,15 @@ function useLanguage() {
 const backButton = "_backButton_qbk37_1";
 const about = "_about_qbk37_16";
 const icon = "_icon_qbk37_20";
-const title$1 = "_title_qbk37_24";
-const text$1 = "_text_qbk37_34";
+const title$2 = "_title_qbk37_24";
+const text$2 = "_text_qbk37_34";
 const contributor = "_contributor_qbk37_43";
 const s$1 = {
   backButton,
   about,
   icon,
-  title: title$1,
-  text: text$1,
+  title: title$2,
+  text: text$2,
   contributor
 };
 function About(props) {
@@ -103279,7 +103459,7 @@ function System() {
   function toggleAbout() {
     setShowAbout(!showAbout);
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.Options_main_content_half, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
     showAbout && /* @__PURE__ */ jsxRuntimeExports.jsx(About, { onClose: toggleAbout }),
     !showAbout && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("autoSpeed.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -103385,7 +103565,7 @@ function System() {
 }
 const textPreviewMain = "_textPreviewMain_nolr3_1";
 const textbox = "_textbox_nolr3_8";
-const styles$8 = {
+const styles$9 = {
   textPreviewMain,
   textbox
 };
@@ -103426,8 +103606,8 @@ const miniAvatarImg$1 = "_miniAvatarImg_1cs17_126";
 const nameContainer = "_nameContainer_1cs17_134";
 const outerName = "_outerName_1cs17_140";
 const innerName = "_innerName_1cs17_151";
-const text = "_text_1cs17_158";
-const styles$7 = {
+const text$1 = "_text_1cs17_158";
+const styles$8 = {
   TextBox_EventHandler: TextBox_EventHandler$1,
   TextBox_Container,
   showSoftly: showSoftly$1,
@@ -103446,7 +103626,7 @@ const styles$7 = {
   nameContainer,
   outerName,
   innerName,
-  text
+  text: text$1
 };
 function IMSSTextbox(props) {
   const {
@@ -103471,7 +103651,7 @@ function IMSSTextbox(props) {
       const textElements = document.querySelectorAll(".Textelement_start");
       const textArray2 = [...textElements];
       textArray2.forEach((e2) => {
-        e2.className = applyStyle2("TextBox_textElement_Settled", styles$7.TextBox_textElement_Settled);
+        e2.className = applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled);
       });
     }
     WebGAL.events.textSettle.on(settleText);
@@ -103493,12 +103673,12 @@ function IMSSTextbox(props) {
           "span",
           {
             id: `${delay}`,
-            className: applyStyle2("TextBox_textElement_Settled", styles$7.TextBox_textElement_Settled),
+            className: applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled),
             style: { animationDelay: `${delay}ms`, animationDuration: `${textDuration}ms` },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
               e2,
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$7.outer), children: e2 }),
-              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$7.inner), children: e2 })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
+              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
             ] })
           },
           currentDialogKey + index22
@@ -103509,12 +103689,12 @@ function IMSSTextbox(props) {
         {
           "data-text": e2,
           id: `${delay}`,
-          className: `${applyStyle2("TextBox_textElement_start", styles$7.TextBox_textElement_start)} Textelement_start`,
+          className: `${applyStyle2("TextBox_textElement_start", styles$8.TextBox_textElement_start)} Textelement_start`,
           style: { animationDelay: `${delay}ms`, position: "relative" },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
             e2,
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$7.outer), children: e2 }),
-            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$7.inner), children: e2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
+            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
           ] })
         },
         currentDialogKey + index22
@@ -103534,11 +103714,11 @@ function IMSSTextbox(props) {
     );
   });
   console.log(`${textboxOpacity / 100}`);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$7.TextBox_Container, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$8.TextBox_Container, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: applyStyle2("TextBox_main", styles$7.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$7.TextBox_Background),
+        className: applyStyle2("TextBox_main", styles$8.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$8.TextBox_Background),
         style: {
           opacity: `${textboxOpacity / 100}`,
           left: miniAvatar2 === "" ? 25 : void 0
@@ -103549,27 +103729,27 @@ function IMSSTextbox(props) {
       "div",
       {
         id: "textBoxMain",
-        className: applyStyle2("TextBox_main", styles$7.TextBox_main),
+        className: applyStyle2("TextBox_main", styles$8.TextBox_main),
         style: {
           fontFamily: font,
           left: miniAvatar2 === "" ? 25 : void 0
         },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$7.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$7.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$8.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$8.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
           showName !== "" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$7.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$7.TextBox_ShowName_Background),
+                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$8.TextBox_ShowName_Background),
                 style: {
                   opacity: `${textboxOpacity / 100}`,
                   fontSize: "200%"
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { opacity: 0 }, children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$7.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$7.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 }) })
               }
@@ -103577,15 +103757,15 @@ function IMSSTextbox(props) {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$7.TextBox_showName),
+                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName),
                 style: {
                   fontSize: "200%"
                 },
                 children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$7.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$7.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$7.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 })
               },
@@ -103595,7 +103775,7 @@ function IMSSTextbox(props) {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("text", styles$7.text),
+              className: applyStyle2("text", styles$8.text),
               style: {
                 fontSize,
                 flexFlow: "column",
@@ -103810,11 +103990,11 @@ const TextPreview = (props) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
-      className: styles$8.textPreviewMain,
+      className: styles$9.textPreviewMain,
       style: {
         background: previewBackground ? `bottom / cover no-repeat url(${previewBackground})` : "rgba(0, 0, 0, 0.1)"
       },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$8.textbox, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Textbox, { ...textboxProps }) }, `previewTextbox-${textDelay}`)
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.textbox, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Textbox, { ...textboxProps }) }, `previewTextbox-${textDelay}`)
     }
   );
 };
@@ -103843,7 +104023,7 @@ function Display() {
   const userDataState = useSelector((state) => state.userData);
   const dispatch = useDispatch();
   const t2 = useTrans("menu.options.pages.display.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.Options_main_content_half, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("fullScreen.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       NormalButton,
       {
@@ -103943,7 +104123,7 @@ function Sound() {
   const userDataState = useSelector((state) => state.userData);
   const dispatch = useDispatch();
   const t2 = useTrans("menu.options.pages.sound.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.Options_main_content_half, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("volumeMain.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       OptionSlider,
       {
@@ -104032,15 +104212,15 @@ const Options = () => {
   reactExports.useEffect(getStorage, []);
   function getClassName(page) {
     if (page === currentOptionPage.value) {
-      return styles$b.Options_page_button + " " + styles$b.Options_page_button_active;
+      return styles$c.Options_page_button + " " + styles$c.Options_page_button_active;
     } else
-      return styles$b.Options_page_button;
+      return styles$c.Options_page_button;
   }
   const t2 = useTrans("menu.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.Options_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.Options_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.Options_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.Option_title_text, children: t2("title") }) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.Options_page_container, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.Options_button_list, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Option_title_text, children: t2("title") }) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_page_container, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_button_list, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -104096,7 +104276,7 @@ const Options = () => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.Options_main_content, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content, children: [
         currentOptionPage.value === 1 && /* @__PURE__ */ jsxRuntimeExports.jsx(Display, {}),
         currentOptionPage.value === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(System, {}),
         currentOptionPage.value === 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(Sound, {})
@@ -104118,8 +104298,8 @@ const Menu = () => {
       currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Options, {});
       break;
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.Menu_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.Menu_TagContent, children: currentTag }),
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.Menu_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.Menu_TagContent, children: currentTag }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(MenuPanel, {})
   ] }) });
 };
@@ -104133,7 +104313,7 @@ const MainStage_oldBgFadeout = "_MainStage_oldBgFadeout_9enex_1";
 const MainStage_oldBgContainer_Settled = "_MainStage_oldBgContainer_Settled_9enex_47";
 const pixiContainer = "_pixiContainer_9enex_72";
 const chooseContainer = "_chooseContainer_9enex_77";
-const styles$6 = {
+const styles$7 = {
   MainStage_main,
   MainStage_main_container,
   MainStage_bgContainer,
@@ -104223,10 +104403,10 @@ const AudioContainer = () => {
   const [bgmUrl, setBgmUrl] = reactExports.useState("");
   const [fadeTimer, setFadeTimer] = reactExports.useState(setTimeout(() => {
   }, 0));
-  const bgmFadeIn = (bgm2, maxVol, time) => {
-    time >= 0 ? bgm2.volume = 0 : bgm2.volume = maxVol;
+  const bgmFadeIn = (bgm2, maxVol, time2) => {
+    time2 >= 0 ? bgm2.volume = 0 : bgm2.volume = maxVol;
     const duration = 10;
-    const volumeStep = maxVol / time * duration;
+    const volumeStep = maxVol / time2 * duration;
     const fade = () => {
       const timer = setTimeout(() => {
         if (bgm2.volume + volumeStep >= maxVol) {
@@ -104312,7 +104492,7 @@ const FullScreenPerform = () => {
     stageHeight = "76%";
     top = "12%";
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
 };
 const TextBox_EventHandler = "_TextBox_EventHandler_449dq_2";
 const TextBox_main = "_TextBox_main_449dq_10";
@@ -104324,7 +104504,7 @@ const TextBox_textElement_Settled = "_TextBox_textElement_Settled_449dq_48";
 const TextBox_showName = "_TextBox_showName_449dq_52";
 const miniAvatarContainer = "_miniAvatarContainer_449dq_68";
 const miniAvatarImg = "_miniAvatarImg_449dq_76";
-const styles$5 = {
+const styles$6 = {
   TextBox_EventHandler,
   TextBox_main,
   showSoftly,
@@ -104355,7 +104535,7 @@ const TextBoxFilm = () => {
         "span",
         {
           id: `${delay}`,
-          className: styles$5.TextBox_textElement_Settled,
+          className: styles$6.TextBox_textElement_Settled,
           style: { animationDelay: `${delay}ms` },
           children: e2
         },
@@ -104366,14 +104546,14 @@ const TextBoxFilm = () => {
       "span",
       {
         id: `${delay}`,
-        className: styles$5.TextBox_textElement_start,
+        className: styles$6.TextBox_textElement_start,
         style: { animationDelay: `${delay}ms` },
         children: e2
       },
       stageState.currentDialogKey + index2
     );
   });
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "textBoxMain", className: styles$5.TextBox_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: size }, children: textElementList }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "textBoxMain", className: styles$6.TextBox_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: size }, children: textElementList }) });
 };
 function useSetBg(stageState) {
   const bgName = stageState.bgName;
@@ -104651,11 +104831,11 @@ function MainStage() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { display: "none" } });
 }
 const introContainer = "_introContainer_119k8_1";
-const styles$4 = {
+const styles$5 = {
   introContainer
 };
 function IntroContainer() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.introContainer, id: "introContainer" });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$5.introContainer, id: "introContainer" });
 }
 function inTextBox(event) {
   const tb2 = document.getElementById("textBoxMain");
@@ -104710,11 +104890,11 @@ const Stage = () => {
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
   useHotkey();
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$6.MainStage_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$7.MainStage_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(FullScreenPerform, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(MainStage, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$6.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$6.chooseContainer }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$7.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$7.chooseContainer }),
     GUIState.showTextBox && stageState.enableFilm === "" && !stageState.isDisableTextbox && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBox, {}),
     GUIState.showTextBox && stageState.enableFilm !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBoxFilm, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AudioContainer, {}),
@@ -104766,9 +104946,9 @@ const BottomControlPanel = () => {
   let fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "125%" }, children: t2("noSaving") }) });
   if (saveData[0]) {
     const data2 = saveData[0];
-    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.slPreviewMain, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.textContainer, children: [
+    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.slPreviewMain, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.textContainer, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data2.nowStageState.showName }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "75%", color: "rgb(55,60,56)" }, children: data2.nowStageState.showText })
       ] })
@@ -104776,11 +104956,11 @@ const BottomControlPanel = () => {
   }
   return (
     // <div className={styles.ToCenter}>
-    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
       GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", false);
@@ -104791,21 +104971,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewCloseOne,
               {
-                className: styles$i.button,
+                className: styles$j.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.hide") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.hide") })
           ]
         }
       ),
       !GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", true);
@@ -104816,21 +104996,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewOpen,
               {
-                className: styles$i.button,
+                className: styles$j.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.show") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.show") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showBacklog", true);
@@ -104842,21 +105022,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               AlignTextLeftOne,
               {
-                className: styles$i.button,
+                className: styles$j.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.backlog") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.backlog") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             let VocalControl = document.getElementById("currentVocal");
@@ -104872,14 +105052,14 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               ReplayMusic,
               {
-                className: styles$i.button,
+                className: styles$j.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.replay") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.replay") })
           ]
         }
       ),
@@ -104887,7 +105067,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_auto",
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             switchAuto();
@@ -104895,8 +105075,8 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$i.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.auto") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.auto") })
           ]
         }
       ),
@@ -104904,7 +105084,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_fast",
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             switchFast();
@@ -104915,21 +105095,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleRight,
               {
-                className: styles$i.button,
+                className: styles$j.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.forward") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.forward") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton + " " + styles$i.fastsave,
+          className: styles$j.singleButton + " " + styles$j.fastsave,
           style: { fontSize },
           onClick: () => {
             saveGame(0);
@@ -104940,22 +105120,22 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleDown,
               {
-                className: styles$i.button,
+                className: styles$j.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.quicklySave") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.fastSlPreview + " " + styles$i.fastSPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklySave") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastSPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton + " " + styles$i.fastload,
+          className: styles$j.singleButton + " " + styles$j.fastload,
           style: { fontSize },
           onClick: () => {
             loadGame(0);
@@ -104963,16 +105143,16 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$i.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.quicklyLoad") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.fastSlPreview + " " + styles$i.fastLPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklyLoad") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastLPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Save);
@@ -104981,15 +105161,15 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$i.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.save") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.save") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Load);
@@ -105001,21 +105181,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               FolderOpen,
               {
-                className: styles$i.button,
+                className: styles$j.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.load") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.load") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Option);
@@ -105027,21 +105207,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               SettingTwo,
               {
-                className: styles$i.button,
+                className: styles$j.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.options") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.options") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             playSeDialogOpen();
@@ -105058,22 +105238,22 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$i.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.button_text, children: t2("buttons.title") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.title") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$i.singleButton,
+          className: styles$j.singleButton,
           style: { fontSize },
           onClick: () => {
             switchControls();
             playSeClick();
           },
           onMouseEnter: playSeEnter,
-          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$i.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$i.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
+          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
         }
       )
     ] }) })
@@ -105107,11 +105287,11 @@ const Backlog = () => {
       const singleBacklogView = /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: styles$h.backlog_item,
+          className: styles$i.backlog_item,
           style: { animationDelay: `${20 * (WebGAL.backlogManager.getBacklog().length - i2)}ms` },
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$h.backlog_func_area, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$h.backlog_item_button_list, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_func_area, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_item_button_list, children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "div",
                   {
@@ -105122,7 +105302,7 @@ const Backlog = () => {
                       e2.stopPropagation();
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$h.backlog_item_button_element,
+                    className: styles$i.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(Return, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ),
@@ -105141,14 +105321,14 @@ const Backlog = () => {
                       }
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$h.backlog_item_button_element,
+                    className: styles$i.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(VolumeNotice, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ) : null
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$h.backlog_item_content_name, children: backlogItem.currentStageState.showName })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content_name, children: backlogItem.currentStageState.showName })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$h.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$h.backlog_item_content_text, children: showTextElementList }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.backlog_item_content_text, children: showTextElementList }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("audio", { id: "backlog_audio_play_element_" + i2, src: backlogItem.currentStageState.vocal })
           ]
         },
@@ -105183,15 +105363,15 @@ const Backlog = () => {
       "div",
       {
         className: `
-          ${GUIStore.showBacklog ? styles$h.Backlog_main : styles$h.Backlog_main_out}
-          ${indexHide ? styles$h.Backlog_main_out_IndexHide : ""}
+          ${GUIStore.showBacklog ? styles$i.Backlog_main : styles$i.Backlog_main_out}
+          ${indexHide ? styles$i.Backlog_main_out_IndexHide : ""}
           `,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$h.backlog_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_top, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               CloseSmall,
               {
-                className: styles$h.backlog_top_icon,
+                className: styles$i.backlog_top_icon,
                 onClick: () => {
                   playSeClick();
                   dispatch(setVisibility({ component: "showBacklog", visibility: false }));
@@ -105207,7 +105387,7 @@ const Backlog = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: styles$h.backlog_title,
+                className: styles$i.backlog_title,
                 onClick: () => {
                   logger.info("Rua! Testing");
                 },
@@ -105215,7 +105395,7 @@ const Backlog = () => {
               }
             )
           ] }),
-          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$h.backlog_content} ${isDisableScroll ? styles$h.Backlog_main_DisableScroll : ""}`, children: backlogList })
+          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$i.backlog_content} ${isDisableScroll ? styles$i.Backlog_main_DisableScroll : ""}`, children: backlogList })
         ]
       }
     )
@@ -105265,7 +105445,7 @@ const showFullContainer = "_showFullContainer_1tymt_232";
 const showFullCgMain = "_showFullCgMain_1tymt_245";
 const fullCgIn = "_fullCgIn_1tymt_1";
 const bgmElement_In = "_bgmElement_In_1tymt_1";
-const styles$3 = {
+const styles$4 = {
   extra,
   extra_top,
   extra_top_icon,
@@ -105319,9 +105499,9 @@ function ExtraBgm() {
     dispatch(setGuiAsset({ asset: "titleBgm", value: e2.url }));
   }
   const showBgmList = extraState.bgm.map((e2, i2) => {
-    let className = styles$3.bgmElement;
+    let className = styles$4.bgmElement;
     if (e2.name === currentPlayingBgmName.value) {
-      className = className + " " + styles$3.bgmElement_active;
+      className = className + " " + styles$4.bgmElement_active;
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -105341,8 +105521,8 @@ function ExtraBgm() {
       e2.name
     );
   });
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.bgmContainer, style: { maxHeight: bgmPlayerHeight }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.bgmPlayerMain, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmContainer, style: { maxHeight: bgmPlayerHeight }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmPlayerMain, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -105355,7 +105535,7 @@ function ExtraBgm() {
             }
           },
           onMouseEnter: playSeEnter,
-          className: styles$3.bgmControlButton,
+          className: styles$4.bgmControlButton,
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoStart, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       ),
@@ -105368,7 +105548,7 @@ function ExtraBgm() {
             bgmControl == null ? void 0 : bgmControl.play().then();
           },
           onMouseEnter: playSeEnter,
-          className: styles$3.bgmControlButton,
+          className: styles$4.bgmControlButton,
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       ),
@@ -105384,7 +105564,7 @@ function ExtraBgm() {
             }
           },
           onMouseEnter: playSeEnter,
-          className: styles$3.bgmControlButton,
+          className: styles$4.bgmControlButton,
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(GoEnd, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       ),
@@ -105397,11 +105577,11 @@ function ExtraBgm() {
             bgmControl.pause();
           },
           onMouseEnter: playSeEnter,
-          className: styles$3.bgmControlButton,
+          className: styles$4.bgmControlButton,
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(SquareSmall, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$3.bgmName, children: foundCurrentBgmName }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.bgmName, children: foundCurrentBgmName }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -105410,13 +105590,13 @@ function ExtraBgm() {
             isShowBgmList.set(!isShowBgmList.value);
           },
           onMouseEnter: playSeEnter,
-          className: styles$3.bgmControlButton,
+          className: styles$4.bgmControlButton,
           style: { marginLeft: "auto" },
           children: /* @__PURE__ */ jsxRuntimeExports.jsx(MusicList, { theme: "filled", size: iconSize, fill: "#fff", strokeWidth: 3, strokeLinejoin: "miter" })
         }
       )
     ] }),
-    isShowBgmList.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.bgmListContainer, children: [
+    isShowBgmList.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.bgmListContainer, children: [
       " ",
       showBgmList
     ] })
@@ -105434,9 +105614,9 @@ function ExtraCgElement(props) {
           showFull.set(!showFull.value);
           playSeClick();
         },
-        className: styles$3.showFullContainer,
+        className: styles$4.showFullContainer,
         onMouseEnter: playSeEnter,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$3.showFullCgMain, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.showFullCgMain, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
             style: {
@@ -105462,7 +105642,7 @@ function ExtraCgElement(props) {
           // transform: `rotate(${deg}deg)`,
           animation: `cg_softIn_${props.transformDeg} 1.5s ease-out ${100 + props.index * 100}ms forwards `
         },
-        className: styles$3.cgElement,
+        className: styles$4.cgElement,
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -105505,9 +105685,9 @@ function ExtraCg() {
   }
   const showNav = [];
   for (let i2 = 1; i2 <= pageNumber; i2++) {
-    let className = styles$3.cgNav;
+    let className = styles$4.cgNav;
     if (currentPage.value === i2) {
-      className = className + " " + styles$3.cgNav_active;
+      className = className + " " + styles$4.cgNav_active;
     }
     const temp2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -105524,9 +105704,9 @@ function ExtraCg() {
     );
     showNav.push(temp2);
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.cgMain, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$3.cgShowDiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$3.cgShowDivWarpper, children: showNav }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$3.cgContainer, children: showCgList })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.cgMain, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDiv, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgShowDivWarpper, children: showNav }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.cgContainer, children: showCgList })
   ] });
 }
 function Random(min, max2) {
@@ -105537,12 +105717,12 @@ function Extra() {
   const showExtra = useSelector((state) => state.GUI.showExtra);
   const dispatch = useDispatch();
   const t2 = useTrans("extra.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: showExtra && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.extra, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.extra_top, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: showExtra && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra_top, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         CloseSmall,
         {
-          className: styles$3.extra_top_icon,
+          className: styles$4.extra_top_icon,
           onClick: () => {
             dispatch(setVisibility({ component: "showExtra", visibility: false }));
             playSeClick();
@@ -105554,9 +105734,9 @@ function Extra() {
           strokeWidth: 3
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$3.extra_title, children: t2("title") })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$4.extra_title, children: t2("title") })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.mainContainer, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.mainContainer, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraCg, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(ExtraBgm, {})
     ] })
@@ -105567,7 +105747,7 @@ const container = "_container_yghix_17";
 const showContainer = "_showContainer_yghix_1";
 const singleButton = "_singleButton_yghix_33";
 const button_text = "_button_text_yghix_37";
-const styles$2 = {
+const styles$3 = {
   tag,
   container,
   showContainer,
@@ -105588,30 +105768,30 @@ const BottomControlPanelFilm = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$2.tag,
+        className: styles$3.tag,
         onClick: () => {
           showPanel.set(!showPanel.value);
         },
         children: /* @__PURE__ */ jsxRuntimeExports.jsx(HamburgerButton, { theme: "outline", size: "32", fill: "#fff" })
       }
     ),
-    showPanel.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$2.container, children: [
+    showPanel.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$3.container, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$2.singleButton,
+          className: styles$3.singleButton,
           onClick: () => {
             setComponentVisibility("showBacklog", true);
             setComponentVisibility("showTextBox", false);
             showPanel.set(!showPanel.value);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$2.button_text, children: "剧情回想 / BACKLOG" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "剧情回想 / BACKLOG" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$2.singleButton,
+          className: styles$3.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             let VocalControl = document.getElementById("currentVocal");
@@ -105621,78 +105801,78 @@ const BottomControlPanelFilm = () => {
               VocalControl == null ? void 0 : VocalControl.play();
             }
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$2.button_text, children: "重播语音 / REPLAY VOICE" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "重播语音 / REPLAY VOICE" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
           id: "Button_ControlPanel_auto",
-          className: styles$2.singleButton,
+          className: styles$3.singleButton,
           onClick: () => {
             switchAuto();
             showPanel.set(!showPanel.value);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$2.button_text, children: "自动模式 / AUTO" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "自动模式 / AUTO" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
           id: "Button_ControlPanel_fast",
-          className: styles$2.singleButton,
+          className: styles$3.singleButton,
           onClick: () => {
             switchFast();
             showPanel.set(!showPanel.value);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$2.button_text, children: "快进 / FAST" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "快进 / FAST" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$2.singleButton,
+          className: styles$3.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             setMenuPanel(MenuPanelTag.Save);
             setComponentVisibility("showMenuPanel", true);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$2.button_text, children: "存档 / SAVE" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "存档 / SAVE" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$2.singleButton,
+          className: styles$3.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             setMenuPanel(MenuPanelTag.Load);
             setComponentVisibility("showMenuPanel", true);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$2.button_text, children: "读档 / LOAD" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "读档 / LOAD" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$2.singleButton,
+          className: styles$3.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             setMenuPanel(MenuPanelTag.Option);
             setComponentVisibility("showMenuPanel", true);
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$2.button_text, children: "选项 / OPTIONS" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "选项 / OPTIONS" })
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$2.singleButton,
+          className: styles$3.singleButton,
           onClick: () => {
             showPanel.set(!showPanel.value);
             backToTitle();
           },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$2.button_text, children: "标题 / TITLE" })
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$3.button_text, children: "标题 / TITLE" })
         }
       )
     ] })
@@ -105700,7 +105880,7 @@ const BottomControlPanelFilm = () => {
 };
 const devPanelMain = "_devPanelMain_11x6i_1";
 const devPanelOpener = "_devPanelOpener_11x6i_13";
-const styles$1 = {
+const styles$2 = {
   devPanelMain,
   devPanelOpener
 };
@@ -105746,7 +105926,7 @@ function DevPanel() {
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: JSON.stringify(stageState, null, "  ") })
   ] });
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    isShow && isOpenDevPanel.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.devPanelMain, children: [
+    isShow && isOpenDevPanel.value && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$2.devPanelMain, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { display: "flex", alignItems: "center" }, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -105760,7 +105940,7 @@ function DevPanel() {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { padding: "10px 10px 10px 10px", overflow: "auto" }, children: devMainArea })
     ] }),
-    !isOpenDevPanel.value && isShow && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => isOpenDevPanel.set(true), className: styles$1.devPanelOpener, children: "Open Dev Panel" })
+    !isOpenDevPanel.value && isShow && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { onClick: () => isOpenDevPanel.set(true), className: styles$2.devPanelOpener, children: "Open Dev Panel" })
   ] });
 }
 const trans = "_trans_8uz61_2";
@@ -105841,20 +106021,20 @@ function useFullScreen() {
 const storyLine = "_storyLine_1luh3_2";
 const storyLine_header = "_storyLine_header_1luh3_11";
 const goBack = "_goBack_1luh3_18";
-const title = "_title_1luh3_25";
+const title$1 = "_title_1luh3_25";
 const storyLine_content = "_storyLine_content_1luh3_30";
 const storyLine_item = "_storyLine_item_1luh3_38";
-const info_card = "_info_card_1luh3_49";
+const info_card$1 = "_info_card_1luh3_49";
 const playButton_icon = "_playButton_icon_1luh3_69";
 const name = "_name_1luh3_83";
-const styles = {
+const styles$1 = {
   storyLine,
   storyLine_header,
   goBack,
-  title,
+  title: title$1,
   storyLine_content,
   storyLine_item,
-  info_card,
+  info_card: info_card$1,
   playButton_icon,
   name
 };
@@ -105864,7 +106044,6 @@ const StoryLine = () => {
   const GUIState = useSelector((state) => state.GUI);
   const StageState = useSelector((state) => state.stage);
   const SaveState = useSelector((state) => state.saveData);
-  
   reactExports.useEffect(() => {
     if (GUIState.showStoryLine) {
       getStorylineFromStorage();
@@ -105876,19 +106055,18 @@ const StoryLine = () => {
   };
   const handlPlay = (e2, saveData) => {
     e2.stopPropagation();
-    console.log(saveData);
     dispatch(setShowStoryLine(false));
     loadGameFromStageData(saveData.videoData);
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showStoryLine && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.storyLine, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.storyLine_header, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.goBack, onClick: handlGoBack, children: "返回" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.title, children: "故事线" })
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showStoryLine && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.storyLine, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.storyLine_header, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$1.goBack, onClick: handlGoBack, children: "返回" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$1.title, children: "故事线" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles.storyLine_content,
+        className: styles$1.storyLine_content,
         style: {
           width: StageState.storyLineBgX,
           backgroundImage: `url("${StageState.storyLineBg}")`,
@@ -105902,17 +106080,131 @@ const StoryLine = () => {
           return /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: styles.storyLine_item,
+              className: styles$1.storyLine_item,
               style: thumbnailUrl ? { top: `${y2}px`, left: `${x}px`, backgroundImage: `url("${thumbnailUrl}")` } : {},
               onClick: (e2) => handlPlay(e2, item),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.info_card, children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.playButton_icon }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.name, children: name2 })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$1.info_card, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$1.playButton_icon }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$1.name, children: name2 })
               ] })
             },
             `storyLine-${index2}`
           );
         })) ?? null
+      }
+    )
+  ] }) });
+};
+const achievement = "_achievement_11rs6_1";
+const achievement_header = "_achievement_header_11rs6_12";
+const goback = "_goback_11rs6_20";
+const title = "_title_11rs6_28";
+const achievement_content = "_achievement_content_11rs6_32";
+const achievement_current = "_achievement_current_11rs6_38";
+const text = "_text_11rs6_49";
+const number = "_number_11rs6_54";
+const pregessBar = "_pregessBar_11rs6_59";
+const pregressBar_inner = "_pregressBar_inner_11rs6_67";
+const achievement_content_bg = "_achievement_content_bg_11rs6_75";
+const achievement_list = "_achievement_list_11rs6_83";
+const achievement_item = "_achievement_item_11rs6_83";
+const ripple = "_ripple_11rs6_101";
+const info_card = "_info_card_11rs6_104";
+const unlockname = "_unlockname_11rs6_135";
+const time = "_time_11rs6_144";
+const description = "_description_11rs6_145";
+const styles = {
+  achievement,
+  achievement_header,
+  goback,
+  title,
+  achievement_content,
+  achievement_current,
+  text,
+  number,
+  pregessBar,
+  pregressBar_inner,
+  achievement_content_bg,
+  achievement_list,
+  achievement_item,
+  ripple,
+  "ripple-effect": "_ripple-effect_11rs6_1",
+  info_card,
+  unlockname,
+  time,
+  description
+};
+const Achievement = () => {
+  var _a2, _b2;
+  const GUIState = useSelector((state) => state.GUI);
+  const StageState = useSelector((state) => state.stage);
+  const saveData = useSelector((state) => state.saveData);
+  const dispatch = useDispatch();
+  const [unlockedData, setUnlockedData] = reactExports.useState({
+    unlocked: 0,
+    allTotal: 0,
+    currentProgress: "0%"
+  });
+  reactExports.useEffect(() => {
+    webgalStore.dispatch(saveActions.setIsShowUnlock(false));
+    setTimeout(() => {
+      initData();
+    }, 1e3);
+  }, []);
+  async function initData() {
+    var _a3, _b3;
+    await getUnlickAchieveFromStorage();
+    const currentScene = WebGAL.sceneManager.sceneData.currentScene;
+    const unlockAchieveAlls = ((_a3 = currentScene.sentenceList) == null ? void 0 : _a3.filter((e2) => e2.commandRaw === "unlockAchieve" && currentScene.sceneName === "start.txt")) ?? [];
+    const unlocked = ((_b3 = webgalStore.getState().saveData.unlockAchieveData) == null ? void 0 : _b3.length) ?? 0;
+    const allTotal = (unlockAchieveAlls == null ? void 0 : unlockAchieveAlls.length) ?? 0;
+    const currentProgress = (unlocked / allTotal * 100).toFixed(2) + "%";
+    setUnlockedData({ unlocked, allTotal, currentProgress });
+  }
+  const handleGoBack = () => {
+    backToTitle();
+    dispatch(setVisibility({ component: "showAchievement", visibility: false }));
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showAchievement && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.achievement, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.achievement_header, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.goback, onClick: handleGoBack, children: "返回" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.title, children: "成就" })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.achievement_content, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.achievement_current, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.text, children: "已获得成就" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.number, children: `${unlockedData.unlocked}/${unlockedData.allTotal}` }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.pregessBar, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.pregressBar_inner, style: { width: unlockedData.currentProgress } }) })
+    ] }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: styles.achievement_content_bg,
+        style: {
+          width: StageState.achieveBgX,
+          backgroundImage: `url("${StageState.achieveBg}")`,
+          backgroundSize: StageState.achieveBgX && StageState.achieveBgY && `${StageState.achieveBgX} ${StageState.achieveBgY}`
+        },
+        children: ((_a2 = saveData.unlockAchieveData) == null ? void 0 : _a2.length) > 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.achievement_list, children: ((_b2 = saveData.unlockAchieveData) == null ? void 0 : _b2.map(({ unlockname: unlockname2, x, y: y2, url: url2, isShow, saveTime }, index2) => {
+          if (!isShow) {
+            return null;
+          }
+          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            "div",
+            {
+              className: styles.achievement_item,
+              style: url2 ? { top: `${y2}px`, left: `${x}px`, backgroundImage: `url("${url2}")` } : {},
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles.ripple }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.info_card, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.unlockname, children: unlockname2 }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.time, children: `${saveTime}达成` }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.description, children: "55% 玩家已达成" })
+                ] })
+              ]
+            },
+            `unlockAchieveItem-${index2}`
+          );
+        })) ?? null })
       }
     )
   ] }) });
@@ -105935,7 +106227,8 @@ function App() {
     /* @__PURE__ */ jsxRuntimeExports.jsx(GlobalDialog, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(PanicOverlay, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(DevPanel, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(StoryLine, {})
+    /* @__PURE__ */ jsxRuntimeExports.jsx(StoryLine, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Achievement, {})
   ] });
 }
 const animation = "";

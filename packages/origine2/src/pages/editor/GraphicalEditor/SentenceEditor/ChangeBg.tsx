@@ -80,7 +80,7 @@ export default function ChangeBg(props: ISentenceEditorProps) {
           placeholder={t('options.name.placeholder')}
         />
       </CommonOptions>}
-      <CommonOptions key={'3'} title={t('options.axis.title')}>
+      <CommonOptions key={'4'} title={t('options.axis.title')}>
             {t('options.axis.x')}
             {'\u00a0'}
             <input 
