@@ -170,4 +170,11 @@ setVar:a=人物名称;可以设置字符串`,
     detail: `command setVar:<expression>;`,
     insertText: 'setVar:',
   },
+  {
+    label: 'unlockStoryLine',
+    kind: CompletionItemKind.Function,
+    documentation: `使用变量`,
+    detail: `command unlockStoryLine:<expression>;`,
+    insertText: 'unlockStoryLine:',
+  },
 ];

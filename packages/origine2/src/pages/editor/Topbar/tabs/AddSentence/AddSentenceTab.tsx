@@ -35,6 +35,7 @@ export function AddSentenceTab() {
   const btsExtra = pickSentenceType([14, 15]);
   const btsSystem = pickSentenceType([16, 17]);
   const btsControl = pickSentenceType([3, 19, 20]);
+  const btsStoryLine = pickSentenceType([23]);
   const {t} = useTranslation();
 
   return <TopbarTab>
@@ -72,6 +73,11 @@ export function AddSentenceTab() {
     <TabItem title={t("游戏控制")}>
       <div>
         {btsSystem}
+      </div>
+    </TabItem>
+    <TabItem title={t("故事线")}>
+      <div>
+        {btsStoryLine}
       </div>
     </TabItem>
   </TopbarTab>;

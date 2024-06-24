@@ -2355,40 +2355,90 @@ input[type=range]::-moz-range-track {
   background: white;
   color: #93a5cf;
 }
-._storyLine_jp7oj_2 {
+._storyLine_1luh3_2 {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 99;
+  overflow: auto;
 }
-._storyLine_jp7oj_2 ._storyLine_header_jp7oj_10 {
+._storyLine_1luh3_2 ._storyLine_header_1luh3_11 {
   padding: 10px 30px;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 100;
 }
-._storyLine_jp7oj_2 ._storyLine_header_jp7oj_10 ._goBack_jp7oj_17 {
+._storyLine_1luh3_2 ._storyLine_header_1luh3_11 ._goBack_1luh3_18 {
   color: #666;
   font-size: 50px;
 }
-._storyLine_jp7oj_2 ._storyLine_header_jp7oj_10 ._goBack_jp7oj_17:hover {
+._storyLine_1luh3_2 ._storyLine_header_1luh3_11 ._goBack_1luh3_18:hover {
   cursor: pointer;
 }
-._storyLine_jp7oj_2 ._storyLine_header_jp7oj_10 ._title_jp7oj_24 {
+._storyLine_1luh3_2 ._storyLine_header_1luh3_11 ._title_1luh3_25 {
   color: #000;
   font-size: 50px;
   margin-left: 50px;
 }
-._storyLine_jp7oj_2 ._storyLine_content_jp7oj_29 {
+._storyLine_1luh3_2 ._storyLine_content_1luh3_30 {
   height: 100%;
   width: 100%;
-  overflow-x: scroll; /* 允许水平滚动 */
-  overflow-y: hidden; /* 禁止垂直滚动 */
-  background-repeat: no-repeat; /* 防止背景图重复 */
-  background-size: cover;
+  overflow: auto;
+  background-repeat: no-repeat;
+  position: relative;
+  background-size: 1920px 1080px;
+}
+._storyLine_1luh3_2 ._storyLine_content_1luh3_30 ._storyLine_item_1luh3_38 {
+  width: 320px;
+  height: 240px;
+  border-radius: 3rem;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-color: #000;
+  position: absolute;
+  background-size: contain;
+  background-position: center;
+}
+._storyLine_1luh3_2 ._storyLine_content_1luh3_30 ._storyLine_item_1luh3_38:hover ._info_card_1luh3_49 {
+  z-index: 100;
+  opacity: 1;
+}
+._storyLine_1luh3_2 ._storyLine_content_1luh3_30 ._storyLine_item_1luh3_38 ._info_card_1luh3_49 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: -1;
+  opacity: 0;
+  transition: all 0.5s;
+  cursor: pointer;
+}
+._storyLine_1luh3_2 ._storyLine_content_1luh3_30 ._storyLine_item_1luh3_38 ._info_card_1luh3_49 ._playButton_icon_1luh3_69 {
+  display: inline-block;
+  height: 170px;
+  text-align: center;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 8em;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+._storyLine_1luh3_2 ._storyLine_content_1luh3_30 ._storyLine_item_1luh3_38 ._info_card_1luh3_49 ._playButton_icon_1luh3_69::before {
+  content: "▶";
+  color: #fff;
+}
+._storyLine_1luh3_2 ._storyLine_content_1luh3_30 ._storyLine_item_1luh3_38 ._info_card_1luh3_49 ._name_1luh3_83 {
+  font-size: 50px;
+  color: red;
 }
 @keyframes centerIn {
   0% {

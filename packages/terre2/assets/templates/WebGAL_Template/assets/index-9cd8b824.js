@@ -8184,8 +8184,8 @@ function getType2(slice2, actionKey) {
   return slice2 + "/" + actionKey;
 }
 function createSlice(options) {
-  var name = options.name;
-  if (!name) {
+  var name2 = options.name;
+  if (!name2) {
     throw new Error("`name` is a required option for createSlice");
   }
   if (typeof process !== "undefined" && false) {
@@ -8201,7 +8201,7 @@ function createSlice(options) {
   var actionCreators = {};
   reducerNames.forEach(function(reducerName) {
     var maybeReducerWithPrepare = reducers[reducerName];
-    var type2 = getType2(name, reducerName);
+    var type2 = getType2(name2, reducerName);
     var caseReducer;
     var prepareCallback;
     if ("reducer" in maybeReducerWithPrepare) {
@@ -8232,7 +8232,7 @@ function createSlice(options) {
   }
   var _reducer;
   return {
-    name,
+    name: name2,
     reducer: function(state, action) {
       if (!_reducer)
         _reducer = buildReducer();
@@ -9497,6 +9497,7 @@ var commandType$1 = /* @__PURE__ */ ((commandType2) => {
   commandType2[commandType2["setTransition"] = 30] = "setTransition";
   commandType2[commandType2["getUserInput"] = 31] = "getUserInput";
   commandType2[commandType2["applyStyle"] = 32] = "applyStyle";
+  commandType2[commandType2["unlockStoryline"] = 33] = "unlockStoryline";
   return commandType2;
 })(commandType$1 || {});
 const initState$3 = {
@@ -9557,8 +9558,12 @@ const initState$3 = {
   enableFilm: "",
   isDisableTextbox: false,
   replacedUIlable: {},
-  storyLineBg: ""
+  storyLineBg: "",
   // 故事线背景
+  storyLineBgX: "",
+  // 故事线背景长度
+  storyLineBgY: ""
+  // 故事线背景宽度
 };
 const stageSlice = createSlice({
   name: "stage",
@@ -12033,10 +12038,10 @@ InterceptorManager$3.prototype.forEach = function forEach(fn2) {
 var InterceptorManager_1$1 = InterceptorManager$3;
 var utils$n = utils$q;
 var normalizeHeaderName$3 = function normalizeHeaderName(headers, normalizedName) {
-  utils$n.forEach(headers, function processHeader(value, name) {
-    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+  utils$n.forEach(headers, function processHeader(value, name2) {
+    if (name2 !== normalizedName && name2.toUpperCase() === normalizedName.toUpperCase()) {
       headers[normalizedName] = value;
-      delete headers[name];
+      delete headers[name2];
     }
   });
 };
@@ -12116,9 +12121,9 @@ function requireCookies$1() {
     // Standard browser envs support document.cookie
     function standardBrowserEnv() {
       return {
-        write: function write(name, value, expires, path2, domain, secure) {
+        write: function write(name2, value, expires, path2, domain, secure) {
           var cookie = [];
-          cookie.push(name + "=" + encodeURIComponent(value));
+          cookie.push(name2 + "=" + encodeURIComponent(value));
           if (utils2.isNumber(expires)) {
             cookie.push("expires=" + new Date(expires).toGMTString());
           }
@@ -12133,12 +12138,12 @@ function requireCookies$1() {
           }
           document.cookie = cookie.join("; ");
         },
-        read: function read(name) {
-          var match2 = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
+        read: function read(name2) {
+          var match2 = document.cookie.match(new RegExp("(^|;\\s*)(" + name2 + ")=([^;]*)"));
           return match2 ? decodeURIComponent(match2[3]) : null;
         },
-        remove: function remove(name) {
-          this.write(name, "", Date.now() - 864e5);
+        remove: function remove(name2) {
+          this.write(name2, "", Date.now() - 864e5);
         }
       };
     }()
@@ -14322,7 +14327,7 @@ const userDataSlice = createSlice({
       state[key] = value;
     },
     unlockCgInUserData: (state, action) => {
-      const { name, url: url2, series } = action.payload;
+      const { name: name2, url: url2, series } = action.payload;
       let isExist = false;
       state.appreciationData.cg.forEach((e2) => {
         if (url2 === e2.url) {
@@ -14336,7 +14341,7 @@ const userDataSlice = createSlice({
       }
     },
     unlockBgmInUserData: (state, action) => {
-      const { name, url: url2, series } = action.payload;
+      const { name: name2, url: url2, series } = action.payload;
       let isExist = false;
       state.appreciationData.bgm.forEach((e2) => {
         if (url2 === e2.url) {
@@ -14758,8 +14763,8 @@ function configLineParser(inputLine) {
   if (getOptionsResult) {
     const optionsRaw = newSentenceRaw.substring(getOptionsResult.index, newSentenceRaw.length);
     newSentenceRaw = newSentenceRaw.substring(0, getOptionsResult.index);
-    for (const e2 of argsParser(optionsRaw, (name, _24) => {
-      return name;
+    for (const e2 of argsParser(optionsRaw, (name2, _24) => {
+      return name2;
     })) {
       options.push(e2);
     }
@@ -15546,11 +15551,11 @@ function getSentenceArgByKey(sentnece, argk) {
 }
 const bgm = (sentence) => {
   let url2 = sentence.content;
-  let name = "";
+  let name2 = "";
   let series = "default";
   sentence.args.forEach((e2) => {
     if (e2.key === "unlockname") {
-      name = e2.value.toString();
+      name2 = e2.value.toString();
     }
     if (e2.key === "series") {
       series = e2.value.toString();
@@ -15558,8 +15563,8 @@ const bgm = (sentence) => {
   });
   const enter = getSentenceArgByKey(sentence, "enter");
   const volume = getSentenceArgByKey(sentence, "volume");
-  if (name !== "")
-    webgalStore.dispatch(unlockBgmInUserData({ name, url: url2, series }));
+  if (name2 !== "")
+    webgalStore.dispatch(unlockBgmInUserData({ name: name2, url: url2, series }));
   playBgm(
     url2,
     typeof enter === "number" && enter >= 0 ? enter : 0,
@@ -16040,8 +16045,8 @@ function AxiosURLSearchParams$2(params, options) {
   params && toFormData$2(params, this, options);
 }
 var prototype = AxiosURLSearchParams$2.prototype;
-prototype.append = function append(name, value) {
-  this._pairs.push([name, value]);
+prototype.append = function append(name2, value) {
+  this._pairs.push([name2, value]);
 };
 prototype.toString = function toString(encoder) {
   var _encode = encoder ? function(value) {
@@ -16105,10 +16110,10 @@ InterceptorManager$1.prototype.forEach = function forEach2(fn2) {
 var InterceptorManager_1 = InterceptorManager$1;
 var utils$c = utils$h;
 var normalizeHeaderName$2 = function normalizeHeaderName2(headers, normalizedName) {
-  utils$c.forEach(headers, function processHeader(value, name) {
-    if (name !== normalizedName && name.toUpperCase() === normalizedName.toUpperCase()) {
+  utils$c.forEach(headers, function processHeader(value, name2) {
+    if (name2 !== normalizedName && name2.toUpperCase() === normalizedName.toUpperCase()) {
       headers[normalizedName] = value;
-      delete headers[name];
+      delete headers[name2];
     }
   });
 };
@@ -16145,8 +16150,8 @@ var toURLEncodedForm$1 = function toURLEncodedForm(data2, options) {
   }, options));
 };
 var utils$a = utils$h;
-function parsePropPath(name) {
-  return utils$a.matchAll(/\w+|\[(\w*)]/g, name).map(function(match2) {
+function parsePropPath(name2) {
+  return utils$a.matchAll(/\w+|\[(\w*)]/g, name2).map(function(match2) {
     return match2[0] === "[]" ? "" : match2[1] || match2[0];
   });
 }
@@ -16164,31 +16169,31 @@ function arrayToObject$1(arr) {
 }
 function formDataToJSON$2(formData) {
   function buildPath(path2, value, target, index2) {
-    var name = path2[index2++];
-    var isNumericKey = Number.isFinite(+name);
+    var name2 = path2[index2++];
+    var isNumericKey = Number.isFinite(+name2);
     var isLast = index2 >= path2.length;
-    name = !name && utils$a.isArray(target) ? target.length : name;
+    name2 = !name2 && utils$a.isArray(target) ? target.length : name2;
     if (isLast) {
-      if (utils$a.hasOwnProperty(target, name)) {
-        target[name] = [target[name], value];
+      if (utils$a.hasOwnProperty(target, name2)) {
+        target[name2] = [target[name2], value];
       } else {
-        target[name] = value;
+        target[name2] = value;
       }
       return !isNumericKey;
     }
-    if (!target[name] || !utils$a.isObject(target[name])) {
-      target[name] = [];
+    if (!target[name2] || !utils$a.isObject(target[name2])) {
+      target[name2] = [];
     }
-    var result = buildPath(path2, value, target[name], index2);
-    if (result && utils$a.isArray(target[name])) {
-      target[name] = arrayToObject$1(target[name]);
+    var result = buildPath(path2, value, target[name2], index2);
+    if (result && utils$a.isArray(target[name2])) {
+      target[name2] = arrayToObject$1(target[name2]);
     }
     return !isNumericKey;
   }
   if (utils$a.isFormData(formData) && utils$a.isFunction(formData.entries)) {
     var obj = {};
-    utils$a.forEachEntry(formData, function(name, value) {
-      buildPath(parsePropPath(name), value, obj, 0);
+    utils$a.forEachEntry(formData, function(name2, value) {
+      buildPath(parsePropPath(name2), value, obj, 0);
     });
     return obj;
   }
@@ -16229,9 +16234,9 @@ function requireCookies() {
     // Standard browser envs support document.cookie
     function standardBrowserEnv() {
       return {
-        write: function write(name, value, expires, path2, domain, secure) {
+        write: function write(name2, value, expires, path2, domain, secure) {
           var cookie = [];
-          cookie.push(name + "=" + encodeURIComponent(value));
+          cookie.push(name2 + "=" + encodeURIComponent(value));
           if (utils2.isNumber(expires)) {
             cookie.push("expires=" + new Date(expires).toGMTString());
           }
@@ -16246,12 +16251,12 @@ function requireCookies() {
           }
           document.cookie = cookie.join("; ");
         },
-        read: function read(name) {
-          var match2 = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
+        read: function read(name2) {
+          var match2 = document.cookie.match(new RegExp("(^|;\\s*)(" + name2 + ")=([^;]*)"));
           return match2 ? decodeURIComponent(match2[3]) : null;
         },
-        remove: function remove(name) {
-          this.write(name, "", Date.now() - 864e5);
+        remove: function remove(name2) {
+          this.write(name2, "", Date.now() - 864e5);
         }
       };
     }()
@@ -17553,8 +17558,8 @@ function minErr(module, ErrorConstructor) {
 }
 var $parseMinErr = minErr("$parse");
 ({}).constructor.prototype.valueOf;
-function getStringValue(name) {
-  return name + "";
+function getStringValue(name2) {
+  return name2 + "";
 }
 var OPERATORS = createMap();
 forEach3(
@@ -18349,16 +18354,16 @@ ASTCompiler.prototype = {
     var result = [];
     var fns = this.state.inputs;
     var self2 = this;
-    forEach3(fns, function(name) {
-      result.push("var " + name + "=" + self2.generateFunction(name, "s"));
+    forEach3(fns, function(name2) {
+      result.push("var " + name2 + "=" + self2.generateFunction(name2, "s"));
     });
     if (fns.length) {
       result.push("fn.inputs=[" + fns.join(",") + "];");
     }
     return result.join("");
   },
-  generateFunction: function(name, params) {
-    return "function(" + params + "){" + this.varsPrefix(name) + this.body(name) + "};";
+  generateFunction: function(name2, params) {
+    return "function(" + params + "){" + this.varsPrefix(name2) + this.body(name2) + "};";
   },
   filterPrefix: function() {
     var parts = [];
@@ -19188,15 +19193,15 @@ ASTInterpreter.prototype = {
       return context2 ? { context: void 0, name: void 0, value } : value;
     };
   },
-  identifier: function(name, context2, create) {
+  identifier: function(name2, context2, create) {
     return function(scope, locals, assign2, inputs) {
-      var base = locals && name in locals ? locals : scope;
-      if (create && create !== 1 && base && base[name] == null) {
-        base[name] = {};
+      var base = locals && name2 in locals ? locals : scope;
+      if (create && create !== 1 && base && base[name2] == null) {
+        base[name2] = {};
       }
-      var value = base ? base[name] : void 0;
+      var value = base ? base[name2] : void 0;
       if (context2) {
-        return { context: base, name, value };
+        return { context: base, name: name2, value };
       } else {
         return value;
       }
@@ -19299,8 +19304,8 @@ function compile$1(src, options) {
   var lexer = new Lexer2(lexerOptions);
   var parser = new Parser2(
     lexer,
-    function getFilter(name) {
-      return localFilters[name];
+    function getFilter(name2) {
+      return localFilters[name2];
     },
     parserOptions
   );
@@ -21367,7 +21372,15 @@ const changeBg = (sentence) => {
   const url2 = sentence.content;
   const dispatch = webgalStore.dispatch;
   if (webgalStore.getState().GUI.showStoryLine) {
-    dispatch(setStoryLineBg(url2));
+    dispatch(setStage({ key: "storyLineBg", value: url2 }));
+    sentence.args.forEach((e2) => {
+      if (e2.key === "x") {
+        dispatch(setStage({ key: "storyLineBgX", value: `${e2.value}px` }));
+      }
+      if (e2.key === "y") {
+        dispatch(setStage({ key: "storyLineBgY", value: `${e2.value}px` }));
+      }
+    });
     return {
       performName: "none",
       duration: 0,
@@ -21380,18 +21393,18 @@ const changeBg = (sentence) => {
       // 暂时不用，后面会交给自动清除
     };
   }
-  let name = "";
+  let name2 = "";
   let series = "default";
   sentence.args.forEach((e2) => {
     if (e2.key === "unlockname") {
-      name = e2.value.toString();
+      name2 = e2.value.toString();
     }
     if (e2.key === "series") {
       series = e2.value.toString();
     }
   });
-  if (name !== "")
-    dispatch(unlockCgInUserData({ name, url: url2, series }));
+  if (name2 !== "")
+    dispatch(unlockCgInUserData({ name: name2, url: url2, series }));
   dispatch(stageActions.removeEffectByTargetId(`bg-main`));
   const transformString = getSentenceArgByKey(sentence, "transform");
   let duration = getSentenceArgByKey(sentence, "duration");
@@ -22923,35 +22936,35 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
   });
 };
 const performs = /* @__PURE__ */ new Map();
-function getName(name) {
-  if (!name)
+function getName(name2) {
+  if (!name2)
     return null;
-  if (typeof name === "string")
-    return name;
-  return name();
+  if (typeof name2 === "string")
+    return name2;
+  return name2();
 }
-function getKey(name) {
-  const key = getName(name);
+function getKey(name2) {
+  const key = getName(name2);
   if (!key) {
     logger.error("Get name of perform failed. There no name of the perform.");
     return "";
   }
   return key;
 }
-function registerPerform(name, callback) {
+function registerPerform(name2, callback) {
   if (!callback || typeof callback !== "function")
-    throw new Error(`"${name}" is not a callback.`);
-  performs.set(getKey(name), callback);
+    throw new Error(`"${name2}" is not a callback.`);
+  performs.set(getKey(name2), callback);
 }
-function call$1(name, args = []) {
-  const callback = performs.get(getKey(name));
+function call$1(name2, args = []) {
+  const callback = performs.get(getKey(name2));
   if (!callback || !(callback instanceof Function)) {
-    logger.error(`Can't call the perform named "${name}"`);
-    throw new Error(`"${name}" don't have the pixiPerform callback.`);
+    logger.error(`Can't call the perform named "${name2}"`);
+    throw new Error(`"${name2}" don't have the pixiPerform callback.`);
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-7efdcccf.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-17ca89cc.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23089,11 +23102,11 @@ class PerformController {
     }, perform.duration);
     this.performList.push(perform);
   }
-  unmountPerform(name, force = false) {
+  unmountPerform(name2, force = false) {
     if (!force) {
       for (let i2 = 0; i2 < this.performList.length; i2++) {
         const e2 = this.performList[i2];
-        if (!e2.isHoldOn && e2.performName === name) {
+        if (!e2.isHoldOn && e2.performName === name2) {
           e2.stopFunction();
           clearTimeout(e2.stopTimeout);
           this.performList.splice(i2, 1);
@@ -23103,18 +23116,18 @@ class PerformController {
     } else {
       for (let i2 = 0; i2 < this.performList.length; i2++) {
         const e2 = this.performList[i2];
-        if (e2.performName === name) {
+        if (e2.performName === name2) {
           e2.stopFunction();
           clearTimeout(e2.stopTimeout);
           this.performList.splice(i2, 1);
           i2--;
-          this.erasePerformFromState(name);
+          this.erasePerformFromState(name2);
         }
       }
     }
   }
-  erasePerformFromState(name) {
-    webgalStore.dispatch(stageActions.removePerformByName(name));
+  erasePerformFromState(name2) {
+    webgalStore.dispatch(stageActions.removePerformByName(name2));
   }
   removeAllPerform() {
     for (const e2 of this.performList) {
@@ -23137,6 +23150,156 @@ class PerformController {
       nextSentence();
     }
   }
+}
+const initState$1 = {
+  saveData: [],
+  quickSaveData: null,
+  unlockStorylineList: [],
+  // 保存已经解锁的故事线列表
+  saveVideoData: null
+};
+const saveDataSlice = createSlice({
+  name: "saveData",
+  initialState: cloneDeep$1(initState$1),
+  reducers: {
+    setFastSave: (state, action) => {
+      state.quickSaveData = action.payload;
+    },
+    resetFastSave: (state) => {
+      state.quickSaveData = null;
+    },
+    resetSaves: (state) => {
+      state.quickSaveData = null;
+      state.saveData = [];
+    },
+    saveGame: (state, action) => {
+      state.saveData[action.payload.index] = action.payload.saveData;
+    },
+    replaceSaveGame: (state, action) => {
+      state.saveData = action.payload;
+    },
+    setStorylineListFromStorage: (state, action) => {
+      state.unlockStorylineList = action.payload;
+    },
+    addStorylineList: (state, action) => {
+      state.unlockStorylineList.push(action.payload);
+    },
+    replaceStorylineList: (state, action) => {
+      state.unlockStorylineList[action.payload.index] = {
+        ...state.unlockStorylineList[action.payload.index],
+        storyLine: action.payload.data.storyLine
+      };
+    },
+    setSaveVideoData: (state, action) => {
+      state.saveVideoData = action.payload;
+    }
+  }
+});
+const saveActions = saveDataSlice.actions;
+const savesReducer = saveDataSlice.reducer;
+function dumpSavesToStorage(startIndex, endIndex) {
+  for (let i2 = startIndex; i2 <= endIndex; i2++) {
+    const save = webgalStore.getState().saveData.saveData[i2];
+    localforage.setItem(`${WebGAL.gameKey}-saves${i2}`, save).then(() => {
+      logger.info(`存档${i2}写入本地存储`);
+    });
+  }
+}
+function getSavesFromStorage(startIndex, endIndex) {
+  for (let i2 = startIndex; i2 <= endIndex; i2++) {
+    localforage.getItem(`${WebGAL.gameKey}-saves${i2}`).then((save) => {
+      webgalStore.dispatch(saveActions.saveGame({ index: i2, saveData: save }));
+      logger.info(`存档${i2}读取自本地存储`);
+    });
+  }
+}
+async function dumpFastSaveToStorage() {
+  const save = webgalStore.getState().saveData.quickSaveData;
+  await localforage.setItem(`${WebGAL.gameKey}-saves-fast`, save);
+  logger.info(`快速存档写入本地存储`);
+}
+async function getFastSaveFromStorage() {
+  const save = await localforage.getItem(`${WebGAL.gameKey}-saves-fast`);
+  webgalStore.dispatch(saveActions.setFastSave(save));
+  logger.info(`快速存档读取自本地存储`);
+}
+async function dumpStorylineToStorage() {
+  const data2 = webgalStore.getState().saveData.unlockStorylineList;
+  await localforage.setItem(`${WebGAL.gameKey}-storyline`, { data: data2 });
+  logger.info(`故事线 >> 写入本地存储`);
+}
+async function getStorylineFromStorage() {
+  const res = await localforage.getItem(`${WebGAL.gameKey}-storyline`);
+  webgalStore.dispatch(saveActions.setStorylineListFromStorage((res == null ? void 0 : res.data) ?? []));
+  logger.info(`故事线 >> 读取自本地存储`);
+}
+const saveGame = (index2) => {
+  const saveData = generateCurrentStageData(index2);
+  webgalStore.dispatch(saveActions.saveGame({ index: index2, saveData }));
+  dumpSavesToStorage(index2, index2);
+};
+function generateCurrentStageData(index2, isSavePreviewImage = true) {
+  const stageState = webgalStore.getState().stage;
+  const saveBacklog = cloneDeep$1(WebGAL.backlogManager.getBacklog());
+  let urlToSave = "";
+  if (isSavePreviewImage) {
+    const canvas = document.getElementById("pixiCanvas");
+    const canvas2 = document.createElement("canvas");
+    const context2 = canvas2.getContext("2d");
+    canvas2.width = 480;
+    canvas2.height = 270;
+    context2.drawImage(canvas, 0, 0, 480, 270);
+    urlToSave = canvas2.toDataURL("image/webp", 0.5);
+    canvas2.remove();
+  }
+  const saveData = {
+    nowStageState: cloneDeep$1(stageState),
+    backlog: saveBacklog,
+    // 舞台数据
+    index: index2,
+    // 存档的序号
+    saveTime: (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false }),
+    // 保存时间
+    // 场景数据
+    sceneData: {
+      currentSentenceId: WebGAL.sceneManager.sceneData.currentSentenceId,
+      // 当前语句ID
+      sceneStack: cloneDeep$1(WebGAL.sceneManager.sceneData.sceneStack),
+      // 场景栈
+      sceneName: WebGAL.sceneManager.sceneData.currentScene.sceneName,
+      // 场景名称
+      sceneUrl: WebGAL.sceneManager.sceneData.currentScene.sceneUrl
+      // 场景url
+    },
+    previewImage: urlToSave
+  };
+  return saveData;
+}
+function getCurrentVideoStageDataForStoryLine() {
+  const stageState = webgalStore.getState().stage;
+  const saveBacklog = cloneDeep$1(WebGAL.backlogManager.getBacklog());
+  const currentTime = (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false });
+  const saveData = {
+    nowStageState: cloneDeep$1(stageState),
+    backlog: saveBacklog,
+    // 舞台数据
+    saveTime: currentTime,
+    // 保存时间
+    index: -1,
+    previewImage: "",
+    // 场景数据
+    sceneData: {
+      currentSentenceId: WebGAL.sceneManager.sceneData.currentSentenceId,
+      // 当前语句ID
+      sceneStack: cloneDeep$1(WebGAL.sceneManager.sceneData.sceneStack),
+      // 场景栈
+      sceneName: WebGAL.sceneManager.sceneData.currentScene.sceneName,
+      // 场景名称
+      sceneUrl: WebGAL.sceneManager.sceneData.currentScene.sceneUrl
+      // 场景url
+    }
+  };
+  webgalStore.dispatch(saveActions.setSaveVideoData(saveData));
 }
 const playVideo = (sentence) => {
   const userDataState = webgalStore.getState().userData;
@@ -23287,6 +23450,7 @@ const playVideo = (sentence) => {
           WebGAL.gameplay.performController.arrangeNewPerform(perform2, script);
         }
         WebGAL.videoManager.onEnded(url2, () => {
+          getCurrentVideoStageDataForStoryLine();
           if (loopValue) {
             WebGAL.videoManager.seek(url2, 0.03);
             WebGAL.videoManager.playVideo(url2);
@@ -23589,18 +23753,18 @@ const setTransition = (sentence) => {
 };
 const unlockBgm = (sentence) => {
   const url2 = sentence.content;
-  let name = sentence.content;
+  let name2 = sentence.content;
   let series = "default";
   sentence.args.forEach((e2) => {
     if (e2.key === "name") {
-      name = e2.value.toString();
+      name2 = e2.value.toString();
     }
     if (e2.key === "series") {
       series = e2.value.toString();
     }
   });
-  logger.info(`解锁BGM：${name}，路径：${url2}，所属系列：${series}`);
-  webgalStore.dispatch(unlockBgmInUserData({ name, url: url2, series }));
+  logger.info(`解锁BGM：${name2}，路径：${url2}，所属系列：${series}`);
+  webgalStore.dispatch(unlockBgmInUserData({ name: name2, url: url2, series }));
   const userDataState = webgalStore.getState().userData;
   localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
   });
@@ -23618,18 +23782,18 @@ const unlockBgm = (sentence) => {
 };
 const unlockCg = (sentence) => {
   const url2 = sentence.content;
-  let name = sentence.content;
+  let name2 = sentence.content;
   let series = "default";
   sentence.args.forEach((e2) => {
     if (e2.key === "name") {
-      name = e2.value.toString();
+      name2 = e2.value.toString();
     }
     if (e2.key === "series") {
       series = e2.value.toString();
     }
   });
-  logger.info(`解锁CG：${name}，路径：${url2}，所属系列：${series}`);
-  webgalStore.dispatch(unlockCgInUserData({ name, url: url2, series }));
+  logger.info(`解锁CG：${name2}，路径：${url2}，所属系列：${series}`);
+  webgalStore.dispatch(unlockCgInUserData({ name: name2, url: url2, series }));
   const userDataState = webgalStore.getState().userData;
   localforage.setItem(WebGAL.gameKey, userDataState).then(() => {
   });
@@ -23664,34 +23828,6 @@ const resetStage = (resetBacklog, resetSceneAndVar = true, resetVideo = true) =>
     webgalStore.dispatch(setStage({ key: "GameVar", value: currentVars }));
   }
 };
-const initState$1 = {
-  saveData: [],
-  quickSaveData: null
-};
-const saveDataSlice = createSlice({
-  name: "saveData",
-  initialState: cloneDeep$1(initState$1),
-  reducers: {
-    setFastSave: (state, action) => {
-      state.quickSaveData = action.payload;
-    },
-    resetFastSave: (state) => {
-      state.quickSaveData = null;
-    },
-    resetSaves: (state) => {
-      state.quickSaveData = null;
-      state.saveData = [];
-    },
-    saveGame: (state, action) => {
-      state.saveData[action.payload.index] = action.payload.saveData;
-    },
-    replaceSaveGame: (state, action) => {
-      state.saveData = action.payload;
-    }
-  }
-});
-const saveActions = saveDataSlice.actions;
-const savesReducer = saveDataSlice.reducer;
 const end = (sentence) => {
   resetStage(true);
   const dispatch = webgalStore.dispatch;
@@ -24163,6 +24299,84 @@ const applyStyle = (sentence) => {
     // 暂时不用，后面会交给自动清除
   };
 };
+const unlockStoryline = (sentence) => {
+  var _a2;
+  console.log("解锁故事线 >>>>>>>> start : ", { sentence });
+  getStorylineFromStorage();
+  let thumbnailUrl = sentence.content || "";
+  const storyLineData = {};
+  if (thumbnailUrl) {
+    storyLineData["thumbnailUrl"] = assetSetter(thumbnailUrl, fileType$1.ui);
+  }
+  sentence.args.forEach((e2) => {
+    var _a3;
+    switch (e2.key) {
+      case "name":
+        storyLineData["name"] = ((_a3 = e2.value) == null ? void 0 : _a3.toString()) ?? "";
+        break;
+      case "x":
+        storyLineData["x"] = e2.value && Number(e2.value) || 0;
+        break;
+      case "y":
+        storyLineData["y"] = e2.value && Number(e2.value) || 0;
+        break;
+    }
+  });
+  if (storyLineData["name"] === "" && storyLineData["thumbnailUrl"] === "") {
+    return {
+      performName: "none",
+      duration: 0,
+      isHoldOn: false,
+      stopFunction: () => {
+      },
+      blockingNext: () => false,
+      blockingAuto: () => true,
+      stopTimeout: void 0
+    };
+  }
+  const saveData = webgalStore.getState().saveData;
+  const unlockItemIndex = (_a2 = saveData.unlockStorylineList) == null ? void 0 : _a2.findIndex(
+    (item) => item.storyLine.name === storyLineData["name"]
+  );
+  const payload = {
+    name: storyLineData["name"] || "",
+    thumbnailUrl: storyLineData["thumbnailUrl"] || "",
+    x: storyLineData["x"] || 0,
+    y: storyLineData["y"] || 0,
+    isUnlock: true
+    // isShow: saveData.isShowUnlock || unlockItemIndex !== -1,
+  };
+  if (unlockItemIndex === -1) {
+    webgalStore.dispatch(
+      saveActions.addStorylineList({
+        storyLine: payload,
+        videoData: webgalStore.getState().saveData.saveVideoData
+      })
+    );
+  } else {
+    webgalStore.dispatch(
+      saveActions.replaceStorylineList({
+        index: unlockItemIndex,
+        data: {
+          storyLine: payload,
+          videoData: webgalStore.getState().saveData.saveVideoData
+        }
+      })
+    );
+  }
+  dumpStorylineToStorage();
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+};
 const SCRIPT_TAG_MAP = defineScripts({
   intro: ScriptConfig(commandType$1.intro, intro),
   changeBg: ScriptConfig(commandType$1.changeBg, changeBg),
@@ -24194,7 +24408,8 @@ const SCRIPT_TAG_MAP = defineScripts({
   setTransform: ScriptConfig(commandType$1.setTransform, setTransform),
   setTransition: ScriptConfig(commandType$1.setTransition, setTransition, { next: true }),
   getUserInput: ScriptConfig(commandType$1.getUserInput, getUserInput),
-  applyStyle: ScriptConfig(commandType$1.applyStyle, applyStyle, { next: true })
+  applyStyle: ScriptConfig(commandType$1.applyStyle, applyStyle, { next: true }),
+  unlockStoryline: ScriptConfig(commandType$1.unlockStoryline, unlockStoryline, { next: true })
   // if: ScriptConfig(commandType.if, undefined, { next: true }),
 });
 const SCRIPT_CONFIG = Object.values(SCRIPT_TAG_MAP);
@@ -25192,10 +25407,10 @@ var flv = { exports: {} };
                 }
                 return ret;
               }
-              function once(emitter, name) {
+              function once(emitter, name2) {
                 return new Promise(function(resolve2, reject2) {
                   function errorListener(err) {
-                    emitter.removeListener(name, resolver2);
+                    emitter.removeListener(name2, resolver2);
                     reject2(err);
                   }
                   function resolver2() {
@@ -25204,8 +25419,8 @@ var flv = { exports: {} };
                     }
                     resolve2([].slice.call(arguments));
                   }
-                  eventTargetAgnosticAddListener(emitter, name, resolver2, { once: true });
-                  if (name !== "error") {
+                  eventTargetAgnosticAddListener(emitter, name2, resolver2, { once: true });
+                  if (name2 !== "error") {
                     addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
                   }
                 });
@@ -25215,17 +25430,17 @@ var flv = { exports: {} };
                   eventTargetAgnosticAddListener(emitter, "error", handler, flags);
                 }
               }
-              function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
+              function eventTargetAgnosticAddListener(emitter, name2, listener, flags) {
                 if (typeof emitter.on === "function") {
                   if (flags.once) {
-                    emitter.once(name, listener);
+                    emitter.once(name2, listener);
                   } else {
-                    emitter.on(name, listener);
+                    emitter.on(name2, listener);
                   }
                 } else if (typeof emitter.addEventListener === "function") {
-                  emitter.addEventListener(name, function wrapListener(arg) {
+                  emitter.addEventListener(name2, function wrapListener(arg) {
                     if (flags.once) {
-                      emitter.removeEventListener(name, wrapListener);
+                      emitter.removeEventListener(name2, wrapListener);
                     }
                     listener(arg);
                   });
@@ -25265,9 +25480,9 @@ var flv = { exports: {} };
                 __nested_webpack_require_164__.i = function(value) {
                   return value;
                 };
-                __nested_webpack_require_164__.d = function(exports2, name, getter) {
-                  if (!__nested_webpack_require_164__.o(exports2, name)) {
-                    Object.defineProperty(exports2, name, {
+                __nested_webpack_require_164__.d = function(exports2, name2, getter) {
+                  if (!__nested_webpack_require_164__.o(exports2, name2)) {
+                    Object.defineProperty(exports2, name2, {
                       /******/
                       configurable: false,
                       /******/
@@ -27184,15 +27399,15 @@ var flv = { exports: {} };
                     if (dataSize < 3) {
                       throw new _utils_exception_js__WEBPACK_IMPORTED_MODULE_2__.IllegalStateException("Data not enough when parse ScriptDataObject");
                     }
-                    var name = AMF2.parseString(arrayBuffer, dataOffset, dataSize);
-                    var value = AMF2.parseValue(arrayBuffer, dataOffset + name.size, dataSize - name.size);
+                    var name2 = AMF2.parseString(arrayBuffer, dataOffset, dataSize);
+                    var value = AMF2.parseValue(arrayBuffer, dataOffset + name2.size, dataSize - name2.size);
                     var isObjectEnd = value.objectEnd;
                     return {
                       data: {
-                        name: name.data,
+                        name: name2.data,
                         value: value.data
                       },
-                      size: name.size + value.size,
+                      size: name2.size + value.size,
                       objectEnd: isObjectEnd
                     };
                   };
@@ -40849,74 +41064,6 @@ function loadGameFromStageData(stageData) {
   dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
   setEbg(webgalStore.getState().stage.bgName);
 }
-function dumpSavesToStorage(startIndex, endIndex) {
-  for (let i2 = startIndex; i2 <= endIndex; i2++) {
-    const save = webgalStore.getState().saveData.saveData[i2];
-    localforage.setItem(`${WebGAL.gameKey}-saves${i2}`, save).then(() => {
-      logger.info(`存档${i2}写入本地存储`);
-    });
-  }
-}
-function getSavesFromStorage(startIndex, endIndex) {
-  for (let i2 = startIndex; i2 <= endIndex; i2++) {
-    localforage.getItem(`${WebGAL.gameKey}-saves${i2}`).then((save) => {
-      webgalStore.dispatch(saveActions.saveGame({ index: i2, saveData: save }));
-      logger.info(`存档${i2}读取自本地存储`);
-    });
-  }
-}
-async function dumpFastSaveToStorage() {
-  const save = webgalStore.getState().saveData.quickSaveData;
-  await localforage.setItem(`${WebGAL.gameKey}-saves-fast`, save);
-  logger.info(`快速存档写入本地存储`);
-}
-async function getFastSaveFromStorage() {
-  const save = await localforage.getItem(`${WebGAL.gameKey}-saves-fast`);
-  webgalStore.dispatch(saveActions.setFastSave(save));
-  logger.info(`快速存档读取自本地存储`);
-}
-const saveGame = (index2) => {
-  const saveData = generateCurrentStageData(index2);
-  webgalStore.dispatch(saveActions.saveGame({ index: index2, saveData }));
-  dumpSavesToStorage(index2, index2);
-};
-function generateCurrentStageData(index2, isSavePreviewImage = true) {
-  const stageState = webgalStore.getState().stage;
-  const saveBacklog = cloneDeep$1(WebGAL.backlogManager.getBacklog());
-  let urlToSave = "";
-  if (isSavePreviewImage) {
-    const canvas = document.getElementById("pixiCanvas");
-    const canvas2 = document.createElement("canvas");
-    const context2 = canvas2.getContext("2d");
-    canvas2.width = 480;
-    canvas2.height = 270;
-    context2.drawImage(canvas, 0, 0, 480, 270);
-    urlToSave = canvas2.toDataURL("image/webp", 0.5);
-    canvas2.remove();
-  }
-  const saveData = {
-    nowStageState: cloneDeep$1(stageState),
-    backlog: saveBacklog,
-    // 舞台数据
-    index: index2,
-    // 存档的序号
-    saveTime: (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false }),
-    // 保存时间
-    // 场景数据
-    sceneData: {
-      currentSentenceId: WebGAL.sceneManager.sceneData.currentSentenceId,
-      // 当前语句ID
-      sceneStack: cloneDeep$1(WebGAL.sceneManager.sceneData.sceneStack),
-      // 场景栈
-      sceneName: WebGAL.sceneManager.sceneData.currentScene.sceneName,
-      // 场景名称
-      sceneUrl: WebGAL.sceneManager.sceneData.currentScene.sceneUrl
-      // 场景url
-    },
-    previewImage: urlToSave
-  };
-  return saveData;
-}
 function initKey() {
   `FastSaveKey-${WebGAL.gameName}-${WebGAL.gameKey}`;
   `FastSaveActive-${WebGAL.gameName}-${WebGAL.gameKey}`;
@@ -40950,6 +41097,8 @@ const enterStoryLine = () => {
     });
   });
   webgalStore.dispatch(setVisibility({ component: "showTitle", visibility: false }));
+  webgalStore.dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
+  webgalStore.dispatch(setVisibility({ component: "showTextBox", visibility: false }));
   webgalStore.dispatch(setShowStoryLine(true));
 };
 function _objectWithoutProperties$1(source, excluded) {
@@ -42777,9 +42926,9 @@ var serializeStyles = function serializeStyles2(args, registered, mergedProps) {
     identifierName += "-" + // $FlowFixMe we know it's not null
     match2[1];
   }
-  var name = murmur2(styles2) + identifierName;
+  var name2 = murmur2(styles2) + identifierName;
   return {
-    name,
+    name: name2,
     styles: styles2,
     next: cursor
   };
@@ -43637,7 +43786,6 @@ const Title = () => {
               className: applyStyle2("Title_button", styles$m.Title_button),
               onClick: () => {
                 enterStoryLine();
-                dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
                 playSeClick();
               },
               onMouseEnter: playSeEnter,
@@ -44848,12 +44996,12 @@ var eventemitter3 = { exports: {} };
     this._eventsCount = 0;
   }
   EventEmitter2.prototype.eventNames = function eventNames() {
-    var names = [], events, name;
+    var names = [], events, name2;
     if (this._eventsCount === 0)
       return names;
-    for (name in events = this._events) {
-      if (has2.call(events, name))
-        names.push(prefix2 ? name.slice(1) : name);
+    for (name2 in events = this._events) {
+      if (has2.call(events, name2))
+        names.push(prefix2 ? name2.slice(1) : name2);
     }
     if (Object.getOwnPropertySymbols) {
       return names.concat(Object.getOwnPropertySymbols(events));
@@ -45967,26 +46115,26 @@ if (getProto) {
     INTRINSICS["%Error.prototype%"] = errorProto;
   }
 }
-var doEval = function doEval2(name) {
+var doEval = function doEval2(name2) {
   var value;
-  if (name === "%AsyncFunction%") {
+  if (name2 === "%AsyncFunction%") {
     value = getEvalledConstructor("async function () {}");
-  } else if (name === "%GeneratorFunction%") {
+  } else if (name2 === "%GeneratorFunction%") {
     value = getEvalledConstructor("function* () {}");
-  } else if (name === "%AsyncGeneratorFunction%") {
+  } else if (name2 === "%AsyncGeneratorFunction%") {
     value = getEvalledConstructor("async function* () {}");
-  } else if (name === "%AsyncGenerator%") {
+  } else if (name2 === "%AsyncGenerator%") {
     var fn2 = doEval2("%AsyncGeneratorFunction%");
     if (fn2) {
       value = fn2.prototype;
     }
-  } else if (name === "%AsyncIteratorPrototype%") {
+  } else if (name2 === "%AsyncIteratorPrototype%") {
     var gen = doEval2("%AsyncGenerator%");
     if (gen && getProto) {
       value = getProto(gen.prototype);
     }
   }
-  INTRINSICS[name] = value;
+  INTRINSICS[name2] = value;
   return value;
 };
 var LEGACY_ALIASES = {
@@ -46066,8 +46214,8 @@ var stringToPath = function stringToPath2(string) {
   });
   return result;
 };
-var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
-  var intrinsicName = name;
+var getBaseIntrinsic = function getBaseIntrinsic2(name2, allowMissing) {
+  var intrinsicName = name2;
   var alias;
   if (hasOwn$1(LEGACY_ALIASES, intrinsicName)) {
     alias = LEGACY_ALIASES[intrinsicName];
@@ -46079,7 +46227,7 @@ var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
       value = doEval(intrinsicName);
     }
     if (typeof value === "undefined" && !allowMissing) {
-      throw new $TypeError$3("intrinsic " + name + " exists, but is not available. Please file an issue!");
+      throw new $TypeError$3("intrinsic " + name2 + " exists, but is not available. Please file an issue!");
     }
     return {
       alias,
@@ -46087,19 +46235,19 @@ var getBaseIntrinsic = function getBaseIntrinsic2(name, allowMissing) {
       value
     };
   }
-  throw new $SyntaxError$1("intrinsic " + name + " does not exist!");
+  throw new $SyntaxError$1("intrinsic " + name2 + " does not exist!");
 };
-var getIntrinsic = function GetIntrinsic(name, allowMissing) {
-  if (typeof name !== "string" || name.length === 0) {
+var getIntrinsic = function GetIntrinsic(name2, allowMissing) {
+  if (typeof name2 !== "string" || name2.length === 0) {
     throw new $TypeError$3("intrinsic name must be a non-empty string");
   }
   if (arguments.length > 1 && typeof allowMissing !== "boolean") {
     throw new $TypeError$3('"allowMissing" argument must be a boolean');
   }
-  if ($exec(/^%?[^%]*%?$/, name) === null) {
+  if ($exec(/^%?[^%]*%?$/, name2) === null) {
     throw new $SyntaxError$1("`%` may not be present anywhere but at the beginning and end of the intrinsic name");
   }
-  var parts = stringToPath(name);
+  var parts = stringToPath(name2);
   var intrinsicBaseName = parts.length > 0 ? parts[0] : "";
   var intrinsic = getBaseIntrinsic("%" + intrinsicBaseName + "%", allowMissing);
   var intrinsicRealName = intrinsic.name;
@@ -46127,7 +46275,7 @@ var getIntrinsic = function GetIntrinsic(name, allowMissing) {
     } else if (value != null) {
       if (!(part in value)) {
         if (!allowMissing) {
-          throw new $TypeError$3("base intrinsic for " + name + " exists, but the property is not available.");
+          throw new $TypeError$3("base intrinsic for " + name2 + " exists, but the property is not available.");
         }
         return void 0;
       }
@@ -46315,9 +46463,9 @@ var callBindExports = callBind$1.exports;
 var GetIntrinsic$1 = getIntrinsic;
 var callBind = callBindExports;
 var $indexOf = callBind(GetIntrinsic$1("String.prototype.indexOf"));
-var callBound$1 = function callBoundIntrinsic(name, allowMissing) {
-  var intrinsic = GetIntrinsic$1(name, !!allowMissing);
-  if (typeof intrinsic === "function" && $indexOf(name, ".prototype.") > -1) {
+var callBound$1 = function callBoundIntrinsic(name2, allowMissing) {
+  var intrinsic = GetIntrinsic$1(name2, !!allowMissing);
+  if (typeof intrinsic === "function" && $indexOf(name2, ".prototype.") > -1) {
     return callBind(intrinsic);
   }
   return intrinsic;
@@ -46448,9 +46596,9 @@ var objectInspect = function inspect_(obj, options, depth, seen2) {
     return inspect_(value, opts, depth + 1, seen2);
   }
   if (typeof obj === "function" && !isRegExp$1(obj)) {
-    var name = nameOf(obj);
+    var name2 = nameOf(obj);
     var keys2 = arrObjKeys(obj, inspect2);
-    return "[Function" + (name ? ": " + name : " (anonymous)") + "]" + (keys2.length > 0 ? " { " + $join.call(keys2, ", ") + " }" : "");
+    return "[Function" + (name2 ? ": " + name2 : " (anonymous)") + "]" + (keys2.length > 0 ? " { " + $join.call(keys2, ", ") + " }" : "");
   }
   if (isSymbol(obj)) {
     var symString = hasShammedSymbols ? $replace.call(String(obj), /^(Symbol\(.*\))_[^)]*$/, "$1") : symToString.call(obj);
@@ -51968,19 +52116,19 @@ var extensions = {
 var Runner = (
   /** @class */
   function() {
-    function Runner2(name) {
+    function Runner2(name2) {
       this.items = [];
-      this._name = name;
+      this._name = name2;
       this._aliasCount = 0;
     }
     Runner2.prototype.emit = function(a0, a1, a2, a3, a4, a5, a6, a7) {
       if (arguments.length > 8) {
         throw new Error("max arguments reached");
       }
-      var _a2 = this, name = _a2.name, items = _a2.items;
+      var _a2 = this, name2 = _a2.name, items = _a2.items;
       this._aliasCount++;
       for (var i2 = 0, len = items.length; i2 < len; i2++) {
-        items[i2][name](a0, a1, a2, a3, a4, a5, a6, a7);
+        items[i2][name2](a0, a1, a2, a3, a4, a5, a6, a7);
       }
       if (items === this.items) {
         this._aliasCount--;
@@ -54206,7 +54354,7 @@ var Texture = (
     Texture2.fromBuffer = function(buffer, width, height, options) {
       return new Texture2(BaseTexture.fromBuffer(buffer, width, height, options));
     };
-    Texture2.fromLoader = function(source, imageUrl, name, options) {
+    Texture2.fromLoader = function(source, imageUrl, name2, options) {
       var baseTexture = new BaseTexture(source, Object.assign({
         scaleMode: settings$1.SCALE_MODE,
         resolution: getResolutionOfUrl(imageUrl)
@@ -54216,12 +54364,12 @@ var Texture = (
         resource.url = imageUrl;
       }
       var texture = new Texture2(baseTexture);
-      if (!name) {
-        name = imageUrl;
+      if (!name2) {
+        name2 = imageUrl;
       }
-      BaseTexture.addToCache(texture.baseTexture, name);
-      Texture2.addToCache(texture, name);
-      if (name !== imageUrl) {
+      BaseTexture.addToCache(texture.baseTexture, name2);
+      Texture2.addToCache(texture, name2);
+      if (name2 !== imageUrl) {
         BaseTexture.addToCache(texture.baseTexture, imageUrl);
         Texture2.addToCache(texture, imageUrl);
       }
@@ -55011,9 +55159,9 @@ var UniformGroup = (
         this.buffer.update();
       }
     };
-    UniformGroup2.prototype.add = function(name, uniforms, _static) {
+    UniformGroup2.prototype.add = function(name2, uniforms, _static) {
       if (!this.ubo) {
-        this.uniforms[name] = new UniformGroup2(uniforms, _static);
+        this.uniforms[name2] = new UniformGroup2(uniforms, _static);
       } else {
         throw new Error("[UniformGroup] uniform groups in ubo mode cannot be modified, or have uniform groups nested in them");
       }
@@ -56544,8 +56692,8 @@ var uniformParsers = [
     test: function(data2) {
       return data2.type === "float" && data2.size === 1 && !data2.isArray;
     },
-    code: function(name) {
-      return '\n            if(uv["' + name + '"] !== ud["' + name + '"].value)\n            {\n                ud["' + name + '"].value = uv["' + name + '"]\n                gl.uniform1f(ud["' + name + '"].location, uv["' + name + '"])\n            }\n            ';
+    code: function(name2) {
+      return '\n            if(uv["' + name2 + '"] !== ud["' + name2 + '"].value)\n            {\n                ud["' + name2 + '"].value = uv["' + name2 + '"]\n                gl.uniform1f(ud["' + name2 + '"].location, uv["' + name2 + '"])\n            }\n            ';
     }
   },
   // handling samplers
@@ -56553,8 +56701,8 @@ var uniformParsers = [
     test: function(data2, uniform) {
       return (data2.type === "sampler2D" || data2.type === "samplerCube" || data2.type === "sampler2DArray") && data2.size === 1 && !data2.isArray && (uniform == null || uniform.castToBaseTexture !== void 0);
     },
-    code: function(name) {
-      return 't = syncData.textureCount++;\n\n            renderer.texture.bind(uv["' + name + '"], t);\n\n            if(ud["' + name + '"].value !== t)\n            {\n                ud["' + name + '"].value = t;\n                gl.uniform1i(ud["' + name + '"].location, t);\n; // eslint-disable-line max-len\n            }';
+    code: function(name2) {
+      return 't = syncData.textureCount++;\n\n            renderer.texture.bind(uv["' + name2 + '"], t);\n\n            if(ud["' + name2 + '"].value !== t)\n            {\n                ud["' + name2 + '"].value = t;\n                gl.uniform1i(ud["' + name2 + '"].location, t);\n; // eslint-disable-line max-len\n            }';
     }
   },
   // uploading pixi matrix object to mat3
@@ -56562,11 +56710,11 @@ var uniformParsers = [
     test: function(data2, uniform) {
       return data2.type === "mat3" && data2.size === 1 && !data2.isArray && uniform.a !== void 0;
     },
-    code: function(name) {
-      return '\n            gl.uniformMatrix3fv(ud["' + name + '"].location, false, uv["' + name + '"].toArray(true));\n            ';
+    code: function(name2) {
+      return '\n            gl.uniformMatrix3fv(ud["' + name2 + '"].location, false, uv["' + name2 + '"].toArray(true));\n            ';
     },
-    codeUbo: function(name) {
-      return "\n                var " + name + "_matrix = uv." + name + ".toArray(true);\n\n                data[offset] = " + name + "_matrix[0];\n                data[offset+1] = " + name + "_matrix[1];\n                data[offset+2] = " + name + "_matrix[2];\n        \n                data[offset + 4] = " + name + "_matrix[3];\n                data[offset + 5] = " + name + "_matrix[4];\n                data[offset + 6] = " + name + "_matrix[5];\n        \n                data[offset + 8] = " + name + "_matrix[6];\n                data[offset + 9] = " + name + "_matrix[7];\n                data[offset + 10] = " + name + "_matrix[8];\n            ";
+    codeUbo: function(name2) {
+      return "\n                var " + name2 + "_matrix = uv." + name2 + ".toArray(true);\n\n                data[offset] = " + name2 + "_matrix[0];\n                data[offset+1] = " + name2 + "_matrix[1];\n                data[offset+2] = " + name2 + "_matrix[2];\n        \n                data[offset + 4] = " + name2 + "_matrix[3];\n                data[offset + 5] = " + name2 + "_matrix[4];\n                data[offset + 6] = " + name2 + "_matrix[5];\n        \n                data[offset + 8] = " + name2 + "_matrix[6];\n                data[offset + 9] = " + name2 + "_matrix[7];\n                data[offset + 10] = " + name2 + "_matrix[8];\n            ";
     }
   },
   // uploading a pixi point as a vec2 with caching layer
@@ -56574,11 +56722,11 @@ var uniformParsers = [
     test: function(data2, uniform) {
       return data2.type === "vec2" && data2.size === 1 && !data2.isArray && uniform.x !== void 0;
     },
-    code: function(name) {
-      return '\n                cv = ud["' + name + '"].value;\n                v = uv["' + name + '"];\n\n                if(cv[0] !== v.x || cv[1] !== v.y)\n                {\n                    cv[0] = v.x;\n                    cv[1] = v.y;\n                    gl.uniform2f(ud["' + name + '"].location, v.x, v.y);\n                }';
+    code: function(name2) {
+      return '\n                cv = ud["' + name2 + '"].value;\n                v = uv["' + name2 + '"];\n\n                if(cv[0] !== v.x || cv[1] !== v.y)\n                {\n                    cv[0] = v.x;\n                    cv[1] = v.y;\n                    gl.uniform2f(ud["' + name2 + '"].location, v.x, v.y);\n                }';
     },
-    codeUbo: function(name) {
-      return "\n                v = uv." + name + ";\n\n                data[offset] = v.x;\n                data[offset+1] = v.y;\n            ";
+    codeUbo: function(name2) {
+      return "\n                v = uv." + name2 + ";\n\n                data[offset] = v.x;\n                data[offset+1] = v.y;\n            ";
     }
   },
   // caching layer for a vec2
@@ -56586,8 +56734,8 @@ var uniformParsers = [
     test: function(data2) {
       return data2.type === "vec2" && data2.size === 1 && !data2.isArray;
     },
-    code: function(name) {
-      return '\n                cv = ud["' + name + '"].value;\n                v = uv["' + name + '"];\n\n                if(cv[0] !== v[0] || cv[1] !== v[1])\n                {\n                    cv[0] = v[0];\n                    cv[1] = v[1];\n                    gl.uniform2f(ud["' + name + '"].location, v[0], v[1]);\n                }\n            ';
+    code: function(name2) {
+      return '\n                cv = ud["' + name2 + '"].value;\n                v = uv["' + name2 + '"];\n\n                if(cv[0] !== v[0] || cv[1] !== v[1])\n                {\n                    cv[0] = v[0];\n                    cv[1] = v[1];\n                    gl.uniform2f(ud["' + name2 + '"].location, v[0], v[1]);\n                }\n            ';
     }
   },
   // upload a pixi rectangle as a vec4 with caching layer
@@ -56595,11 +56743,11 @@ var uniformParsers = [
     test: function(data2, uniform) {
       return data2.type === "vec4" && data2.size === 1 && !data2.isArray && uniform.width !== void 0;
     },
-    code: function(name) {
-      return '\n                cv = ud["' + name + '"].value;\n                v = uv["' + name + '"];\n\n                if(cv[0] !== v.x || cv[1] !== v.y || cv[2] !== v.width || cv[3] !== v.height)\n                {\n                    cv[0] = v.x;\n                    cv[1] = v.y;\n                    cv[2] = v.width;\n                    cv[3] = v.height;\n                    gl.uniform4f(ud["' + name + '"].location, v.x, v.y, v.width, v.height)\n                }';
+    code: function(name2) {
+      return '\n                cv = ud["' + name2 + '"].value;\n                v = uv["' + name2 + '"];\n\n                if(cv[0] !== v.x || cv[1] !== v.y || cv[2] !== v.width || cv[3] !== v.height)\n                {\n                    cv[0] = v.x;\n                    cv[1] = v.y;\n                    cv[2] = v.width;\n                    cv[3] = v.height;\n                    gl.uniform4f(ud["' + name2 + '"].location, v.x, v.y, v.width, v.height)\n                }';
     },
-    codeUbo: function(name) {
-      return "\n                    v = uv." + name + ";\n\n                    data[offset] = v.x;\n                    data[offset+1] = v.y;\n                    data[offset+2] = v.width;\n                    data[offset+3] = v.height;\n                ";
+    codeUbo: function(name2) {
+      return "\n                    v = uv." + name2 + ";\n\n                    data[offset] = v.x;\n                    data[offset+1] = v.y;\n                    data[offset+2] = v.width;\n                    data[offset+3] = v.height;\n                ";
     }
   },
   // a caching layer for vec4 uploading
@@ -56607,8 +56755,8 @@ var uniformParsers = [
     test: function(data2) {
       return data2.type === "vec4" && data2.size === 1 && !data2.isArray;
     },
-    code: function(name) {
-      return '\n                cv = ud["' + name + '"].value;\n                v = uv["' + name + '"];\n\n                if(cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3])\n                {\n                    cv[0] = v[0];\n                    cv[1] = v[1];\n                    cv[2] = v[2];\n                    cv[3] = v[3];\n\n                    gl.uniform4f(ud["' + name + '"].location, v[0], v[1], v[2], v[3])\n                }';
+    code: function(name2) {
+      return '\n                cv = ud["' + name2 + '"].value;\n                v = uv["' + name2 + '"];\n\n                if(cv[0] !== v[0] || cv[1] !== v[1] || cv[2] !== v[2] || cv[3] !== v[3])\n                {\n                    cv[0] = v[0];\n                    cv[1] = v[1];\n                    cv[2] = v[2];\n                    cv[3] = v[3];\n\n                    gl.uniform4f(ud["' + name2 + '"].location, v[0], v[1], v[2], v[3])\n                }';
     }
   }
 ];
@@ -56749,9 +56897,9 @@ var nameCache = {};
 var Program = (
   /** @class */
   function() {
-    function Program2(vertexSrc, fragmentSrc, name) {
-      if (name === void 0) {
-        name = "pixi-shader";
+    function Program2(vertexSrc, fragmentSrc, name2) {
+      if (name2 === void 0) {
+        name2 = "pixi-shader";
       }
       this.id = UID$1++;
       this.vertexSrc = vertexSrc || Program2.defaultVertexSrc;
@@ -56759,15 +56907,15 @@ var Program = (
       this.vertexSrc = this.vertexSrc.trim();
       this.fragmentSrc = this.fragmentSrc.trim();
       if (this.vertexSrc.substring(0, 8) !== "#version") {
-        name = name.replace(/\s+/g, "-");
-        if (nameCache[name]) {
-          nameCache[name]++;
-          name += "-" + nameCache[name];
+        name2 = name2.replace(/\s+/g, "-");
+        if (nameCache[name2]) {
+          nameCache[name2]++;
+          name2 += "-" + nameCache[name2];
         } else {
-          nameCache[name] = 1;
+          nameCache[name2] = 1;
         }
-        this.vertexSrc = "#define SHADER_NAME " + name + "\n" + this.vertexSrc;
-        this.fragmentSrc = "#define SHADER_NAME " + name + "\n" + this.fragmentSrc;
+        this.vertexSrc = "#define SHADER_NAME " + name2 + "\n" + this.vertexSrc;
+        this.fragmentSrc = "#define SHADER_NAME " + name2 + "\n" + this.fragmentSrc;
         this.vertexSrc = setPrecision(this.vertexSrc, settings$1.PRECISION_VERTEX, PRECISION.HIGH);
         this.fragmentSrc = setPrecision(this.fragmentSrc, settings$1.PRECISION_FRAGMENT, getMaxFragmentPrecision());
       }
@@ -56796,11 +56944,11 @@ var Program = (
       enumerable: false,
       configurable: true
     });
-    Program2.from = function(vertexSrc, fragmentSrc, name) {
+    Program2.from = function(vertexSrc, fragmentSrc, name2) {
       var key = vertexSrc + fragmentSrc;
       var program = ProgramCache[key];
       if (!program) {
-        ProgramCache[key] = program = new Program2(vertexSrc, fragmentSrc, name);
+        ProgramCache[key] = program = new Program2(vertexSrc, fragmentSrc, name2);
       }
       return program;
     };
@@ -56824,14 +56972,14 @@ var Shader = (
       }
       this.disposeRunner = new Runner("disposeShader");
     }
-    Shader2.prototype.checkUniformExists = function(name, group) {
-      if (group.uniforms[name]) {
+    Shader2.prototype.checkUniformExists = function(name2, group) {
+      if (group.uniforms[name2]) {
         return true;
       }
       for (var i2 in group.uniforms) {
         var uniform = group.uniforms[i2];
         if (uniform.group) {
-          if (this.checkUniformExists(name, uniform)) {
+          if (this.checkUniformExists(name2, uniform)) {
             return true;
           }
         }
@@ -57838,7 +57986,7 @@ function generateUniformBufferSync(group, uniformData) {
   for (var i2 = 0; i2 < uboElements.length; i2++) {
     var uboElement = uboElements[i2];
     var uniform = group.uniforms[uboElement.data.name];
-    var name = uboElement.data.name;
+    var name2 = uboElement.data.name;
     var parsed = false;
     for (var j2 = 0; j2 < uniformParsers.length; j2++) {
       var uniformParser = uniformParsers[j2];
@@ -57854,10 +58002,10 @@ function generateUniformBufferSync(group, uniformData) {
         var rowSize = Math.max(GLSL_TO_STD40_SIZE[uboElement.data.type] / 16, 1);
         var elementSize = size_1 / rowSize;
         var remainder = (4 - elementSize % 4) % 4;
-        funcFragments.push("\n                cv = ud." + name + ".value;\n                v = uv." + name + ";\n                offset = " + uboElement.offset / 4 + ";\n\n                t = 0;\n\n                for(var i=0; i < " + uboElement.data.size * rowSize + "; i++)\n                {\n                    for(var j = 0; j < " + elementSize + "; j++)\n                    {\n                        data[offset++] = v[t++];\n                    }\n                    offset += " + remainder + ";\n                }\n\n                ");
+        funcFragments.push("\n                cv = ud." + name2 + ".value;\n                v = uv." + name2 + ";\n                offset = " + uboElement.offset / 4 + ";\n\n                t = 0;\n\n                for(var i=0; i < " + uboElement.data.size * rowSize + "; i++)\n                {\n                    for(var j = 0; j < " + elementSize + "; j++)\n                    {\n                        data[offset++] = v[t++];\n                    }\n                    offset += " + remainder + ";\n                }\n\n                ");
       } else {
         var template = UBO_TO_SINGLE_SETTERS[uboElement.data.type];
-        funcFragments.push("\n                cv = ud." + name + ".value;\n                v = uv." + name + ";\n                offset = " + uboElement.offset / 4 + ";\n                " + template + ";\n                ");
+        funcFragments.push("\n                cv = ud." + name2 + ".value;\n                v = uv." + name2 + ";\n                offset = " + uboElement.offset / 4 + ";\n                " + template + ";\n                ");
       }
     }
   }
@@ -57920,11 +58068,11 @@ function getUniformData(program, gl) {
   var totalUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
   for (var i2 = 0; i2 < totalUniforms; i2++) {
     var uniformData = gl.getActiveUniform(program, i2);
-    var name = uniformData.name.replace(/\[.*?\]$/, "");
+    var name2 = uniformData.name.replace(/\[.*?\]$/, "");
     var isArray2 = !!uniformData.name.match(/\[.*?\]$/);
     var type2 = mapType(gl, uniformData.type);
-    uniforms[name] = {
-      name,
+    uniforms[name2] = {
+      name: name2,
       index: i2,
       type: type2,
       size: uniformData.size,
@@ -58036,21 +58184,21 @@ var ShaderSystem = (
       group.syncUniforms[this.shader.program.id] = this.cache[id2];
       return group.syncUniforms[this.shader.program.id];
     };
-    ShaderSystem2.prototype.syncUniformBufferGroup = function(group, name) {
+    ShaderSystem2.prototype.syncUniformBufferGroup = function(group, name2) {
       var glProgram = this.getGlProgram();
       if (!group.static || group.dirtyId !== 0 || !glProgram.uniformGroups[group.id]) {
         group.dirtyId = 0;
-        var syncFunc = glProgram.uniformGroups[group.id] || this.createSyncBufferGroup(group, glProgram, name);
+        var syncFunc = glProgram.uniformGroups[group.id] || this.createSyncBufferGroup(group, glProgram, name2);
         group.buffer.update();
         syncFunc(glProgram.uniformData, group.uniforms, this.renderer, defaultSyncData, group.buffer);
       }
-      this.renderer.buffer.bindBufferBase(group.buffer, glProgram.uniformBufferBindings[name]);
+      this.renderer.buffer.bindBufferBase(group.buffer, glProgram.uniformBufferBindings[name2]);
     };
-    ShaderSystem2.prototype.createSyncBufferGroup = function(group, glProgram, name) {
+    ShaderSystem2.prototype.createSyncBufferGroup = function(group, glProgram, name2) {
       var gl = this.renderer.gl;
       this.renderer.buffer.bind(group.buffer);
-      var uniformBlockIndex = this.gl.getUniformBlockIndex(glProgram.program, name);
-      glProgram.uniformBufferBindings[name] = this.shader.uniformBindCount;
+      var uniformBlockIndex = this.gl.getUniformBlockIndex(glProgram.program, name2);
+      glProgram.uniformBufferBindings[name2] = this.shader.uniformBindCount;
       gl.uniformBlockBinding(glProgram.program, uniformBlockIndex, this.shader.uniformBindCount);
       this.shader.uniformBindCount++;
       var id2 = this.getSignature(group, this.shader.program.uniformData, "ubo");
@@ -58926,12 +59074,12 @@ var Renderer = (
         this.multisample = MSAA_QUALITY.NONE;
       }
     };
-    Renderer2.prototype.addSystem = function(ClassRef, name) {
+    Renderer2.prototype.addSystem = function(ClassRef, name2) {
       var system = new ClassRef(this);
-      if (this[name]) {
-        throw new Error('Whoops! The name "' + name + '" is already in use');
+      if (this[name2]) {
+        throw new Error('Whoops! The name "' + name2 + '" is already in use');
       }
-      this[name] = system;
+      this[name2] = system;
       for (var i2 in this.runners) {
         this.runners[i2].add(system);
       }
@@ -59615,28 +59763,28 @@ Object.assign(BatchRenderer, {
   }
 });
 var resources = {};
-var _loop_1 = function(name) {
-  Object.defineProperty(resources, name, {
+var _loop_1 = function(name2) {
+  Object.defineProperty(resources, name2, {
     get: function() {
-      deprecation("6.0.0", "PIXI.systems." + name + " has moved to PIXI." + name);
-      return _resources[name];
+      deprecation("6.0.0", "PIXI.systems." + name2 + " has moved to PIXI." + name2);
+      return _resources[name2];
     }
   });
 };
-for (var name in _resources) {
-  _loop_1(name);
+for (var name$1 in _resources) {
+  _loop_1(name$1);
 }
 var systems = {};
-var _loop_2 = function(name) {
-  Object.defineProperty(systems, name, {
+var _loop_2 = function(name2) {
+  Object.defineProperty(systems, name2, {
     get: function() {
-      deprecation("6.0.0", "PIXI.resources." + name + " has moved to PIXI." + name);
-      return _systems[name];
+      deprecation("6.0.0", "PIXI.resources." + name2 + " has moved to PIXI." + name2);
+      return _systems[name2];
     }
   });
 };
-for (var name in _systems) {
-  _loop_2(name);
+for (var name$1 in _systems) {
+  _loop_2(name$1);
 }
 var VERSION = "6.5.10";
 /*!
@@ -61430,7 +61578,7 @@ function reqType(xhr2) {
 var LoaderResource = (
   /** @class */
   function() {
-    function LoaderResource2(name, url2, options) {
+    function LoaderResource2(name2, url2, options) {
       this._dequeue = _noop$1;
       this._onLoadBinding = null;
       this._elementTimer = 0;
@@ -61442,13 +61590,13 @@ var LoaderResource = (
       this._boundXhrOnTimeout = null;
       this._boundXhrOnAbort = null;
       this._boundXhrOnLoad = null;
-      if (typeof name !== "string" || typeof url2 !== "string") {
+      if (typeof name2 !== "string" || typeof url2 !== "string") {
         throw new Error("Both name and url are required for constructing a resource.");
       }
       options = options || {};
       this._flags = 0;
       this._setFlag(LoaderResource2.STATUS_FLAGS.DATA_URL, url2.indexOf("data:") === 0);
-      this.name = name;
+      this.name = name2;
       this.url = url2;
       this.extension = this._getExtension();
       this.data = null;
@@ -62201,17 +62349,17 @@ var Loader = (
       }
       this._protected = false;
     }
-    Loader2.prototype._add = function(name, url2, options, callback) {
+    Loader2.prototype._add = function(name2, url2, options, callback) {
       if (this.loading && (!options || !options.parentResource)) {
         throw new Error("Cannot add resources while the loader is running.");
       }
-      if (this.resources[name]) {
-        throw new Error('Resource named "' + name + '" already exists.');
+      if (this.resources[name2]) {
+        throw new Error('Resource named "' + name2 + '" already exists.');
       }
       url2 = this._prepareUrl(url2);
-      this.resources[name] = new LoaderResource(name, url2, options);
+      this.resources[name2] = new LoaderResource(name2, url2, options);
       if (typeof callback === "function") {
-        this.resources[name].onAfterMiddleware.once(callback);
+        this.resources[name2].onAfterMiddleware.once(callback);
       }
       if (this.loading) {
         var parent = options.parentResource;
@@ -62223,14 +62371,14 @@ var Loader = (
         }
         var fullChunk = parent.progressChunk * (incompleteChildren.length + 1);
         var eachChunk = fullChunk / (incompleteChildren.length + 2);
-        parent.children.push(this.resources[name]);
+        parent.children.push(this.resources[name2]);
         parent.progressChunk = eachChunk;
         for (var i2 = 0; i2 < incompleteChildren.length; ++i2) {
           incompleteChildren[i2].progressChunk = eachChunk;
         }
-        this.resources[name].progressChunk = eachChunk;
+        this.resources[name2].progressChunk = eachChunk;
       }
-      this._queue.push(this.resources[name]);
+      this._queue.push(this.resources[name2]);
       return this;
     };
     Loader2.prototype.pre = function(fn2) {
@@ -62396,23 +62544,23 @@ var Loader = (
   }()
 );
 extensions.handleByList(ExtensionType.Loader, Loader._plugins);
-Loader.prototype.add = function add(name, url2, options, callback) {
-  if (Array.isArray(name)) {
-    for (var i2 = 0; i2 < name.length; ++i2) {
-      this.add(name[i2]);
+Loader.prototype.add = function add(name2, url2, options, callback) {
+  if (Array.isArray(name2)) {
+    for (var i2 = 0; i2 < name2.length; ++i2) {
+      this.add(name2[i2]);
     }
     return this;
   }
-  if (typeof name === "object") {
-    options = name;
+  if (typeof name2 === "object") {
+    options = name2;
     callback = url2 || options.callback || options.onComplete;
     url2 = options.url;
-    name = options.name || options.key || options.url;
+    name2 = options.name || options.key || options.url;
   }
   if (typeof url2 !== "string") {
     callback = options;
     options = url2;
-    url2 = name;
+    url2 = name2;
   }
   if (typeof url2 !== "string") {
     throw new Error("No url passed to add resource to loader.");
@@ -62421,7 +62569,7 @@ Loader.prototype.add = function add(name, url2, options, callback) {
     callback = options;
     options = null;
   }
-  return this._add(name, url2, options, callback);
+  return this._add(name2, url2, options, callback);
 };
 var AppLoaderPlugin = (
   /** @class */
@@ -62455,8 +62603,8 @@ var TextureLoader = (
     };
     TextureLoader2.use = function(resource, next2) {
       if (resource.data && (resource.type === LoaderResource.TYPE.IMAGE || resource.extension === "svg")) {
-        var data2 = resource.data, url2 = resource.url, name = resource.name, metadata = resource.metadata;
-        Texture.fromLoader(data2, url2, name, metadata).then(function(texture) {
+        var data2 = resource.data, url2 = resource.url, name2 = resource.name, metadata = resource.metadata;
+        Texture.fromLoader(data2, url2, name2, metadata).then(function(texture) {
           resource.texture = texture;
           next2();
         }).catch(next2);
@@ -69178,7 +69326,7 @@ var TextFormat = (
         distanceField: []
       };
       for (var i2 in items) {
-        var name = items[i2].match(/^[a-z]+/gm)[0];
+        var name2 = items[i2].match(/^[a-z]+/gm)[0];
         var attributeList = items[i2].match(/[a-zA-Z]+=([^\s"']+|"([^"]*)")/gm);
         var itemData = {};
         for (var i_1 in attributeList) {
@@ -69189,7 +69337,7 @@ var TextFormat = (
           var value = isNaN(floatValue) ? strValue : floatValue;
           itemData[key] = value;
         }
-        rawData[name].push(itemData);
+        rawData[name2].push(itemData);
       }
       var font = new BitmapFontData();
       rawData.info.forEach(function(info) {
@@ -69560,16 +69708,16 @@ var BitmapFont = (
       BitmapFont2.available[font.font] = font;
       return font;
     };
-    BitmapFont2.uninstall = function(name) {
-      var font = BitmapFont2.available[name];
+    BitmapFont2.uninstall = function(name2) {
+      var font = BitmapFont2.available[name2];
       if (!font) {
-        throw new Error("No font found named '" + name + "'");
+        throw new Error("No font found named '" + name2 + "'");
       }
       font.destroy();
-      delete BitmapFont2.available[name];
+      delete BitmapFont2.available[name2];
     };
-    BitmapFont2.from = function(name, textStyle, options) {
-      if (!name) {
+    BitmapFont2.from = function(name2, textStyle, options) {
+      if (!name2) {
         throw new Error("[BitmapFont] Property `name` is required.");
       }
       var _a2 = Object.assign({}, BitmapFont2.defaultOptions, options), chars2 = _a2.chars, padding = _a2.padding, resolution = _a2.resolution, textureWidth = _a2.textureWidth, textureHeight = _a2.textureHeight;
@@ -69670,10 +69818,10 @@ var BitmapFont = (
         }
       }
       var font = new BitmapFont2(fontData, textures, true);
-      if (BitmapFont2.available[name] !== void 0) {
-        BitmapFont2.uninstall(name);
+      if (BitmapFont2.available[name2] !== void 0) {
+        BitmapFont2.uninstall(name2);
       }
-      BitmapFont2.available[name] = font;
+      BitmapFont2.available[name2] = font;
       return font;
     };
     BitmapFont2.ALPHA = [["a", "z"], ["A", "Z"], " "];
@@ -70305,8 +70453,8 @@ var BitmapFontLoader = (
         var pageFile = data2.page[i2].file;
         var url2 = baseUrl + pageFile;
         var exists = false;
-        for (var name in this.resources) {
-          var bitmapResource = this.resources[name];
+        for (var name2 in this.resources) {
+          var bitmapResource = this.resources[name2];
           if (bitmapResource.url === url2) {
             bitmapResource.metadata.pageFile = pageFile;
             if (bitmapResource.texture) {
@@ -72112,9 +72260,9 @@ DisplayObject.prototype._cacheAsBitmapDestroy = function _cacheAsBitmapDestroy(o
  * http://www.opensource.org/licenses/mit-license
  */
 DisplayObject.prototype.name = null;
-Container.prototype.getChildByName = function getChildByName(name, deep) {
+Container.prototype.getChildByName = function getChildByName(name2, deep) {
   for (var i2 = 0, j2 = this.children.length; i2 < j2; i2++) {
-    if (this.children[i2].name === name) {
+    if (this.children[i2].name === name2) {
       return this.children[i2];
     }
   }
@@ -72124,7 +72272,7 @@ Container.prototype.getChildByName = function getChildByName(name, deep) {
       if (!child.getChildByName) {
         continue;
       }
-      var target = child.getChildByName(name, true);
+      var target = child.getChildByName(name2, true);
       if (target) {
         return target;
       }
@@ -77976,13 +78124,13 @@ class WebGALPixiContainer extends Container {
       this.filters = [filter2];
     }
   }
-  removeFilter(name) {
-    const filter2 = this.containerFilters.get(name);
+  removeFilter(name2) {
+    const filter2 = this.containerFilters.get(name2);
     if (filter2) {
       const index2 = ((this == null ? void 0 : this.filters) ?? []).findIndex((e2) => e2 === filter2);
       if (this.filters) {
         this.filters.splice(index2, 1);
-        this.containerFilters.delete(name);
+        this.containerFilters.delete(name2);
       }
     }
   }
@@ -78604,7 +78752,7 @@ var TextureAtlas = (
         this.addSpineAtlas(atlasText, textureLoader, callback);
       }
     }
-    TextureAtlas2.prototype.addTexture = function(name, texture) {
+    TextureAtlas2.prototype.addTexture = function(name2, texture) {
       var pages = this.pages;
       var page = null;
       for (var i2 = 0; i2 < pages.length; i2++) {
@@ -78626,7 +78774,7 @@ var TextureAtlas = (
         pages.push(page);
       }
       var region = new TextureAtlasRegion();
-      region.name = name;
+      region.name = name2;
       region.page = page;
       region.texture = texture;
       region.index = -1;
@@ -78819,9 +78967,9 @@ var TextureAtlas = (
       };
       iterateParser();
     };
-    TextureAtlas2.prototype.findRegion = function(name) {
+    TextureAtlas2.prototype.findRegion = function(name2) {
       for (var i2 = 0; i2 < this.regions.length; i2++) {
-        if (this.regions[i2].name == name) {
+        if (this.regions[i2].name == name2) {
           return this.regions[i2];
         }
       }
@@ -79230,8 +79378,8 @@ var Utils = (
           return true;
       return false;
     };
-    Utils2.enumValue = function(type2, name) {
-      return type2[name[0].toUpperCase() + name.slice(1)];
+    Utils2.enumValue = function(type2, name2) {
+      return type2[name2[0].toUpperCase() + name2.slice(1)];
     };
     Utils2.SUPPORTS_TYPED_ARRAYS = typeof Float32Array !== "undefined";
     return Utils2;
@@ -80174,9 +80322,9 @@ function imageLoaderAdapter(loader, namePrefix, baseUrl, imageOptions) {
     baseUrl += "/";
   }
   return function(line2, callback) {
-    var name = namePrefix + line2;
+    var name2 = namePrefix + line2;
     var url2 = baseUrl + line2;
-    var cachedResource = loader.resources[name];
+    var cachedResource = loader.resources[name2];
     if (cachedResource) {
       var done = function() {
         callback(cachedResource.texture.baseTexture);
@@ -80187,7 +80335,7 @@ function imageLoaderAdapter(loader, namePrefix, baseUrl, imageOptions) {
         cachedResource.onAfterMiddleware.add(done);
       }
     } else {
-      loader.add(name, url2, imageOptions, function(resource) {
+      loader.add(name2, url2, imageOptions, function(resource) {
         if (!resource.error) {
           if (line2.indexOf("-pma.") >= 0) {
             resource.texture.baseTexture.alphaMode = ALPHA_MODES.PMA;
@@ -80245,10 +80393,10 @@ function __extends$3(d2, b2) {
 var Attachment$2 = (
   /** @class */
   function() {
-    function Attachment2(name) {
-      if (name == null)
+    function Attachment2(name2) {
+      if (name2 == null)
         throw new Error("name cannot be null.");
-      this.name = name;
+      this.name = name2;
     }
     return Attachment2;
   }()
@@ -80257,8 +80405,8 @@ var VertexAttachment$2 = (
   /** @class */
   function(_super) {
     __extends$3(VertexAttachment2, _super);
-    function VertexAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function VertexAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.id = (VertexAttachment2.nextID++ & 65535) << 11;
       _this.worldVerticesLength = 0;
       _this.deformAttachment = _this;
@@ -80347,8 +80495,8 @@ var BoundingBoxAttachment$2 = (
   /** @class */
   function(_super) {
     __extends$3(BoundingBoxAttachment2, _super);
-    function BoundingBoxAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function BoundingBoxAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.BoundingBox;
       _this.color = new Color(1, 1, 1, 1);
       return _this;
@@ -80366,8 +80514,8 @@ var ClippingAttachment$2 = (
   /** @class */
   function(_super) {
     __extends$3(ClippingAttachment2, _super);
-    function ClippingAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function ClippingAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Clipping;
       _this.color = new Color(0.2275, 0.2275, 0.8078, 1);
       return _this;
@@ -80386,8 +80534,8 @@ var MeshAttachment$2 = (
   /** @class */
   function(_super) {
     __extends$3(MeshAttachment2, _super);
-    function MeshAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function MeshAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Mesh;
       _this.color = new Color(1, 1, 1, 1);
       _this.tempColor = new Color(0, 0, 0, 0);
@@ -80445,8 +80593,8 @@ var PathAttachment$2 = (
   /** @class */
   function(_super) {
     __extends$3(PathAttachment2, _super);
-    function PathAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function PathAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Path;
       _this.closed = false;
       _this.constantSpeed = false;
@@ -80470,8 +80618,8 @@ var PointAttachment$2 = (
   /** @class */
   function(_super) {
     __extends$3(PointAttachment2, _super);
-    function PointAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function PointAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Point;
       _this.color = new Color(0.38, 0.94, 0, 1);
       return _this;
@@ -80550,8 +80698,8 @@ var RegionAttachment$2 = (
   /** @class */
   function(_super) {
     __extends$3(RegionAttachment2, _super);
-    function RegionAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function RegionAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Region;
       _this.x = 0;
       _this.y = 0;
@@ -80761,12 +80909,12 @@ var SwirlEffect$1 = (
 var Animation$2 = (
   /** @class */
   function() {
-    function Animation2(name, timelines, duration) {
-      if (name == null)
+    function Animation2(name2, timelines, duration) {
+      if (name2 == null)
         throw new Error("name cannot be null.");
       if (timelines == null)
         throw new Error("timelines cannot be null.");
-      this.name = name;
+      this.name = name2;
       this.timelines = timelines;
       this.timelineIds = [];
       for (var i2 = 0; i2 < timelines.length; i2++)
@@ -82998,33 +83146,33 @@ var AtlasAttachmentLoader$2 = (
     function AtlasAttachmentLoader2(atlas) {
       this.atlas = atlas;
     }
-    AtlasAttachmentLoader2.prototype.newRegionAttachment = function(skin, name, path2) {
+    AtlasAttachmentLoader2.prototype.newRegionAttachment = function(skin, name2, path2) {
       var region = this.atlas.findRegion(path2);
       if (region == null)
-        throw new Error("Region not found in atlas: " + path2 + " (region attachment: " + name + ")");
-      var attachment = new RegionAttachment$2(name);
+        throw new Error("Region not found in atlas: " + path2 + " (region attachment: " + name2 + ")");
+      var attachment = new RegionAttachment$2(name2);
       attachment.region = region;
       return attachment;
     };
-    AtlasAttachmentLoader2.prototype.newMeshAttachment = function(skin, name, path2) {
+    AtlasAttachmentLoader2.prototype.newMeshAttachment = function(skin, name2, path2) {
       var region = this.atlas.findRegion(path2);
       if (region == null)
-        throw new Error("Region not found in atlas: " + path2 + " (mesh attachment: " + name + ")");
-      var attachment = new MeshAttachment$2(name);
+        throw new Error("Region not found in atlas: " + path2 + " (mesh attachment: " + name2 + ")");
+      var attachment = new MeshAttachment$2(name2);
       attachment.region = region;
       return attachment;
     };
-    AtlasAttachmentLoader2.prototype.newBoundingBoxAttachment = function(skin, name) {
-      return new BoundingBoxAttachment$2(name);
+    AtlasAttachmentLoader2.prototype.newBoundingBoxAttachment = function(skin, name2) {
+      return new BoundingBoxAttachment$2(name2);
     };
-    AtlasAttachmentLoader2.prototype.newPathAttachment = function(skin, name) {
-      return new PathAttachment$2(name);
+    AtlasAttachmentLoader2.prototype.newPathAttachment = function(skin, name2) {
+      return new PathAttachment$2(name2);
     };
-    AtlasAttachmentLoader2.prototype.newPointAttachment = function(skin, name) {
-      return new PointAttachment$2(name);
+    AtlasAttachmentLoader2.prototype.newPointAttachment = function(skin, name2) {
+      return new PointAttachment$2(name2);
     };
-    AtlasAttachmentLoader2.prototype.newClippingAttachment = function(skin, name) {
-      return new ClippingAttachment$2(name);
+    AtlasAttachmentLoader2.prototype.newClippingAttachment = function(skin, name2) {
+      return new ClippingAttachment$2(name2);
     };
     return AtlasAttachmentLoader2;
   }()
@@ -83299,7 +83447,7 @@ var Bone$2 = (
 var BoneData$2 = (
   /** @class */
   function() {
-    function BoneData2(index2, name, parent) {
+    function BoneData2(index2, name2, parent) {
       this.x = 0;
       this.y = 0;
       this.rotation = 0;
@@ -83312,10 +83460,10 @@ var BoneData$2 = (
       this.color = new Color();
       if (index2 < 0)
         throw new Error("index must be >= 0.");
-      if (name == null)
+      if (name2 == null)
         throw new Error("name cannot be null.");
       this.index = index2;
-      this.name = name;
+      this.name = name2;
       this.parent = parent;
     }
     return BoneData2;
@@ -83324,8 +83472,8 @@ var BoneData$2 = (
 var ConstraintData$1 = (
   /** @class */
   function() {
-    function ConstraintData2(name, order, skinRequired) {
-      this.name = name;
+    function ConstraintData2(name2, order, skinRequired) {
+      this.name = name2;
       this.order = order;
       this.skinRequired = skinRequired;
     }
@@ -83347,8 +83495,8 @@ var Event$3 = (
 var EventData$2 = (
   /** @class */
   function() {
-    function EventData2(name) {
-      this.name = name;
+    function EventData2(name2) {
+      this.name = name2;
     }
     return EventData2;
   }()
@@ -83601,8 +83749,8 @@ var IkConstraintData$2 = (
   /** @class */
   function(_super) {
     __extends$3(IkConstraintData2, _super);
-    function IkConstraintData2(name) {
-      var _this = _super.call(this, name, 0, false) || this;
+    function IkConstraintData2(name2) {
+      var _this = _super.call(this, name2, 0, false) || this;
       _this.bones = new Array();
       _this.bendDirection = 1;
       _this.compress = false;
@@ -83619,8 +83767,8 @@ var PathConstraintData$2 = (
   /** @class */
   function(_super) {
     __extends$3(PathConstraintData2, _super);
-    function PathConstraintData2(name) {
-      var _this = _super.call(this, name, 0, false) || this;
+    function PathConstraintData2(name2) {
+      var _this = _super.call(this, name2, 0, false) || this;
       _this.bones = new Array();
       return _this;
     }
@@ -84873,16 +85021,16 @@ var SkeletonData$2 = (
 var SlotData$2 = (
   /** @class */
   function() {
-    function SlotData2(index2, name, boneData) {
+    function SlotData2(index2, name2, boneData) {
       this.color = new Color(1, 1, 1, 1);
       if (index2 < 0)
         throw new Error("index must be >= 0.");
-      if (name == null)
+      if (name2 == null)
         throw new Error("name cannot be null.");
       if (boneData == null)
         throw new Error("boneData cannot be null.");
       this.index = index2;
-      this.name = name;
+      this.name = name2;
       this.boneData = boneData;
     }
     return SlotData2;
@@ -84892,8 +85040,8 @@ var TransformConstraintData$2 = (
   /** @class */
   function(_super) {
     __extends$3(TransformConstraintData2, _super);
-    function TransformConstraintData2(name) {
-      var _this = _super.call(this, name, 0, false) || this;
+    function TransformConstraintData2(name2) {
+      var _this = _super.call(this, name2, 0, false) || this;
       _this.bones = new Array();
       _this.rotateMix = 0;
       _this.translateMix = 0;
@@ -84915,9 +85063,9 @@ var TransformConstraintData$2 = (
 var SkinEntry$1 = (
   /** @class */
   function() {
-    function SkinEntry2(slotIndex, name, attachment) {
+    function SkinEntry2(slotIndex, name2, attachment) {
       this.slotIndex = slotIndex;
-      this.name = name;
+      this.name = name2;
       this.attachment = attachment;
     }
     return SkinEntry2;
@@ -84926,15 +85074,15 @@ var SkinEntry$1 = (
 var Skin$2 = (
   /** @class */
   function() {
-    function Skin2(name) {
+    function Skin2(name2) {
       this.attachments = new Array();
       this.bones = Array();
       this.constraints = new Array();
-      if (name == null)
+      if (name2 == null)
         throw new Error("name cannot be null.");
-      this.name = name;
+      this.name = name2;
     }
-    Skin2.prototype.setAttachment = function(slotIndex, name, attachment) {
+    Skin2.prototype.setAttachment = function(slotIndex, name2, attachment) {
       if (attachment == null)
         throw new Error("attachment cannot be null.");
       var attachments = this.attachments;
@@ -84942,7 +85090,7 @@ var Skin$2 = (
         attachments.length = slotIndex + 1;
       if (!attachments[slotIndex])
         attachments[slotIndex] = {};
-      attachments[slotIndex][name] = attachment;
+      attachments[slotIndex][name2] = attachment;
     };
     Skin2.prototype.addSkin = function(skin) {
       for (var i2 = 0; i2 < skin.bones.length; i2++) {
@@ -85014,14 +85162,14 @@ var Skin$2 = (
         }
       }
     };
-    Skin2.prototype.getAttachment = function(slotIndex, name) {
+    Skin2.prototype.getAttachment = function(slotIndex, name2) {
       var dictionary = this.attachments[slotIndex];
-      return dictionary ? dictionary[name] : null;
+      return dictionary ? dictionary[name2] : null;
     };
-    Skin2.prototype.removeAttachment = function(slotIndex, name) {
+    Skin2.prototype.removeAttachment = function(slotIndex, name2) {
       var dictionary = this.attachments[slotIndex];
       if (dictionary)
-        dictionary[name] = null;
+        dictionary[name2] = null;
     };
     Skin2.prototype.getAttachments = function() {
       var entries = new Array();
@@ -85279,9 +85427,9 @@ var SkeletonBinary$1 = (
     };
     SkeletonBinary2.prototype.readAttachment = function(input, skeletonData, skin, slotIndex, attachmentName, nonessential) {
       var scale = this.scale;
-      var name = input.readStringRef();
-      if (name == null)
-        name = attachmentName;
+      var name2 = input.readStringRef();
+      if (name2 == null)
+        name2 = attachmentName;
       var typeIndex = input.readByte();
       var type2 = SkeletonBinary2.AttachmentTypeValues[typeIndex];
       switch (type2) {
@@ -85296,8 +85444,8 @@ var SkeletonBinary$1 = (
           var height = input.readFloat();
           var color2 = input.readInt32();
           if (path2 == null)
-            path2 = name;
-          var region = this.attachmentLoader.newRegionAttachment(skin, name, path2);
+            path2 = name2;
+          var region = this.attachmentLoader.newRegionAttachment(skin, name2, path2);
           if (region == null)
             return null;
           region.path = path2;
@@ -85315,7 +85463,7 @@ var SkeletonBinary$1 = (
           var vertexCount = input.readInt(true);
           var vertices = this.readVertices(input, vertexCount);
           var color2 = nonessential ? input.readInt32() : 0;
-          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
+          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name2);
           if (box == null)
             return null;
           box.worldVerticesLength = vertexCount << 1;
@@ -85341,8 +85489,8 @@ var SkeletonBinary$1 = (
             height = input.readFloat();
           }
           if (path2 == null)
-            path2 = name;
-          var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path2);
+            path2 = name2;
+          var mesh = this.attachmentLoader.newMeshAttachment(skin, name2, path2);
           if (mesh == null)
             return null;
           mesh.path = path2;
@@ -85372,8 +85520,8 @@ var SkeletonBinary$1 = (
             height = input.readFloat();
           }
           if (path2 == null)
-            path2 = name;
-          var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path2);
+            path2 = name2;
+          var mesh = this.attachmentLoader.newMeshAttachment(skin, name2, path2);
           if (mesh == null)
             return null;
           mesh.path = path2;
@@ -85394,7 +85542,7 @@ var SkeletonBinary$1 = (
           for (var i2 = 0, n2 = lengths.length; i2 < n2; i2++)
             lengths[i2] = input.readFloat() * scale;
           var color2 = nonessential ? input.readInt32() : 0;
-          var path2 = this.attachmentLoader.newPathAttachment(skin, name);
+          var path2 = this.attachmentLoader.newPathAttachment(skin, name2);
           if (path2 == null)
             return null;
           path2.closed = closed_1;
@@ -85412,7 +85560,7 @@ var SkeletonBinary$1 = (
           var x = input.readFloat();
           var y2 = input.readFloat();
           var color2 = nonessential ? input.readInt32() : 0;
-          var point = this.attachmentLoader.newPointAttachment(skin, name);
+          var point = this.attachmentLoader.newPointAttachment(skin, name2);
           if (point == null)
             return null;
           point.x = x * scale;
@@ -85427,7 +85575,7 @@ var SkeletonBinary$1 = (
           var vertexCount = input.readInt(true);
           var vertices = this.readVertices(input, vertexCount);
           var color2 = nonessential ? input.readInt32() : 0;
-          var clip = this.attachmentLoader.newClippingAttachment(skin, name);
+          var clip = this.attachmentLoader.newClippingAttachment(skin, name2);
           if (clip == null)
             return null;
           clip.endSlot = skeletonData.slots[endSlotIndex];
@@ -85483,7 +85631,7 @@ var SkeletonBinary$1 = (
         array[i2] = input.readShort();
       return array;
     };
-    SkeletonBinary2.prototype.readAnimation = function(input, name, skeletonData) {
+    SkeletonBinary2.prototype.readAnimation = function(input, name2, skeletonData) {
       var timelines = new Array();
       var scale = this.scale;
       var duration = 0;
@@ -85742,7 +85890,7 @@ var SkeletonBinary$1 = (
         timelines.push(timeline);
         duration = Math.max(duration, timeline.frames[eventCount - 1]);
       }
-      return new Animation$2(name, timelines, duration);
+      return new Animation$2(name2, timelines, duration);
     };
     SkeletonBinary2.prototype.readCurve = function(input, frameIndex, timeline) {
       switch (input.readByte()) {
@@ -86081,14 +86229,14 @@ var SkeletonJson$2 = (
       }
       return skeletonData;
     };
-    SkeletonJson2.prototype.readAttachment = function(map2, skin, slotIndex, name, skeletonData) {
+    SkeletonJson2.prototype.readAttachment = function(map2, skin, slotIndex, name2, skeletonData) {
       var scale = this.scale;
-      name = this.getValue(map2, "name", name);
+      name2 = this.getValue(map2, "name", name2);
       var type2 = this.getValue(map2, "type", "region");
       switch (type2) {
         case "region": {
-          var path2 = this.getValue(map2, "path", name);
-          var region = this.attachmentLoader.newRegionAttachment(skin, name, path2);
+          var path2 = this.getValue(map2, "path", name2);
+          var region = this.attachmentLoader.newRegionAttachment(skin, name2, path2);
           if (region == null)
             return null;
           region.path = path2;
@@ -86105,7 +86253,7 @@ var SkeletonJson$2 = (
           return region;
         }
         case "boundingbox": {
-          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
+          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name2);
           if (box == null)
             return null;
           this.readVertices(map2, box, map2.vertexCount << 1);
@@ -86116,8 +86264,8 @@ var SkeletonJson$2 = (
         }
         case "mesh":
         case "linkedmesh": {
-          var path2 = this.getValue(map2, "path", name);
-          var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path2);
+          var path2 = this.getValue(map2, "path", name2);
+          var mesh = this.attachmentLoader.newMeshAttachment(skin, name2, path2);
           if (mesh == null)
             return null;
           mesh.path = path2;
@@ -86140,7 +86288,7 @@ var SkeletonJson$2 = (
           return mesh;
         }
         case "path": {
-          var path2 = this.attachmentLoader.newPathAttachment(skin, name);
+          var path2 = this.attachmentLoader.newPathAttachment(skin, name2);
           if (path2 == null)
             return null;
           path2.closed = this.getValue(map2, "closed", false);
@@ -86157,7 +86305,7 @@ var SkeletonJson$2 = (
           return path2;
         }
         case "point": {
-          var point = this.attachmentLoader.newPointAttachment(skin, name);
+          var point = this.attachmentLoader.newPointAttachment(skin, name2);
           if (point == null)
             return null;
           point.x = this.getValue(map2, "x", 0) * scale;
@@ -86169,7 +86317,7 @@ var SkeletonJson$2 = (
           return point;
         }
         case "clipping": {
-          var clip = this.attachmentLoader.newClippingAttachment(skin, name);
+          var clip = this.attachmentLoader.newClippingAttachment(skin, name2);
           if (clip == null)
             return null;
           var end2 = this.getValue(map2, "end", null);
@@ -86217,7 +86365,7 @@ var SkeletonJson$2 = (
       attachment.bones = bones;
       attachment.vertices = Utils.toFloatArray(weights);
     };
-    SkeletonJson2.prototype.readAnimation = function(map2, name, skeletonData) {
+    SkeletonJson2.prototype.readAnimation = function(map2, name2, skeletonData) {
       var scale = this.scale;
       var timelines = new Array();
       var duration = 0;
@@ -86517,7 +86665,7 @@ var SkeletonJson$2 = (
       if (isNaN(duration)) {
         throw new Error("Error while parsing animation, duration is NaN");
       }
-      skeletonData.animations.push(new Animation$2(name, timelines, duration));
+      skeletonData.animations.push(new Animation$2(name2, timelines, duration));
     };
     SkeletonJson2.prototype.readCurve = function(map2, timeline, frameIndex) {
       if (!map2.hasOwnProperty("curve"))
@@ -86720,10 +86868,10 @@ function __extends$2(d2, b2) {
 var Attachment$1 = (
   /** @class */
   function() {
-    function Attachment2(name) {
-      if (name == null)
+    function Attachment2(name2) {
+      if (name2 == null)
         throw new Error("name cannot be null.");
-      this.name = name;
+      this.name = name2;
     }
     return Attachment2;
   }()
@@ -86732,8 +86880,8 @@ var VertexAttachment$1 = (
   /** @class */
   function(_super) {
     __extends$2(VertexAttachment2, _super);
-    function VertexAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function VertexAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.id = (VertexAttachment2.nextID++ & 65535) << 11;
       _this.worldVerticesLength = 0;
       return _this;
@@ -86810,8 +86958,8 @@ var BoundingBoxAttachment$1 = (
   /** @class */
   function(_super) {
     __extends$2(BoundingBoxAttachment2, _super);
-    function BoundingBoxAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function BoundingBoxAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.BoundingBox;
       _this.color = new Color(1, 1, 1, 1);
       return _this;
@@ -86823,8 +86971,8 @@ var ClippingAttachment$1 = (
   /** @class */
   function(_super) {
     __extends$2(ClippingAttachment2, _super);
-    function ClippingAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function ClippingAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Clipping;
       _this.color = new Color(0.2275, 0.2275, 0.8078, 1);
       return _this;
@@ -86836,8 +86984,8 @@ var MeshAttachment$1 = (
   /** @class */
   function(_super) {
     __extends$2(MeshAttachment2, _super);
-    function MeshAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function MeshAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Mesh;
       _this.color = new Color(1, 1, 1, 1);
       _this.inheritDeform = false;
@@ -86869,8 +87017,8 @@ var PathAttachment$1 = (
   /** @class */
   function(_super) {
     __extends$2(PathAttachment2, _super);
-    function PathAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function PathAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Path;
       _this.closed = false;
       _this.constantSpeed = false;
@@ -86884,8 +87032,8 @@ var PointAttachment$1 = (
   /** @class */
   function(_super) {
     __extends$2(PointAttachment2, _super);
-    function PointAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function PointAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Point;
       _this.color = new Color(0.38, 0.94, 0, 1);
       return _this;
@@ -86956,8 +87104,8 @@ var RegionAttachment$1 = (
   /** @class */
   function(_super) {
     __extends$2(RegionAttachment2, _super);
-    function RegionAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function RegionAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Region;
       _this.x = 0;
       _this.y = 0;
@@ -87150,12 +87298,12 @@ var SwirlEffect = (
 var Animation$1 = (
   /** @class */
   function() {
-    function Animation2(name, timelines, duration) {
-      if (name == null)
+    function Animation2(name2, timelines, duration) {
+      if (name2 == null)
         throw new Error("name cannot be null.");
       if (timelines == null)
         throw new Error("timelines cannot be null.");
-      this.name = name;
+      this.name = name2;
       this.timelines = timelines;
       this.duration = duration;
     }
@@ -89306,33 +89454,33 @@ var AtlasAttachmentLoader$1 = (
     function AtlasAttachmentLoader2(atlas) {
       this.atlas = atlas;
     }
-    AtlasAttachmentLoader2.prototype.newRegionAttachment = function(skin, name, path2) {
+    AtlasAttachmentLoader2.prototype.newRegionAttachment = function(skin, name2, path2) {
       var region = this.atlas.findRegion(path2);
       if (region == null)
-        throw new Error("Region not found in atlas: " + path2 + " (region attachment: " + name + ")");
-      var attachment = new RegionAttachment$1(name);
+        throw new Error("Region not found in atlas: " + path2 + " (region attachment: " + name2 + ")");
+      var attachment = new RegionAttachment$1(name2);
       attachment.region = region;
       return attachment;
     };
-    AtlasAttachmentLoader2.prototype.newMeshAttachment = function(skin, name, path2) {
+    AtlasAttachmentLoader2.prototype.newMeshAttachment = function(skin, name2, path2) {
       var region = this.atlas.findRegion(path2);
       if (region == null)
-        throw new Error("Region not found in atlas: " + path2 + " (mesh attachment: " + name + ")");
-      var attachment = new MeshAttachment$1(name);
+        throw new Error("Region not found in atlas: " + path2 + " (mesh attachment: " + name2 + ")");
+      var attachment = new MeshAttachment$1(name2);
       attachment.region = region;
       return attachment;
     };
-    AtlasAttachmentLoader2.prototype.newBoundingBoxAttachment = function(skin, name) {
-      return new BoundingBoxAttachment$1(name);
+    AtlasAttachmentLoader2.prototype.newBoundingBoxAttachment = function(skin, name2) {
+      return new BoundingBoxAttachment$1(name2);
     };
-    AtlasAttachmentLoader2.prototype.newPathAttachment = function(skin, name) {
-      return new PathAttachment$1(name);
+    AtlasAttachmentLoader2.prototype.newPathAttachment = function(skin, name2) {
+      return new PathAttachment$1(name2);
     };
-    AtlasAttachmentLoader2.prototype.newPointAttachment = function(skin, name) {
-      return new PointAttachment$1(name);
+    AtlasAttachmentLoader2.prototype.newPointAttachment = function(skin, name2) {
+      return new PointAttachment$1(name2);
     };
-    AtlasAttachmentLoader2.prototype.newClippingAttachment = function(skin, name) {
-      return new ClippingAttachment$1(name);
+    AtlasAttachmentLoader2.prototype.newClippingAttachment = function(skin, name2) {
+      return new ClippingAttachment$1(name2);
     };
     return AtlasAttachmentLoader2;
   }()
@@ -89602,7 +89750,7 @@ var Bone$1 = (
 var BoneData$1 = (
   /** @class */
   function() {
-    function BoneData2(index2, name, parent) {
+    function BoneData2(index2, name2, parent) {
       this.x = 0;
       this.y = 0;
       this.rotation = 0;
@@ -89613,10 +89761,10 @@ var BoneData$1 = (
       this.transformMode = TransformMode.Normal;
       if (index2 < 0)
         throw new Error("index must be >= 0.");
-      if (name == null)
+      if (name2 == null)
         throw new Error("name cannot be null.");
       this.index = index2;
-      this.name = name;
+      this.name = name2;
       this.parent = parent;
     }
     return BoneData2;
@@ -89637,8 +89785,8 @@ var Event$2 = (
 var EventData$1 = (
   /** @class */
   function() {
-    function EventData2(name) {
-      this.name = name;
+    function EventData2(name2) {
+      this.name = name2;
     }
     return EventData2;
   }()
@@ -89847,7 +89995,7 @@ var IkConstraint$1 = (
 var IkConstraintData$1 = (
   /** @class */
   function() {
-    function IkConstraintData2(name) {
+    function IkConstraintData2(name2) {
       this.order = 0;
       this.bones = new Array();
       this.bendDirection = 1;
@@ -89855,7 +90003,7 @@ var IkConstraintData$1 = (
       this.stretch = false;
       this.uniform = false;
       this.mix = 1;
-      this.name = name;
+      this.name = name2;
     }
     return IkConstraintData2;
   }()
@@ -89863,10 +90011,10 @@ var IkConstraintData$1 = (
 var PathConstraintData$1 = (
   /** @class */
   function() {
-    function PathConstraintData2(name) {
+    function PathConstraintData2(name2) {
       this.order = 0;
       this.bones = new Array();
-      this.name = name;
+      this.name = name2;
     }
     return PathConstraintData2;
   }()
@@ -91089,16 +91237,16 @@ var SkeletonData$1 = (
 var SlotData$1 = (
   /** @class */
   function() {
-    function SlotData2(index2, name, boneData) {
+    function SlotData2(index2, name2, boneData) {
       this.color = new Color(1, 1, 1, 1);
       if (index2 < 0)
         throw new Error("index must be >= 0.");
-      if (name == null)
+      if (name2 == null)
         throw new Error("name cannot be null.");
       if (boneData == null)
         throw new Error("boneData cannot be null.");
       this.index = index2;
-      this.name = name;
+      this.name = name2;
       this.boneData = boneData;
     }
     return SlotData2;
@@ -91107,7 +91255,7 @@ var SlotData$1 = (
 var TransformConstraintData$1 = (
   /** @class */
   function() {
-    function TransformConstraintData2(name) {
+    function TransformConstraintData2(name2) {
       this.order = 0;
       this.bones = new Array();
       this.rotateMix = 0;
@@ -91122,9 +91270,9 @@ var TransformConstraintData$1 = (
       this.offsetShearY = 0;
       this.relative = false;
       this.local = false;
-      if (name == null)
+      if (name2 == null)
         throw new Error("name cannot be null.");
-      this.name = name;
+      this.name = name2;
     }
     return TransformConstraintData2;
   }()
@@ -91132,13 +91280,13 @@ var TransformConstraintData$1 = (
 var Skin$1 = (
   /** @class */
   function() {
-    function Skin2(name) {
+    function Skin2(name2) {
       this.attachments = new Array();
-      if (name == null)
+      if (name2 == null)
         throw new Error("name cannot be null.");
-      this.name = name;
+      this.name = name2;
     }
-    Skin2.prototype.addAttachment = function(slotIndex, name, attachment) {
+    Skin2.prototype.addAttachment = function(slotIndex, name2, attachment) {
       if (attachment == null)
         throw new Error("attachment cannot be null.");
       var attachments = this.attachments;
@@ -91146,11 +91294,11 @@ var Skin$1 = (
         attachments.length = slotIndex + 1;
       if (!attachments[slotIndex])
         attachments[slotIndex] = {};
-      attachments[slotIndex][name] = attachment;
+      attachments[slotIndex][name2] = attachment;
     };
-    Skin2.prototype.getAttachment = function(slotIndex, name) {
+    Skin2.prototype.getAttachment = function(slotIndex, name2) {
       var dictionary = this.attachments[slotIndex];
-      return dictionary ? dictionary[name] : null;
+      return dictionary ? dictionary[name2] : null;
     };
     Skin2.prototype.attachAll = function(skeleton, oldSkin) {
       var slotIndex = 0;
@@ -91378,14 +91526,14 @@ var SkeletonJson$1 = (
       }
       return skeletonData;
     };
-    SkeletonJson2.prototype.readAttachment = function(map2, skin, slotIndex, name, skeletonData) {
+    SkeletonJson2.prototype.readAttachment = function(map2, skin, slotIndex, name2, skeletonData) {
       var scale = this.scale;
-      name = this.getValue(map2, "name", name);
+      name2 = this.getValue(map2, "name", name2);
       var type2 = this.getValue(map2, "type", "region");
       switch (type2) {
         case "region": {
-          var path2 = this.getValue(map2, "path", name);
-          var region = this.attachmentLoader.newRegionAttachment(skin, name, path2);
+          var path2 = this.getValue(map2, "path", name2);
+          var region = this.attachmentLoader.newRegionAttachment(skin, name2, path2);
           if (region == null)
             return null;
           region.path = path2;
@@ -91402,7 +91550,7 @@ var SkeletonJson$1 = (
           return region;
         }
         case "boundingbox": {
-          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
+          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name2);
           if (box == null)
             return null;
           this.readVertices(map2, box, map2.vertexCount << 1);
@@ -91413,8 +91561,8 @@ var SkeletonJson$1 = (
         }
         case "mesh":
         case "linkedmesh": {
-          var path2 = this.getValue(map2, "path", name);
-          var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path2);
+          var path2 = this.getValue(map2, "path", name2);
+          var mesh = this.attachmentLoader.newMeshAttachment(skin, name2, path2);
           if (mesh == null)
             return null;
           mesh.path = path2;
@@ -91435,7 +91583,7 @@ var SkeletonJson$1 = (
           return mesh;
         }
         case "path": {
-          var path2 = this.attachmentLoader.newPathAttachment(skin, name);
+          var path2 = this.attachmentLoader.newPathAttachment(skin, name2);
           if (path2 == null)
             return null;
           path2.closed = this.getValue(map2, "closed", false);
@@ -91452,7 +91600,7 @@ var SkeletonJson$1 = (
           return path2;
         }
         case "point": {
-          var point = this.attachmentLoader.newPointAttachment(skin, name);
+          var point = this.attachmentLoader.newPointAttachment(skin, name2);
           if (point == null)
             return null;
           point.x = this.getValue(map2, "x", 0) * scale;
@@ -91464,7 +91612,7 @@ var SkeletonJson$1 = (
           return point;
         }
         case "clipping": {
-          var clip = this.attachmentLoader.newClippingAttachment(skin, name);
+          var clip = this.attachmentLoader.newClippingAttachment(skin, name2);
           if (clip == null)
             return null;
           var end2 = this.getValue(map2, "end", null);
@@ -91512,7 +91660,7 @@ var SkeletonJson$1 = (
       attachment.bones = bones;
       attachment.vertices = Utils.toFloatArray(weights);
     };
-    SkeletonJson2.prototype.readAnimation = function(map2, name, skeletonData) {
+    SkeletonJson2.prototype.readAnimation = function(map2, name2, skeletonData) {
       var scale = this.scale;
       var timelines = new Array();
       var duration = 0;
@@ -91811,7 +91959,7 @@ var SkeletonJson$1 = (
       if (isNaN(duration)) {
         throw new Error("Error while parsing animation, duration is NaN");
       }
-      skeletonData.animations.push(new Animation$1(name, timelines, duration));
+      skeletonData.animations.push(new Animation$1(name2, timelines, duration));
     };
     SkeletonJson2.prototype.readCurve = function(map2, timeline, frameIndex) {
       if (!map2.curve)
@@ -92010,10 +92158,10 @@ function __extends$1(d2, b2) {
 var Attachment = (
   /** @class */
   function() {
-    function Attachment2(name) {
-      if (!name)
+    function Attachment2(name2) {
+      if (!name2)
         throw new Error("name cannot be null.");
-      this.name = name;
+      this.name = name2;
     }
     return Attachment2;
   }()
@@ -92022,8 +92170,8 @@ var VertexAttachment = (
   /** @class */
   function(_super) {
     __extends$1(VertexAttachment2, _super);
-    function VertexAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function VertexAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.id = VertexAttachment2.nextID++;
       _this.bones = null;
       _this.vertices = [];
@@ -92113,8 +92261,8 @@ var BoundingBoxAttachment = (
   /** @class */
   function(_super) {
     __extends$1(BoundingBoxAttachment2, _super);
-    function BoundingBoxAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function BoundingBoxAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.BoundingBox;
       _this.color = new Color(1, 1, 1, 1);
       return _this;
@@ -92132,8 +92280,8 @@ var ClippingAttachment = (
   /** @class */
   function(_super) {
     __extends$1(ClippingAttachment2, _super);
-    function ClippingAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function ClippingAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Clipping;
       _this.endSlot = null;
       _this.color = new Color(0.2275, 0.2275, 0.8078, 1);
@@ -92153,8 +92301,8 @@ var MeshAttachment = (
   /** @class */
   function(_super) {
     __extends$1(MeshAttachment2, _super);
-    function MeshAttachment2(name, path2) {
-      var _this = _super.call(this, name) || this;
+    function MeshAttachment2(name2, path2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Mesh;
       _this.region = null;
       _this.triangles = [];
@@ -92225,8 +92373,8 @@ var PathAttachment = (
   /** @class */
   function(_super) {
     __extends$1(PathAttachment2, _super);
-    function PathAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function PathAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Path;
       _this.lengths = [];
       _this.closed = false;
@@ -92251,8 +92399,8 @@ var PointAttachment = (
   /** @class */
   function(_super) {
     __extends$1(PointAttachment2, _super);
-    function PointAttachment2(name) {
-      var _this = _super.call(this, name) || this;
+    function PointAttachment2(name2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Point;
       _this.x = 0;
       _this.y = 0;
@@ -92288,8 +92436,8 @@ var RegionAttachment = (
   /** @class */
   function(_super) {
     __extends$1(RegionAttachment2, _super);
-    function RegionAttachment2(name, path2) {
-      var _this = _super.call(this, name) || this;
+    function RegionAttachment2(name2, path2) {
+      var _this = _super.call(this, name2) || this;
       _this.type = AttachmentType.Region;
       _this.x = 0;
       _this.y = 0;
@@ -92507,12 +92655,12 @@ var SequenceModeValues = [
 var Animation = (
   /** @class */
   function() {
-    function Animation2(name, timelines, duration) {
+    function Animation2(name2, timelines, duration) {
       this.timelines = [];
       this.timelineIds = new StringSet();
-      if (!name)
+      if (!name2)
         throw new Error("name cannot be null.");
-      this.name = name;
+      this.name = name2;
       this.setTimelines(timelines);
       this.duration = duration;
     }
@@ -96298,54 +96446,54 @@ var AtlasAttachmentLoader = (
     function AtlasAttachmentLoader2(atlas) {
       this.atlas = atlas;
     }
-    AtlasAttachmentLoader2.prototype.loadSequence = function(name, basePath, sequence) {
+    AtlasAttachmentLoader2.prototype.loadSequence = function(name2, basePath, sequence) {
       var regions = sequence.regions;
       for (var i2 = 0, n2 = regions.length; i2 < n2; i2++) {
         var path2 = sequence.getPath(basePath, i2);
         var region = this.atlas.findRegion(path2);
         if (region == null)
-          throw new Error("Region not found in atlas: " + path2 + " (sequence: " + name + ")");
+          throw new Error("Region not found in atlas: " + path2 + " (sequence: " + name2 + ")");
         regions[i2] = region;
         regions[i2].renderObject = regions[i2];
       }
     };
-    AtlasAttachmentLoader2.prototype.newRegionAttachment = function(skin, name, path2, sequence) {
-      var attachment = new RegionAttachment(name, path2);
+    AtlasAttachmentLoader2.prototype.newRegionAttachment = function(skin, name2, path2, sequence) {
+      var attachment = new RegionAttachment(name2, path2);
       if (sequence != null) {
-        this.loadSequence(name, path2, sequence);
+        this.loadSequence(name2, path2, sequence);
       } else {
         var region = this.atlas.findRegion(path2);
         if (!region)
-          throw new Error("Region not found in atlas: " + path2 + " (region attachment: " + name + ")");
+          throw new Error("Region not found in atlas: " + path2 + " (region attachment: " + name2 + ")");
         region.renderObject = region;
         attachment.region = region;
       }
       return attachment;
     };
-    AtlasAttachmentLoader2.prototype.newMeshAttachment = function(skin, name, path2, sequence) {
-      var attachment = new MeshAttachment(name, path2);
+    AtlasAttachmentLoader2.prototype.newMeshAttachment = function(skin, name2, path2, sequence) {
+      var attachment = new MeshAttachment(name2, path2);
       if (sequence != null) {
-        this.loadSequence(name, path2, sequence);
+        this.loadSequence(name2, path2, sequence);
       } else {
         var region = this.atlas.findRegion(path2);
         if (!region)
-          throw new Error("Region not found in atlas: " + path2 + " (mesh attachment: " + name + ")");
+          throw new Error("Region not found in atlas: " + path2 + " (mesh attachment: " + name2 + ")");
         region.renderObject = region;
         attachment.region = region;
       }
       return attachment;
     };
-    AtlasAttachmentLoader2.prototype.newBoundingBoxAttachment = function(skin, name) {
-      return new BoundingBoxAttachment(name);
+    AtlasAttachmentLoader2.prototype.newBoundingBoxAttachment = function(skin, name2) {
+      return new BoundingBoxAttachment(name2);
     };
-    AtlasAttachmentLoader2.prototype.newPathAttachment = function(skin, name) {
-      return new PathAttachment(name);
+    AtlasAttachmentLoader2.prototype.newPathAttachment = function(skin, name2) {
+      return new PathAttachment(name2);
     };
-    AtlasAttachmentLoader2.prototype.newPointAttachment = function(skin, name) {
-      return new PointAttachment(name);
+    AtlasAttachmentLoader2.prototype.newPointAttachment = function(skin, name2) {
+      return new PointAttachment(name2);
     };
-    AtlasAttachmentLoader2.prototype.newClippingAttachment = function(skin, name) {
-      return new ClippingAttachment(name);
+    AtlasAttachmentLoader2.prototype.newClippingAttachment = function(skin, name2) {
+      return new ClippingAttachment(name2);
     };
     return AtlasAttachmentLoader2;
   }()
@@ -96618,7 +96766,7 @@ var Bone = (
 var BoneData = (
   /** @class */
   function() {
-    function BoneData2(index2, name, parent) {
+    function BoneData2(index2, name2, parent) {
       this.index = 0;
       this.parent = null;
       this.length = 0;
@@ -96634,10 +96782,10 @@ var BoneData = (
       this.color = new Color();
       if (index2 < 0)
         throw new Error("index must be >= 0.");
-      if (!name)
+      if (!name2)
         throw new Error("name cannot be null.");
       this.index = index2;
-      this.name = name;
+      this.name = name2;
       this.parent = parent;
     }
     return BoneData2;
@@ -96646,8 +96794,8 @@ var BoneData = (
 var ConstraintData = (
   /** @class */
   function() {
-    function ConstraintData2(name, order, skinRequired) {
-      this.name = name;
+    function ConstraintData2(name2, order, skinRequired) {
+      this.name = name2;
       this.order = order;
       this.skinRequired = skinRequired;
     }
@@ -96675,14 +96823,14 @@ var Event$1 = (
 var EventData = (
   /** @class */
   function() {
-    function EventData2(name) {
+    function EventData2(name2) {
       this.intValue = 0;
       this.floatValue = 0;
       this.stringValue = null;
       this.audioPath = null;
       this.volume = 0;
       this.balance = 0;
-      this.name = name;
+      this.name = name2;
     }
     return EventData2;
   }()
@@ -96946,8 +97094,8 @@ var IkConstraintData = (
   /** @class */
   function(_super) {
     __extends$1(IkConstraintData2, _super);
-    function IkConstraintData2(name) {
-      var _this = _super.call(this, name, 0, false) || this;
+    function IkConstraintData2(name2) {
+      var _this = _super.call(this, name2, 0, false) || this;
       _this.bones = new Array();
       _this._target = null;
       _this.bendDirection = 1;
@@ -96978,8 +97126,8 @@ var PathConstraintData = (
   /** @class */
   function(_super) {
     __extends$1(PathConstraintData2, _super);
-    function PathConstraintData2(name) {
-      var _this = _super.call(this, name, 0, false) || this;
+    function PathConstraintData2(name2) {
+      var _this = _super.call(this, name2, 0, false) || this;
       _this.bones = new Array();
       _this._target = null;
       _this.positionMode = PositionMode.Fixed;
@@ -98383,7 +98531,7 @@ var SkeletonData = (
 var SlotData = (
   /** @class */
   function() {
-    function SlotData2(index2, name, boneData) {
+    function SlotData2(index2, name2, boneData) {
       this.index = 0;
       this.color = new Color(1, 1, 1, 1);
       this.darkColor = null;
@@ -98391,12 +98539,12 @@ var SlotData = (
       this.blendMode = BLEND_MODES.NORMAL;
       if (index2 < 0)
         throw new Error("index must be >= 0.");
-      if (!name)
+      if (!name2)
         throw new Error("name cannot be null.");
       if (!boneData)
         throw new Error("boneData cannot be null.");
       this.index = index2;
-      this.name = name;
+      this.name = name2;
       this.boneData = boneData;
     }
     return SlotData2;
@@ -98406,8 +98554,8 @@ var TransformConstraintData = (
   /** @class */
   function(_super) {
     __extends$1(TransformConstraintData2, _super);
-    function TransformConstraintData2(name) {
-      var _this = _super.call(this, name, 0, false) || this;
+    function TransformConstraintData2(name2) {
+      var _this = _super.call(this, name2, 0, false) || this;
       _this.bones = new Array();
       _this._target = null;
       _this.mixRotate = 0;
@@ -98445,9 +98593,9 @@ var TransformConstraintData = (
 var SkinEntry = (
   /** @class */
   function() {
-    function SkinEntry2(slotIndex, name, attachment) {
+    function SkinEntry2(slotIndex, name2, attachment) {
       this.slotIndex = slotIndex;
-      this.name = name;
+      this.name = name2;
       this.attachment = attachment;
     }
     return SkinEntry2;
@@ -98456,15 +98604,15 @@ var SkinEntry = (
 var Skin = (
   /** @class */
   function() {
-    function Skin2(name) {
+    function Skin2(name2) {
       this.attachments = new Array();
       this.bones = Array();
       this.constraints = new Array();
-      if (!name)
+      if (!name2)
         throw new Error("name cannot be null.");
-      this.name = name;
+      this.name = name2;
     }
-    Skin2.prototype.setAttachment = function(slotIndex, name, attachment) {
+    Skin2.prototype.setAttachment = function(slotIndex, name2, attachment) {
       if (!attachment)
         throw new Error("attachment cannot be null.");
       var attachments = this.attachments;
@@ -98472,7 +98620,7 @@ var Skin = (
         attachments.length = slotIndex + 1;
       if (!attachments[slotIndex])
         attachments[slotIndex] = {};
-      attachments[slotIndex][name] = attachment;
+      attachments[slotIndex][name2] = attachment;
     };
     Skin2.prototype.addSkin = function(skin) {
       for (var i2 = 0; i2 < skin.bones.length; i2++) {
@@ -98544,14 +98692,14 @@ var Skin = (
         }
       }
     };
-    Skin2.prototype.getAttachment = function(slotIndex, name) {
+    Skin2.prototype.getAttachment = function(slotIndex, name2) {
       var dictionary = this.attachments[slotIndex];
-      return dictionary ? dictionary[name] : null;
+      return dictionary ? dictionary[name2] : null;
     };
-    Skin2.prototype.removeAttachment = function(slotIndex, name) {
+    Skin2.prototype.removeAttachment = function(slotIndex, name2) {
       var dictionary = this.attachments[slotIndex];
       if (dictionary)
-        delete dictionary[name];
+        delete dictionary[name2];
     };
     Skin2.prototype.getAttachments = function() {
       var entries = new Array();
@@ -98852,9 +99000,9 @@ var SkeletonBinary = (
     };
     SkeletonBinary2.prototype.readAttachment = function(input, skeletonData, skin, slotIndex, attachmentName, nonessential) {
       var scale = this.scale;
-      var name = input.readStringRef();
-      if (!name)
-        name = attachmentName;
+      var name2 = input.readStringRef();
+      if (!name2)
+        name2 = attachmentName;
       switch (input.readByte()) {
         case AttachmentType.Region: {
           var path2 = input.readStringRef();
@@ -98868,8 +99016,8 @@ var SkeletonBinary = (
           var color2 = input.readInt32();
           var sequence = this.readSequence(input);
           if (!path2)
-            path2 = name;
-          var region = this.attachmentLoader.newRegionAttachment(skin, name, path2, sequence);
+            path2 = name2;
+          var region = this.attachmentLoader.newRegionAttachment(skin, name2, path2, sequence);
           if (!region)
             return null;
           region.path = path2;
@@ -98890,7 +99038,7 @@ var SkeletonBinary = (
           var vertexCount = input.readInt(true);
           var vertices = this.readVertices(input, vertexCount);
           var color2 = nonessential ? input.readInt32() : 0;
-          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
+          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name2);
           if (!box)
             return null;
           box.worldVerticesLength = vertexCount << 1;
@@ -98917,8 +99065,8 @@ var SkeletonBinary = (
             height = input.readFloat();
           }
           if (!path2)
-            path2 = name;
-          var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path2, sequence);
+            path2 = name2;
+          var mesh = this.attachmentLoader.newMeshAttachment(skin, name2, path2, sequence);
           if (!mesh)
             return null;
           mesh.path = path2;
@@ -98950,8 +99098,8 @@ var SkeletonBinary = (
             height = input.readFloat();
           }
           if (!path2)
-            path2 = name;
-          var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path2, sequence);
+            path2 = name2;
+          var mesh = this.attachmentLoader.newMeshAttachment(skin, name2, path2, sequence);
           if (!mesh)
             return null;
           mesh.path = path2;
@@ -98973,7 +99121,7 @@ var SkeletonBinary = (
           for (var i2 = 0, n2 = lengths.length; i2 < n2; i2++)
             lengths[i2] = input.readFloat() * scale;
           var color2 = nonessential ? input.readInt32() : 0;
-          var path2 = this.attachmentLoader.newPathAttachment(skin, name);
+          var path2 = this.attachmentLoader.newPathAttachment(skin, name2);
           if (!path2)
             return null;
           path2.closed = closed_1;
@@ -98991,7 +99139,7 @@ var SkeletonBinary = (
           var x = input.readFloat();
           var y2 = input.readFloat();
           var color2 = nonessential ? input.readInt32() : 0;
-          var point = this.attachmentLoader.newPointAttachment(skin, name);
+          var point = this.attachmentLoader.newPointAttachment(skin, name2);
           if (!point)
             return null;
           point.x = x * scale;
@@ -99006,7 +99154,7 @@ var SkeletonBinary = (
           var vertexCount = input.readInt(true);
           var vertices = this.readVertices(input, vertexCount);
           var color2 = nonessential ? input.readInt32() : 0;
-          var clip = this.attachmentLoader.newClippingAttachment(skin, name);
+          var clip = this.attachmentLoader.newClippingAttachment(skin, name2);
           if (!clip)
             return null;
           clip.endSlot = skeletonData.slots[endSlotIndex];
@@ -99076,7 +99224,7 @@ var SkeletonBinary = (
         array[i2] = input.readShort();
       return array;
     };
-    SkeletonBinary2.prototype.readAnimation = function(input, name, skeletonData) {
+    SkeletonBinary2.prototype.readAnimation = function(input, name2, skeletonData) {
       input.readInt(true);
       var timelines = new Array();
       var scale = this.scale;
@@ -99526,7 +99674,7 @@ var SkeletonBinary = (
       var duration = 0;
       for (var i2 = 0, n2 = timelines.length; i2 < n2; i2++)
         duration = Math.max(duration, timelines[i2].getDuration());
-      return new Animation(name, timelines, duration);
+      return new Animation(name2, timelines, duration);
     };
     SkeletonBinary2.BlendModeValues = [BLEND_MODES.NORMAL, BLEND_MODES.ADD, BLEND_MODES.MULTIPLY, BLEND_MODES.SCREEN];
     return SkeletonBinary2;
@@ -99893,14 +100041,14 @@ var SkeletonJson = (
       }
       return skeletonData;
     };
-    SkeletonJson2.prototype.readAttachment = function(map2, skin, slotIndex, name, skeletonData) {
+    SkeletonJson2.prototype.readAttachment = function(map2, skin, slotIndex, name2, skeletonData) {
       var scale = this.scale;
-      name = getValue(map2, "name", name);
+      name2 = getValue(map2, "name", name2);
       switch (getValue(map2, "type", "region")) {
         case "region": {
-          var path2 = getValue(map2, "path", name);
+          var path2 = getValue(map2, "path", name2);
           var sequence = this.readSequence(getValue(map2, "sequence", null));
-          var region = this.attachmentLoader.newRegionAttachment(skin, name, path2, sequence);
+          var region = this.attachmentLoader.newRegionAttachment(skin, name2, path2, sequence);
           if (!region)
             return null;
           region.path = path2;
@@ -99918,7 +100066,7 @@ var SkeletonJson = (
           return region;
         }
         case "boundingbox": {
-          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name);
+          var box = this.attachmentLoader.newBoundingBoxAttachment(skin, name2);
           if (!box)
             return null;
           this.readVertices(map2, box, map2.vertexCount << 1);
@@ -99929,9 +100077,9 @@ var SkeletonJson = (
         }
         case "mesh":
         case "linkedmesh": {
-          var path2 = getValue(map2, "path", name);
+          var path2 = getValue(map2, "path", name2);
           var sequence = this.readSequence(getValue(map2, "sequence", null));
-          var mesh = this.attachmentLoader.newMeshAttachment(skin, name, path2, sequence);
+          var mesh = this.attachmentLoader.newMeshAttachment(skin, name2, path2, sequence);
           if (!mesh)
             return null;
           mesh.path = path2;
@@ -99955,7 +100103,7 @@ var SkeletonJson = (
           return mesh;
         }
         case "path": {
-          var path2 = this.attachmentLoader.newPathAttachment(skin, name);
+          var path2 = this.attachmentLoader.newPathAttachment(skin, name2);
           if (!path2)
             return null;
           path2.closed = getValue(map2, "closed", false);
@@ -99972,7 +100120,7 @@ var SkeletonJson = (
           return path2;
         }
         case "point": {
-          var point = this.attachmentLoader.newPointAttachment(skin, name);
+          var point = this.attachmentLoader.newPointAttachment(skin, name2);
           if (!point)
             return null;
           point.x = getValue(map2, "x", 0) * scale;
@@ -99984,7 +100132,7 @@ var SkeletonJson = (
           return point;
         }
         case "clipping": {
-          var clip = this.attachmentLoader.newClippingAttachment(skin, name);
+          var clip = this.attachmentLoader.newClippingAttachment(skin, name2);
           if (!clip)
             return null;
           var end2 = getValue(map2, "end", null);
@@ -100041,7 +100189,7 @@ var SkeletonJson = (
       attachment.bones = bones;
       attachment.vertices = Utils.toFloatArray(weights);
     };
-    SkeletonJson2.prototype.readAnimation = function(map2, name, skeletonData) {
+    SkeletonJson2.prototype.readAnimation = function(map2, name2, skeletonData) {
       var scale = this.scale;
       var timelines = new Array();
       if (map2.slots) {
@@ -100525,7 +100673,7 @@ var SkeletonJson = (
       if (isNaN(duration)) {
         throw new Error("Error while parsing animation, duration is NaN");
       }
-      skeletonData.animations.push(new Animation(name, timelines, duration));
+      skeletonData.animations.push(new Animation(name2, timelines, duration));
     };
     SkeletonJson2.blendModeFromString = function(str) {
       str = str.toLowerCase();
@@ -101591,8 +101739,8 @@ class PixiStage {
       this.live2dFigureRecorder.push({ target, motion: "", expression });
     }
   }
-  loadAsset(url2, callback, name) {
-    this.loadQueue.unshift({ url: url2, callback, name });
+  loadAsset(url2, callback, name2) {
+    this.loadQueue.unshift({ url: url2, callback, name: name2 });
     this.callLoader();
   }
   callLoader() {
@@ -101633,7 +101781,7 @@ class PixiStage {
     this.lockTransformTarget.push(targetName);
   }
   unlockStageObject(targetName) {
-    const index2 = this.lockTransformTarget.findIndex((name) => name === targetName);
+    const index2 = this.lockTransformTarget.findIndex((name2) => name2 === targetName);
     if (index2 >= 0)
       this.lockTransformTarget.splice(index2, 1);
   }
@@ -101880,7 +102028,7 @@ function IconConverter(id2, icon2, config) {
 }
 var IconContext = /* @__PURE__ */ reactExports.createContext(DEFAULT_ICON_CONFIGS);
 IconContext.Provider;
-function IconWrapper(name, rtl, render) {
+function IconWrapper(name2, rtl, render) {
   return function(props) {
     var size = props.size, strokeWidth = props.strokeWidth, strokeLinecap = props.strokeLinecap, strokeLinejoin = props.strokeLinejoin, theme = props.theme, fill = props.fill, className = props.className, spin = props.spin, extra2 = _objectWithoutProperties(props, _excluded);
     var ICON_CONFIGS = reactExports.useContext(IconContext);
@@ -101894,7 +102042,7 @@ function IconWrapper(name, rtl, render) {
       fill
     }, ICON_CONFIGS);
     var cls = [ICON_CONFIGS.prefix + "-icon"];
-    cls.push(ICON_CONFIGS.prefix + "-icon-" + name);
+    cls.push(ICON_CONFIGS.prefix + "-icon-" + name2);
     if (rtl && ICON_CONFIGS.rtl) {
       cls.push(ICON_CONFIGS.prefix + "-icon-rtl");
     }
@@ -105690,25 +105838,47 @@ function useFullScreen() {
     }
   }, [fullScreen]);
 }
-const storyLine = "_storyLine_jp7oj_2";
-const storyLine_header = "_storyLine_header_jp7oj_10";
-const goBack = "_goBack_jp7oj_17";
-const title = "_title_jp7oj_24";
-const storyLine_content = "_storyLine_content_jp7oj_29";
+const storyLine = "_storyLine_1luh3_2";
+const storyLine_header = "_storyLine_header_1luh3_11";
+const goBack = "_goBack_1luh3_18";
+const title = "_title_1luh3_25";
+const storyLine_content = "_storyLine_content_1luh3_30";
+const storyLine_item = "_storyLine_item_1luh3_38";
+const info_card = "_info_card_1luh3_49";
+const playButton_icon = "_playButton_icon_1luh3_69";
+const name = "_name_1luh3_83";
 const styles = {
   storyLine,
   storyLine_header,
   goBack,
   title,
-  storyLine_content
+  storyLine_content,
+  storyLine_item,
+  info_card,
+  playButton_icon,
+  name
 };
 const StoryLine = () => {
+  var _a2;
   const dispatch = useDispatch();
   const GUIState = useSelector((state) => state.GUI);
   const StageState = useSelector((state) => state.stage);
+  const SaveState = useSelector((state) => state.saveData);
+  
+  reactExports.useEffect(() => {
+    if (GUIState.showStoryLine) {
+      getStorylineFromStorage();
+    }
+  }, [GUIState.showStoryLine]);
   const handlGoBack = () => {
     backToTitle();
     dispatch(setShowStoryLine(false));
+  };
+  const handlPlay = (e2, saveData) => {
+    e2.stopPropagation();
+    console.log(saveData);
+    dispatch(setShowStoryLine(false));
+    loadGameFromStageData(saveData.videoData);
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showStoryLine && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.storyLine, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.storyLine_header, children: [
@@ -105719,7 +105889,30 @@ const StoryLine = () => {
       "div",
       {
         className: styles.storyLine_content,
-        style: { backgroundImage: `url("${StageState.storyLineBg}")` }
+        style: {
+          width: StageState.storyLineBgX,
+          backgroundImage: `url("${StageState.storyLineBg}")`,
+          backgroundSize: StageState.storyLineBgX && StageState.storyLineBgY && `${StageState.storyLineBgX} ${StageState.storyLineBgY}`
+        },
+        children: ((_a2 = SaveState.unlockStorylineList) == null ? void 0 : _a2.map((item, index2) => {
+          const { name: name2, thumbnailUrl, x, y: y2, isUnlock } = item.storyLine;
+          if (!isUnlock) {
+            return null;
+          }
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: styles.storyLine_item,
+              style: thumbnailUrl ? { top: `${y2}px`, left: `${x}px`, backgroundImage: `url("${thumbnailUrl}")` } : {},
+              onClick: (e2) => handlPlay(e2, item),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles.info_card, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.playButton_icon }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles.name, children: name2 })
+              ] })
+            },
+            `storyLine-${index2}`
+          );
+        })) ?? null
       }
     )
   ] }) });
@@ -107625,13 +107818,13 @@ var Formatter = function() {
     }
   }, {
     key: "add",
-    value: function add2(name, fc2) {
-      this.formats[name.toLowerCase().trim()] = fc2;
+    value: function add2(name2, fc2) {
+      this.formats[name2.toLowerCase().trim()] = fc2;
     }
   }, {
     key: "addCached",
-    value: function addCached(name, fc2) {
-      this.formats[name.toLowerCase().trim()] = createCachedFormatter(fc2);
+    value: function addCached(name2, fc2) {
+      this.formats[name2.toLowerCase().trim()] = createCachedFormatter(fc2);
     }
   }, {
     key: "format",
@@ -107710,9 +107903,9 @@ function _isNativeReflectConstruct$1() {
     return false;
   }
 }
-function removePending(q2, name) {
-  if (q2.pending[name] !== void 0) {
-    delete q2.pending[name];
+function removePending(q2, name2) {
+  if (q2.pending[name2] !== void 0) {
+    delete q2.pending[name2];
     q2.pendingCount--;
   }
 }
@@ -107756,21 +107949,21 @@ var Connector = function(_EventEmitter) {
       languages2.forEach(function(lng) {
         var hasAllNamespaces = true;
         namespaces.forEach(function(ns) {
-          var name = "".concat(lng, "|").concat(ns);
+          var name2 = "".concat(lng, "|").concat(ns);
           if (!options.reload && _this2.store.hasResourceBundle(lng, ns)) {
-            _this2.state[name] = 2;
-          } else if (_this2.state[name] < 0)
+            _this2.state[name2] = 2;
+          } else if (_this2.state[name2] < 0)
             ;
-          else if (_this2.state[name] === 1) {
-            if (pending[name] === void 0)
-              pending[name] = true;
+          else if (_this2.state[name2] === 1) {
+            if (pending[name2] === void 0)
+              pending[name2] = true;
           } else {
-            _this2.state[name] = 1;
+            _this2.state[name2] = 1;
             hasAllNamespaces = false;
-            if (pending[name] === void 0)
-              pending[name] = true;
-            if (toLoad[name] === void 0)
-              toLoad[name] = true;
+            if (pending[name2] === void 0)
+              pending[name2] = true;
+            if (toLoad[name2] === void 0)
+              toLoad[name2] = true;
             if (toLoadNamespaces[ns] === void 0)
               toLoadNamespaces[ns] = true;
           }
@@ -107796,8 +107989,8 @@ var Connector = function(_EventEmitter) {
     }
   }, {
     key: "loaded",
-    value: function loaded(name, err, data2) {
-      var s2 = name.split("|");
+    value: function loaded(name2, err, data2) {
+      var s2 = name2.split("|");
       var lng = s2[0];
       var ns = s2[1];
       if (err)
@@ -107805,11 +107998,11 @@ var Connector = function(_EventEmitter) {
       if (data2) {
         this.store.addResourceBundle(lng, ns, data2);
       }
-      this.state[name] = err ? -1 : 2;
+      this.state[name2] = err ? -1 : 2;
       var loaded2 = {};
       this.queue.forEach(function(q2) {
         pushPath(q2.loaded, [lng], ns);
-        removePending(q2, name);
+        removePending(q2, name2);
         if (err)
           q2.errors.push(err);
         if (q2.pendingCount === 0 && !q2.done) {
@@ -107910,8 +108103,8 @@ var Connector = function(_EventEmitter) {
           callback();
         return null;
       }
-      toLoad.toLoad.forEach(function(name) {
-        _this4.loadOne(name);
+      toLoad.toLoad.forEach(function(name2) {
+        _this4.loadOne(name2);
       });
     }
   }, {
@@ -107928,10 +108121,10 @@ var Connector = function(_EventEmitter) {
     }
   }, {
     key: "loadOne",
-    value: function loadOne(name) {
+    value: function loadOne(name2) {
       var _this5 = this;
       var prefix2 = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : "";
-      var s2 = name.split("|");
+      var s2 = name2.split("|");
       var lng = s2[0];
       var ns = s2[1];
       this.read(lng, ns, "read", void 0, void 0, function(err, data2) {
@@ -107939,7 +108132,7 @@ var Connector = function(_EventEmitter) {
           _this5.logger.warn("".concat(prefix2, "loading namespace ").concat(ns, " for language ").concat(lng, " failed"), err);
         if (!err && data2)
           _this5.logger.log("".concat(prefix2, "loaded namespace ").concat(ns, " for language ").concat(lng), data2);
-        _this5.loaded(name, err, data2);
+        _this5.loaded(name2, err, data2);
       });
     }
   }, {
