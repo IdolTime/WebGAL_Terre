@@ -49,6 +49,7 @@ import SetTransition from "./SetTransition";
 import GetUserInput from "./GetUserInput";
 import UnlockStoryline from './UnlockStoryline'
 import UnlockAchieve from './UnlockAchieve';
+import ShowValue from './ShowValue'
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -277,4 +278,12 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     icon: <Unlock theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'unlockAchieve.descText')
   },
+  {
+    type: commandType.showValue,
+    title: () => t(tPrefix + 'showValue.title'),
+    initialText: () => t(tPrefix + 'showValue.initText'),
+    component: ShowValue,
+    icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'showValue.descText')
+  }
 ];

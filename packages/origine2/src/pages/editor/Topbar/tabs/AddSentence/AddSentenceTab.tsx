@@ -32,7 +32,7 @@ export function AddSentenceTab() {
   const btsCommon1 = pickSentenceType([0, 1, 2]);
   const btsCommon2 = pickSentenceType([4, 5]);
   const btsSpecial = pickSentenceType([8, 12, 13, 22]);
-  const btsSpecial2 = pickSentenceType([6, 7, 21]);
+  const btsSpecial2 = pickSentenceType([6, 7, 21, 23]);
   const btsBranch = pickSentenceType([9, 10, 11]);
   const btsExtra = pickSentenceType([14, 15]);
   const btsSystem = pickSentenceType([16, 17]);

@@ -37,7 +37,8 @@ const SCRIPT_CONFIG = [
   { scriptString: 'setTransform', scriptType: commandType.setTransform },
   { scriptString: 'getUserInput', scriptType: commandType.getUserInput },
   { scriptString: 'unlockAchieve', scriptType: commandType.unlockAchieve },
-  { scriptString: 'unlockStoryline', scriptType: commandType.unlockStoryline }
+  { scriptString: 'unlockStoryline', scriptType: commandType.unlockStoryline },
+  { scriptString: 'showValue', scriptType: commandType.showValue },
 ];
 
 export const WebgalParser = new SceneParser(() => {

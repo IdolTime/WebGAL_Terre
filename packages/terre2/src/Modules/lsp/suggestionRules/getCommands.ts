@@ -183,5 +183,16 @@ setVar:a=人物名称;可以设置字符串`,
     documentation: `使用变量`,
     detail: `command unlockStoryline:<expression>;`,
     insertText: 'unlockStoryline:',
-  }
+  },
+  {
+    label: 'showValue',
+    kind: CompletionItemKind.Function,
+    documentation: `显示变量
+    showValue:name=变量名称;
+    showValue:x=1;可以设置X坐标轴位置
+    showValue:y=1;可以设置Y坐标轴位置
+    switchValue=true;可以设置布尔值控制显示关闭`,
+    detail: `command showValue:<expression>;`,
+    insertText: 'showValue:',
+  },
 ];
