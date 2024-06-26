@@ -1,12 +1,4 @@
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/initRegister-043a7cb7.js
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/initRegister-6de16ff6.js
-import { r as registerPerform, W as WebGAL, C as Container, T as Texture, S as Sprite, a as SCREEN_CONSTANTS } from "./index-70d63b92.js";
-========
-import { r as registerPerform, W as WebGAL, C as Container, T as Texture, S as Sprite, a as SCREEN_CONSTANTS } from "./index-44c518c4.js";
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/initRegister-043a7cb7.js
-========
-import { r as registerPerform, W as WebGAL, C as Container, T as Texture, S as Sprite, a as SCREEN_CONSTANTS } from "./index-3c8f1fd4.js";
->>>>>>>> feature/hmz-角色数值系统:packages/terre2/assets/templates/WebGAL_Template/assets/initRegister-75ffd9a5.js
+import { r as registerPerform, W as WebGAL, C as Container, T as Texture, S as Sprite, a as SCREEN_CONSTANTS } from "./index-353e4390.js";
 const pixicherryBlossoms = (cherryBlossomsSpeed) => {
   const scalePreset = 0.15;
   const effectsContainer = WebGAL.gameplay.pixiStage.effectsContainer;

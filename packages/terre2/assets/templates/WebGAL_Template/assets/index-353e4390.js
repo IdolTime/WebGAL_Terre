@@ -6963,7 +6963,7 @@ const Title_buttonList = "_Title_buttonList_xpe81_8";
 const Title_button = "_Title_button_xpe81_8";
 const Title_button_text = "_Title_button_text_xpe81_41";
 const Title_backup_background = "_Title_backup_background_xpe81_48";
-const styles$n = {
+const styles$o = {
   Title_main,
   Title_buttonList,
   Title_button,
@@ -9499,6 +9499,7 @@ var commandType$1 = /* @__PURE__ */ ((commandType2) => {
   commandType2[commandType2["applyStyle"] = 32] = "applyStyle";
   commandType2[commandType2["unlockAchieve"] = 33] = "unlockAchieve";
   commandType2[commandType2["unlockStoryline"] = 34] = "unlockStoryline";
+  commandType2[commandType2["showValue"] = 35] = "showValue";
   return commandType2;
 })(commandType$1 || {});
 const initState$3 = {
@@ -9559,7 +9560,6 @@ const initState$3 = {
   enableFilm: "",
   isDisableTextbox: false,
   replacedUIlable: {},
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
   storyLineBg: "",
   // 故事线背景
   storyLineBgX: "",
@@ -9581,13 +9581,15 @@ const initState$3 = {
   unlockAchieves: [],
   totalAchievements: 0,
   // 总成就数量
-  unlockedAchievements: 0
+  unlockedAchievements: 0,
   //已获得的成就数量
   // isShowUnlockAchieve: false,
-========
-  currentVideoIndex: 0
+  currentVideoIndex: 0,
   // 当前视频播放索引
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
+  isShowValueSWitch: false,
+  showValueName: "",
+  showValueAxisX: 0,
+  showValueAxisY: 0
 };
 const stageSlice = createSlice({
   name: "stage",
@@ -9689,7 +9691,6 @@ const stageSlice = createSlice({
     replaceUIlable: (state, action) => {
       state.replacedUIlable[action.payload[0]] = action.payload[1];
     },
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
     setStoryLineBg: (state, action) => {
       state.storyLineBg = action.payload;
     },
@@ -9698,18 +9699,21 @@ const stageSlice = createSlice({
     },
     setUnlockAchieve: (state, action) => {
       state.unlockAchieves.push(action.payload);
-    }
-  }
-});
-const { resetStageState, setStage, setStageVar, setAchieveBg, setUnlockAchieve, setStoryLineBg } = stageSlice.actions;
-========
+    },
     setVideoIndex: (state, action) => {
       state.currentVideoIndex = action.payload;
     }
   }
 });
-const { resetStageState, setStage, setStageVar, setVideoIndex } = stageSlice.actions;
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
+const {
+  resetStageState,
+  setStage,
+  setStageVar,
+  setAchieveBg,
+  setVideoIndex,
+  setUnlockAchieve,
+  setStoryLineBg
+} = stageSlice.actions;
 const stageActions = stageSlice.actions;
 const stageReducer = stageSlice.reducer;
 function commonjsRequire(path2) {
@@ -21796,7 +21800,7 @@ const Choose_item_image = "_Choose_item_image_o52on_30";
 const Choose_item_countdown = "_Choose_item_countdown_o52on_45";
 const Choose_item_progress_bar = "_Choose_item_progress_bar_o52on_52";
 const Choose_item_disabled = "_Choose_item_disabled_o52on_61";
-const styles$m = {
+const styles$n = {
   Choose_Main: Choose_Main$1,
   Choose_item: Choose_item$1,
   Choose_item_image,
@@ -22530,7 +22534,7 @@ const choose = (sentence, chooseCallback) => {
     return chooseListFull.filter((e2, i2) => whenChecker(e2.showCondition)).map((e2, i2) => {
       var _a2, _b2;
       const enable = whenChecker(e2.enableCondition);
-      let className = enable ? styles$m.Choose_item : styles$m.Choose_item_disabled;
+      let className = enable ? styles$n.Choose_item : styles$n.Choose_item_disabled;
       const onClick = enable ? () => {
         playSeClick();
         chooseCallback == null ? void 0 : chooseCallback();
@@ -22581,7 +22585,7 @@ const choose = (sentence, chooseCallback) => {
         }
       }
       if (typeof ((_a2 = e2.style) == null ? void 0 : _a2.countdown) === "number") {
-        className = styles$m.Choose_item_countdown;
+        className = styles$n.Choose_item_countdown;
         let time2 = e2.style.countdown;
         let width = 1082;
         let unit = 1082 / (time2 * 1e3 / 16);
@@ -22604,13 +22608,13 @@ const choose = (sentence, chooseCallback) => {
         return /* @__PURE__ */ jsxRuntimeExports.jsxs(React.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className, style: styleObj, onClick, onMouseEnter: playSeEnter, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBarBackground, alt: e2.text, style: { width: "1082px", height: "106px" } }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$m.Choose_item_progress_bar })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: ProgressBar, className: styles$n.Choose_item_progress_bar })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("svg", { width: "0", height: "0", children: /* @__PURE__ */ jsxRuntimeExports.jsx("defs", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("clipPath", { id: "myClip", children: /* @__PURE__ */ jsxRuntimeExports.jsx("rect", { id: "rect", width: "1082", height: "106", rx: "53", ry: "53", style: { fill: "#fff" } }) }) }) })
         ] }, e2.jump + i2);
       }
       if ((_b2 = e2.style) == null ? void 0 : _b2.image) {
-        className = styles$m.Choose_item_image;
+        className = styles$n.Choose_item_image;
         const imgUrl = assetSetter(e2.style.image, fileType$1.ui);
         const id2 = `img-option-${i2}`;
         const img = new Image();
@@ -22646,7 +22650,7 @@ const choose = (sentence, chooseCallback) => {
     });
   };
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$m.Choose_Main, children: runtimeBuildList(chooseOptions) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$n.Choose_Main, children: runtimeBuildList(chooseOptions) }),
     document.getElementById("chooseContainer")
   );
   return {
@@ -22698,25 +22702,15 @@ const Choose_Main = "_Choose_Main_4xkm5_1";
 const Choose_item = "_Choose_item_4xkm5_13";
 const glabalDialog_container_inner$1 = "_glabalDialog_container_inner_4xkm5_28";
 const glabalDialog_container$1 = "_glabalDialog_container_4xkm5_28";
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
 const title$4 = "_title_4xkm5_47";
-const button$2 = "_button_4xkm5_59";
-========
-const title$2 = "_title_4xkm5_47";
 const button$3 = "_button_4xkm5_59";
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
-const styles$l = {
+const styles$m = {
   Choose_Main,
   Choose_item,
   glabalDialog_container_inner: glabalDialog_container_inner$1,
   glabalDialog_container: glabalDialog_container$1,
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
   title: title$4,
-  button: button$2
-========
-  title: title$2,
   button: button$3
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
 };
 const getUserInput = (sentence) => {
   const varKey = sentence.content.toString().trim();
@@ -22727,9 +22721,9 @@ const getUserInput = (sentence) => {
   const fontFamily = webgalStore.getState().userData.optionData.textboxFont;
   const font = fontFamily === textFont.song ? '"思源宋体", serif' : '"WebgalUI", serif';
   const { playSeEnter, playSeClick } = useSEByWebgalStore();
-  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$l.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$l.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.title, children: title2 }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$l.Choose_item }),
+  const chooseElements = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontFamily: font }, className: styles$m.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$m.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$m.title, children: title2 }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "user-input", className: styles$m.Choose_item }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -22745,13 +22739,13 @@ const getUserInput = (sentence) => {
           WebGAL.gameplay.performController.unmountPerform("userInput");
           nextSentence();
         },
-        className: styles$l.button,
+        className: styles$m.button,
         children: buttonText
       }
     )
   ] }) });
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.Choose_Main, children: chooseElements }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$m.Choose_Main, children: chooseElements }),
     document.getElementById("chooseContainer")
   );
   return {
@@ -22780,7 +22774,7 @@ const pixelateEffect = "_pixelateEffect_7er8a_95";
 const pixelateAnimation = "_pixelateAnimation_7er8a_1";
 const revealAnimation = "_revealAnimation_7er8a_101";
 const videoContainer = "_videoContainer_7er8a_115";
-const styles$k = {
+const styles$l = {
   FullScreenPerform_main,
   FullScreenPerform_element,
   fullScreen_video,
@@ -22803,20 +22797,20 @@ const intro = (sentence) => {
   const animationClass = (type2, length2 = 0) => {
     switch (type2) {
       case "fadeIn":
-        return styles$k.fadeIn;
+        return styles$l.fadeIn;
       case "slideIn":
-        return styles$k.slideIn;
+        return styles$l.slideIn;
       case "typingEffect":
-        return `${styles$k.typingEffect} ${length2}`;
+        return `${styles$l.typingEffect} ${length2}`;
       case "pixelateEffect":
-        return styles$k.pixelateEffect;
+        return styles$l.pixelateEffect;
       case "revealAnimation":
-        return styles$k.revealAnimation;
+        return styles$l.revealAnimation;
       default:
-        return styles$k.fadeIn;
+        return styles$l.fadeIn;
     }
   };
-  let chosenAnimationClass = styles$k.fadeIn;
+  let chosenAnimationClass = styles$l.fadeIn;
   let delayTime = 1500;
   let isHold = false;
   for (const e2 of sentence.args) {
@@ -23049,11 +23043,7 @@ function call$1(name2, args = []) {
   }
   return callback(...args);
 }
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
-__vitePreload(() => import("./initRegister-6de16ff6.js"), true ? [] : void 0, import.meta.url);
-========
-__vitePreload(() => import("./initRegister-043a7cb7.js"), true ? [] : void 0, import.meta.url);
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
+__vitePreload(() => import("./initRegister-5aae5dc7.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23243,17 +23233,14 @@ class PerformController {
 const initState$1 = {
   saveData: [],
   quickSaveData: null,
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
   unlockStorylineList: [],
   // 保存已经解锁的故事线列表
   saveVideoData: null,
   unlockAchieveData: [],
   isShowUnlock: false,
-  unlockAchieveAllTotal: 0
-========
+  unlockAchieveAllTotal: 0,
   currentPayerVideoUrlKey: "",
   isLoadVideo: false
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
 };
 const saveDataSlice = createSlice({
   name: "saveData",
@@ -23275,7 +23262,6 @@ const saveDataSlice = createSlice({
     replaceSaveGame: (state, action) => {
       state.saveData = action.payload;
     },
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
     setStorylineListFromStorage: (state, action) => {
       state.unlockStorylineList = action.payload;
     },
@@ -23308,19 +23294,17 @@ const saveDataSlice = createSlice({
     },
     setUnlockAchieveAllTotal: (state, action) => {
       state.unlockAchieveAllTotal = action.payload;
-========
+    },
     saveCurrentPayerVideoUrl: (state, action) => {
       state.currentPayerVideoUrlKey = action.payload;
     },
     setLoadVideo: (state, action) => {
       state.isLoadVideo = action.payload;
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
     }
   }
 });
 const saveActions = saveDataSlice.actions;
 const savesReducer = saveDataSlice.reducer;
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
 function dumpSavesToStorage(startIndex, endIndex) {
   for (let i2 = startIndex; i2 <= endIndex; i2++) {
     const save = webgalStore.getState().saveData.saveData[i2];
@@ -23329,12 +23313,11 @@ function dumpSavesToStorage(startIndex, endIndex) {
     });
   }
 }
-function getSavesFromStorage(startIndex, endIndex) {
+async function getSavesFromStorage(startIndex, endIndex) {
   for (let i2 = startIndex; i2 <= endIndex; i2++) {
-    localforage.getItem(`${WebGAL.gameKey}-saves${i2}`).then((save) => {
-      webgalStore.dispatch(saveActions.saveGame({ index: i2, saveData: save }));
-      logger.info(`存档${i2}读取自本地存储`);
-    });
+    const save = await localforage.getItem(`${WebGAL.gameKey}-saves${i2}`);
+    webgalStore.dispatch(saveActions.saveGame({ index: i2, saveData: save }));
+    logger.info(`存档${i2}读取自本地存储`);
   }
 }
 async function dumpFastSaveToStorage() {
@@ -23367,34 +23350,39 @@ async function getUnlickAchieveFromStorage() {
   webgalStore.dispatch(saveActions.setUnlockAchieveData((res == null ? void 0 : res.data) || []));
   logger.info(`解锁成就 >>> 读取本地存储`);
 }
-const saveGame = (index2) => {
-  const saveData = generateCurrentStageData(index2);
+const saveGame = (index2, newName) => {
+  const saveData = generateCurrentStageData(index2, true, newName);
   webgalStore.dispatch(saveActions.saveGame({ index: index2, saveData }));
   dumpSavesToStorage(index2, index2);
 };
-function generateCurrentStageData(index2, isSavePreviewImage = true) {
+function generateCurrentStageData(index2, isSavePreviewImage = true, newName) {
   const stageState = webgalStore.getState().stage;
   const saveBacklog = cloneDeep$1(WebGAL.backlogManager.getBacklog());
   let urlToSave = "";
-  if (isSavePreviewImage) {
-    const canvas = document.getElementById("pixiCanvas");
+  if (isSavePreviewImage && !newName) {
+    const video = document.querySelector(`#video-${Number(stageState.currentVideoIndex) - 1} > video`);
+    video.currentTime = 0;
     const canvas2 = document.createElement("canvas");
     const context2 = canvas2.getContext("2d");
     canvas2.width = 480;
     canvas2.height = 270;
-    context2.drawImage(canvas, 0, 0, 480, 270);
+    context2.drawImage(video, 0, 0, 480, 270);
     urlToSave = canvas2.toDataURL("image/webp", 0.5);
     canvas2.remove();
+  } else {
+    const userDataState = webgalStore.getState().saveData;
+    const loadFile = userDataState.saveData[index2];
+    urlToSave = (loadFile == null ? void 0 : loadFile.previewImage) ?? "";
   }
+  const currentTime = (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false });
   const saveData = {
     nowStageState: cloneDeep$1(stageState),
     backlog: saveBacklog,
     // 舞台数据
     index: index2,
     // 存档的序号
-    saveTime: (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false }),
-    // 保存时间
-    // 场景数据
+    saveName: newName || currentTime,
+    saveTime: currentTime,
     sceneData: {
       currentSentenceId: WebGAL.sceneManager.sceneData.currentSentenceId,
       // 当前语句ID
@@ -23419,6 +23407,7 @@ function getCurrentVideoStageDataForStoryLine() {
     // 舞台数据
     saveTime: currentTime,
     // 保存时间
+    saveName: "",
     index: -1,
     previewImage: "",
     // 场景数据
@@ -23435,8 +23424,6 @@ function getCurrentVideoStageDataForStoryLine() {
   };
   webgalStore.dispatch(saveActions.setSaveVideoData(saveData));
 }
-========
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
 const playVideo = (sentence) => {
   const userDataState = webgalStore.getState().userData;
   const mainVol = userDataState.optionData.volumeMain;
@@ -24593,6 +24580,37 @@ const unlockAchieve = (sentence) => {
     // 暂时不用，后面会交给自动清除
   };
 };
+function showValue(sentence) {
+  if (sentence.content) {
+    webgalStore.dispatch(setStage({ key: "showValueName", value: sentence.content }));
+  }
+  sentence.args.forEach((e2) => {
+    if (e2.key === "switchValue") {
+      webgalStore.dispatch(
+        setStage({ key: "isShowValueSWitch", value: e2.value })
+      );
+    } else if (e2.key === "x") {
+      webgalStore.dispatch(
+        setStage({ key: "showValueAxisX", value: Number(e2.value) })
+      );
+    } else if (e2.key === "y") {
+      webgalStore.dispatch(
+        setStage({ key: "showValueAxisY", value: Number(e2.value) })
+      );
+    }
+  });
+  return {
+    performName: "none",
+    duration: 0,
+    isHoldOn: false,
+    stopFunction: () => {
+    },
+    blockingNext: () => false,
+    blockingAuto: () => true,
+    stopTimeout: void 0
+    // 暂时不用，后面会交给自动清除
+  };
+}
 const SCRIPT_TAG_MAP = defineScripts({
   intro: ScriptConfig(commandType$1.intro, intro),
   changeBg: ScriptConfig(commandType$1.changeBg, changeBg),
@@ -24626,7 +24644,8 @@ const SCRIPT_TAG_MAP = defineScripts({
   getUserInput: ScriptConfig(commandType$1.getUserInput, getUserInput),
   applyStyle: ScriptConfig(commandType$1.applyStyle, applyStyle, { next: true }),
   unlockAchieve: ScriptConfig(commandType$1.unlockAchieve, unlockAchieve, { next: true }),
-  unlockStoryline: ScriptConfig(commandType$1.unlockStoryline, unlockStoryline, { next: true })
+  unlockStoryline: ScriptConfig(commandType$1.unlockStoryline, unlockStoryline, { next: true }),
+  showValue: ScriptConfig(commandType$1.showValue, showValue, { next: true })
   // if: ScriptConfig(commandType.if, undefined, { next: true }),
 });
 const SCRIPT_CONFIG = Object.values(SCRIPT_TAG_MAP);
@@ -41114,13 +41133,10 @@ const initState = {
   showPanicOverlay: false,
   isEnterGame: false,
   isShowLogo: true,
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
   showStoryLine: false,
-  showAchievement: false
-========
+  showAchievement: false,
   showFavorited: false
   // 显示收藏
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
 };
 const GUISlice = createSlice({
   name: "gui",
@@ -41157,21 +41173,22 @@ const GUISlice = createSlice({
     setLogoImage: (state, action) => {
       state.logoImage = [...action.payload];
     },
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
     setShowStoryLine: (state, action) => {
       state.showStoryLine = action.payload;
-    }
-  }
-});
-const { setVisibility, setMenuPanelTag, setGuiAsset, setLogoImage, setShowStoryLine } = GUISlice.actions;
-========
+    },
     setshowFavorited: (state, action) => {
       state.showFavorited = action.payload;
     }
   }
 });
-const { setVisibility, setMenuPanelTag, setGuiAsset, setLogoImage, setshowFavorited } = GUISlice.actions;
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
+const {
+  setVisibility,
+  setMenuPanelTag,
+  setGuiAsset,
+  setLogoImage,
+  setShowStoryLine,
+  setshowFavorited
+} = GUISlice.actions;
 const GUIReducer = GUISlice.reducer;
 const webgalStore = configureStore({
   reducer: {
@@ -41304,81 +41321,6 @@ function loadGameFromStageData(stageData, isLoadVideo = false) {
   dispatch(saveActions.setLoadVideo(true));
   setEbg(webgalStore.getState().stage.bgName);
 }
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
-========
-function dumpSavesToStorage(startIndex, endIndex) {
-  for (let i2 = startIndex; i2 <= endIndex; i2++) {
-    const save = webgalStore.getState().saveData.saveData[i2];
-    localforage.setItem(`${WebGAL.gameKey}-saves${i2}`, save).then(() => {
-      logger.info(`存档${i2}写入本地存储`);
-    });
-  }
-}
-async function getSavesFromStorage(startIndex, endIndex) {
-  for (let i2 = startIndex; i2 <= endIndex; i2++) {
-    const save = await localforage.getItem(`${WebGAL.gameKey}-saves${i2}`);
-    webgalStore.dispatch(saveActions.saveGame({ index: i2, saveData: save }));
-    logger.info(`存档${i2}读取自本地存储`);
-  }
-}
-async function dumpFastSaveToStorage() {
-  const save = webgalStore.getState().saveData.quickSaveData;
-  await localforage.setItem(`${WebGAL.gameKey}-saves-fast`, save);
-  logger.info(`快速存档写入本地存储`);
-}
-async function getFastSaveFromStorage() {
-  const save = await localforage.getItem(`${WebGAL.gameKey}-saves-fast`);
-  webgalStore.dispatch(saveActions.setFastSave(save));
-  logger.info(`快速存档读取自本地存储`);
-}
-const saveGame = (index2, newName) => {
-  const saveData = generateCurrentStageData(index2, true, newName);
-  webgalStore.dispatch(saveActions.saveGame({ index: index2, saveData }));
-  dumpSavesToStorage(index2, index2);
-};
-function generateCurrentStageData(index2, isSavePreviewImage = true, newName) {
-  const stageState = webgalStore.getState().stage;
-  const saveBacklog = cloneDeep$1(WebGAL.backlogManager.getBacklog());
-  let urlToSave = "";
-  if (isSavePreviewImage && !newName) {
-    const video = document.querySelector(`#video-${Number(stageState.currentVideoIndex) - 1} > video`);
-    video.currentTime = 0;
-    const canvas2 = document.createElement("canvas");
-    const context2 = canvas2.getContext("2d");
-    canvas2.width = 480;
-    canvas2.height = 270;
-    context2.drawImage(video, 0, 0, 480, 270);
-    urlToSave = canvas2.toDataURL("image/webp", 0.5);
-    canvas2.remove();
-  } else {
-    const userDataState = webgalStore.getState().saveData;
-    const loadFile = userDataState.saveData[index2];
-    urlToSave = (loadFile == null ? void 0 : loadFile.previewImage) ?? "";
-  }
-  const currentTime = (/* @__PURE__ */ new Date()).toLocaleDateString() + " " + (/* @__PURE__ */ new Date()).toLocaleTimeString("chinese", { hour12: false });
-  const saveData = {
-    nowStageState: cloneDeep$1(stageState),
-    backlog: saveBacklog,
-    // 舞台数据
-    index: index2,
-    // 存档的序号
-    saveName: newName || currentTime,
-    saveTime: currentTime,
-    sceneData: {
-      currentSentenceId: WebGAL.sceneManager.sceneData.currentSentenceId,
-      // 当前语句ID
-      sceneStack: cloneDeep$1(WebGAL.sceneManager.sceneData.sceneStack),
-      // 场景栈
-      sceneName: WebGAL.sceneManager.sceneData.currentScene.sceneName,
-      // 场景名称
-      sceneUrl: WebGAL.sceneManager.sceneData.currentScene.sceneUrl
-      // 场景url
-    },
-    previewImage: urlToSave
-  };
-  return saveData;
-}
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
 function initKey() {
   `FastSaveKey-${WebGAL.gameName}-${WebGAL.gameKey}`;
   `FastSaveActive-${WebGAL.gameName}-${WebGAL.gameKey}`;
@@ -43475,7 +43417,7 @@ const fastLPreview = "_fastLPreview_15mmi_77";
 const slPreviewMain = "_slPreviewMain_15mmi_89";
 const imgContainer = "_imgContainer_15mmi_97";
 const textContainer = "_textContainer_15mmi_105";
-const styles$j = {
+const styles$k = {
   main,
   button: button$2,
   button_text: button_text$1,
@@ -43495,9 +43437,9 @@ const setButton$1 = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_auto");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$j.button_on;
+      autoIcon.className = styles$k.button_on;
     } else
-      autoIcon.className = styles$j.singleButton;
+      autoIcon.className = styles$k.singleButton;
   }
 };
 const stopAuto = () => {
@@ -43544,9 +43486,9 @@ const setButton = (on2) => {
   const autoIcon = document.getElementById("Button_ControlPanel_fast");
   if (autoIcon) {
     if (on2) {
-      autoIcon.className = styles$j.button_on;
+      autoIcon.className = styles$k.button_on;
     } else
-      autoIcon.className = styles$j.singleButton;
+      autoIcon.className = styles$k.singleButton;
   }
 };
 const stopFast = () => {
@@ -43604,7 +43546,7 @@ const backlog_item_content = "_backlog_item_content_zwyao_113";
 const backlog_item_button_list = "_backlog_item_button_list_zwyao_137";
 const backlog_item_button_element = "_backlog_item_button_element_zwyao_144";
 const backlog_item_content_text = "_backlog_item_content_text_zwyao_157";
-const styles$i = {
+const styles$j = {
   Backlog_main,
   backlog_soft_in,
   Backlog_main_out,
@@ -43841,7 +43783,7 @@ function useMouseWheel() {
       return;
     const direction = ev.wheelDelta && (ev.wheelDelta > 0 ? "up" : "down") || ev.detail && (ev.detail < 0 ? "up" : "down") || "down";
     const ctrlKey = ev.ctrlKey;
-    const dom = document.querySelector(`.${styles$i.backlog_content}`);
+    const dom = document.querySelector(`.${styles$j.backlog_content}`);
     if (isGameActive() && direction === "up" && !ctrlKey) {
       setComponentVisibility("showBacklog", true);
       setComponentVisibility("showTextBox", false);
@@ -44073,7 +44015,7 @@ const Title = () => {
   const { playSeEnter, playSeClick } = useSoundEffect();
   const applyStyle2 = useApplyStyle("UI/Title/title.scss");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$n.Title_backup_background) }),
+    GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_backup_background", styles$o.Title_backup_background) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
@@ -44093,58 +44035,59 @@ const Title = () => {
     GUIState.showTitle && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: applyStyle2("Title_main", styles$n.Title_main),
+        className: applyStyle2("Title_main", styles$o.Title_main),
         style: {
           backgroundImage: showBackground,
           backgroundSize: "cover"
         },
-        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: applyStyle2("Title_buttonList", styles$n.Title_buttonList), children: [
+        children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: applyStyle2("Title_buttonList", styles$o.Title_buttonList), children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("Title_button", styles$n.Title_button),
+              className: applyStyle2("Title_button", styles$o.Title_button),
               onClick: () => {
                 startGame();
                 playSeClick();
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
-========
                 dispatch(setshowFavorited(false));
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
               },
               onMouseEnter: playSeEnter,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("start.title") })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$o.Title_button_text), children: t2("start.title") })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("Title_button", styles$n.Title_button),
+              className: applyStyle2("Title_button", styles$o.Title_button),
               onClick: () => {
-<<<<<<<< HEAD:packages/terre2/assets/templates/WebGAL_Template/assets/index-70d63b92.js
                 enterAchieve();
                 playSeClick();
               },
               onMouseEnter: playSeEnter,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("achievement.title") })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$o.Title_button_text), children: t2("achievement.title") })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("Title_button", styles$n.Title_button),
+              className: applyStyle2("Title_button", styles$o.Title_button),
               onClick: () => {
                 enterStoryLine();
                 playSeClick();
               },
               onMouseEnter: playSeEnter,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("storyLine.title") })
-========
-                playSeClick();
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$o.Title_button_text), children: t2("storyLine.title") })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: applyStyle2("Title_button", styles$o.Title_button),
+              onClick: () => {
                 dispatch(setVisibility({ component: "showExtra", visibility: true }));
+                playSeClick();
               },
               onMouseEnter: playSeEnter,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$n.Title_button_text), children: t2("extra.title") })
->>>>>>>> feature/hmz-视频画廊收藏:packages/terre2/assets/templates/WebGAL_Template/assets/index-44c518c4.js
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: applyStyle2("Title_button_text", styles$o.Title_button_text), children: t2("extra.title") })
             }
           )
         ] })
@@ -44156,7 +44099,7 @@ const Logo_main = "_Logo_main_1bne2_1";
 const Logo_Back = "_Logo_Back_1bne2_32";
 const animationActive = "_animationActive_1bne2_46";
 const fadeout = "_fadeout_1bne2_1";
-const styles$h = {
+const styles$i = {
   Logo_main,
   "change-img-anim": "_change-img-anim_1bne2_1",
   Logo_Back,
@@ -44190,7 +44133,7 @@ const Logo = () => {
     currentLogoIndex.value !== -1 && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$h.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$h.animationActive : ""),
+        className: styles$i.Logo_Back + " " + (currentLogoIndex.value === logoImage.length - 1 ? styles$i.animationActive : ""),
         style: {
           animationDuration: `${animationDuration}ms`
         }
@@ -44200,7 +44143,7 @@ const Logo = () => {
     currentLogoUrl !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: styles$h.Logo_main,
+        className: styles$i.Logo_main,
         onClick: nextImg,
         style: { backgroundImage: `url("${currentLogoUrl}")`, animationDuration: `${animationDuration}ms` }
       },
@@ -102236,7 +102179,7 @@ function getUserAnimation() {
 const Menu_main = "_Menu_main_1a7i6_1";
 const Menu_ShowSoftly = "_Menu_ShowSoftly_1a7i6_1";
 const Menu_TagContent = "_Menu_TagContent_1a7i6_10";
-const styles$g = {
+const styles$h = {
   Menu_main,
   Menu_ShowSoftly,
   Menu_TagContent
@@ -102245,7 +102188,7 @@ const MenuPanel_main = "_MenuPanel_main_1c9ky_1";
 const MenuPanel_button = "_MenuPanel_button_1c9ky_10";
 const MenuPanel_button_icon = "_MenuPanel_button_icon_1c9ky_38";
 const MenuPanel_button_hl = "_MenuPanel_button_hl_1c9ky_44";
-const styles$f = {
+const styles$g = {
   MenuPanel_main,
   MenuPanel_button,
   MenuPanel_button_icon,
@@ -102918,7 +102861,7 @@ const MenuIconMap = (props) => {
 };
 const MenuPanelButton = (props) => {
   const { playSePageChange, playSeEnter } = useSoundEffect();
-  let buttonClassName = styles$f.MenuPanel_button;
+  let buttonClassName = styles$g.MenuPanel_button;
   if (props.hasOwnProperty("buttonOnClassName")) {
     buttonClassName = buttonClassName + props.buttonOnClassName;
   }
@@ -102932,7 +102875,7 @@ const MenuPanelButton = (props) => {
       onMouseEnter: playSeEnter,
       style: { ...props.style, color: props.tagColor },
       children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.MenuPanel_button_icon, children: /* @__PURE__ */ jsxRuntimeExports.jsx(MenuIconMap, { iconName: props.iconName, iconColor: props.iconColor }) }),
         props.tagName
       ]
     }
@@ -102955,7 +102898,7 @@ const glabalDialog_container = "_glabalDialog_container_101j8_17";
 const title$3 = "_title_101j8_36";
 const button_list = "_button_list_101j8_41";
 const button$1 = "_button_101j8_41";
-const styles$e = {
+const styles$f = {
   GlobalDialog_main,
   showGlobalDialog,
   glabalDialog_container_inner,
@@ -102981,11 +102924,11 @@ function showGlogalDialog(props) {
     props.rightFunc();
     hideGlobalDialog();
   };
-  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.glabalDialog_container_inner, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.button_list, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.button, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
+  const renderElement = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.GlobalDialog_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.glabalDialog_container, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.glabalDialog_container_inner, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.title, children: props.title }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.button_list, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.button, onClick: handleLeft, onMouseEnter: playSeEnter, children: props.leftText }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$f.button, onClick: handleRight, onMouseEnter: playSeEnter, children: props.rightText })
     ] })
   ] }) }) });
   setTimeout(() => {
@@ -103013,16 +102956,16 @@ const MenuPanel = () => {
   const { playSeClick, playSeDialogOpen, playSePageChange } = useSoundEffect();
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
-  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$f.MenuPanel_button_hl}` : ``;
-  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$f.MenuPanel_button_hl}` : ``;
-  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$f.MenuPanel_button_hl}` : ``;
+  const SaveTagOn = GUIState.currentMenuTag === MenuPanelTag.Save ? ` ${styles$g.MenuPanel_button_hl}` : ``;
+  const LoadTagOn = GUIState.currentMenuTag === MenuPanelTag.Load ? ` ${styles$g.MenuPanel_button_hl}` : ``;
+  const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles$g.MenuPanel_button_hl}` : ``;
   const SaveTagColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadTagColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionTagColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
   const SaveIconColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
   const LoadIconColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
   const OptionIconColor = GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$f.MenuPanel_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.MenuPanel_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       MenuPanelButton,
       {
@@ -103141,7 +103084,7 @@ const Save_Load_content_miniRen_bg = "_Save_Load_content_miniRen_bg_a3o8b_208";
 const Save_Load_content_miniRen_figure = "_Save_Load_content_miniRen_figure_a3o8b_215";
 const Save_Load_content_miniRen_figLeft = "_Save_Load_content_miniRen_figLeft_a3o8b_223";
 const Save_Load_content_miniRen_figRight = "_Save_Load_content_miniRen_figRight_a3o8b_228";
-const styles$d = {
+const styles$e = {
   Save_Load_main,
   Save_Load_top,
   Elements_in: Elements_in$2,
@@ -103180,9 +103123,9 @@ const Save = () => {
   const dispatch = useDispatch();
   const page = [];
   for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$d.Save_Load_top_button;
+    let classNameOfElement = styles$e.Save_Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$e.Save_Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -103194,7 +103137,7 @@ const Save = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_button_text, children: i2 })
       },
       "Save_element_page" + i2
     );
@@ -103215,14 +103158,14 @@ const Save = () => {
     if (saveData) {
       const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date, children: saveData.saveTime })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_content_element_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top_index, children: saveData.index }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top_date, children: saveData.saveTime })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$e.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_content_text, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_speaker, children: speaker }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
         ] })
       ] });
     }
@@ -103249,7 +103192,7 @@ const Save = () => {
           }
         },
         onMouseEnter: playSeEnter,
-        className: styles$d.Save_Load_content_element,
+        className: styles$e.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -103258,12 +103201,12 @@ const Save = () => {
     showSaves.push(saveElement);
   }
   const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_title_text, children: t2("saving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_title_text, children: t2("saving.title") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_buttonList, children: page })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content, id: "Save_content_page_" + userDataState.optionData.slPage, children: showSaves })
   ] });
 };
 const Load = () => {
@@ -103273,9 +103216,9 @@ const Load = () => {
   const dispatch = useDispatch();
   const page = [];
   for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$d.Save_Load_top_button + " " + styles$d.Load_top_button;
+    let classNameOfElement = styles$e.Save_Load_top_button + " " + styles$e.Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on + " " + styles$d.Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$e.Save_Load_top_button_on + " " + styles$e.Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -103287,7 +103230,7 @@ const Load = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_button_text, children: i2 })
       },
       "Load_element_page" + i2
     );
@@ -103307,14 +103250,14 @@ const Load = () => {
     if (saveData) {
       const speaker = saveData.nowStageState.showName === "" ? " " : `${saveData.nowStageState.showName}`;
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_element_top, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index + " " + styles$d.Load_content_elememt_top_index, children: saveData.index }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_date + " " + styles$d.Load_content_element_top_date, children: saveData.saveTime })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_content_element_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top_index + " " + styles$e.Load_content_elememt_top_index, children: saveData.index }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top_date + " " + styles$e.Load_content_element_top_date, children: saveData.saveTime })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$d.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_content_text, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_speaker + " " + styles$d.Load_content_speaker, children: speaker }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: styles$e.Save_Load_content_miniRen_bg, alt: "Save_img_preview", src: saveData.previewImage }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_content_text, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_speaker + " " + styles$e.Load_content_speaker, children: speaker }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_text_padding, children: saveData.nowStageState.showText })
         ] })
       ] });
     }
@@ -103326,7 +103269,7 @@ const Load = () => {
           playSeClick();
         },
         onMouseEnter: playSeEnter,
-        className: styles$d.Save_Load_content_element,
+        className: styles$e.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -103335,12 +103278,12 @@ const Load = () => {
     showSaves.push(saveElement);
   }
   const t2 = useTrans("menu.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Load_title_text, children: t2("loadSaving.title") }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_top, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Load_title_text, children: t2("loadSaving.title") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_buttonList, children: page })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
   ] });
 };
 const Options_main = "_Options_main_u5orq_2";
@@ -103358,7 +103301,7 @@ const Options_page_container = "_Options_page_container_u5orq_92";
 const Options_button_list = "_Options_button_list_u5orq_98";
 const Options_page_button = "_Options_page_button_u5orq_102";
 const Options_page_button_active = "_Options_page_button_active_u5orq_114";
-const styles$c = {
+const styles$d = {
   Options_main,
   Options_top,
   Options_title,
@@ -103381,7 +103324,7 @@ const NormalOption_title = "_NormalOption_title_ogzuv_10";
 const NormalOption_title_bef = "_NormalOption_title_bef_ogzuv_19";
 const NormalOption_title_sd = "_NormalOption_title_sd_ogzuv_29";
 const NormalOption_buttonList = "_NormalOption_buttonList_ogzuv_39";
-const styles$b = {
+const styles$c = {
   NormalOption: NormalOption$1,
   Elements_in,
   NormalOption_title,
@@ -103390,14 +103333,14 @@ const styles$b = {
   NormalOption_buttonList
 };
 const NormalOption = (props) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$b.NormalOption, style: { width: props.full ? "100%" : "auto" }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_title, children: props.title }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$b.NormalOption_buttonList, style: { width: props.full ? "100%" : "auto" }, children: props.children })
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.NormalOption, style: { width: props.full ? "100%" : "auto" }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.NormalOption_title, children: props.title }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.NormalOption_buttonList, style: { width: props.full ? "100%" : "auto" }, children: props.children })
   ] });
 };
 const NormalButton$1 = "_NormalButton_1qk3b_1";
 const NormalButtonChecked = "_NormalButtonChecked_1qk3b_18";
-const styles$a = {
+const styles$b = {
   NormalButton: NormalButton$1,
   NormalButtonChecked
 };
@@ -103410,7 +103353,7 @@ const NormalButton = (props) => {
       const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: styles$a.NormalButton + " " + styles$a.NormalButtonChecked,
+          className: styles$b.NormalButton + " " + styles$b.NormalButtonChecked,
           onClick: () => {
             playSeSwitch();
             props.functionList[i2]();
@@ -103425,7 +103368,7 @@ const NormalButton = (props) => {
       const t2 = /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
-          className: styles$a.NormalButton,
+          className: styles$b.NormalButton,
           onClick: () => {
             playSeSwitch();
             props.functionList[i2]();
@@ -103547,7 +103490,7 @@ function System() {
   function toggleAbout() {
     setShowAbout(!showAbout);
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main_content_half, children: [
     showAbout && /* @__PURE__ */ jsxRuntimeExports.jsx(About, { onClose: toggleAbout }),
     !showAbout && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("autoSpeed.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -103653,7 +103596,7 @@ function System() {
 }
 const textPreviewMain = "_textPreviewMain_nolr3_1";
 const textbox = "_textbox_nolr3_8";
-const styles$9 = {
+const styles$a = {
   textPreviewMain,
   textbox
 };
@@ -103695,7 +103638,7 @@ const nameContainer = "_nameContainer_1cs17_134";
 const outerName = "_outerName_1cs17_140";
 const innerName = "_innerName_1cs17_151";
 const text$1 = "_text_1cs17_158";
-const styles$8 = {
+const styles$9 = {
   TextBox_EventHandler: TextBox_EventHandler$1,
   TextBox_Container,
   showSoftly: showSoftly$1,
@@ -103739,7 +103682,7 @@ function IMSSTextbox(props) {
       const textElements = document.querySelectorAll(".Textelement_start");
       const textArray2 = [...textElements];
       textArray2.forEach((e2) => {
-        e2.className = applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled);
+        e2.className = applyStyle2("TextBox_textElement_Settled", styles$9.TextBox_textElement_Settled);
       });
     }
     WebGAL.events.textSettle.on(settleText);
@@ -103761,12 +103704,12 @@ function IMSSTextbox(props) {
           "span",
           {
             id: `${delay}`,
-            className: applyStyle2("TextBox_textElement_Settled", styles$8.TextBox_textElement_Settled),
+            className: applyStyle2("TextBox_textElement_Settled", styles$9.TextBox_textElement_Settled),
             style: { animationDelay: `${delay}ms`, animationDuration: `${textDuration}ms` },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+            children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$9.zhanwei, children: [
               e2,
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
-              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$9.outer), children: e2 }),
+              isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$9.inner), children: e2 })
             ] })
           },
           currentDialogKey + index22
@@ -103777,12 +103720,12 @@ function IMSSTextbox(props) {
         {
           "data-text": e2,
           id: `${delay}`,
-          className: `${applyStyle2("TextBox_textElement_start", styles$8.TextBox_textElement_start)} Textelement_start`,
+          className: `${applyStyle2("TextBox_textElement_start", styles$9.TextBox_textElement_start)} Textelement_start`,
           style: { animationDelay: `${delay}ms`, position: "relative" },
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$9.zhanwei, children: [
             e2,
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$8.outer), children: e2 }),
-            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$8.inner), children: e2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outer", styles$9.outer), children: e2 }),
+            isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("inner", styles$9.inner), children: e2 })
           ] })
         },
         currentDialogKey + index22
@@ -103802,11 +103745,11 @@ function IMSSTextbox(props) {
     );
   });
   console.log(`${textboxOpacity / 100}`);
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$8.TextBox_Container, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: isText && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$9.TextBox_Container, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
       {
-        className: applyStyle2("TextBox_main", styles$8.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$8.TextBox_Background),
+        className: applyStyle2("TextBox_main", styles$9.TextBox_main) + " " + applyStyle2("TextBox_Background", styles$9.TextBox_Background),
         style: {
           opacity: `${textboxOpacity / 100}`,
           left: miniAvatar2 === "" ? 25 : void 0
@@ -103817,27 +103760,27 @@ function IMSSTextbox(props) {
       "div",
       {
         id: "textBoxMain",
-        className: applyStyle2("TextBox_main", styles$8.TextBox_main),
+        className: applyStyle2("TextBox_main", styles$9.TextBox_main),
         style: {
           fontFamily: font,
           left: miniAvatar2 === "" ? 25 : void 0
         },
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$8.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$8.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "miniAvatar", className: applyStyle2("miniAvatarContainer", styles$9.miniAvatarContainer), children: miniAvatar2 !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx("img", { className: applyStyle2("miniAvatarImg", styles$9.miniAvatarImg), alt: "miniAvatar", src: miniAvatar2 }) }),
           showName !== "" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$8.TextBox_ShowName_Background),
+                className: applyStyle2("TextBox_showName", styles$9.TextBox_showName) + " " + applyStyle2("TextBox_ShowName_Background", styles$9.TextBox_ShowName_Background),
                 style: {
                   opacity: `${textboxOpacity / 100}`,
                   fontSize: "200%"
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { opacity: 0 }, children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$9.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$9.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$9.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 }) })
               }
@@ -103845,15 +103788,15 @@ function IMSSTextbox(props) {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: applyStyle2("TextBox_showName", styles$8.TextBox_showName),
+                className: applyStyle2("TextBox_showName", styles$9.TextBox_showName),
                 style: {
                   fontSize: "200%"
                 },
                 children: showName.split("").map((e2, i2) => {
-                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$8.zhanwei, children: [
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { position: "relative" }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: styles$9.zhanwei, children: [
                     e2,
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$8.outerName), children: e2 }),
-                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$8.innerName), children: e2 })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("outerName", styles$9.outerName), children: e2 }),
+                    isUseStroke && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: applyStyle2("innerName", styles$9.innerName), children: e2 })
                   ] }) }, e2 + i2);
                 })
               },
@@ -103863,7 +103806,7 @@ function IMSSTextbox(props) {
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "div",
             {
-              className: applyStyle2("text", styles$8.text),
+              className: applyStyle2("text", styles$9.text),
               style: {
                 fontSize,
                 flexFlow: "column",
@@ -104078,11 +104021,11 @@ const TextPreview = (props) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     "div",
     {
-      className: styles$9.textPreviewMain,
+      className: styles$a.textPreviewMain,
       style: {
         background: previewBackground ? `bottom / cover no-repeat url(${previewBackground})` : "rgba(0, 0, 0, 0.1)"
       },
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$9.textbox, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Textbox, { ...textboxProps }) }, `previewTextbox-${textDelay}`)
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$a.textbox, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Textbox, { ...textboxProps }) }, `previewTextbox-${textDelay}`)
     }
   );
 };
@@ -104111,7 +104054,7 @@ function Display() {
   const userDataState = useSelector((state) => state.userData);
   const dispatch = useDispatch();
   const t2 = useTrans("menu.options.pages.display.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main_content_half, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("fullScreen.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       NormalButton,
       {
@@ -104211,7 +104154,7 @@ function Sound() {
   const userDataState = useSelector((state) => state.userData);
   const dispatch = useDispatch();
   const t2 = useTrans("menu.options.pages.sound.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content_half, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main_content_half, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(NormalOption, { title: t2("volumeMain.title"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       OptionSlider,
       {
@@ -104300,15 +104243,15 @@ const Options = () => {
   reactExports.useEffect(getStorage, []);
   function getClassName(page) {
     if (page === currentOptionPage.value) {
-      return styles$c.Options_page_button + " " + styles$c.Options_page_button_active;
+      return styles$d.Options_page_button + " " + styles$d.Options_page_button_active;
     } else
-      return styles$c.Options_page_button;
+      return styles$d.Options_page_button;
   }
   const t2 = useTrans("menu.options.");
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Options_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$c.Option_title_text, children: t2("title") }) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_page_container, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_button_list, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Options_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Options_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Option_title_text, children: t2("title") }) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_page_container, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_button_list, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
@@ -104364,7 +104307,7 @@ const Options = () => {
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$c.Options_main_content, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Options_main_content, children: [
         currentOptionPage.value === 1 && /* @__PURE__ */ jsxRuntimeExports.jsx(Display, {}),
         currentOptionPage.value === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(System, {}),
         currentOptionPage.value === 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(Sound, {})
@@ -104386,8 +104329,8 @@ const Menu = () => {
       currentTag = /* @__PURE__ */ jsxRuntimeExports.jsx(Options, {});
       break;
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$g.Menu_main, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$g.Menu_TagContent, children: currentTag }),
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIState.showMenuPanel && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$h.Menu_main, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$h.Menu_TagContent, children: currentTag }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(MenuPanel, {})
   ] }) });
 };
@@ -104401,7 +104344,7 @@ const MainStage_oldBgFadeout = "_MainStage_oldBgFadeout_9enex_1";
 const MainStage_oldBgContainer_Settled = "_MainStage_oldBgContainer_Settled_9enex_47";
 const pixiContainer = "_pixiContainer_9enex_72";
 const chooseContainer = "_chooseContainer_9enex_77";
-const styles$7 = {
+const styles$8 = {
   MainStage_main,
   MainStage_main_container,
   MainStage_bgContainer,
@@ -104580,7 +104523,7 @@ const FullScreenPerform = () => {
     stageHeight = "76%";
     top = "12%";
   }
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$l.FullScreenPerform_main, style: { width: stageWidth, height: stageHeight, top }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "videoContainer" }) });
 };
 const TextBox_EventHandler = "_TextBox_EventHandler_449dq_2";
 const TextBox_main = "_TextBox_main_449dq_10";
@@ -104592,7 +104535,7 @@ const TextBox_textElement_Settled = "_TextBox_textElement_Settled_449dq_48";
 const TextBox_showName = "_TextBox_showName_449dq_52";
 const miniAvatarContainer = "_miniAvatarContainer_449dq_68";
 const miniAvatarImg = "_miniAvatarImg_449dq_76";
-const styles$6 = {
+const styles$7 = {
   TextBox_EventHandler,
   TextBox_main,
   showSoftly,
@@ -104623,7 +104566,7 @@ const TextBoxFilm = () => {
         "span",
         {
           id: `${delay}`,
-          className: styles$6.TextBox_textElement_Settled,
+          className: styles$7.TextBox_textElement_Settled,
           style: { animationDelay: `${delay}ms` },
           children: e2
         },
@@ -104634,14 +104577,14 @@ const TextBoxFilm = () => {
       "span",
       {
         id: `${delay}`,
-        className: styles$6.TextBox_textElement_start,
+        className: styles$7.TextBox_textElement_start,
         style: { animationDelay: `${delay}ms` },
         children: e2
       },
       stageState.currentDialogKey + index2
     );
   });
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "textBoxMain", className: styles$6.TextBox_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: size }, children: textElementList }) });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "textBoxMain", className: styles$7.TextBox_main, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: size }, children: textElementList }) });
 };
 function useSetBg(stageState) {
   const bgName = stageState.bgName;
@@ -104919,12 +104862,31 @@ function MainStage() {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { display: "none" } });
 }
 const introContainer = "_introContainer_119k8_1";
-const styles$5 = {
+const styles$6 = {
   introContainer
 };
 function IntroContainer() {
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$5.introContainer, id: "introContainer" });
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$6.introContainer, id: "introContainer" });
 }
+const variableNameWrapper = "_variableNameWrapper_1c90s_1";
+const styles$5 = {
+  variableNameWrapper
+};
+const VariableName = () => {
+  const stageState = useSelector((state) => state.stage);
+  return stageState.isShowValueSWitch ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "div",
+    {
+      className: styles$5.variableNameWrapper,
+      style: {
+        position: "fixed",
+        left: stageState.showValueAxisX + "px",
+        top: stageState.showValueAxisY + "px"
+      },
+      children: stageState.showValueName
+    }
+  ) : null;
+};
 function inTextBox(event) {
   const tb2 = document.getElementById("textBoxMain");
   if (!tb2) {
@@ -104978,11 +104940,11 @@ const Stage = () => {
   const GUIState = useSelector((state) => state.GUI);
   const dispatch = useDispatch();
   useHotkey();
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$7.MainStage_main, children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$8.MainStage_main, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(FullScreenPerform, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(MainStage, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$7.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$7.chooseContainer }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "pixiContianer", className: styles$8.pixiContainer, style: { zIndex: isIOS ? "-5" : void 0 } }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "chooseContainer", className: styles$8.chooseContainer }),
     GUIState.showTextBox && stageState.enableFilm === "" && !stageState.isDisableTextbox && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBox, {}),
     GUIState.showTextBox && stageState.enableFilm !== "" && /* @__PURE__ */ jsxRuntimeExports.jsx(TextBoxFilm, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(AudioContainer, {}),
@@ -105005,7 +104967,8 @@ const Stage = () => {
         onMouseMove: (e2) => !GUIState.showControls && updateControlsVisibility(e2, stageState, GUIState, dispatch)
       }
     ),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(IntroContainer, {})
+    /* @__PURE__ */ jsxRuntimeExports.jsx(IntroContainer, {}),
+    stageState.isShowValueSWitch && /* @__PURE__ */ jsxRuntimeExports.jsx(VariableName, {})
   ] });
 };
 const BottomControlPanel = () => {
@@ -105036,9 +104999,9 @@ const BottomControlPanel = () => {
   let fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "125%" }, children: t2("noSaving") }) });
   if (saveData[0]) {
     const data2 = saveData[0];
-    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.slPreviewMain, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.textContainer, children: [
+    fastSlPreview2 = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$k.slPreviewMain, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.imgContainer, children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { style: { height: "100%" }, alt: "q-save-preview image", src: data2.previewImage }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$k.textContainer, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data2.nowStageState.showName }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { fontSize: "75%", color: "rgb(55,60,56)" }, children: data2.nowStageState.showText })
       ] })
@@ -105071,11 +105034,11 @@ const BottomControlPanel = () => {
   };
   return (
     // <div className={styles.ToCenter}>
-    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: GUIStore.showTextBox && stageState.enableFilm === "" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$k.main, style: { visibility: GUIStore.controlsVisibility ? "visible" : "hidden" }, children: [
       GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", false);
@@ -105086,21 +105049,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewCloseOne,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.hide") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.hide") })
           ]
         }
       ),
       !GUIStore.showTextBox && /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showTextBox", true);
@@ -105111,21 +105074,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               PreviewOpen,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.show") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.show") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setComponentVisibility("showBacklog", true);
@@ -105137,21 +105100,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               AlignTextLeftOne,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.backlog") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.backlog") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             let VocalControl = document.getElementById("currentVocal");
@@ -105167,14 +105130,14 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               ReplayMusic,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.replay") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.replay") })
           ]
         }
       ),
@@ -105182,7 +105145,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_auto",
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             switchAuto();
@@ -105190,8 +105153,8 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.auto") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(PlayOne, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.auto") })
           ]
         }
       ),
@@ -105199,7 +105162,7 @@ const BottomControlPanel = () => {
         "span",
         {
           id: "Button_ControlPanel_fast",
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             switchFast();
@@ -105210,21 +105173,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleRight,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.forward") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.forward") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton + " " + styles$j.fastsave,
+          className: styles$k.singleButton + " " + styles$k.fastsave,
           style: { fontSize },
           onClick: () => {
             saveGame(0);
@@ -105235,22 +105198,22 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               DoubleDown,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklySave") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastSPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.quicklySave") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.fastSlPreview + " " + styles$k.fastSPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton + " " + styles$j.fastload,
+          className: styles$k.singleButton + " " + styles$k.fastload,
           style: { fontSize },
           onClick: () => {
             loadGame(0);
@@ -105258,29 +105221,29 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.quicklyLoad") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.fastSlPreview + " " + styles$j.fastLPreview, children: fastSlPreview2 })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(DoubleUp, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.quicklyLoad") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$k.fastSlPreview + " " + styles$k.fastLPreview, children: fastSlPreview2 })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: handleCollectVideo,
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2(`${GUIStore.showFavorited ? "buttons.collected" : "buttons.collection"}`) })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2(`${GUIStore.showFavorited ? "buttons.collected" : "buttons.collection"}`) })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Save);
@@ -105289,15 +105252,15 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.save") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Save$1, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.save") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Load);
@@ -105309,21 +105272,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               FolderOpen,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.load") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.load") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             setMenuPanel(MenuPanelTag.Option);
@@ -105335,21 +105298,21 @@ const BottomControlPanel = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               SettingTwo,
               {
-                className: styles$j.button,
+                className: styles$k.button,
                 theme: "outline",
                 size,
                 fill: "#f5f5f7",
                 strokeWidth
               }
             ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.options") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.options") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             playSeDialogOpen();
@@ -105366,22 +105329,22 @@ const BottomControlPanel = () => {
           },
           onMouseEnter: playSeEnter,
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.button_text, children: t2("buttons.title") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Home, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$k.button_text, children: t2("buttons.title") })
           ]
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "span",
         {
-          className: styles$j.singleButton,
+          className: styles$k.singleButton,
           style: { fontSize },
           onClick: () => {
             switchControls();
             playSeClick();
           },
           onMouseEnter: playSeEnter,
-          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$j.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
+          children: GUIStore.showControls ? /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Unlock, { className: styles$k.button, theme: "outline", size, fill: "#f5f5f7", strokeWidth })
         }
       )
     ] }) })
@@ -105415,11 +105378,11 @@ const Backlog = () => {
       const singleBacklogView = /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "div",
         {
-          className: styles$i.backlog_item,
+          className: styles$j.backlog_item,
           style: { animationDelay: `${20 * (WebGAL.backlogManager.getBacklog().length - i2)}ms` },
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_func_area, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_item_button_list, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.backlog_func_area, children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.backlog_item_button_list, children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "div",
                   {
@@ -105430,7 +105393,7 @@ const Backlog = () => {
                       e2.stopPropagation();
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$i.backlog_item_button_element,
+                    className: styles$j.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(Return, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ),
@@ -105449,14 +105412,14 @@ const Backlog = () => {
                       }
                     },
                     onMouseEnter: playSeEnter,
-                    className: styles$i.backlog_item_button_element,
+                    className: styles$j.backlog_item_button_element,
                     children: /* @__PURE__ */ jsxRuntimeExports.jsx(VolumeNotice, { theme: "outline", size: iconSize, fill: "#ffffff", strokeWidth: 3 })
                   }
                 ) : null
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content_name, children: backlogItem.currentStageState.showName })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.backlog_item_content_name, children: backlogItem.currentStageState.showName })
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$i.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$i.backlog_item_content_text, children: showTextElementList }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$j.backlog_item_content, children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: styles$j.backlog_item_content_text, children: showTextElementList }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("audio", { id: "backlog_audio_play_element_" + i2, src: backlogItem.currentStageState.vocal })
           ]
         },
@@ -105491,15 +105454,15 @@ const Backlog = () => {
       "div",
       {
         className: `
-          ${GUIStore.showBacklog ? styles$i.Backlog_main : styles$i.Backlog_main_out}
-          ${indexHide ? styles$i.Backlog_main_out_IndexHide : ""}
+          ${GUIStore.showBacklog ? styles$j.Backlog_main : styles$j.Backlog_main_out}
+          ${indexHide ? styles$j.Backlog_main_out_IndexHide : ""}
           `,
         children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$i.backlog_top, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$j.backlog_top, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               CloseSmall,
               {
-                className: styles$i.backlog_top_icon,
+                className: styles$j.backlog_top_icon,
                 onClick: () => {
                   playSeClick();
                   dispatch(setVisibility({ component: "showBacklog", visibility: false }));
@@ -105515,7 +105478,7 @@ const Backlog = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
-                className: styles$i.backlog_title,
+                className: styles$j.backlog_title,
                 onClick: () => {
                   logger.info("Rua! Testing");
                 },
@@ -105523,7 +105486,7 @@ const Backlog = () => {
               }
             )
           ] }),
-          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$i.backlog_content} ${isDisableScroll ? styles$i.Backlog_main_DisableScroll : ""}`, children: backlogList })
+          GUIStore.showBacklog && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `${styles$j.backlog_content} ${isDisableScroll ? styles$j.Backlog_main_DisableScroll : ""}`, children: backlogList })
         ]
       }
     )
@@ -105654,9 +105617,9 @@ const ExtraVideo = () => {
   const [showEditDialog, setShowEditDialog] = reactExports.useState(false);
   const page = [];
   for (let i2 = 1; i2 <= 20; i2++) {
-    let classNameOfElement = styles$d.Save_Load_top_button + " " + styles$d.Load_top_button;
+    let classNameOfElement = styles$e.Save_Load_top_button + " " + styles$e.Load_top_button;
     if (i2 === userDataState.optionData.slPage) {
-      classNameOfElement = classNameOfElement + " " + styles$d.Save_Load_top_button_on + " " + styles$d.Load_top_button_on;
+      classNameOfElement = classNameOfElement + " " + styles$e.Save_Load_top_button_on + " " + styles$e.Load_top_button_on;
     }
     const element = /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -105668,7 +105631,7 @@ const ExtraVideo = () => {
         },
         onMouseEnter: playSeEnter,
         className: classNameOfElement,
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_button_text, children: i2 })
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_button_text, children: i2 })
       },
       "Load_element_page" + i2
     );
@@ -105705,11 +105668,11 @@ const ExtraVideo = () => {
     let saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsx("div", {});
     if (saveData) {
       saveElementContent = /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_element_top_index + " " + styles$d.Load_content_elememt_top_index, children: saveData.index }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_element_top_index + " " + styles$e.Load_content_elememt_top_index, children: saveData.index }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content_miniRen, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "img",
           {
-            className: styles$d.Save_Load_content_miniRen_bg,
+            className: styles$e.Save_Load_content_miniRen_bg,
             alt: "Save_img_preview",
             src: saveData.previewImage
           }
@@ -105717,7 +105680,7 @@ const ExtraVideo = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
           {
-            className: styles$d.Save_Load_content_element_top_date + " " + styles$d.Load_content_element_top_date,
+            className: styles$e.Save_Load_content_element_top_date + " " + styles$e.Load_content_element_top_date,
             style: { width: "100%", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" },
             onClick: (e2) => handleEditName(e2, saveData, i2),
             title: `${saveData.saveName || saveData.saveTime}`,
@@ -105735,7 +105698,7 @@ const ExtraVideo = () => {
           playSeClick();
         },
         onMouseEnter: playSeEnter,
-        className: styles$d.Save_Load_content_element,
+        className: styles$e.Save_Load_content_element,
         style: { animationDelay: `${animationIndex * 30}ms` },
         children: saveElementContent
       },
@@ -105745,12 +105708,12 @@ const ExtraVideo = () => {
   }
   const t2 = useTrans("menu.");
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_main, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$d.Save_Load_top, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Load_title_text, children: t2("extra.title") }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_top_buttonList, children: page })
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_main, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$e.Save_Load_top, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_title, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Load_title_text, children: t2("extra.title") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_top_buttonList, children: page })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$d.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: styles$e.Save_Load_content, id: "Load_content_page_" + userDataState.optionData.slPage, children: showSaves })
     ] }),
     showEditDialog && /* @__PURE__ */ jsxRuntimeExports.jsx(EditNameDialog, { value: editNameVal, onCancel, onConfirm })
   ] });
