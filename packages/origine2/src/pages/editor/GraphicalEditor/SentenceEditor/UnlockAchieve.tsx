@@ -36,7 +36,6 @@ export default function UnlockAchieve(props: ISentenceEditorProps) {
     });
   }, []);
 
-  // unlockAchieve：unlock.png -x=100 -y=100 -name="成就名称";
   const submit = () => {
     const axisX = x.value !== '' ? ` -x=${x.value}` : '';
     const axisY = y.value !== '' ? ` -y=${y.value}` : '';
@@ -45,12 +44,8 @@ export default function UnlockAchieve(props: ISentenceEditorProps) {
     let content = '';
     if (bgFile.value !== 'none') {
       content = `unlockAchieve:${bgFile.value}${axisX}${axisY}${name} -next;`;
-    //   console.log('111111111111111111', content);
-    //   console.log({props})
     } else {
       content = `unlockAchieve:${bgFile.value} -next;`;
-    //   console.log('222222222222222222', content);
-    //   console.log({props})
     }
     props.onSubmit(content)
   };

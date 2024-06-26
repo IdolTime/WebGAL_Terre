@@ -2439,7 +2439,7 @@ input[type=range]::-moz-range-track {
 ._storyLine_1luh3_2 ._storyLine_content_1luh3_30 ._storyLine_item_1luh3_38 ._info_card_1luh3_49 ._name_1luh3_83 {
   font-size: 50px;
   color: red;
-}._achievement_11rs6_1 {
+}._achievement_1qmdu_1 {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -2450,7 +2450,7 @@ input[type=range]::-moz-range-track {
   z-index: 99;
   overflow: auto;
 }
-._achievement_11rs6_1 ._achievement_header_11rs6_12 {
+._achievement_1qmdu_1 ._achievement_header_1qmdu_12 {
   display: flex;
   align-items: center;
   position: fixed;
@@ -2458,25 +2458,26 @@ input[type=range]::-moz-range-track {
   left: 50px;
   z-index: 101;
 }
-._achievement_11rs6_1 ._achievement_header_11rs6_12 ._goback_11rs6_20 {
+._achievement_1qmdu_1 ._achievement_header_1qmdu_12 ._goback_1qmdu_20 {
   margin-right: 1em;
   color: #666;
   font-size: 46px;
 }
-._achievement_11rs6_1 ._achievement_header_11rs6_12 ._goback_11rs6_20:hover {
+._achievement_1qmdu_1 ._achievement_header_1qmdu_12 ._goback_1qmdu_20:hover {
   cursor: pointer;
 }
-._achievement_11rs6_1 ._achievement_header_11rs6_12 ._title_11rs6_28 {
+._achievement_1qmdu_1 ._achievement_header_1qmdu_12 ._title_1qmdu_28 {
   color: #000;
   font-size: 50px;
 }
-._achievement_11rs6_1 ._achievement_content_11rs6_32 {
+._achievement_1qmdu_1 ._achievement_content_1qmdu_32 {
   position: absolute;
   top: 50%;
   left: 10%;
   transform: translateY(-50%);
+  z-index: 101;
 }
-._achievement_11rs6_1 ._achievement_content_11rs6_32 ._achievement_current_11rs6_38 {
+._achievement_1qmdu_1 ._achievement_content_1qmdu_32 ._achievement_current_1qmdu_39 {
   width: 300px;
   height: 300px;
   border-radius: 50%;
@@ -2487,17 +2488,17 @@ input[type=range]::-moz-range-track {
   justify-content: center;
   align-items: center;
 }
-._achievement_11rs6_1 ._achievement_content_11rs6_32 ._achievement_current_11rs6_38 ._text_11rs6_49 {
+._achievement_1qmdu_1 ._achievement_content_1qmdu_32 ._achievement_current_1qmdu_39 ._text_1qmdu_50 {
   font-size: 40px;
   color: #000;
   font-weight: 600;
 }
-._achievement_11rs6_1 ._achievement_content_11rs6_32 ._achievement_current_11rs6_38 ._number_11rs6_54 {
+._achievement_1qmdu_1 ._achievement_content_1qmdu_32 ._achievement_current_1qmdu_39 ._number_1qmdu_55 {
   font-size: 50px;
   color: #000;
   font-weight: 600;
 }
-._achievement_11rs6_1 ._achievement_content_11rs6_32 ._achievement_current_11rs6_38 ._pregessBar_11rs6_59 {
+._achievement_1qmdu_1 ._achievement_content_1qmdu_32 ._achievement_current_1qmdu_39 ._pregessBar_1qmdu_60 {
   width: 100%;
   height: 15px;
   background-color: rgb(208, 208, 208);
@@ -2505,7 +2506,7 @@ input[type=range]::-moz-range-track {
   border-radius: 8px;
   overflow: hidden;
 }
-._achievement_11rs6_1 ._achievement_content_11rs6_32 ._achievement_current_11rs6_38 ._pregessBar_11rs6_59 ._pregressBar_inner_11rs6_67 {
+._achievement_1qmdu_1 ._achievement_content_1qmdu_32 ._achievement_current_1qmdu_39 ._pregessBar_1qmdu_60 ._pregressBar_inner_1qmdu_68 {
   width: 0%;
   height: 100%;
   background-color: rgb(252, 227, 114);
@@ -2513,7 +2514,7 @@ input[type=range]::-moz-range-track {
   bottom: 0;
   left: 0;
 }
-._achievement_11rs6_1 ._achievement_content_bg_11rs6_75 {
+._achievement_1qmdu_1 ._achievement_content_bg_1qmdu_76 {
   height: 100%;
   width: 100%;
   overflow: auto;
@@ -2521,7 +2522,7 @@ input[type=range]::-moz-range-track {
   position: relative;
   background-size: 1920px 1080px;
 }
-._achievement_11rs6_1 ._achievement_list_11rs6_83 ._achievement_item_11rs6_83 {
+._achievement_1qmdu_1 ._achievement_list_1qmdu_84 ._achievement_item_1qmdu_84 {
   position: absolute;
   top: 0;
   left: 0;
@@ -2533,20 +2534,21 @@ input[type=range]::-moz-range-track {
   border-radius: 50%;
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  z-index: 101;
 }
-._achievement_11rs6_1 ._achievement_list_11rs6_83 ._achievement_item_11rs6_83:hover {
+._achievement_1qmdu_1 ._achievement_list_1qmdu_84 ._achievement_item_1qmdu_84:hover {
   transform: scale(1.2);
   transition: all 0.3s;
   cursor: pointer;
 }
-._achievement_11rs6_1 ._achievement_list_11rs6_83 ._achievement_item_11rs6_83:hover ._ripple_11rs6_101 {
-  animation: _ripple-effect_11rs6_1 0.5s linear;
+._achievement_1qmdu_1 ._achievement_list_1qmdu_84 ._achievement_item_1qmdu_84:hover ._ripple_1qmdu_103 {
+  animation: _ripple-effect_1qmdu_1 0.5s linear;
 }
-._achievement_11rs6_1 ._achievement_list_11rs6_83 ._achievement_item_11rs6_83:hover ._info_card_11rs6_104 {
+._achievement_1qmdu_1 ._achievement_list_1qmdu_84 ._achievement_item_1qmdu_84:hover ._info_card_1qmdu_106 {
   opacity: 1;
   transition: all 0.3s;
 }
-._achievement_11rs6_1 ._achievement_list_11rs6_83 ._achievement_item_11rs6_83 ._ripple_11rs6_101 {
+._achievement_1qmdu_1 ._achievement_list_1qmdu_84 ._achievement_item_1qmdu_84 ._ripple_1qmdu_103 {
   position: absolute;
   width: 100px;
   height: 100px;
@@ -2557,7 +2559,7 @@ input[type=range]::-moz-range-track {
   border-radius: 50%;
   opacity: 0;
 }
-._achievement_11rs6_1 ._achievement_list_11rs6_83 ._achievement_item_11rs6_83 ._info_card_11rs6_104 {
+._achievement_1qmdu_1 ._achievement_list_1qmdu_84 ._achievement_item_1qmdu_84 ._info_card_1qmdu_106 {
   position: absolute;
   top: -30px;
   left: 100px;
@@ -2573,7 +2575,7 @@ input[type=range]::-moz-range-track {
   line-height: 1.2;
   font-weight: bold;
 }
-._achievement_11rs6_1 ._achievement_list_11rs6_83 ._achievement_item_11rs6_83 ._info_card_11rs6_104 ._unlockname_11rs6_135 {
+._achievement_1qmdu_1 ._achievement_list_1qmdu_84 ._achievement_item_1qmdu_84 ._info_card_1qmdu_106 ._unlockname_1qmdu_137 {
   display: flex;
   justify-content: center;
   padding: 0.2em 0.8rem;
@@ -2582,14 +2584,14 @@ input[type=range]::-moz-range-track {
   border-radius: 1rem;
   background-color: rgb(209, 129, 175);
 }
-._achievement_11rs6_1 ._achievement_list_11rs6_83 ._achievement_item_11rs6_83 ._info_card_11rs6_104 ._time_11rs6_144,
-._achievement_11rs6_1 ._achievement_list_11rs6_83 ._achievement_item_11rs6_83 ._info_card_11rs6_104 ._description_11rs6_145 {
+._achievement_1qmdu_1 ._achievement_list_1qmdu_84 ._achievement_item_1qmdu_84 ._info_card_1qmdu_106 ._time_1qmdu_146,
+._achievement_1qmdu_1 ._achievement_list_1qmdu_84 ._achievement_item_1qmdu_84 ._info_card_1qmdu_106 ._description_1qmdu_147 {
   color: rgb(162, 99, 137);
   font-size: 50px;
   margin-top: 10px;
 }
 
-@keyframes _ripple-effect_11rs6_1 {
+@keyframes _ripple-effect_1qmdu_1 {
   0% {
     transform: translate(-50%, -50%) scale(0);
     opacity: 1;

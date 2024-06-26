@@ -14664,6 +14664,8 @@ var commandType;
   commandType2[commandType2["setTransition"] = 30] = "setTransition";
   commandType2[commandType2["getUserInput"] = 31] = "getUserInput";
   commandType2[commandType2["applyStyle"] = 32] = "applyStyle";
+  commandType2[commandType2["unlockAchieve"] = 33] = "unlockAchieve";
+  commandType2[commandType2["unlockStoryline"] = 34] = "unlockStoryline";
 })(commandType || (commandType = {}));
 [
   { scriptString: "intro", scriptType: commandType.intro },
@@ -14695,7 +14697,9 @@ var commandType;
   { scriptString: "setTextbox", scriptType: commandType.setTextbox },
   { scriptString: "setAnimation", scriptType: commandType.setAnimation },
   { scriptString: "playEffect", scriptType: commandType.playEffect },
-  { scriptString: "applyStyle", scriptType: commandType.applyStyle }
+  { scriptString: "applyStyle", scriptType: commandType.applyStyle },
+  { scriptString: "unlockStoryline", scriptType: commandType.unlockStoryline },
+  { scriptString: "unlockAchieve", scriptType: commandType.unlockAchieve }
 ];
 [
   commandType.bgm,
@@ -23016,7 +23020,7 @@ function call$1(name2, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-0a34afcf.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-6de16ff6.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23210,7 +23214,8 @@ const initState$1 = {
   // 保存已经解锁的故事线列表
   saveVideoData: null,
   unlockAchieveData: [],
-  isShowUnlock: false
+  isShowUnlock: false,
+  unlockAchieveAllTotal: 0
 };
 const saveDataSlice = createSlice({
   name: "saveData",
@@ -23261,6 +23266,9 @@ const saveDataSlice = createSlice({
     },
     setIsShowUnlock: (state, action) => {
       state.isShowUnlock = action.payload;
+    },
+    setUnlockAchieveAllTotal: (state, action) => {
+      state.unlockAchieveAllTotal = action.payload;
     }
   }
 });
@@ -102025,6 +102033,9 @@ const initializeScript = () => {
     WebGAL.sceneManager.settledScenes.push(sceneUrl);
     const subSceneListUniq = uniqWith$1(subSceneList);
     scenePrefetcher(subSceneListUniq);
+    const sentenceList = (scene == null ? void 0 : scene.sentenceList) ?? [];
+    const unlockAchieveList = sentenceList == null ? void 0 : sentenceList.filter((e2) => (e2 == null ? void 0 : e2.commandRaw) === "unlockAchieve");
+    webgalStore.dispatch(saveActions.setUnlockAchieveAllTotal((unlockAchieveList == null ? void 0 : unlockAchieveList.length) ?? 0));
   });
   WebGAL.gameplay.pixiStage = new PixiStage();
   bindExtraFunc();
@@ -106095,24 +106106,24 @@ const StoryLine = () => {
     )
   ] }) });
 };
-const achievement = "_achievement_11rs6_1";
-const achievement_header = "_achievement_header_11rs6_12";
-const goback = "_goback_11rs6_20";
-const title = "_title_11rs6_28";
-const achievement_content = "_achievement_content_11rs6_32";
-const achievement_current = "_achievement_current_11rs6_38";
-const text = "_text_11rs6_49";
-const number = "_number_11rs6_54";
-const pregessBar = "_pregessBar_11rs6_59";
-const pregressBar_inner = "_pregressBar_inner_11rs6_67";
-const achievement_content_bg = "_achievement_content_bg_11rs6_75";
-const achievement_list = "_achievement_list_11rs6_83";
-const achievement_item = "_achievement_item_11rs6_83";
-const ripple = "_ripple_11rs6_101";
-const info_card = "_info_card_11rs6_104";
-const unlockname = "_unlockname_11rs6_135";
-const time = "_time_11rs6_144";
-const description = "_description_11rs6_145";
+const achievement = "_achievement_1qmdu_1";
+const achievement_header = "_achievement_header_1qmdu_12";
+const goback = "_goback_1qmdu_20";
+const title = "_title_1qmdu_28";
+const achievement_content = "_achievement_content_1qmdu_32";
+const achievement_current = "_achievement_current_1qmdu_39";
+const text = "_text_1qmdu_50";
+const number = "_number_1qmdu_55";
+const pregessBar = "_pregessBar_1qmdu_60";
+const pregressBar_inner = "_pregressBar_inner_1qmdu_68";
+const achievement_content_bg = "_achievement_content_bg_1qmdu_76";
+const achievement_list = "_achievement_list_1qmdu_84";
+const achievement_item = "_achievement_item_1qmdu_84";
+const ripple = "_ripple_1qmdu_103";
+const info_card = "_info_card_1qmdu_106";
+const unlockname = "_unlockname_1qmdu_137";
+const time = "_time_1qmdu_146";
+const description = "_description_1qmdu_147";
 const styles = {
   achievement,
   achievement_header,
@@ -106128,7 +106139,7 @@ const styles = {
   achievement_list,
   achievement_item,
   ripple,
-  "ripple-effect": "_ripple-effect_11rs6_1",
+  "ripple-effect": "_ripple-effect_1qmdu_1",
   info_card,
   unlockname,
   time,
@@ -106147,17 +106158,18 @@ const Achievement = () => {
   });
   reactExports.useEffect(() => {
     webgalStore.dispatch(saveActions.setIsShowUnlock(false));
-    setTimeout(() => {
-      initData();
-    }, 1e3);
-  }, []);
+    if (GUIState.showAchievement) {
+      setTimeout(() => {
+        initData();
+      }, 10);
+    }
+  }, [GUIState.showAchievement]);
   async function initData() {
-    var _a3, _b3;
+    var _a3;
     await getUnlickAchieveFromStorage();
-    const currentScene = WebGAL.sceneManager.sceneData.currentScene;
-    const unlockAchieveAlls = ((_a3 = currentScene.sentenceList) == null ? void 0 : _a3.filter((e2) => e2.commandRaw === "unlockAchieve" && currentScene.sceneName === "start.txt")) ?? [];
-    const unlocked = ((_b3 = webgalStore.getState().saveData.unlockAchieveData) == null ? void 0 : _b3.length) ?? 0;
-    const allTotal = (unlockAchieveAlls == null ? void 0 : unlockAchieveAlls.length) ?? 0;
+    WebGAL.sceneManager.sceneData.currentScene;
+    const unlocked = ((_a3 = webgalStore.getState().saveData.unlockAchieveData) == null ? void 0 : _a3.length) ?? 0;
+    const allTotal = webgalStore.getState().saveData.unlockAchieveAllTotal || 0;
     const currentProgress = (unlocked / allTotal * 100).toFixed(2) + "%";
     setUnlockedData({ unlocked, allTotal, currentProgress });
   }

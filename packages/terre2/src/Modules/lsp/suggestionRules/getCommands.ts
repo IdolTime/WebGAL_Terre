@@ -171,28 +171,17 @@ setVar:a=人物名称;可以设置字符串`,
     insertText: 'setVar:',
   },
   {
-    label: 'unlockStoryLine',
-    kind: CompletionItemKind.Function,
-    documentation: `使用变量`,
-    detail: `command unlockStoryLine:<expression>;`,
-    insertText: 'unlockStoryLine:',
-  },
-  {
-    label: 'achieveBg',
-    kind: CompletionItemKind.Function,
-    documentation: `更新成就背景图片
-    achieveBg:testBG03.jpg -next;`,
-    detail: `command achieveBg:<fileName> [-next];`,
-    insertText: 'achieveBg',
-  },
-  {
     label: 'unlockAchieve',
     kind: CompletionItemKind.Function,
-    documentation: `使用变量
-    unlockAchieve:a=1;可以设置数字
-    unlockAchieve:a=true;可以设置布尔值
-    unlockAchieve:a=人物名称;可以设置字符串`,
+    documentation: `使用变量`,
     detail: `command unlockAchieve:<expression>;`,
     insertText: 'unlockAchieve:',
   },
+  {
+    label: 'unlockStoryline',
+    kind: CompletionItemKind.Function,
+    documentation: `使用变量`,
+    detail: `command unlockStoryline:<expression>;`,
+    insertText: 'unlockStoryline:',
+  }
 ];
