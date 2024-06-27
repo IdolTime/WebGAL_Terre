@@ -23043,7 +23043,7 @@ function call$1(name2, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-5aae5dc7.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-f12a447f.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -40931,7 +40931,9 @@ class VideoManager {
         videoContainerTag.style.zIndex = "11";
       }
     } else {
-      videoItem.waitCommands.showVideo = true;
+      if (videoItem) {
+        videoItem.waitCommands.showVideo = true;
+      }
     }
   }
   playVideo(key) {
@@ -40959,7 +40961,9 @@ class VideoManager {
     if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.player.currentTime = time2;
     } else {
-      videoItem.waitCommands.seek = time2;
+      if (videoItem) {
+        videoItem.waitCommands.seek = time2;
+      }
     }
   }
   setVolume(key, volume) {
@@ -41341,6 +41345,7 @@ const startGame = () => {
       }
     });
   });
+  webgalStore.dispatch(saveActions.setIsShowUnlock(true));
   webgalStore.dispatch(setVisibility({ component: "showTitle", visibility: false }));
 };
 const enterStoryLine = () => {
@@ -106021,15 +106026,15 @@ function useFullScreen() {
     }
   }, [fullScreen]);
 }
-const storyLine = "_storyLine_1luh3_2";
-const storyLine_header = "_storyLine_header_1luh3_11";
-const goBack = "_goBack_1luh3_18";
-const title$1 = "_title_1luh3_25";
-const storyLine_content = "_storyLine_content_1luh3_30";
-const storyLine_item = "_storyLine_item_1luh3_38";
-const info_card$1 = "_info_card_1luh3_49";
-const playButton_icon = "_playButton_icon_1luh3_69";
-const name = "_name_1luh3_83";
+const storyLine = "_storyLine_v4y75_2";
+const storyLine_header = "_storyLine_header_v4y75_11";
+const goBack = "_goBack_v4y75_18";
+const title$1 = "_title_v4y75_25";
+const storyLine_content = "_storyLine_content_v4y75_30";
+const storyLine_item = "_storyLine_item_v4y75_38";
+const info_card$1 = "_info_card_v4y75_49";
+const playButton_icon = "_playButton_icon_v4y75_69";
+const name = "_name_v4y75_83";
 const styles$1 = {
   storyLine,
   storyLine_header,
@@ -106149,8 +106154,8 @@ const Achievement = () => {
     currentProgress: "0%"
   });
   reactExports.useEffect(() => {
-    webgalStore.dispatch(saveActions.setIsShowUnlock(false));
     if (GUIState.showAchievement) {
+      webgalStore.dispatch(saveActions.setIsShowUnlock(false));
       setTimeout(() => {
         initData();
       }, 10);
