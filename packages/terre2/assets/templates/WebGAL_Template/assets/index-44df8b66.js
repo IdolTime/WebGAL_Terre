@@ -23043,7 +23043,7 @@ function call$1(name2, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-f12a447f.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-01df3b3e.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -23546,7 +23546,7 @@ const playVideo = (sentence) => {
             if (vocalElement2) {
               vocalElement2.volume = vocalVol.toString();
             }
-            WebGAL.videoManager.destroy(url2);
+            WebGAL.videoManager.destroy(url2, false, isLoadVideo);
           },
           blockingNext: checkIfBlockingNext,
           blockingAuto: () => {
@@ -23961,6 +23961,7 @@ const resetStage = (resetBacklog, resetSceneAndVar = true, resetVideo = true) =>
     webgalStore.dispatch(setStage({ key: "GameVar", value: currentVars }));
   }
   webgalStore.dispatch(saveActions.setIsShowUnlock(true));
+  webgalStore.dispatch(saveActions.setLoadVideo(false));
 };
 const end = (sentence) => {
   resetStage(true);
@@ -40942,7 +40943,9 @@ class VideoManager {
       videoItem.player.play();
       this.checkProgress(key);
     } else {
-      videoItem.waitCommands.playVideo = true;
+      if (videoItem) {
+        videoItem.waitCommands.playVideo = true;
+      }
     }
   }
   setLoop(key, loopValue) {
@@ -40953,7 +40956,9 @@ class VideoManager {
         videoTag.loop = loopValue;
       }
     } else {
-      videoItem.waitCommands.setLoop = loopValue;
+      if (videoItem) {
+        videoItem.waitCommands.setLoop = loopValue;
+      }
     }
   }
   seek(key, time2) {
@@ -40971,10 +40976,12 @@ class VideoManager {
     if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.player.volume = volume;
     } else {
-      videoItem.waitCommands.setVolume = volume;
+      if (videoItem) {
+        videoItem.waitCommands.setVolume = volume;
+      }
     }
   }
-  destroy(key, noWait = false) {
+  destroy(key, noWait = false, isLoadVideo = false) {
     const videoItem = this.videosByKey[key];
     if (videoItem == null ? void 0 : videoItem.player) {
       videoItem.player.pause();
@@ -40991,7 +40998,7 @@ class VideoManager {
         () => {
           try {
             const video = videoContainer2 == null ? void 0 : videoContainer2.getElementsByTagName("video");
-            if (video == null ? void 0 : video.length) {
+            if ((video == null ? void 0 : video.length) && !isLoadVideo) {
               videoItem.player.destroy();
             }
           } catch (error2) {
@@ -40999,16 +41006,22 @@ class VideoManager {
           }
           setTimeout(
             () => {
-              videoContainer2 == null ? void 0 : videoContainer2.remove();
+              if (!isLoadVideo) {
+                videoContainer2 == null ? void 0 : videoContainer2.remove();
+              }
             },
             noWait ? 0 : 500
           );
-          delete this.videosByKey[key];
+          if (!isLoadVideo) {
+            delete this.videosByKey[key];
+          }
         },
         noWait ? 0 : 2e3
       );
     } else {
-      videoItem.waitCommands.destroy = true;
+      if (videoItem) {
+        videoItem.waitCommands.destroy = true;
+      }
     }
   }
   destroyAll(noWait = false) {
@@ -105728,6 +105741,11 @@ function Extra() {
   const showExtra = useSelector((state) => state.GUI.showExtra);
   const dispatch = useDispatch();
   const t2 = useTrans("extra.");
+  reactExports.useEffect(() => {
+    if (showExtra) {
+      dispatch(saveActions.setLoadVideo(true));
+    }
+  }, [showExtra]);
   return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: showExtra && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra, children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: styles$4.extra_top, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -105736,6 +105754,7 @@ function Extra() {
           className: styles$4.extra_top_icon,
           onClick: () => {
             dispatch(setVisibility({ component: "showExtra", visibility: false }));
+            dispatch(saveActions.setLoadVideo(false));
             playSeClick();
           },
           onMouseEnter: playSeClick,
