@@ -58,7 +58,7 @@
       }
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-983992db.js"></script>
+  <script type="module" crossorigin src="./assets/index-c4aef83a.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -136,7 +136,7 @@
             建议在wifi环境下进行下载，资源文件较多，请耐心等待！
           </div>
           <img style="display: block; width: auto; height: 100%; object-fit: cover;"
-            src="./assets/loading-enter.png" />
+            src="./assets/loading-enter.webp" />
           <img style="position: absolute;width: 100%;height: auto;bottom:10%;left:0;"
             src="./assets/loading-bar-bg.png" />
           <img id="bar-img"
@@ -356,7 +356,7 @@
     function setProgress(num, width, height) {
       const progress = document.getElementById('rectW');
       progress.style.width = (num / 100 * width).toFixed(2) + 'px';
-      progress.style.height = height + 'px';
+      progress.style.height = 100 + 'px';
       const textWrapper = document.getElementById('updating-text');
       const percentage = textWrapper.getElementsByTagName('span')[0];
       percentage.innerText = num.toFixed(0) + '%';
