@@ -23043,7 +23043,7 @@ function call$1(name2, args = []) {
   }
   return callback(...args);
 }
-__vitePreload(() => import("./initRegister-01df3b3e.js"), true ? [] : void 0, import.meta.url);
+__vitePreload(() => import("./initRegister-793e9e2b.js"), true ? [] : void 0, import.meta.url);
 const pixi = (sentence) => {
   const pixiPerformName = "PixiPerform" + sentence.content;
   WebGAL.gameplay.performController.performList.forEach((e2) => {
@@ -24557,7 +24557,7 @@ const unlockAchieve = (sentence) => {
     x: unlockAchieveObj["x"] || 0,
     y: unlockAchieveObj["y"] || 0,
     saveTime: currentTime,
-    isShow: saveData.isShowUnlock || unlockItemIndex !== -1
+    isShow: saveData.isShowUnlock || unlockItemIndex === -1
   };
   if (unlockItemIndex === -1) {
     webgalStore.dispatch(
@@ -41335,7 +41335,9 @@ function loadGameFromStageData(stageData, isLoadVideo = false) {
   dispatch(setVisibility({ component: "showTitle", visibility: false }));
   dispatch(setVisibility({ component: "showMenuPanel", visibility: false }));
   dispatch(setVisibility({ component: "showExtra", visibility: false }));
-  dispatch(saveActions.setLoadVideo(true));
+  if (isLoadVideo) {
+    dispatch(saveActions.setLoadVideo(true));
+  }
   setEbg(webgalStore.getState().stage.bgName);
 }
 function initKey() {
