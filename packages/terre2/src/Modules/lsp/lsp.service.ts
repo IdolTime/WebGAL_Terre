@@ -10,11 +10,11 @@ import { getCommands } from './suggestionRules/getCommands';
 import { getArgsKey } from './suggestionRules/getArgsKey';
 import { getKeywordsAndConstants } from './suggestionRules/getKeywordsAndConstants';
 // 这里的导入不要动！如果不这么写就出问题了
-import SceneParser from 'webgal-parser/build/cjs/index.cjs';
+import SceneParser from 'idoltime-parser/build/cjs/index.cjs';
 import {
   ADD_NEXT_ARG_LIST,
   SCRIPT_CONFIG,
-} from 'webgal-parser/build/cjs/index.cjs';
+} from 'idoltime-parser/build/cjs/index.cjs';
 
 @Injectable()
 export class LspService {

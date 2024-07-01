@@ -1,7 +1,7 @@
-import SceneParser from "webgal-parser";
-import { IScene } from "webgal-parser/src/interface/sceneInterface";
+import SceneParser from "idoltime-parser";
+import { IScene } from "idoltime-parser/src/interface/sceneInterface";
 import { logger } from "./logger";
-import { ADD_NEXT_ARG_LIST, SCRIPT_CONFIG } from "webgal-parser/src/config/scriptConfig";
+import { ADD_NEXT_ARG_LIST, SCRIPT_CONFIG } from "idoltime-parser/src/config/scriptConfig";
 
 const parser = new SceneParser((assetList) => {
 }, (fileName, assetType) => {
