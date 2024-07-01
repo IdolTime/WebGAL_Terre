@@ -8,7 +8,7 @@ import {cloneDeep} from "lodash";
 import ChooseFile from "../../../ChooseFile/ChooseFile";
 import useTrans from "@/hooks/useTrans";
 import TagTitleWrapper from "@/components/TagTitleWrapper/TagTitleWrapper";
-import {WebgalConfig} from "webgal-parser/build/es/configParser/configParser";
+import {WebgalConfig} from "idoltime-parser/build/es/configParser/configParser";
 import {WebgalParser} from "@/pages/editor/GraphicalEditor/parser";
 import {logger} from "@/utils/logger";
 import {textboxThemes} from "./constants";

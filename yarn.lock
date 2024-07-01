@@ -4794,6 +4794,16 @@ iconv-lite@^0.6.3:
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
+idoltime-parser@latest:
+  version "4.4.15"
+  resolved "https://registry.yarnpkg.com/idoltime-parser/-/idoltime-parser-4.4.15.tgz#8d8b952e867c7a20aa6ade5931af51bf6ed62945"
+  integrity sha512-HK7BAS19QvBoxwNUz46zy7LocdtN00rW8Cn9XzDi0f7HdUuqWJKSxREg6UYDsY/5FaLvz9Qtm7Q7UCElbs9DWA==
+  dependencies:
+    chevrotain "^10.5.0"
+    cloudlogjs "^1.0.11"
+    lodash "^4.17.21"
+    tsx "^3.12.7"
+
 ieee754@^1.1.13:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
@@ -8169,16 +8179,6 @@ web-streams-polyfill@^3.0.3:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.3.2.tgz#32e26522e05128203a7de59519be3c648004343b"
   integrity sha512-3pRGuxRF5gpuZc0W+EpwQRmCD7gRqcDOMt688KmdlDAgAyaB1XlN0zq2njfDNm44XVdIouE7pZ6GzbdyH47uIQ==
-
-webgal-parser@latest:
-  version "4.4.9-fix1"
-  resolved "https://registry.yarnpkg.com/webgal-parser/-/webgal-parser-4.4.9-fix1.tgz#5bda2b7308900d9f6c9dea85f1a8d0b36e38aa45"
-  integrity sha512-jtfxkjntPo6svJPVOoqZ36r/rObk36YDvctof6apjuK8s/LgfJFi82NP9eLmvvatkI3aIFSe6mZIV2tLtTgIfQ==
-  dependencies:
-    chevrotain "^10.5.0"
-    cloudlogjs "^1.0.11"
-    lodash "^4.17.21"
-    tsx "^3.12.7"
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

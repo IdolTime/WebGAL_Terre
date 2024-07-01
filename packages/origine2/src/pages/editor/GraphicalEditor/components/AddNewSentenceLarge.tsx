@@ -1,6 +1,6 @@
 import {useValue} from "@/hooks/useValue";
 import {sentenceEditorConfig} from "@/pages/editor/GraphicalEditor/SentenceEditor";
-import {commandType} from "webgal-parser/src/interface/sceneInterface";
+import {commandType} from "idoltime-parser/src/interface/sceneInterface";
 import stylesAs from "@/pages/editor/GraphicalEditor/components/addSentence.module.scss";
 import React, {useEffect, useRef, WheelEvent, WheelEventHandler} from "react";
 import {Down, Up} from "@icon-park/react";

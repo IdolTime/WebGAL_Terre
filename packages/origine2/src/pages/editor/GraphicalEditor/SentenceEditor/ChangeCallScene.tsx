@@ -1,7 +1,7 @@
 import CommonOptions from '../components/CommonOption';
 import { ISentenceEditorProps } from './index';
 import styles from './sentenceEditor.module.scss';
-import { commandType } from 'webgal-parser/src/interface/sceneInterface';
+import { commandType } from 'idoltime-parser/src/interface/sceneInterface';
 import { useValue } from '../../../../hooks/useValue';
 import ChooseFile from '../../ChooseFile/ChooseFile';
 import TerreToggle from '../../../../components/terreToggle/TerreToggle';

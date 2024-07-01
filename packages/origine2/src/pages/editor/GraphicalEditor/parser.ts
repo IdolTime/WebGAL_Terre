@@ -1,6 +1,6 @@
-import SceneParser from "webgal-parser";
+import SceneParser from "idoltime-parser";
 import { logger } from "../../../utils/logger";
-import {commandType, IScene} from "webgal-parser/src/interface/sceneInterface";
+import {commandType, IScene} from "idoltime-parser/src/interface/sceneInterface";
 
 
 const SCRIPT_CONFIG = [
