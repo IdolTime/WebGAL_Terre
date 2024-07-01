@@ -1,4 +1,4 @@
-import { commandType, ISentence } from "webgal-parser/src/interface/sceneInterface";
+import { commandType, ISentence } from "idoltime-parser/src/interface/sceneInterface";
 import Say from "./Say";
 import { FC, ReactElement } from "react";
 import { t } from 'i18next';

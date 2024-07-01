@@ -4,7 +4,7 @@ import { Button, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, 
 import { Add } from "@icon-park/react";
 import stylesAs from "./addSentence.module.scss";
 import stylesGe from '../graphicalEditor.module.scss';
-import { commandType } from "webgal-parser/src/interface/sceneInterface";
+import { commandType } from "idoltime-parser/src/interface/sceneInterface";
 import useTrans from "@/hooks/useTrans";
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
 

@@ -3,7 +3,7 @@ import { ISentenceEditorProps } from "./index";
 import styles from "./sentenceEditor.module.scss";
 import { useValue } from "../../../../hooks/useValue";
 import TerreToggle from "../../../../components/terreToggle/TerreToggle";
-import { commandType } from "webgal-parser/src/interface/sceneInterface";
+import { commandType } from "idoltime-parser/src/interface/sceneInterface";
 import useTrans from "@/hooks/useTrans";
 import { Dropdown, Option } from "@fluentui/react-components";
 
