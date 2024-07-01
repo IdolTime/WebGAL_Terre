@@ -60,7 +60,6 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
   function updateSentenceByIndex(newSentence: string, updateIndex: number) {
     const arr = splitToArray(sceneText.value);
     arr[updateIndex] = newSentence;
-    // debugger
     submitSceneAndUpdate(mergeToString(arr), updateIndex);
   }
 
@@ -163,6 +162,7 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
                 const index = i + 1;
                 // console.log(sentence.command);
                 const sentenceConfig = sentenceEditorConfig.find((e) => e.type === sentence.command) ?? sentenceEditorDefault;
+                // console.log('sentenceConfig 8888 ', { sentenceEditorConfig, sentenceConfig })
                 const SentenceEditor = sentenceConfig.component;
                 return <Draggable key={JSON.stringify(sentence) + i}
                   draggableId={sentence.content + sentence.commandRaw + i} index={i}>

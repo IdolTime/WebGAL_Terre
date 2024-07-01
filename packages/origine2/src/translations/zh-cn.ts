@@ -282,6 +282,11 @@ export const zhCn = {
               title: "显示效果",
               on: "显示",
               off: "不显示"
+            },
+            axis: {
+              title: '背景尺寸',
+              x: 'X',
+              y: 'Y'
             }
           }
         },
@@ -657,6 +662,65 @@ export const zhCn = {
             minValue: "最小值"
           }
         },
+        unlockStoryline: {
+          title: "解锁故事线",
+          initText: 'unlockStoryline:;',
+          descText: '解锁后的故事线将显示在故事线页面中',
+          tips: {
+            edit: '提示：解锁后的故事线将显示在故事线页面中。'
+          },
+          options: {
+            file: {
+              title: '缩略图文件',
+              placeholder: '未选择'
+            },
+            name: {
+              title: "解锁名称",
+              placeholder: "解锁的故事线名称"
+            },
+            axis: {
+              title: '解锁按钮坐标',
+              x: 'X',
+              y: 'Y'
+            }
+          }
+        },
+        unlockAchieve: {
+          title: "解锁成就",
+          initText: 'unlockAchieve:;',
+          descText: '切换背景图片',
+          tips: {
+            edit: '提示：解锁后的成就将显示在成就页面中。'
+          },
+          options: {
+            file: {
+              title: '成就图片文件',
+              placeholder: '未选择'
+            },
+            name: {
+              title: "解锁名称",
+              placeholder: "请填写成就名称"
+            },
+            axis: {
+              title: '解锁按钮坐标',
+              x: 'X',
+              y: 'Y'
+            }
+          }
+        },
+        showValue: {
+          title: "显示变量",
+          initText: "showValue:;",
+          descText: '显示一个变量的值',
+          options: {
+            name: "变量名称",
+          },
+          transform: {
+            title: "显示坐标",
+            x: " X",
+            y: " Y",
+          }
+        },
         unknown: {
           title: "未识别",
           options: {
@@ -665,9 +729,8 @@ export const zhCn = {
               text: '该指令没有被识别，请打开脚本编辑模式以手动编辑'
             }
           }
-        }
+        },
       },
-
       components: {
         addSentence: {
           dialogs: {
@@ -712,6 +775,7 @@ export const zhCn = {
   "场景与分支": "场景与分支",
   "鉴赏": "鉴赏",
   "游戏控制": "游戏控制",
+  "成就": "成就",
   "执行到此句": "执行到此句",
   "打开效果编辑器": "打开效果编辑器",
   "效果编辑器": "效果编辑器",
@@ -732,5 +796,6 @@ export const zhCn = {
   "默认值0": "默认值0",
   "默认值1": "默认值1",
   "持续时间（单位为毫秒）": "持续时间（单位为毫秒）",
-  "结束后保持": "结束后保持"
+  "结束后保持": "结束后保持",
+  "故事线": "故事线"
 };

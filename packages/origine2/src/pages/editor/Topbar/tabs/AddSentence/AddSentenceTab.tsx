@@ -20,9 +20,11 @@ function pickSentenceType(indexes: Array<number>) {
 
 function convertSentenceToNode(sentence: ISentenceEditorConfig, index: number) {
   const iconSmall = cloneElement(sentence.icon, {size: "18px"});
-  return <IconWithTextItemSmall key={`sentenceAddSmall${index}`} onClick={() => addSentenceText(sentence.initialText())}
-    icon={iconSmall}
-    text={sentence.title()}/>;
+  return <IconWithTextItemSmall 
+          key={`sentenceAddSmall${index}`} 
+          onClick={() => addSentenceText(sentence.initialText())}
+          icon={iconSmall}
+          text={sentence.title()}/>;
 }
 
 export function AddSentenceTab() {
@@ -30,11 +32,13 @@ export function AddSentenceTab() {
   const btsCommon1 = pickSentenceType([0, 1, 2]);
   const btsCommon2 = pickSentenceType([4, 5]);
   const btsSpecial = pickSentenceType([8, 12, 13, 22]);
-  const btsSpecial2 = pickSentenceType([6, 7, 21]);
+  const btsSpecial2 = pickSentenceType([6, 7, 21, 25]);
   const btsBranch = pickSentenceType([9, 10, 11]);
   const btsExtra = pickSentenceType([14, 15]);
   const btsSystem = pickSentenceType([16, 17]);
   const btsControl = pickSentenceType([3, 19, 20]);
+  const btsStoryLine = pickSentenceType([23]);
+  const btsAchieve = pickSentenceType([24]);
   const {t} = useTranslation();
 
   return <TopbarTab>
@@ -72,6 +76,16 @@ export function AddSentenceTab() {
     <TabItem title={t("游戏控制")}>
       <div>
         {btsSystem}
+      </div>
+    </TabItem>
+    <TabItem title={t("故事线")}>
+      <div>
+        {btsStoryLine}
+        </div>
+    </TabItem>
+    <TabItem title={t("成就")}>
+      <div>
+        {btsAchieve}
       </div>
     </TabItem>
   </TopbarTab>;
