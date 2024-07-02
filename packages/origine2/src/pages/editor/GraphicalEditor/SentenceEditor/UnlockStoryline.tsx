@@ -43,13 +43,15 @@ export default function UnlockStoryline(props: ISentenceEditorProps) {
     const name = unlockName.value !== '' ? ` -name=${unlockName.value}` : '';
 
     let content = '';
-    if (bgFile.value !== 'none') {
+    if (bgFile.value !== 'none' && name !== '') {
       content = `unlockStoryline:${bgFile.value}${axisX}${axisY}${name} -next;`;
-    } else {
-      content = `unlockStoryline:${bgFile.value} -next;`;
-    }
-    console.log('222222222222222222', content);
-    props.onSubmit(content)
+      props.onSubmit(content)
+    } 
+    // else {
+      // content = `unlockStoryline:${bgFile.value} -next;`;
+    // }
+    // console.log('222222222222222222', content);
+    
   };
 
   return ( 
