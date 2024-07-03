@@ -705,6 +705,10 @@ export const zhCn = {
               title: '解锁按钮坐标',
               x: 'X',
               y: 'Y'
+            },
+            condition: {
+              title: '解锁条件',
+              placeholder: '请填写解锁条件'
             }
           }
         },
