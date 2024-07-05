@@ -7,7 +7,8 @@ import {
   AddMusic,
   AddPicture,
   AlignLeftTwo,
-  AlignTextBottomOne, ApplicationEffect,
+  AlignTextBottomOne, 
+  ApplicationEffect,
   AutoWidth,
   Avatar,
   Code,
@@ -22,7 +23,8 @@ import {
   NewPicture,
   People,
   SwitchThemes, Transform,
-  VideoTwo
+  VideoTwo,
+  Unlock
 } from "@icon-park/react";
 import ChangeBg from "./ChangeBg";
 import ChangeFigure from "./ChangeFigure";
@@ -45,6 +47,9 @@ import SetVar from "./SetVar";
 import SetTransform from "./SetTransform";
 import SetTransition from "./SetTransition";
 import GetUserInput from "./GetUserInput";
+import UnlockStoryline from './UnlockStoryline'
+import UnlockAchieve from './UnlockAchieve';
+import ShowValue from './ShowValue'
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -256,5 +261,29 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: SetVar,
     icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'setVar.descText')
+  },
+  {
+    type: commandType.unlockStoryline,
+    title: () => t(tPrefix + 'unlockStoryline.title'),
+    initialText: () => t(tPrefix + 'unlockStoryline.initText'),
+    component: UnlockStoryline,
+    icon: <Unlock theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'unlockStoryline.descText')
+  },
+  {
+    type: commandType.unlockAchieve,
+    title: () => t(tPrefix + 'unlockAchieve.title'),
+    initialText: () => t(tPrefix + 'unlockAchieve.initText'),
+    component: UnlockAchieve,
+    icon: <Unlock theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'unlockAchieve.descText')
+  },
+  {
+    type: commandType.showValue,
+    title: () => t(tPrefix + 'showValue.title'),
+    initialText: () => t(tPrefix + 'showValue.initText'),
+    component: ShowValue,
+    icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'showValue.descText')
   }
 ];

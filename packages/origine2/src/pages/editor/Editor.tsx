@@ -5,7 +5,6 @@ import {useDispatch, useSelector} from "react-redux";
 import { RootState } from "@/store/origineStore";
 import MainArea from "./MainArea/MainArea";
 import { Splitter, SplitterPanel } from "primereact/splitter";
-import { useHashRoute } from "@/hooks/useHashRoute";
 import {statusActions} from "@/store/statusReducer";
 
 
@@ -15,7 +14,6 @@ export default function Editor() {
   const isShowPreview = editorState.showPreview;
   const dispatch = useDispatch();
   const currentTag = editorState.currentSidebarTag;
-  useHashRoute();
   const isAutoHideToolbar = useSelector((state:RootState)=>state.userData.isAutoHideToolbar);
 
   function handleMainAreaClick(){

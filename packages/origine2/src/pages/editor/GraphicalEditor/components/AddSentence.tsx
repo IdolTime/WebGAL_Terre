@@ -23,8 +23,8 @@ export default function AddSentence(props: IAddSentenceProps) {
   const t = useTrans('editor.graphical.components.addSentence.');
   const DismissIcon = bundleIcon(Dismiss24Filled, Dismiss24Regular);
   const isShowCallout = useValue(false);
-  const addSentenceButtons = sentenceEditorConfig.filter(e => e.type !== commandType.comment).map(sentenceConfig => {
-    return <div className={stylesAs.sentenceTypeButton} key={sentenceConfig.type} onClick={() => {
+  const addSentenceButtons = sentenceEditorConfig.filter(e => e.type !== commandType.comment).map((sentenceConfig, index) => {
+    return <div className={stylesAs.sentenceTypeButton} key={`${sentenceConfig.type}-${index}`} onClick={() => {
       props.onChoose(sentenceConfig.initialText());
       isShowCallout.set(false);
     }}>

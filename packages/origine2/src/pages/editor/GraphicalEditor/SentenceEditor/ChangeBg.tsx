@@ -22,12 +22,19 @@ export default function ChangeBg(props: ISentenceEditorProps) {
   const {updateExpandIndex} = useExpand();
   const json = useValue<string>(getArgByKey(props.sentence, 'transform') as string);
   const duration = useValue<number | string>(getArgByKey(props.sentence, 'duration') as number);
+  const x = useValue<string>(getArgByKey(props.sentence, "x").toString() ?? "");
+  const y = useValue<string>(getArgByKey(props.sentence, "y").toString() ?? "");
+
   const submit = () => {
     const isGoNextStr = isGoNext.value ? " -next" : "";
     const durationStr = duration.value === "" ? '' : ` -duration=${duration.value}`;
     const transformStr = json.value === "" ? '' : ` -transform=${json.value}`;
+    const xStr = x.value === "" ? '' : ` -x=${x.value}`;
+    const yStr = y.value === "" ? '' : ` -y=${y.value}`;
+
     if (bgFile.value !== "none") {
-      props.onSubmit(`changeBg:${bgFile.value}${isGoNextStr}${durationStr}${transformStr}${unlockName.value !== "" ? " -unlockname=" + unlockName.value : ""}${unlockSeries.value !== "" ? " -series=" + unlockSeries.value : ""};`);
+      props.onSubmit(
+        `changeBg:${bgFile.value}${isGoNextStr}${durationStr}${transformStr}${xStr}${yStr}${unlockName.value !== "" ? " -unlockname=" + unlockName.value : ""}${unlockSeries.value !== "" ? " -series=" + unlockSeries.value : ""};`);
     } else {
       props.onSubmit(`changeBg:${bgFile.value}${isGoNextStr};`);
     }
@@ -73,6 +80,34 @@ export default function ChangeBg(props: ISentenceEditorProps) {
           placeholder={t('options.name.placeholder')}
         />
       </CommonOptions>}
+      <CommonOptions key={'4'} title={t('options.axis.title')}>
+            {t('options.axis.x')}
+            {'\u00a0'}
+            <input 
+                className={styles.sayInput}
+                style={{ width: '80px' }}
+                value={x.value} 
+                onBlur={submit}
+                onChange={(e) => {
+                    const newValue = e.target.value;
+                    x.set(newValue ?? '');
+                }}
+            />
+            {'\u00a0'}
+            {'\u00a0'}
+            {t('options.axis.y')}
+            {'\u00a0'}
+            <input 
+                className={styles.sayInput}
+                style={{ width: '80px' }}
+                value={y.value}
+                onBlur={submit}
+                onChange={(e) => {
+                    const newValue = e.target.value;
+                    y.set(newValue ?? '');
+                }}  
+            />
+        </CommonOptions>
       <CommonOptions key="23" title={t("options.displayEffect.title")}>
         <Button onClick={() => {
           updateExpandIndex(props.index);

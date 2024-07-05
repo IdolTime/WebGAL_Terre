@@ -3,12 +3,19 @@ import { _open } from 'src/util/open';
 import { IFileInfo, WebgalFsService } from '../webgal-fs/webgal-fs.service';
 import * as process from 'process';
 import { resolve } from 'path';
+import * as archiver from 'archiver';
+import { Upload } from '@aws-sdk/lib-storage';
+import { S3Client } from '@aws-sdk/client-s3';
+import * as fs from 'fs';
+import { join } from 'path';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class ManageGameService {
   constructor(
     private readonly logger: ConsoleLogger,
     private readonly webgalFs: WebgalFsService,
+    private readonly httpService: HttpService,
   ) {}
 
   /**
@@ -16,6 +23,12 @@ export class ManageGameService {
    */
   async openGameDictionary(gameName: string) {
     const path = this.webgalFs.getPathFromRoot(`public/games/${gameName}`);
+    const isExist = await this.webgalFs.existsDir(path);
+
+    if (!isExist) {
+      await this.createGame(gameName);
+    }
+
     await _open(path);
   }
 
@@ -55,10 +68,142 @@ export class ManageGameService {
     );
     // 递归复制
     await this.webgalFs.copy(
-      this.webgalFs.getPathFromRoot('/assets/templates/IdolTime_Template/game/'),
+      this.webgalFs.getPathFromRoot(
+        '/assets/templates/IdolTime_Template/game/',
+      ),
       this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/`),
     );
     return true;
+  }
+
+  /**
+   * 压缩游戏目录并上传到 S3
+   * @param gameName 游戏名称
+   * @param bucketName S3 存储桶名称
+   * @param s3Key 上传到 S3 的文件键
+   */
+  async uploadGame(gameName: string, gId: number, token: string) {
+    await this.exportGame(gameName, 'web');
+    const gameDir = this.webgalFs.getPathFromRoot(
+      `/Exported_Games/${gameName}`,
+    );
+    const now = Date.now();
+    const key = `${gId}_${now}_web.zip`;
+    const gameWebDir = join(gameDir, 'web');
+    const zipFilePath = `${gameDir}/${key}`;
+
+    // 创建压缩包
+    await this.compressDirectory(gameWebDir, zipFilePath);
+
+    const res = await this.httpService
+      .post(
+        `${process.env.API_HOST}/editor/game/game_put_object_pre_sign`,
+        { fileName: key },
+        {
+          headers: {
+            editorToken: token,
+          },
+        },
+      )
+      .toPromise();
+
+    if (res.data.code === 0) {
+      const url = res.data.data as string;
+      const fileStream = fs.createReadStream(zipFilePath);
+
+      const uploadRes = await this.httpService
+        .put(url, fileStream, {
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'Content-Length': fs.statSync(zipFilePath).size,
+          },
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        })
+        .toPromise();
+
+      if (uploadRes.status !== 200) {
+        throw new Error('上传失败');
+      }
+
+      const approvalLink = `https://idol-unzip-dst.s3.ap-southeast-1.amazonaws.com/${gId}/${now}/web/index.html`;
+
+      const approvalRes = await this.httpService
+        .post(
+          `${process.env.API_HOST}/editor/author/game_approval_upload`,
+          {
+            gId,
+            approvalLink,
+          },
+          {
+            headers: {
+              editorToken: token,
+            },
+          },
+        )
+        .toPromise();
+
+      // 删除本地压缩包
+      fs.unlinkSync(zipFilePath);
+
+      if (approvalRes.data.code === 0) {
+        return true;
+      } else {
+        throw new Error(approvalRes.data.message);
+      }
+    } else {
+      throw new Error(res.data.message);
+    }
+  }
+
+  private async compressDirectory(
+    sourceDir: string,
+    outPath: string,
+  ): Promise<void> {
+    const output = fs.createWriteStream(outPath);
+    const archive = archiver('zip', { zlib: { level: 9 } });
+
+    return new Promise((resolve, reject) => {
+      output.on('close', resolve);
+      archive.on('error', reject);
+
+      archive.pipe(output);
+      archive.directory(sourceDir, false);
+      archive.finalize();
+    });
+  }
+
+  private async uploadToS3(filePath: string, key: string): Promise<void> {
+    const fileStream = fs.createReadStream(filePath);
+
+    const target = {
+      Bucket: 'idol-editor',
+      Key: key,
+      Body: fileStream,
+    };
+
+    try {
+      const parallelUploads3 = new Upload({
+        client: new S3Client({
+          region: process.env.AWS_REGION,
+          credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          },
+        }),
+        params: target,
+        queueSize: 4, // optional concurrency configuration
+        leavePartsOnError: false, // optional manually handle dropped parts
+      });
+
+      parallelUploads3.on('httpUploadProgress', (progress) => {
+        console.log(progress);
+      });
+
+      await parallelUploads3.done();
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   // 获取游戏配置
@@ -347,5 +492,15 @@ export class ManageGameService {
       await this.webgalFs.copy(gameDir, `${webExportDir}/game/`);
       await _open(webExportDir);
     }
+  }
+
+  /**
+   * 检查游戏是否在本地存在
+   * @param gameName
+   */
+  async checkGameFolder(gameName: string) {
+    return await this.webgalFs.existsDir(
+      this.webgalFs.getPathFromRoot(`/public/games/${gameName}`),
+    );
   }
 }
