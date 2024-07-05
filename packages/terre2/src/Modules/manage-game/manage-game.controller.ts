@@ -364,9 +364,9 @@ export class ManageGameController {
 
     const fileInfos: IUploadFileInfo[] = files.map((file) => {
       let encryptedFile = file.buffer;
-      const encryptedFileFormat = ['.mp4', '.flv', '.webm', '.ogg'];
+      const encryptedFileFormat = ['.mp4', '.flv', '.webm', '.ogv'];
       const shouldEncrptFile = encryptedFileFormat.some((f) =>
-        file.originalname.endsWith(f),
+        file.originalname.toLowerCase().endsWith(f),
       );
 
       if (shouldEncrptFile) {

@@ -8,14 +8,12 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join } from 'path';
-import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class ManageGameService {
   constructor(
     private readonly logger: ConsoleLogger,
     private readonly webgalFs: WebgalFsService,
-    private readonly httpService: HttpService,
   ) {}
 
   /**
@@ -95,32 +93,36 @@ export class ManageGameService {
     // 创建压缩包
     await this.compressDirectory(gameWebDir, zipFilePath);
 
-    const res = await this.httpService
-      .post(
-        `${process.env.API_HOST}/editor/game/game_put_object_pre_sign`,
-        { fileName: key },
-        {
-          headers: {
-            editorToken: token,
-          },
+    const res = await fetch(
+      `${process.env.API_HOST}/editor/game/game_put_object_pre_sign`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          editorToken: token,
         },
-      )
-      .toPromise();
+        body: JSON.stringify({ fileName: key }),
+      },
+    );
 
-    if (res.data.code === 0) {
-      const url = res.data.data as string;
+    const resData = await res.json();
+
+    if (resData.code === 0) {
+      const url = resData.data as string;
       const fileStream = fs.createReadStream(zipFilePath);
+      const fileSize = fs.statSync(zipFilePath).size;
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const axios = require('axios');
 
-      const uploadRes = await this.httpService
-        .put(url, fileStream, {
-          headers: {
-            'Content-Type': 'application/octet-stream',
-            'Content-Length': fs.statSync(zipFilePath).size,
-          },
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity,
-        })
-        .toPromise();
+      const uploadRes = await axios.put(url, fileStream, {
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'Content-Length': fileSize.toString(),
+        },
+        body: fileStream,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+      });
 
       if (uploadRes.status !== 200) {
         throw new Error('上传失败');
@@ -128,31 +130,33 @@ export class ManageGameService {
 
       const approvalLink = `https://idol-unzip-dst.s3.ap-southeast-1.amazonaws.com/${gId}/${now}/web/index.html`;
 
-      const approvalRes = await this.httpService
-        .post(
-          `${process.env.API_HOST}/editor/author/game_approval_upload`,
-          {
+      const approvalRes = await fetch(
+        `${process.env.API_HOST}/editor/author/game_approval_upload`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            editorToken: token,
+          },
+          body: JSON.stringify({
             gId,
             approvalLink,
-          },
-          {
-            headers: {
-              editorToken: token,
-            },
-          },
-        )
-        .toPromise();
+          }),
+        },
+      );
+
+      const approvalResData = await approvalRes.json();
 
       // 删除本地压缩包
       fs.unlinkSync(zipFilePath);
 
-      if (approvalRes.data.code === 0) {
+      if (approvalResData.code === 0) {
         return true;
       } else {
-        throw new Error(approvalRes.data.message);
+        throw new Error(approvalResData.message);
       }
     } else {
-      throw new Error(res.data.message);
+      throw new Error(resData.message);
     }
   }
 
