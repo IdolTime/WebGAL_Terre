@@ -8,7 +8,10 @@ axiosInstance.defaults.headers.common['Content-Type'] = 'application/json';
 axiosInstance.interceptors.request.use(config => {
   const token = localStorage.getItem('editor-token'); // 获取 token
   if (token) {
-    config.headers['editorToken'] = token;
+    config.headers = {
+      ...config.headers,
+      editorToken: token
+    }
   }
   return config;
 }, error => {
