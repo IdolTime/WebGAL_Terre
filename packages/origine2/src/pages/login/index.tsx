@@ -33,10 +33,10 @@ export const LoginPage = () => {
       return;
     }
 
-    if (!invitationCode) {
-      alert("请输入邀请码");
-      return;
-    }
+    // if (!invitationCode) {
+    //   alert("请输入邀请码");
+    //   return;
+    // }
 
     if (!checkCode) {
       alert("请输入邮箱验证码");
@@ -44,7 +44,7 @@ export const LoginPage = () => {
     }
 
     try {
-      const res = await axios.post("/api/auth/login", { email, invitationCode, checkCode });
+      const res = await axios.post("/api/auth/login", { email, invitationCode: invitationCode || undefined, checkCode });
 
       if (res.data.access_token) {
         localStorage.setItem("editor-token", res.data.access_token);
