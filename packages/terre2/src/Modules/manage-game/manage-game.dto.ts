@@ -5,6 +5,12 @@ export class CreateGameDto {
   gameName: string;
 }
 
+export class UploadGameDto {
+  @ApiProperty({ description: 'The name of the game to be uploaded' })
+  gameName: string;
+  gId: number;
+}
+
 export class EditFileNameDto {
   @ApiProperty({ description: 'The path to the file to be renamed' })
   path: string;
@@ -91,4 +97,9 @@ export class RenameDto {
 
   @ApiProperty({ description: 'New name for renaming the file or directory' })
   newName: string;
+}
+
+export class CheckGameFolderDto {
+  @ApiProperty({ description: 'The name of the game' })
+  gameName: string;
 }

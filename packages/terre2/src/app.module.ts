@@ -5,10 +5,15 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ManageGameModule } from './Modules/manage-game/manage-game.module';
 import { LspModule } from './Modules/lsp/lsp.module';
+import { AuthController } from './Modules/auth/auth.controller';
+import { AuthService } from './Modules/auth/auth.service';
+import { HttpModule } from '@nestjs/axios';
+import { AuthModule } from './Modules/auth/auth.module';
 
 @Module({
   imports: [
     // 代码提示
+    HttpModule,
     LspModule,
     ManageGameModule,
     // 静态文件服务：游戏与编辑器静态资源文件
@@ -22,7 +27,7 @@ import { LspModule } from './Modules/lsp/lsp.module';
       serveRoot: '/games/:gamename/',
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AuthController],
+  providers: [AppService, AuthService],
 })
 export class AppModule { }

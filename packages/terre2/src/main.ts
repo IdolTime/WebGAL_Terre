@@ -5,6 +5,9 @@ import { _open } from './util/open';
 import { urlencoded, json } from 'express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { env } from 'process';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 let WEBGAL_PORT = 3000; // default port
 const version_number = `4.4.13`;
