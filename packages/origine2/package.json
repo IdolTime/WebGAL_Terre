@@ -20,7 +20,7 @@
     "@monaco-editor/react": "^4.4.5",
     "@reduxjs/toolkit": "^1.8.1",
     "@uiw/react-json-view": "^2.0.0-alpha.12",
-    "axios": "^1.6.0",
+    "axios": "0.27.2",
     "cloudlogjs": "^1.0.11",
     "flv.js": "^1.6.2",
     "i18next": "^22.4.15",
