@@ -4,6 +4,7 @@ import {
   ConsoleLogger,
   Controller,
   Get,
+  Headers,
   Param,
   Post,
   Query,
@@ -31,6 +32,7 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import {
+  CheckGameFolderDto,
   CreateGameDto,
   CreateNewSceneDto,
   DeleteFileDto,
@@ -42,6 +44,7 @@ import {
   MkDirDto,
   RenameDto,
   UploadFilesDto,
+  UploadGameDto,
 } from './manage-game.dto';
 
 @Controller('api/manageGame')
@@ -77,6 +80,44 @@ export class ManageGameController {
     );
     if (createResult) {
       return { status: 'success' };
+    } else {
+      return { status: 'failed' }; // Note: Typo correction 'filed' -> 'failed'
+    }
+  }
+
+  @Post('checkGameFolder')
+  @ApiOperation({ summary: 'Check if the game folder exists' })
+  @ApiResponse({ status: 200, description: 'Check result.' })
+  @ApiBody({
+    type: CheckGameFolderDto,
+    description: 'Boolean value of the result',
+  })
+  async checkGameFolder(@Body() checkGameFolderData: CheckGameFolderDto) {
+    const checkResult = await this.manageGame.checkGameFolder(
+      checkGameFolderData.gameName,
+    );
+    if (checkResult) {
+      return { status: 'success' };
+    } else {
+      return { status: 'failed' }; // Note: Typo correction 'filed' -> 'failed'
+    }
+  }
+
+  @Post('uploadGame')
+  @ApiOperation({ summary: 'Upload a game' })
+  @ApiResponse({ status: 200, description: 'Game upload result.' })
+  @ApiBody({ type: UploadGameDto, description: 'Game upload data' })
+  async uploadGame(
+    @Body() uploadGameData: UploadGameDto,
+    @Headers('editorToken') editorToken: string,
+  ) {
+    const uploadResult = await this.manageGame.uploadGame(
+      uploadGameData.gameName,
+      uploadGameData.gId,
+      editorToken,
+    );
+    if (uploadResult) {
+      return { status: 'success', key: uploadResult };
     } else {
       return { status: 'failed' }; // Note: Typo correction 'filed' -> 'failed'
     }

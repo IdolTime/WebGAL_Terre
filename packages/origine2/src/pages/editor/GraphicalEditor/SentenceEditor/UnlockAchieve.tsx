@@ -18,6 +18,7 @@ export default function UnlockAchieve(props: ISentenceEditorProps) {
   const isNoFile = props.sentence.content === '';
   const bgFile = useValue(props.sentence.content);
   const unlockName = useValue(getArgByKey(props.sentence, 'unlockname').toString() ?? '');
+  const condition = useValue(getArgByKey(props.sentence, 'condition').toString() ?? '');
   const unlockSeries = useValue(getArgByKey(props.sentence, 'series').toString() ?? '');
   const { updateExpandIndex } = useExpand();
 
@@ -26,12 +27,14 @@ export default function UnlockAchieve(props: ISentenceEditorProps) {
 
   useEffect(() => {
     props.sentence.args.forEach((k) => {
-        if (k.key === 'unlockname') {
-            unlockName.set(k.value.toString());
-        } else if (k.key === 'x') {
-            x.set(String(k.value));
-        } else if (k.key === 'y') {
+      if (k.key === 'unlockname') {
+          unlockName.set(k.value.toString());
+      } else if (k.key === 'x') {
+          x.set(String(k.value));
+      } else if (k.key === 'y') {
         y.set(String(k.value));
+      } else if (k.key === 'condition') {
+        condition.set(k.value.toString());
       }
     });
   }, []);
@@ -40,14 +43,17 @@ export default function UnlockAchieve(props: ISentenceEditorProps) {
     const axisX = x.value !== '' ? ` -x=${x.value}` : '';
     const axisY = y.value !== '' ? ` -y=${y.value}` : '';
     const name = unlockName.value !== '' ? ` -unlockname=${unlockName.value}` : '';
+    const unlockCondition = condition.value !== '' ? ` -condition=${condition.value}` : ''; 
 
     let content = '';
     if (bgFile.value !== 'none') {
-      content = `unlockAchieve:${bgFile.value}${axisX}${axisY}${name} -next;`;
-    } else {
-      content = `unlockAchieve:${bgFile.value} -next;`;
-    }
-    props.onSubmit(content)
+      content = `unlockAchieve:${bgFile.value}${axisX}${axisY}${name}${unlockCondition} -next;`;
+      props.onSubmit(content)
+    } 
+    // else {
+    //   content = `unlockAchieve:${bgFile.value} -next;`;
+    // }
+    
   };
 
   return ( 
@@ -105,6 +111,19 @@ export default function UnlockAchieve(props: ISentenceEditorProps) {
                     const newValue = e.target.value;
                     y.set(newValue ?? '');
                 }}  
+            />
+        </CommonOptions>
+        <CommonOptions key="4" title={t('options.condition.title')}>
+            <input
+                value={condition.value}
+                onBlur={submit}
+                className={styles.sayInput}
+                style={{ width: '200px' }}
+                placeholder={t('options.condition.placeholder')}
+                onChange={(ev) => {
+                const newValue = ev.target.value;
+                condition.set(newValue);
+                }}
             />
         </CommonOptions>
       </div>
