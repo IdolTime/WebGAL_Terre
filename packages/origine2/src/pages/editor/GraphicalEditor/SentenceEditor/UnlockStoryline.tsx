@@ -50,6 +50,7 @@ export default function UnlockStoryline(props: ISentenceEditorProps) {
     // else {
     // content = `unlockStoryline:${bgFile.value} -next;`;
     // }
+    
   };
 
   return ( 
