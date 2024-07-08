@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -8,19 +9,21 @@ export class AuthService {
     invitationCode: string,
   ): Promise<string> {
     try {
-      const response = await fetch(`${process.env.API_HOST}/editorEmailLogin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${process.env.API_HOST}/editorEmailLogin`,
+        {
           email,
           check_code: checkCode,
           invitation_code: invitationCode,
-        }),
-      });
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
 
-      const data = await response.json();
+      const data = response.data;
 
       if (data && data.code === 0) {
         return data.data; // 返回 access token

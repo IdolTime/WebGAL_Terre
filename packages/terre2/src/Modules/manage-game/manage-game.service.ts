@@ -8,6 +8,7 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join } from 'path';
+import axios from 'axios';
 
 @Injectable()
 export class ManageGameService {
@@ -93,28 +94,27 @@ export class ManageGameService {
     // 创建压缩包
     await this.compressDirectory(gameWebDir, zipFilePath);
 
-    const res = await fetch(
+    const res = await axios.post(
       `${process.env.API_HOST}/editor/game/game_put_object_pre_sign`,
+      { fileName: key },
       {
-        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           editorToken: token,
         },
-        body: JSON.stringify({ fileName: key }),
       },
     );
 
-    const resData = await res.json();
+    const resData = res.data;
 
     if (resData.code === 0) {
       const url = resData.data as string;
       const fileStream = fs.createReadStream(zipFilePath);
       const fileSize = fs.statSync(zipFilePath).size;
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const axios = require('axios');
+      const axios2 = require('axios');
 
-      const uploadRes = await axios.put(url, fileStream, {
+      const uploadRes = await axios2.put(url, fileStream, {
         headers: {
           'Content-Type': 'application/octet-stream',
           'Content-Length': fileSize.toString(),
@@ -130,22 +130,21 @@ export class ManageGameService {
 
       const approvalLink = `https://idol-unzip-dst.s3.ap-southeast-1.amazonaws.com/${gId}/${now}/web/index.html`;
 
-      const approvalRes = await fetch(
+      const approvalRes = await axios.post(
         `${process.env.API_HOST}/editor/author/game_approval_upload`,
         {
-          method: 'POST',
+          gId,
+          approvalLink,
+        },
+        {
           headers: {
             'Content-Type': 'application/json',
             editorToken: token,
           },
-          body: JSON.stringify({
-            gId,
-            approvalLink,
-          }),
         },
       );
 
-      const approvalResData = await approvalRes.json();
+      const approvalResData = approvalRes.data;
 
       // 删除本地压缩包
       fs.unlinkSync(zipFilePath);

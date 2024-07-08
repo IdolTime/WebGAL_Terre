@@ -110,7 +110,7 @@ export const LoginPage = () => {
           label="邀请码"
           validationState="none"
           validationMessage=""
-          required
+          // required
         >
           <Input
             type="text"
