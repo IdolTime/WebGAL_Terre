@@ -10,7 +10,7 @@ export class AuthService {
   ): Promise<string> {
     try {
       const response = await axios.post(
-        `${process.env.API_HOST}/editorEmailLogin`,
+        `https://test-api.idoltime.games/editorEmailLogin`,
         {
           email,
           check_code: checkCode,
@@ -31,6 +31,7 @@ export class AuthService {
         throw new Error(data.message);
       }
     } catch (error) {
+      console.error(error);
       throw new UnauthorizedException(error.message);
     }
   }

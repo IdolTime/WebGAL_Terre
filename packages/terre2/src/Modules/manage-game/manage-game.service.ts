@@ -95,7 +95,7 @@ export class ManageGameService {
     await this.compressDirectory(gameWebDir, zipFilePath);
 
     const res = await axios.post(
-      `${process.env.API_HOST}/editor/game/game_put_object_pre_sign`,
+      `https://test-api.idoltime.games/editor/game/game_put_object_pre_sign`,
       { fileName: key },
       {
         headers: {
@@ -131,7 +131,7 @@ export class ManageGameService {
       const approvalLink = `https://idol-unzip-dst.s3.ap-southeast-1.amazonaws.com/${gId}/${now}/web/index.html`;
 
       const approvalRes = await axios.post(
-        `${process.env.API_HOST}/editor/author/game_approval_upload`,
+        `https://test-api.idoltime.games/editor/author/game_approval_upload`,
         {
           gId,
           approvalLink,
