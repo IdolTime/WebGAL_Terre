@@ -137,6 +137,7 @@ export const zhCn = {
           bg: '标题背景图片',
           bgm: '标题背景音乐',
           logoImage: '启动图',
+          mouseCursor: '鼠标光标'
         }
       },
 

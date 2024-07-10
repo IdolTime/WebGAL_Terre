@@ -134,6 +134,14 @@ export default function GameConfig() {
           value={getConfigContentAsStringArray('Game_Logo')}
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_Logo', e)}/>
       </TabItem>
+      <TabItem title={t("options.mouseCursor")}>
+        <GameConfigEditorWithImageFileChoose
+          sourceBase="background"
+          extNameList={[".jpg", ".png", ".webp"]}
+          key="mouseCursor"
+          value={getConfigContentAsStringArray('Game_cursor')}
+          onChange={(e: string[]) => updateGameConfigArrayByKey('Game_cursor', e)}/>
+      </TabItem>
     </>
   );
 }
