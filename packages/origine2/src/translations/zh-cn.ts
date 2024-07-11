@@ -137,6 +137,12 @@ export const zhCn = {
           bg: '标题背景图片',
           bgm: '标题背景音乐',
           logoImage: '启动图',
+          mouseCursor: '鼠标光标',
+          gameMenu: '游戏菜单',
+        },
+        gameMenu: {
+          achieve: '成就',
+          storyline: '故事线'
         }
       },
 

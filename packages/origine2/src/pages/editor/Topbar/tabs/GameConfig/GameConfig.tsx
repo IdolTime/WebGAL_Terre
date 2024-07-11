@@ -15,8 +15,14 @@ import {textboxThemes} from "./constants";
 import {eventBus} from "@/utils/eventBus";
 import {TabItem} from "@/pages/editor/Topbar/components/TabItem";
 import {Add, Plus, Write} from "@icon-park/react";
-import { Button, Dropdown, Input, Option } from "@fluentui/react-components";
+import { Button, Dropdown, Input, Option, Checkbox } from "@fluentui/react-components";
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
+
+interface IMenuConfig {
+  gameName: string
+  key: string
+  show: boolean
+}
 
 export default function GameConfig() {
   const t = useTrans("editor.sideBar.gameConfigs.");
@@ -48,7 +54,31 @@ export default function GameConfig() {
   }
 
   function getConfigContentAsStringArray(key: string) {
+    console.log(gameConfig.value)
     return gameConfig.value.find(e => e.command === key)?.args ?? [];
+  }
+
+  function getConfigGameMenuArray(key: string) {
+    const args = gameConfig.value.find(e => e.command === key)?.args as unknown as IMenuConfig[] ?? [];
+
+    const boolMap = new Map([
+      ['true', true],
+      ['false', false]
+    ])
+
+    const keyMap = new Map([
+      ['achieve', '成就'],
+      ['storyline', '故事线'],
+    ])
+
+    return args?.map((e: any) => {
+      const arr: any = typeof e === 'string' ? e.split('-') : e;
+      return { 
+        gameName: typeof e === 'string' ? keyMap.get(arr[0]) : e, 
+        key: typeof e === 'string' ?  arr[0] : e,
+        show: typeof e === 'string' ? boolMap.get(arr[1]) : e
+      };
+    }) ?? [];
   }
 
   function updateGameConfigSimpleByKey(key: string, value: string) {
@@ -66,6 +96,10 @@ export default function GameConfig() {
   function updateGameConfigArrayByKey(key: string, value: string[]) {
     const newConfig = cloneDeep(gameConfig.value);
     const index = newConfig.findIndex(e => e.command === key);
+
+    if (key === 'Game_menu') {
+      value = value.map((val: any) => `${val?.key}-${val?.show}`)
+    }
 
     if (index >= 0) {
       newConfig[index].args = value;
@@ -134,6 +168,21 @@ export default function GameConfig() {
           value={getConfigContentAsStringArray('Game_Logo')}
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_Logo', e)}/>
       </TabItem>
+      <TabItem title={t("options.mouseCursor")}>
+        <GameConfigEditorWithImageFileChoose
+          sourceBase="background"
+          extNameList={[".jpg", ".png", ".webp"]}
+          key="mouseCursor"
+          value={getConfigContentAsStringArray('Game_cursor')}
+          onChange={(e: string[]) => updateGameConfigArrayByKey('Game_cursor', e)}/>
+      </TabItem>
+      <TabItem title={t("options.gameMenu")}>
+        <GameConfigEditorGameMenu
+          key="gameMenu"
+          value={getConfigGameMenuArray('Game_menu')}
+          onChange={(e: string[]) => updateGameConfigArrayByKey('Game_menu', e)}
+        />
+      </TabItem>
     </>
   );
 }
@@ -147,6 +196,12 @@ interface IGameConfigEditor {
 interface IGameConfigEditorMulti {
   key: string;
   value: string[];
+  onChange: Function;
+}
+
+interface IGameConfigEditorMenu {
+  key: string;
+  value: Array<IMenuConfig>;
   onChange: Function;
 }
 
@@ -283,4 +338,49 @@ function GameConfigEditorWithImageFileChoose(props: IGameConfigEditorMulti & {
         extName={props.extNameList}/>}
     </div>
   );
+}
+
+
+
+/**
+ * 游戏菜单控制
+ */
+function GameConfigEditorGameMenu(props: IGameConfigEditorMenu) {
+  const t = useTrans("editor.sideBar.gameConfigs.");
+  const menuConfig: IMenuConfig[] = [
+    { gameName: t('gameMenu.achieve'), key: 'achieve',  show: true },
+    { gameName: t('gameMenu.storyline'), key: 'storyline',  show: true },
+  ];
+
+  const [menu, setMenu] = useState<IMenuConfig[]>(props.value?.length ? props.value : menuConfig);
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    const checked = e.target.checked;
+    const list = [...menu];
+    list.forEach((item: IMenuConfig) => {
+      if (item.key === key) {
+        item.show = checked
+      }
+    });
+    setMenu(list);
+    props.onChange(list);
+  }
+
+  return (
+    <>
+      {menu.map((item: IMenuConfig) => {
+        return (
+          <div key={item.key}>
+            <Checkbox 
+              defaultChecked={item.show} 
+              onChange={(e) => handleCheckboxChange(e, item.key)}
+              
+            />
+            <span>{item.gameName}</span>
+          </div>
+        )
+      })}
+      
+    </>
+  )
 }
