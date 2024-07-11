@@ -137,8 +137,13 @@ export const zhCn = {
           bg: '标题背景图片',
           bgm: '标题背景音乐',
           logoImage: '启动图',
-          enableStoryline: '启用故事线',
-          enableAchievement: '启用成就',
+          mouseCursor: '鼠标光标',
+          gameMenu: '游戏菜单',
+        },
+        gameMenu: {
+          achieve: '成就',
+          storyline: '故事线',
+          beautyGuide: '美女图鉴'
         }
       },
 
