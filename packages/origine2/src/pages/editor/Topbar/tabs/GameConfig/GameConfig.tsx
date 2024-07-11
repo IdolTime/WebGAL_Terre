@@ -15,7 +15,7 @@ import {textboxThemes} from "./constants";
 import {eventBus} from "@/utils/eventBus";
 import {TabItem} from "@/pages/editor/Topbar/components/TabItem";
 import {Add, Plus, Write} from "@icon-park/react";
-import { Button, Dropdown, Input, Option } from "@fluentui/react-components";
+import { Button, Dropdown, Input, Option, Switch } from "@fluentui/react-components";
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
 
 export default function GameConfig() {
@@ -133,6 +133,24 @@ export default function GameConfig() {
           key="logoImage"
           value={getConfigContentAsStringArray('Game_Logo')}
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_Logo', e)}/>
+      </TabItem>
+      <TabItem title={t("options.enableStoryline")}>
+        <Switch
+          key="enableStoryline"
+          checked={getConfigContentAsString('Enable_Storyline') === 'true'}
+          onChange={(ev, data) => {
+            updateGameConfigSimpleByKey('Enable_Storyline', data.checked ? 'true' : 'false');
+          }}
+        />
+      </TabItem>
+      <TabItem title={t("options.enableAchievement")}>
+        <Switch
+          key="enableAchievement"
+          checked={getConfigContentAsString('Enable_Achievements') === 'true'}
+          onChange={(ev, data) => {
+            updateGameConfigSimpleByKey('Enable_Achievements', data.checked ? 'true' : 'false');
+          }}
+        />
       </TabItem>
     </>
   );

@@ -137,6 +137,8 @@ export const zhCn = {
           bg: '标题背景图片',
           bgm: '标题背景音乐',
           logoImage: '启动图',
+          enableStoryline: '启用故事线',
+          enableAchievement: '启用成就',
         }
       },
 
