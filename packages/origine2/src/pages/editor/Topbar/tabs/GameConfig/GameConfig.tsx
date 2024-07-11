@@ -19,10 +19,22 @@ import { Button, Dropdown, Input, Option, Checkbox } from "@fluentui/react-compo
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
 
 interface IMenuConfig {
-  gameName: string
+  menuName: string
   key: string
   show: boolean
 }
+
+const boolMap = new Map<string, boolean>([
+  ['true', true],
+  ['false', false]
+])
+
+const menuKeysMap = new Map<string, string>([
+  ['achieve', '成就'],
+  ['storyline', '故事线'],
+  ['beautyGuide', '美女图鉴']
+])
+
 
 export default function GameConfig() {
   const t = useTrans("editor.sideBar.gameConfigs.");
@@ -61,22 +73,10 @@ export default function GameConfig() {
   function getConfigGameMenuArray(key: string) {
     const args = gameConfig.value.find(e => e.command === key)?.args as unknown as IMenuConfig[] ?? [];
 
-    const boolMap = new Map([
-      ['true', true],
-      ['false', false]
-    ])
-
-    const keyMap = new Map([
-      ['achieve', '成就'],
-      ['storyline', '故事线'],
-      ['beautyGuide', '美女图鉴']
-    ])
-
     return args?.map((e: any) => {
-      debugger;
       const arr: any = typeof e === 'string' ? e.split('-') : e;
       return { 
-        gameName: typeof e === 'string' ? keyMap.get(arr[0]) : e, 
+        menuName: typeof e === 'string' ? menuKeysMap.get(arr[0]) : e, 
         key: typeof e === 'string' ?  arr[0] : e,
         show: typeof e === 'string' ? boolMap.get(arr[1]) : e
       };
@@ -98,7 +98,6 @@ export default function GameConfig() {
   function updateGameConfigArrayByKey(key: string, value: string[]) {
     const newConfig = cloneDeep(gameConfig.value);
     const index = newConfig.findIndex(e => e.command === key);
-    debugger;
 
     if (key === 'Game_menu') {
       value = value.map((val: any) => `${val?.key}-${val?.show}`)
@@ -350,13 +349,40 @@ function GameConfigEditorWithImageFileChoose(props: IGameConfigEditorMulti & {
  */
 function GameConfigEditorGameMenu(props: IGameConfigEditorMenu) {
   const t = useTrans("editor.sideBar.gameConfigs.");
-  const menuConfig: IMenuConfig[] = [
-    { gameName: t('gameMenu.achieve'), key: 'achieve',  show: true },
-    { gameName: t('gameMenu.storyline'), key: 'storyline',  show: true },
-    { gameName: t('gameMenu.beautyGuide'), key: 'beautyGuide',  show: true },
+  const defaultGameMenuList: IMenuConfig[] = [
+    { menuName: t('gameMenu.achieve'), key: 'achieve',  show: true },
+    { menuName: t('gameMenu.storyline'), key: 'storyline',  show: true },
+    { menuName: t('gameMenu.beautyGuide'), key: 'beautyGuide',  show: true },
   ];
 
-  const [menu, setMenu] = useState<IMenuConfig[]>(props.value?.length ? props.value : menuConfig);
+  const [menu, setMenu] = useState<IMenuConfig[]>(defaultGameMenuList);
+
+  useEffect(() => {
+
+    if (props.value?.length) {
+      const menuList = props.value.map((item: string | unknown) => {
+        if (typeof item === 'string') {
+          const menukeys: string[] = item?.split('-') ?? [];
+          if (menukeys?.length < 0) return item
+          const menuItem: IMenuConfig | undefined = defaultGameMenuList.find((menu) => menu.key === menukeys[0])
+          if (menuItem) {
+            menuItem['show'] = boolMap.get(menukeys[1]) || false
+            return menuItem
+          }
+          return item
+        }
+
+        return item
+      }).filter(f => f !== null) as IMenuConfig[]
+
+
+      if (menuList.length) {
+        setMenu(menuList)
+      }
+
+    }
+
+  }, [props.value])
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
     const checked = e.target.checked;
@@ -376,15 +402,14 @@ function GameConfigEditorGameMenu(props: IGameConfigEditorMenu) {
         return (
           <div key={item.key}>
             <Checkbox 
-              defaultChecked={item.show} 
+              checked={item.show} 
               onChange={(e) => handleCheckboxChange(e, item.key)}
               
             />
-            <span>{item.gameName}</span>
+            <span>{item.menuName}</span>
           </div>
         )
       })}
-      
     </>
   )
 }
