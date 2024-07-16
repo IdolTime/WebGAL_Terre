@@ -32,7 +32,8 @@ const initialState: UserData = {
     userId: "",
     email: "",
     nickName: "",
-    avatar: ""
+    avatar: "",
+    userName: "",
   }
 };
 
