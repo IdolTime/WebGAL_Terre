@@ -139,6 +139,8 @@ export const zhCn = {
           logoImage: '启动图',
           mouseCursor: '鼠标光标',
           gameMenu: '游戏菜单',
+          openingLogo: '开场logo',
+          R18: '是否显示R18提示'
         },
         gameMenu: {
           achieve: '成就',
