@@ -3,3 +3,7 @@ Game_key:;
 Title_img:title-bg.png;
 Title_bgm:s_Title.mp3;
 Textbox_theme:imss;
+Game_start_button:开始游戏 -hide=false -style={};
+Game_achievement_button:成就 -hide=false -style={};
+Game_storyline_button:故事线 -hide=false -style={};
+Game_extra_button:鉴赏模式 -hide=false -style={};
