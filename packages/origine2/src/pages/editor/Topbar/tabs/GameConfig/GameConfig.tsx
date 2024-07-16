@@ -536,7 +536,6 @@ function GameConfigEditorGameMenu(props: {
                 <div style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
                   <span style={{ fontSize: '16px', fontWeight: 500, width: "70px" }}>{(keysNameMap as any)[keys[index]]}</span>
                   <Checkbox checked={menu.args.hide} onChange={(_, data) => {
-                    console.log(33333,data);
                     setHide(index, data.checked as boolean);
                   }} />
                   <span>隐藏</span>
