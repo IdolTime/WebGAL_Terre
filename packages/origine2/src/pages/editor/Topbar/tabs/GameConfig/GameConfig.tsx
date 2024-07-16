@@ -249,18 +249,6 @@ interface IGameConfigEditorMulti {
   onChange: Function;
 }
 
-interface IGameConfigEditorR18 {
-  key: string;
-  value: boolean;
-  onChange: Function;
-}
-
-interface IGameConfigEditorMenu {
-  key: string;
-  value: Array<IMenuConfig>;
-  onChange: Function;
-}
-
 function GameConfigEditor(props: IGameConfigEditor) {
   const t = useTrans("common.");
   const showEditBox = useValue(false);
