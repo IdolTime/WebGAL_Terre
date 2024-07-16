@@ -15,7 +15,7 @@ import {textboxThemes} from "./constants";
 import {eventBus} from "@/utils/eventBus";
 import {TabItem} from "@/pages/editor/Topbar/components/TabItem";
 import {Add, Plus, Write} from "@icon-park/react";
-import { Button, Dropdown, Input, Option, Checkbox } from "@fluentui/react-components";
+import { Button, Dropdown, Input, Option, Checkbox, Radio } from "@fluentui/react-components";
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
 
 interface IMenuConfig {
@@ -185,6 +185,23 @@ export default function GameConfig() {
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_menu', e)}
         />
       </TabItem>
+
+      {/* <TabItem title={t("options.openingLogo")}>
+        <GameConfigEditorWithImageFileChoose
+          sourceBase="background"
+          extNameList={[".jpg", ".png", ".webp", '.mp4', '.flv']}
+          key="openingLogo"
+          value={getConfigContentAsStringArray('Opening_logo')}
+          onChange={(e: string[]) => updateGameConfigArrayByKey('Opening_logo', e)}/>
+      </TabItem> */}
+
+      <TabItem title={t("options.R18")}>
+        <GameConfigEditorR18
+          key="R18"
+          value={getConfigContentAsStringArray('Game_r18')}
+          onChange={(e: string[]) => updateGameConfigArrayByKey('Game_r18', e)}
+        />
+      </TabItem>
     </>
   );
 }
@@ -198,6 +215,12 @@ interface IGameConfigEditor {
 interface IGameConfigEditorMulti {
   key: string;
   value: string[];
+  onChange: Function;
+}
+
+interface IGameConfigEditorR18 {
+  key: string;
+  value: boolean;
   onChange: Function;
 }
 
@@ -411,5 +434,24 @@ function GameConfigEditorGameMenu(props: IGameConfigEditorMenu) {
         )
       })}
     </>
+  )
+}
+
+
+/**
+ * R18
+ */
+function GameConfigEditorR18(props: IGameConfigEditorMulti) {
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    props.onChange([`${checked}`]);
+  }
+  
+  return (
+      <Checkbox 
+        checked={props.value?.length ? boolMap.get(props.value[0]) : false}
+        onChange={(e) => handleCheckboxChange(e)}
+      />
   )
 }
