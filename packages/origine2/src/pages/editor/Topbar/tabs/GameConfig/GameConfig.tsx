@@ -32,10 +32,14 @@ import {
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
 
 export enum GameMenuKey {
-  Game_start_button = "Game_start_button",
-  Game_achievement_button="Game_achievement_button",
-  Game_storyline_button="Game_storyline_button",
-  Game_extra_button="Game_extra_button",
+  Game_start_button = 'Game_start_button', // 开始
+  Game_achievement_button = 'Game_achievement_button', // 成就
+  Game_storyline_button = 'Game_storyline_button', // 故事线
+  Game_extra_button = 'Game_extra_button', // bgm和图片收藏
+  Game_collection_button = 'Game_collection_button', // 图鉴
+  Game_option_button = 'Game_option_button', // 设置
+  Game_load_button = 'Game_load_button', // 读取
+  Game_continue_button = 'Game_continue_button', // 继续游戏
 }
 
 interface GameMenuItem {
@@ -392,38 +396,22 @@ function GameConfigEditorGameMenu(props: {
   onChange: (options: Record<GameMenuKey, GameMenuItem>) => void
 }) {
   const [gameMenuDialogOpen, setGameMenuDialogOpen] = useState(false);
+  const generateButton = () => ({
+    content: "",
+    args: {
+      hide: false,
+      style: {}
+    }
+  });
   const [options, setOptions] = useState<Record<GameMenuKey, GameMenuItem>>({
-    Game_start_button: {
-      content: "",
-      args: {
-        hide: false,
-        style: {}
-      }
-    },
-    Game_achievement_button: {
-      content: "",
-      args: {
-        hide: false,
-        style: {
-        }
-      }
-    },
-    Game_storyline_button: {
-      content: "",
-      args: {
-        hide: false,
-        style: {
-        }
-      }
-    },
-    Game_extra_button: {
-      content: "",
-      args: {
-        hide: false,
-        style: {
-        }
-      }
-    },
+    Game_start_button: generateButton(),
+    Game_achievement_button: generateButton(),
+    Game_storyline_button: generateButton(),
+    Game_extra_button: generateButton(),
+    Game_collection_button: generateButton(),
+    Game_option_button: generateButton(),
+    Game_load_button: generateButton(),
+    Game_continue_button: generateButton(),
   });
   const keys = Object.keys(GameMenuKey) as GameMenuKey[];
   const keysNameMap = {
@@ -431,6 +419,10 @@ function GameConfigEditorGameMenu(props: {
     Game_achievement_button: "成就",
     Game_storyline_button: "故事线",
     Game_extra_button: "鉴赏模式",
+    Game_collection_button: "图鉴",
+    Game_option_button: "选项",
+    Game_load_button: "加载存档",
+    Game_continue_button: "继续游戏",
   };
   
   useEffect(() => {
@@ -438,6 +430,10 @@ function GameConfigEditorGameMenu(props: {
     let GameAchievementButton = props.value.find(e => e.command === GameMenuKey.Game_achievement_button);
     let GameStorylineButton = props.value.find(e => e.command === GameMenuKey.Game_storyline_button);
     let GameExtraButton = props.value.find(e => e.command === GameMenuKey.Game_extra_button);
+    let GameContinueButton = props.value.find(e => e.command === GameMenuKey.Game_continue_button);
+    let GameLoadButton = props.value.find(e => e.command === GameMenuKey.Game_load_button);
+    let GameCollectionButton = props.value.find(e => e.command === GameMenuKey.Game_collection_button);
+    let GameOptionButton = props.value.find(e => e.command === GameMenuKey.Game_option_button);
 
     const parseArgs = (args: WebgalConfig[0]['options']) => {
       const hide = args.find((e: any) => e.key === 'hide')?.value === true;
@@ -468,6 +464,15 @@ function GameConfigEditorGameMenu(props: {
       };
     };
 
+    // Game_start_button: "开始游戏",
+    // Game_achievement_button: "成就",
+    // Game_storyline_button: "故事线",
+    // Game_extra_button: "鉴赏模式",
+    // Game_collection_button: "图鉴",
+    // Game_option_button: "选项",
+    // Game_load_button: "加载存档",
+    // Game_continue_button: "继续游戏",
+
     setOptions({
       Game_start_button: {
         content: GameStartButton?.args[0] ?? '',
@@ -484,6 +489,22 @@ function GameConfigEditorGameMenu(props: {
       Game_extra_button: {
         content: GameExtraButton?.args[0] ?? '',
         args: parseArgs(GameExtraButton?.options ?? [])
+      },
+      Game_collection_button: {
+        content: GameCollectionButton?.args[0] ?? '',
+        args: parseArgs(GameCollectionButton?.options ?? [])
+      },
+      Game_option_button: {
+        content: GameOptionButton?.args[0] ?? '',
+        args: parseArgs(GameOptionButton?.options ?? [])
+      },
+      Game_load_button: {
+        content: GameLoadButton?.args[0] ?? '',
+        args: parseArgs(GameLoadButton?.options ?? [])
+      },
+      Game_continue_button: {
+        content: GameContinueButton?.args[0] ?? '',
+        args: parseArgs(GameContinueButton?.options ?? [])
       },
     });
   }, [props.value]);

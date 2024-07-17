@@ -7,3 +7,7 @@ Game_start_button:开始游戏 -hide=false -style={};
 Game_achievement_button:成就 -hide=false -style={};
 Game_storyline_button:故事线 -hide=false -style={};
 Game_extra_button:鉴赏模式 -hide=false -style={};
+Game_continue_button:继续游戏 -hide=false -style={};
+Game_load_button:读取存档 -hide=false -style={};
+Game_collection_button:美女图鉴 -hide=false -style={};
+Game_option_button:选项 -hide=false -style={};
