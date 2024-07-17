@@ -124,7 +124,7 @@ export default function GameConfig() {
 
       Object.keys((value.args.style)).forEach((key) => {
         let newKey = key as 'x' | 'y' | 'scale' | 'fontSize' | 'fontColor' | 'image';
-        if (value.args.style[newKey] !== undefined) {
+        if (value.args.style[newKey]) {
           styleContent.push(`${key}=${value.args.style[newKey]}`);
         }
       });
