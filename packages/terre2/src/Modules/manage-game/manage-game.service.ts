@@ -82,7 +82,7 @@ export class ManageGameService {
    * @param s3Key 上传到 S3 的文件键
    */
   async uploadGame(gameName: string, gId: number, token: string) {
-    await this.exportGame(gameName, 'web');
+    await this.exportGame(gameName, 'web', false);
     const gameDir = this.webgalFs.getPathFromRoot(
       `/Exported_Games/${gameName}`,
     );
@@ -259,6 +259,7 @@ export class ManageGameService {
   async exportGame(
     gameName: string,
     ejectPlatform: 'web' | 'electron-windows' | 'android',
+    openFileExplorer = true,
   ) {
     // 根据 GameName 找到游戏所在目录
     const gameDir = this.webgalFs.getPathFromRoot(
@@ -335,7 +336,10 @@ export class ManageGameService {
           gameDir,
           `${electronExportDir}/resources/app/public/game/`,
         );
-        await _open(electronExportDir);
+
+        if (openFileExplorer) {
+          await _open(electronExportDir);
+        }
       }
       if (process.platform === 'linux') {
         const electronExportDir = this.webgalFs.getPath(
@@ -370,7 +374,9 @@ export class ManageGameService {
           gameDir,
           `${electronExportDir}/resources/app/public/game/`,
         );
-        await _open(electronExportDir);
+        if (openFileExplorer) {
+          await _open(electronExportDir);
+        }
       }
       if (process.platform === 'darwin') {
         const electronExportDir = this.webgalFs.getPath(
@@ -405,7 +411,10 @@ export class ManageGameService {
           gameDir,
           `${electronExportDir}/Contents/Resources/app/public/game/`,
         );
-        await _open(exportDir);
+
+        if (openFileExplorer) {
+          await _open(exportDir);
+        }
       }
     }
     // 导出 android
@@ -474,7 +483,10 @@ export class ManageGameService {
       await this.webgalFs.deleteFileOrDirectory(
         `${androidExportDir}/app/src/main/java/MainActivity.kt`,
       );
-      await _open(androidExportDir);
+
+      if (openFileExplorer) {
+        await _open(androidExportDir);
+      }
     }
     // 导出 Web
     if (ejectPlatform === 'web') {
@@ -493,7 +505,10 @@ export class ManageGameService {
       // 复制游戏前尝试删除文件夹，防止游戏素材更改后有多余文件
       await this.webgalFs.deleteFileOrDirectory(`${webExportDir}/game/`);
       await this.webgalFs.copy(gameDir, `${webExportDir}/game/`);
-      await _open(webExportDir);
+
+      if (openFileExplorer) {
+        await _open(webExportDir);
+      }
     }
   }
 
