@@ -124,7 +124,7 @@ export default function GameConfig() {
 
       Object.keys((value.args.style)).forEach((key) => {
         let newKey = key as 'x' | 'y' | 'scale' | 'fontSize' | 'fontColor' | 'image';
-        if (value.args.style[newKey] !== undefined) {
+        if (value.args.style[newKey]) {
           styleContent.push(`${key}=${value.args.style[newKey]}`);
         }
       });
@@ -652,19 +652,19 @@ function GameConfigEditorR18(props: IGameConfigEditorMulti) {
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
     props.onChange([`${checked}`]);
-  }
+  };
 
   const boolMap = new Map<string | boolean, boolean>([
     ['true', true],
     ['false', false],
     [true, true],
     [false, false]
-  ])
+  ]);
   
   return (
-      <Checkbox 
-        checked={props.value?.length ? boolMap.get(props.value[0]) : false}
-        onChange={(e) => handleCheckboxChange(e)}
-      />
-  )
+    <Checkbox 
+      checked={props.value?.length ? boolMap.get(props.value[0]) : false}
+      onChange={(e) => handleCheckboxChange(e)}
+    />
+  );
 }

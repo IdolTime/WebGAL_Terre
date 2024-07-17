@@ -7,7 +7,7 @@ import useVarTrans from "@/hooks/useVarTrans";
 import { GameInfo, GameOriginInfo } from "./DashBoard";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/api";
-import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Input, Menu, MenuButton, MenuItem, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
+import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Input, Menu, MenuButton, MenuItem, MenuList, MenuPopover, MenuTrigger, Toast, Toaster, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
 import { Delete24Filled, Delete24Regular, FolderOpen24Filled, FolderOpen24Regular, MoreVertical24Filled, MoreVertical24Regular, Open24Filled, Open24Regular, Rename24Filled, Rename24Regular, bundleIcon } from "@fluentui/react-icons";
 import { request } from "@/utils/request";
 
@@ -30,6 +30,16 @@ export default function GameElement(props: IGameElementProps) {
   const RenameIcon = bundleIcon(Rename24Filled, Rename24Regular);
   const DeleteIcon = bundleIcon(Delete24Filled, Delete24Regular);
   const [loadingStatusMap, setLoadingStatusMap] = useState<{ [key: string]: number }>({});
+
+  const toasterId = useId("toaster");
+  const { dispatchToast } = useToastController(toasterId);
+  const notify = (title: string, type: ToastIntent) =>
+    dispatchToast(
+      <Toast>
+        <ToastTitle>{title}</ToastTitle>
+      </Toast>,
+      { position: 'top', timeout: 3000, intent: type }
+    );
 
   const statusMap = {
     0: "上传游戏",
@@ -110,10 +120,17 @@ export default function GameElement(props: IGameElementProps) {
       return;
     }
     setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 1 });
-    request.post("/api/manageGame/uploadGame", { gameName, gId }).then(() => {
-      setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 2 });
-    }).catch(() => {
+    request.post("/api/manageGame/uploadGame", { gameName, gId }).then((res) => {
+      if (res.data.status === 'success') {
+        setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 2 });
+        notify("上传成功", "success");
+      } else {
+        setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
+        notify(res.data.message, "error");
+      }
+    }).catch((err) => {
       setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
+      notify(err.message, "error");
     });
   };
 
@@ -150,6 +167,7 @@ export default function GameElement(props: IGameElementProps) {
           </div>
         </div>
       </div>
+      <Toaster toasterId={toasterId} />
       {/* 重命名对话框 */}
       <Dialog
         open={isShowRenameDialog.value}
