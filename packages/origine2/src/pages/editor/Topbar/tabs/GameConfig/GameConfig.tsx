@@ -14,7 +14,7 @@ import {logger} from "@/utils/logger";
 import {textboxThemes} from "./constants";
 import {eventBus} from "@/utils/eventBus";
 import {TabItem} from "@/pages/editor/Topbar/components/TabItem";
-import {Add, Plus, Write} from "@icon-park/react";
+import {Add, Plus, Tub, Write} from "@icon-park/react";
 import {
   Button,
   Dropdown,
@@ -214,6 +214,23 @@ export default function GameConfig() {
           key="gameMenu"
           value={gameConfig.value}
           onChange={updateGameMenuConfig}
+        />
+      </TabItem>
+
+      {/* <TabItem title={t("options.openingLogo")}>
+        <GameConfigEditorWithImageFileChoose
+          sourceBase="background"
+          extNameList={[".jpg", ".png", ".webp", '.mp4', '.flv']}
+          key="openingLogo"
+          value={getConfigContentAsStringArray('Opening_logo')}
+          onChange={(e: string[]) => updateGameConfigArrayByKey('Opening_logo', e)}/>
+      </TabItem> */}
+
+      <TabItem title={t("options.R18")}>
+        <GameConfigEditorR18
+          key="R18"
+          value={getConfigContentAsStringArray('Game_r18')}
+          onChange={(e: string[]) => updateGameConfigArrayByKey('Game_r18', e)}
         />
       </TabItem>
     </>
@@ -624,4 +641,30 @@ function GameConfigEditorGameMenu(props: {
       </DialogSurface>
     </Dialog>
   );
+}
+
+
+/**
+ * R18
+ */
+function GameConfigEditorR18(props: IGameConfigEditorMulti) {
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    props.onChange([`${checked}`]);
+  }
+
+  const boolMap = new Map<string | boolean, boolean>([
+    ['true', true],
+    ['false', false],
+    [true, true],
+    [false, false]
+  ])
+  
+  return (
+      <Checkbox 
+        checked={props.value?.length ? boolMap.get(props.value[0]) : false}
+        onChange={(e) => handleCheckboxChange(e)}
+      />
+  )
 }
