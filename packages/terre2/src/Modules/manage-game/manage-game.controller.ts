@@ -111,15 +111,19 @@ export class ManageGameController {
     @Body() uploadGameData: UploadGameDto,
     @Headers('editorToken') editorToken: string,
   ) {
-    const uploadResult = await this.manageGame.uploadGame(
-      uploadGameData.gameName,
-      uploadGameData.gId,
-      editorToken,
-    );
-    if (uploadResult) {
-      return { status: 'success', key: uploadResult };
-    } else {
-      return { status: 'failed' }; // Note: Typo correction 'filed' -> 'failed'
+    try {
+      const uploadResult = await this.manageGame.uploadGame(
+        uploadGameData.gameName,
+        uploadGameData.gId,
+        editorToken,
+      );
+      if (uploadResult) {
+        return { status: 'success', key: uploadResult };
+      } else {
+        return { status: 'failed' };
+      }
+    } catch (error) {
+      return { status: 'failed', message: error.message };
     }
   }
 
