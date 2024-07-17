@@ -43,7 +43,7 @@ export default function UnlockStoryline(props: ISentenceEditorProps) {
     const name = unlockName.value !== '' ? ` -name=${unlockName.value}` : '';
 
     let content = '';
-    if (bgFile.value !== 'none' && name !== '') {
+    if (bgFile.value !== 'none') {
       content = `unlockStoryline:${bgFile.value}${axisX}${axisY}${name} -next;`;
       props.onSubmit(content);
     } 
