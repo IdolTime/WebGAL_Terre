@@ -1,12 +1,12 @@
 import styles from "./gamepreview.module.scss";
-import { GameInfo, GameOriginInfo } from './DashBoard';
+import { GameInfo } from './DashBoard';
 import { Button } from "@fluentui/react-components";
 import { Dismiss48Filled, Dismiss48Regular, bundleIcon } from "@fluentui/react-icons";
 
 interface IGamePreviewProps {
   currentGame: string;
   setCurrentGame: (currentGame: string | null) => void;
-  gameInfo: GameOriginInfo;
+  gameInfo: GameInfo;
 }
 
 export default function GamePreview(props: IGamePreviewProps) {
@@ -14,7 +14,7 @@ export default function GamePreview(props: IGamePreviewProps) {
 
   return <div className={styles.preview_main}>
     <div className={styles.preview_title}>
-      <span className={styles.preview_title_text}>{props.gameInfo.gName}</span>
+      <span className={styles.preview_title_text}>{props.gameInfo.title}</span>
       <Button appearance='subtle' icon={<DismissIcon />} onClick={() => props.setCurrentGame(null)} />
     </div>
     {/* eslint-disable-next-line react/iframe-missing-sandbox */}
