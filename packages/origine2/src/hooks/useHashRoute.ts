@@ -60,7 +60,6 @@ export function useHashRoute() {
       }
     }
   }, [token]);
-
 }
 
 function decodeHash() {
