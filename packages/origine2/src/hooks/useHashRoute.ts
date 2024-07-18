@@ -6,18 +6,12 @@ import {ITag} from "@/store/statusReducer";
 
 export function useHashRoute() {
   const state = useSelector((state: RootState) => state.status);
-  const userState = useSelector((state: RootState) => state.userData);
   const isShowDashboard = state.dashboard.showDashBoard;
   const editingGameName = state.editor.currentEditingGame;
   const currentTag = state.editor.selectedTagTarget;
   const dispatch = useDispatch();
-  const token = userState.editorToken;
   useEffect(() => {
     setTimeout(() => {
-      if (!token) {
-        window.location.hash = '#/login';
-        return;
-      }
       // 写入 Hash
       // 如果显示 dashboard 或者两个状态都为空，则清空哈希
       if (isShowDashboard || (!editingGameName && !currentTag)) {
@@ -37,10 +31,9 @@ export function useHashRoute() {
       window.location.hash = `#/${hashParts.join('/')}`;
     }, 50);
 
-  }, [isShowDashboard, editingGameName, currentTag, token]);
+  }, [isShowDashboard, editingGameName, currentTag]);
 
   useEffect(() => {
-    if (!token) return;
     const result = decodeHash();
     if (result.editingGameName !== '') {
       dispatch(setDashboardShow(false));
@@ -59,7 +52,7 @@ export function useHashRoute() {
 
       }
     }
-  }, [token]);
+  }, []);
 
 }
 
