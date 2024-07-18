@@ -8,6 +8,7 @@ import useTrans from '@/hooks/useTrans';
 import CommonTips from '@/pages/editor/GraphicalEditor/components/CommonTips';
 import { useExpand } from '@/hooks/useExpand';
 import { useEffect } from 'react';
+import { Switch } from "@fluentui/react-components";
 
 
 /**
@@ -17,6 +18,7 @@ export default function UnlockStoryline(props: ISentenceEditorProps) {
   const t = useTrans('editor.graphical.sentences.unlockStoryline.');
   const isNoFile = props.sentence.content === '';
   const bgFile = useValue(props.sentence.content);
+  const isHide = useValue(getArgByKey(props.sentence, 'hideName'));
   const unlockName = useValue(getArgByKey(props.sentence, 'name').toString() ?? '');
   const unlockSeries = useValue(getArgByKey(props.sentence, 'series').toString() ?? '');
   const { updateExpandIndex } = useExpand();
@@ -41,15 +43,13 @@ export default function UnlockStoryline(props: ISentenceEditorProps) {
     const axisX = x.value !== '' ? ` -x=${x.value}` : '';
     const axisY = y.value !== '' ? ` -y=${y.value}` : '';
     const name = unlockName.value !== '' ? ` -name=${unlockName.value}` : '';
+    const isHideName = ` -hideName=${!!isHide.value}`;
 
     let content = '';
-    if (bgFile.value !== 'none') {
-      content = `unlockStoryline:${bgFile.value}${axisX}${axisY}${name} -next;`;
+    if (bgFile.value !== 'none' && name !== '') {
+      content = `unlockStoryline:${bgFile.value}${axisX}${axisY}${name}${isHideName} -next;`;
       props.onSubmit(content);
-    } 
-    // else {
-    // content = `unlockStoryline:${bgFile.value} -next;`;
-    // }
+    }
     
   };
 
@@ -82,7 +82,17 @@ export default function UnlockStoryline(props: ISentenceEditorProps) {
             }}
           />
         </CommonOptions>
-        <CommonOptions key="3" title={t('options.axis.title')}>
+        <CommonOptions key="3" title={t('options.switch.title')}>
+          <Switch 
+            checked={!!isHide.value}
+            onChange={(ev, data) => {
+              isHide.set(data.checked);
+              submit();
+            }}
+          />
+          {!!isHide.value ? t('options.switch.hide') : t('options.switch.show')}
+        </CommonOptions>
+        <CommonOptions key="4" title={t('options.axis.title')}>
           {t('options.axis.x')}
           {'\u00a0'}
           <input 
