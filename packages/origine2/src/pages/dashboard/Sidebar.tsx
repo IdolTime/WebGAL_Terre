@@ -2,13 +2,12 @@ import GameElement from "./GameElement";
 import styles from "./sidebar.module.scss";
 import { useState } from "react";
 import useTrans from "@/hooks/useTrans";
-import { GameOriginInfo } from "./DashBoard";
+import { GameInfo } from "./DashBoard";
 import { Button, Input, Popover, PopoverSurface, PopoverTrigger, Subtitle1 } from "@fluentui/react-components";
-import {  bundleIcon, ArrowSync24Filled, ArrowSync24Regular } from "@fluentui/react-icons";
-import { request } from "@/utils/request";
+import { Add24Filled, Add24Regular, bundleIcon } from "@fluentui/react-icons";
 
 interface ISidebarProps {
-  gameList: GameOriginInfo[];
+  gameList: GameInfo[];
   currentSetGame: string | null;
   setCurrentGame: (currentGame: string) => void;
   createGame: (name: string) => void;
@@ -18,13 +17,13 @@ interface ISidebarProps {
 export default function Sidebar(props: ISidebarProps) {
   const t = useTrans('dashBoard.');
 
-  const SyncIcon = bundleIcon(ArrowSync24Filled, ArrowSync24Regular);
+  const AddIcon = bundleIcon(Add24Filled, Add24Regular);
 
   const [createGameFormOpen, setCreateGameFormOpen] = useState(false);
   const [newGameName, setNewGameName] = useState(t('createNewGame.dialog.defaultName') || 'NewGame');
 
   function createNewGame() {
-    if (newGameName && newGameName.trim() !== '' && !props.gameList.find((item) => item.gName === newGameName.trim())) {
+    if (newGameName && newGameName.trim() !== '' && !props.gameList.find((item) => item.dir === newGameName.trim())) {
       props.createGame(newGameName);
       setCreateGameFormOpen(false);
       setNewGameName(t('createNewGame.dialog.defaultName') || 'NewGame');
@@ -34,26 +33,40 @@ export default function Sidebar(props: ISidebarProps) {
   return <div className={`${styles.sidebar_main} ${!props.currentSetGame ? styles.sidebar_main_fullwidth : ""}`}>
     <div className={styles.sidebar_top}>
       <span className={styles.sidebar_top_title}>{t('titles.gameList')}</span>
-      <Button appearance='primary' icon={<SyncIcon />} onClick={props.refreash}>刷新游戏列表</Button>
+      <Popover
+        withArrow
+        trapFocus
+        open={createGameFormOpen}
+        onOpenChange={() => setCreateGameFormOpen(!createGameFormOpen)}
+      >
+        <PopoverTrigger>
+          <Button appearance='primary' icon={<AddIcon />}>{t('createNewGame.button')}</Button>
+        </PopoverTrigger>
+        <PopoverSurface>
+          <form style={{display:"flex", flexDirection:"column", gap:'8px'}}>
+            <Subtitle1>{t('createNewGame.dialog.title')}</Subtitle1>
+            <Input
+              value={newGameName}
+              onChange={(event) => setNewGameName(event.target.value)}
+              onKeyDown={(event) => (event.key === 'Enter') && createNewGame()}
+              defaultValue={t('createNewGame.dialog.defaultName')}
+              placeholder={t('createNewGame.dialog.text')} />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button appearance='primary' onClick={createNewGame} >{t('$common.create')}</Button>
+            </div>         
+          </form>
+        </PopoverSurface>
+      </Popover>
     </div>
     <div className={styles.game_list}>
       {
         props.gameList.map(e => {
-          const checked = props.currentSetGame === e.gName;
+          const checked = props.currentSetGame === e.dir;
           return <GameElement
-            onClick={async () => {
-              const res = await request.post("/api/manageGame/checkGameFolder", { gameName: e.gName });
-
-              if (res.data.status === 'success') {
-                props.setCurrentGame(e.gName);
-              } else {
-                await request.post("/api/manageGame/createGame", { gameName: e.gName });
-                props.setCurrentGame(e.gName);
-              }
-            }}
+            onClick={() => props.setCurrentGame(e.dir)}
             refreash={props.refreash}
             gameInfo={e}
-            key={e.gId}
+            key={e.dir}
             checked={checked} 
           />;
         })

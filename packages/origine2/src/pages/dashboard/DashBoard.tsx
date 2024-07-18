@@ -15,8 +15,6 @@ import { language } from "@/store/statusReducer";
 import { WebgalParser } from "../editor/GraphicalEditor/parser";
 // import { Card, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, Toolbar, ToolbarButton } from "@fluentui/react-components";
 import { LocalLanguage24Filled, LocalLanguage24Regular, bundleIcon } from "@fluentui/react-icons";
-import { request } from "@/utils/request";
-import UserProfile from "@/components/userProfile";
 
 // 返回的文件信息（单个）
 interface IFileInfo {
@@ -30,20 +28,6 @@ export interface GameInfo {
   cover: string;
 }
 
-export interface GameOriginInfo {
-  gId: number,
-  authorId: number,
-  authorName: string,
-  authorNickName: string,
-  authorAvatar: string,
-  gType: string,
-  gName: string,
-  state: string,
-  gCover: string,
-  publicResource: number,
-  isAdmin: boolean,
-}
-
 export default function DashBoard() {
 
   const t = useTrans('editor.topBar.');
@@ -53,7 +37,6 @@ export default function DashBoard() {
   const LocalLanguageIcon = bundleIcon(LocalLanguage24Filled, LocalLanguage24Regular);
 
   const isDashboardShow:boolean = useSelector((state: RootState) => state.status.dashboard.showDashBoard);
-  const userInfo = useSelector((state: RootState) => state.userData.userInfo);
 
   const messageRef = useRef<TestRefRef>(null);
 
@@ -63,25 +46,10 @@ export default function DashBoard() {
   const setCurrentGame = (e: string | null) => currentGame.set(e);
 
   // 游戏列表
-  const gameInfoList = useValue<Array<GameOriginInfo>>([]);
+  const gameInfoList = useValue<Array<GameInfo>>([]);
 
-  async function getGameListFromServer(): Promise<Array<GameOriginInfo>> {
-    if (!userInfo.userId) {
-      return [];
-    }
-    return await request.get("https://test-api.idoltime.games/editor/game/list", {
-      params: {
-        page: 1,
-        pageSize: 9999,
-        authorId: userInfo.userId
-      }
-    }).then(r => {
-      if (r.data.code === 0) {
-        return r.data.data.data;
-      } else {
-        return [];
-      }
-    });
+  async function getDirInfo() {
+    return await axios.get("/api/manageGame/gameList").then(r => r.data);
   }
 
   async function createGame(gameName:string) {
@@ -93,9 +61,24 @@ export default function DashBoard() {
   }
 
   function refreashDashboard() {
-    getGameListFromServer().then(gameList => {
+    getDirInfo().then(response => {
+      const gameList = (response as Array<IFileInfo>)
+        .filter(e => e.isDir)
+        .map(e => e.name);
       logger.info("返回的游戏列表", gameList);
-      gameInfoList.set(gameList);
+
+      const getGameInfoList = gameList.map(
+        async (gameName) : Promise<GameInfo> => {
+          const gameConfigData = (await axios.get(`/api/manageGame/getGameConfig/${gameName}`)).data;
+          const gameConfig = WebgalParser.parseConfig(gameConfigData);
+          return {
+            dir: gameName,
+            title: gameConfig.find(e => e.command === "Game_name")?.args?.join('') ?? "",
+            cover: gameConfig.find(e => e.command === "Title_img")?.args?.join('') ?? "",
+          };
+        });
+
+      Promise.all(getGameInfoList).then(list => gameInfoList.set(list));
     });
   }
 
@@ -105,7 +88,6 @@ export default function DashBoard() {
   }, []);
 
   const refreash = () => {
-    gameInfoList.set([]);
     refreashDashboard();
     setCurrentGame(null);
   };
@@ -130,7 +112,6 @@ export default function DashBoard() {
               </MenuPopover>
             </Menu>
           </Toolbar> */}
-          <UserProfile />
         </div>
         <div className={styles.dashboard_main}>
           <Message ref={messageRef} />
@@ -139,7 +120,7 @@ export default function DashBoard() {
                 <GamePreview
                   currentGame={currentGame.value}
                   setCurrentGame={setCurrentGame}
-                  gameInfo={gameInfoList.value.find(e => e.gName === currentGame.value)!}
+                  gameInfo={gameInfoList.value.find(e => e.dir === currentGame.value)!}
                 />
           }
           <Sidebar

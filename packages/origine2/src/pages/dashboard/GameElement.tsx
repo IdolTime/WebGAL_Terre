@@ -4,15 +4,14 @@ import { useDispatch } from "react-redux";
 import { setDashboardShow, setEditingGame } from "../../store/statusReducer";
 import { useValue } from "../../hooks/useValue";
 import useVarTrans from "@/hooks/useVarTrans";
-import { GameInfo, GameOriginInfo } from "./DashBoard";
-import { useEffect, useMemo, useState } from "react";
+import { GameInfo } from "./DashBoard";
+import { useEffect, useMemo } from "react";
 import { api } from "@/api";
-import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Input, Menu, MenuButton, MenuItem, MenuList, MenuPopover, MenuTrigger, Toast, Toaster, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
+import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Input, Menu, MenuButton, MenuItem, MenuList, MenuPopover, MenuTrigger } from "@fluentui/react-components";
 import { Delete24Filled, Delete24Regular, FolderOpen24Filled, FolderOpen24Regular, MoreVertical24Filled, MoreVertical24Regular, Open24Filled, Open24Regular, Rename24Filled, Rename24Regular, bundleIcon } from "@fluentui/react-icons";
-import { request } from "@/utils/request";
 
 interface IGameElementProps {
-  gameInfo: GameOriginInfo;
+  gameInfo: GameInfo;
   checked: boolean;
   onClick: () => void;
   refreash?: () => void;
@@ -29,38 +28,10 @@ export default function GameElement(props: IGameElementProps) {
   const OpenIcon = bundleIcon(Open24Filled, Open24Regular);
   const RenameIcon = bundleIcon(Rename24Filled, Rename24Regular);
   const DeleteIcon = bundleIcon(Delete24Filled, Delete24Regular);
-  const [loadingStatusMap, setLoadingStatusMap] = useState<{ [key: string]: number }>({});
 
-  const toasterId = useId("toaster");
-  const { dispatchToast } = useToastController(toasterId);
-  const notify = (title: string, type: ToastIntent) =>
-    dispatchToast(
-      <Toast>
-        <ToastTitle>{title}</ToastTitle>
-      </Toast>,
-      { position: 'top', timeout: 3000, intent: type }
-    );
-
-  const statusMap = {
-    0: "上传游戏",
-    1: "上传中",
-    2: "上传成功",
-    3: "上传失败",
-  };
-
-  const enterEditor = async (gameName: string) => {
-    const callback = () => {
-      dispatch(setEditingGame(gameName));
-      dispatch(setDashboardShow(false));
-    };
-    const res = await request.post("/api/manageGame/checkGameFolder", { gameName: props.gameInfo.gName });
-
-    if (res.data.status === 'success') {
-      callback();
-    } else {
-      await request.post("/api/manageGame/createGame", { gameName: props.gameInfo.gName });
-      callback();
-    }
+  const enterEditor = (gameName: string) => {
+    dispatch(setEditingGame(gameName));
+    dispatch(setDashboardShow(false));
   };
 
   let className = styles.gameElement_main;
@@ -73,32 +44,25 @@ export default function GameElement(props: IGameElementProps) {
     () => {
       props.checked &&
         setTimeout(() => {
-          document.getElementById(props.gameInfo.gName)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          document.getElementById(props.gameInfo.dir)?.scrollIntoView({behavior: 'smooth', block: 'center'});
         }, 50);
     },
-    [props.gameInfo.gName, props.checked]
+    [props.gameInfo.dir, props.checked]
   );
 
   const isShowDeleteDialog = useValue(false);
   const isShowRenameDialog = useValue(false);
-  const newGameName = useValue(props.gameInfo.gName);
+  const newGameName = useValue(props.gameInfo.dir);
 
   const openInFileExplorer = () => {
-    api.manageGameControllerOpenGameDict(props.gameInfo.gName);
+    api.manageGameControllerOpenGameDict(props.gameInfo.dir);
   };
 
-  const previewInNewTab = async () => {
-    const res = await request.post("/api/manageGame/checkGameFolder", { gameName: props.gameInfo.gName });
-
-    if (res.data.status === 'success') {
-      window.open(`/games/${props.gameInfo.gName}`, "_blank");
-    } else {
-      await request.post("/api/manageGame/createGame", { gameName: props.gameInfo.gName });
-      window.open(`/games/${props.gameInfo.gName}`, "_blank");
-    }
+  const previewInNewTab = () => {
+    window.open(`/games/${props.gameInfo.dir}`, "_blank");
   };
 
-  const renameThisGame = (gameName: string, newGameName: string) => {
+  const renameThisGame = (gameName:string, newGameName:string) => {
     axios.post("/api/manageGame/rename",
       { source: `public/games/${gameName}/`, newName: newGameName }
     ).then(() => {
@@ -108,50 +72,29 @@ export default function GameElement(props: IGameElementProps) {
   };
 
   const deleteThisGame = () => {
-    axios.post("/api/manageGame/delete", { source: `public/games/${props.gameInfo.gName}` }).then(() => {
+    axios.post("/api/manageGame/delete", { source: `public/games/${props.gameInfo.dir}` }).then(() =>
+    {
       props.refreash?.();
       isShowDeleteDialog.set(false);
     }
     );
   };
 
-  const uploadGame = (gameName: string, gId: number) => {
-    if (loadingStatusMap[gameName] === 1 || loadingStatusMap[gameName] === 2) {
-      return;
-    }
-    setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 1 });
-    request.post("/api/manageGame/uploadGame", { gameName, gId }).then((res) => {
-      if (res.data.status === 'success') {
-        setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 2 });
-        notify("上传成功", "success");
-      } else {
-        setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
-        notify(res.data.message, "error");
-      }
-    }).catch((err) => {
-      setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
-      notify(err.message, "error");
-    });
-  };
-
   return (
     <>
-      <div onClick={props.onClick} className={className} id={props.gameInfo.gName}>
+      <div onClick={props.onClick} className={className} id={props.gameInfo.dir}>
         <img
-          src={props.gameInfo.gCover}
-          alt={props.gameInfo.gName}
+          src={`/games/${props.gameInfo.dir}/game/${soureBase}/${props.gameInfo.cover}`}
+          alt={props.gameInfo.title}
           className={styles.gameElement_cover}
         />
         <div className={styles.gameElement_title}>
-          <span>{props.gameInfo.gName}</span>
+          <span>{props.gameInfo.title}</span>
         </div>
         <div className={styles.gameElement_sub}>
-          <span className={styles.gameElement_dir}>{props.gameInfo.gName}</span>
+          <span className={styles.gameElement_dir}>{props.gameInfo.dir}</span>
           <div className={styles.gameElement_action} onClick={(event) => event.stopPropagation()}>
-            <Button size="small" appearance='primary' onClick={() => uploadGame(props.gameInfo.gName, props.gameInfo.gId)}>
-              {statusMap[loadingStatusMap[props.gameInfo.gName] as keyof typeof statusMap] || statusMap[0]}
-            </Button>
-            <Button size="small" appearance='primary' onClick={() => enterEditor(props.gameInfo.gName)}>{t('preview.editGame')}</Button>
+            <Button appearance='primary' onClick={() =>enterEditor(props.gameInfo.dir)}>{t('preview.editGame')}</Button>
             <Menu>
               <MenuTrigger>
                 <MenuButton appearance='subtle' icon={<MoreVerticalIcon />} />
@@ -160,6 +103,7 @@ export default function GameElement(props: IGameElementProps) {
                 <MenuList>
                   <MenuItem icon={<FolderOpenIcon />} onClick={() => openInFileExplorer()}>{t('menu.openInFileExplorer')}</MenuItem>
                   <MenuItem icon={<OpenIcon />} onClick={() => previewInNewTab()}>{t('menu.previewInNewTab')}</MenuItem>
+                  <MenuItem icon={<RenameIcon />} onClick={() => isShowRenameDialog.set(true)}>{t('menu.renameDir')}</MenuItem>
                   <MenuItem icon={<DeleteIcon />} onClick={() => isShowDeleteDialog.set(true)}>{t('menu.deleteGame')}</MenuItem>
                 </MenuList>
               </MenuPopover>
@@ -167,7 +111,6 @@ export default function GameElement(props: IGameElementProps) {
           </div>
         </div>
       </div>
-      <Toaster toasterId={toasterId} />
       {/* 重命名对话框 */}
       <Dialog
         open={isShowRenameDialog.value}
@@ -178,15 +121,15 @@ export default function GameElement(props: IGameElementProps) {
             <DialogTitle>{t('dialogs.renameDir.title')}</DialogTitle>
             <DialogContent>
               <Input
-                style={{ width: '100%' }}
-                defaultValue={props.gameInfo.gName}
-                onChange={(event) => newGameName.set(event.target.value ? event.target.value.trim() : props.gameInfo.gName)}
-                onKeyDown={(event) => (event.key === 'Enter') && renameThisGame(props.gameInfo.gName, newGameName.value)}
+                style={{width:'100%'}}
+                defaultValue={props.gameInfo.dir}
+                onChange={(event) => newGameName.set(event.target.value ? event.target.value.trim() : props.gameInfo.dir)}
+                onKeyDown={(event) => (event.key === 'Enter') && renameThisGame(props.gameInfo.dir, newGameName.value)}
               />
             </DialogContent>
             <DialogActions>
               <Button appearance='secondary' onClick={() => isShowRenameDialog.set(false)}>{t('$common.exit')}</Button>
-              <Button appearance='primary' onClick={() => renameThisGame(props.gameInfo.gName, newGameName.value)}>{t('$common.rename')}</Button>
+              <Button appearance='primary' onClick={() => renameThisGame(props.gameInfo.dir, newGameName.value)}>{t('$common.rename')}</Button>
             </DialogActions>
           </DialogBody>
         </DialogSurface>
@@ -199,7 +142,7 @@ export default function GameElement(props: IGameElementProps) {
         <DialogSurface>
           <DialogBody>
             <DialogTitle>{t('dialogs.deleteGame.title')}</DialogTitle>
-            <DialogContent>{t('dialogs.deleteGame.subtext', { gameName: props.gameInfo.gName })}</DialogContent>
+            <DialogContent>{t('dialogs.deleteGame.subtext', { gameName: props.gameInfo.dir })}</DialogContent>
             <DialogActions>
               <Button appearance='secondary' onClick={() => isShowDeleteDialog.set(false)}>{t('$common.exit')}</Button>
               <Button appearance='primary' onClick={deleteThisGame}>{t('$common.delete')}</Button>
