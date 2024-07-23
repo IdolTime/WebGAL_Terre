@@ -1,4 +1,20 @@
 const {app, BrowserWindow, globalShortcut, Menu} = require('electron');
+const localforage = require('localforage');
+
+let isFirstRun = true;
+
+// 清除 keyvaluepairs 数据（如果是第一次启动的话）
+const clearLocalForageData = async () => {
+    if (isFirstRun) {
+        try {
+            await localforage.clear(); // 清除所有数据
+            console.log('LocalForage data cleared.');
+            isFirstRun = false;
+        } catch (error) {
+            console.error('Error clearing LocalForage data:', error);
+        }
+    }
+};
 
 /**
  * 关闭默认菜单栏
@@ -19,7 +35,9 @@ app.whenReady().then(() => {
 /**
  * 打开窗口
  */
-const createWindow = () => {
+const createWindow = async () => {
+    await clearLocalForageData()
+
     const win = new BrowserWindow({
         width: 1600,
         height: 900

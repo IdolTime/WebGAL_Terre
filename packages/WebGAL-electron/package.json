@@ -43,5 +43,7 @@
       "mirror": "https://npmmirror.com/mirrors/electron/"
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "localforage": "^1.10.0"
+  }
 }
