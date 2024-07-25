@@ -14,6 +14,7 @@ export default function SetVar(props: ISentenceEditorProps) {
   const minValue = useValue<number | undefined>(undefined);
   const maxValue = useValue<number | undefined>(undefined);
   const globalVariable = useValue<boolean | undefined>(undefined);
+  const randomVariable = useValue<boolean | undefined>(undefined);
 
   useEffect(() => {
     props.sentence.args.forEach((k) => {
@@ -23,6 +24,8 @@ export default function SetVar(props: ISentenceEditorProps) {
         maxValue.set(Number(k.value));
       } else if (k.key === 'global') {
         globalVariable.set(k.value as boolean);
+      } else if (k.key === 'random') {
+        randomVariable.set(k.value as boolean);
       }
     });
   }, [props.sentence]);
@@ -42,6 +45,10 @@ export default function SetVar(props: ISentenceEditorProps) {
       content += ` -global=true`;
     }
 
+    if (randomVariable.value === true) {
+      content += ` -random=${randomVariable.value}`;
+    }
+
     props.onSubmit(content + ';');
   }
 
@@ -57,26 +64,33 @@ export default function SetVar(props: ISentenceEditorProps) {
             }}
             onBlur={setContent}
             className={styles.sayInput}
-            style={{ width: '200px' }}
+            style={{ width: '160px' }}
           />
         </CommonOptions>
         <CommonOptions title={t('options.value')} key="2">
           <input
             value={value.value}
+            onBlur={setContent}
+            className={styles.sayInput}
+            style={{ width: '160px' }}
+            disabled={randomVariable.value}
             onChange={(ev) => {
               const newValue = ev.target.value;
               value.set(newValue ?? '');
             }}
-            onBlur={setContent}
-            className={styles.sayInput}
-            style={{ width: '200px' }}
           />
         </CommonOptions>
-        <CommonOptions key="9" title='全局变量'>
-          <TerreToggle title="" onChange={(newValue) => {
-            globalVariable.set(newValue);
-            setContent();
-          }} onText='是' offText='否' isChecked={!!globalVariable.value} />
+        <CommonOptions title={t('options.globalValue')} key='3'>
+          <TerreToggle 
+            title=""
+            onText={t('options.yes')} 
+            offText={t('options.no')}
+            isChecked={!!globalVariable.value} 
+            onChange={(newValue) => {
+              globalVariable.set(newValue);
+              setContent();
+            }}
+          />
         </CommonOptions>
         <CommonOptions title={t('options.minValue')} key="3">
           <input
@@ -88,10 +102,10 @@ export default function SetVar(props: ISentenceEditorProps) {
             }}
             onBlur={setContent}
             className={styles.sayInput}
-            style={{ width: '200px' }}
+            style={{ width: '120px' }}
           />
         </CommonOptions>
-        <CommonOptions title={t('options.maxValue')} key="3">
+        <CommonOptions title={t('options.maxValue')} key="4">
           <input
             value={maxValue.value}
             type="number"
@@ -101,7 +115,24 @@ export default function SetVar(props: ISentenceEditorProps) {
             }}
             onBlur={setContent}
             className={styles.sayInput}
-            style={{ width: '200px' }}
+            style={{ width: '120px' }}
+          />
+        </CommonOptions>
+        <CommonOptions title={t('options.randomValue')} key="5">
+          <TerreToggle 
+            title="" 
+            onText={t('options.yes')} 
+            offText={t('options.no')}
+            isChecked={!!randomVariable.value} 
+            onChange={(newValue) => {
+              if (!minValue.value || !maxValue.value) {
+                alert(t('errorTips'))
+                return 
+              }
+              
+              randomVariable.set(newValue);
+              setContent();
+            }}
           />
         </CommonOptions>
       </div>

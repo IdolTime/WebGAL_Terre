@@ -668,8 +668,13 @@ export const zhCn = {
             name: "变量名称",
             value: "表达式",
             maxValue: "最大值",
-            minValue: "最小值"
-          }
+            minValue: "最小值",
+            globalValue: '全局变量',
+            randomValue: '随机变量',
+            yes: '是',
+            no: '否'
+          },
+          errorTips: '请先填写最小值和最大值'
         },
         unlockStoryline: {
           title: "解锁故事线",
