@@ -58,7 +58,7 @@ export default function ChangeBg(props: ISentenceEditorProps) {
             bgFile.set(fileDesc?.name ?? "");
             submit();
           }}
-          extName={[".png", ".jpg", ".webp"]}/>
+          extName={[".png", ".jpg", ".webp", '.gif']}/>
         </>
       </CommonOptions>}
       <CommonOptions key="2" title={t('$editor.graphical.sentences.common.options.goNext.title')}>
