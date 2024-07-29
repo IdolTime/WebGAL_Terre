@@ -691,6 +691,11 @@ export const zhCn = {
               title: '解锁按钮坐标',
               x: 'X',
               y: 'Y'
+            },
+            switch: {
+              title: '显示/关闭 名称',
+              show: '显示',
+              hide: '关闭'
             }
           }
         },
