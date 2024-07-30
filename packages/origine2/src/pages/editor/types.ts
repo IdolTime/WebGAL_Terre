@@ -345,7 +345,7 @@ export enum OptionSceneOtherKey {
   Option_global_volume_slider = 'Option_global_volume_slider',
   Option_bg_music_volume_slider = 'Option_bg_music_volume_slider',
   Option_effect_volume_slider = 'Option_effect_volume_slider',
-  Option_fullscreen_checkbox_label = 'Option_fullscreen_label',
+  Option_fullscreen_checkbox_label = 'Option_fullscreen_checkbox_label',
   Option_window_checkbox_label = 'Option_window_checkbox_label',
   Option_fullscreen_checkbox = 'Option_fullscreen_checkbox',
   Option_window_checkbox = 'Option_window_checkbox',
