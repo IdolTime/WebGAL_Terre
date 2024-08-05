@@ -122,6 +122,16 @@ export default function GameConfig() {
         <GameConfigEditor key="packageName" value={getConfigContentAsString('Package_name')}
           onChange={(e: string) => updateGameConfigSimpleByKey('Package_name', e)}/>
       </TabItem>
+
+      <TabItem title={t("options.gameIcon")}>
+        <GameConfigEditorWithImageFileChoose
+          sourceBase="background"
+          extNameList={[".jpg", ".png", ".webp", '.ico']}
+          key="gameIcon"
+          value={getConfigContentAsStringArray('Game_Icon')}
+          onChange={(e: string[]) => updateGameConfigArrayByKey('Game_Icon', e)}
+        />
+      </TabItem>
       {/* <TabItem title={t("options.textboxTheme")}> */}
       {/*  <GameConfigEditorWithSelector key="packageName" value={getConfigContentAsString('Textbox_theme')} */}
       {/*    onChange={(e: string) => updateGameConfigSimpleByKey('Textbox_theme', e)} */}

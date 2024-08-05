@@ -16,7 +16,7 @@ dirnameToDisplayNameMap.set('ui', () => t(tPrefix + 'ui'));
 export const dirNameToExtNameMap = new Map();
 
 dirNameToExtNameMap.set('animation', ['.json']);
-dirNameToExtNameMap.set('background', ['.jpg', '.png', '.webp', '.gif']);
+dirNameToExtNameMap.set('background', ['.jpg', '.png', '.webp', '.gif', '.ico']);
 dirNameToExtNameMap.set('bgm', ['.mp3', '.ogg', '.wav']);
 dirNameToExtNameMap.set('figure', ['.png', '.webp', '.json']);
 dirNameToExtNameMap.set('scene', ['.txt']);
