@@ -140,12 +140,20 @@ export const zhCn = {
           mouseCursor: '鼠标光标',
           gameMenu: '游戏菜单',
           openingLogo: '开场logo',
-          R18: '是否显示R18提示'
+          R18: '是否显示R18提示',
+          escMenu: 'ESC菜单',
+          sound: '界面音效'
         },
         gameMenu: {
           achieve: '成就',
           storyline: '故事线',
           beautyGuide: '美女图鉴'
+        },
+        escMenu: {
+          title: 'UI设置'
+        },
+        sound: {
+          title: '音效设置'
         }
       },
 
