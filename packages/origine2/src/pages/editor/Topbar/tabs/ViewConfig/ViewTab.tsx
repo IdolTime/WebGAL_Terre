@@ -238,7 +238,7 @@ function GameConfigEditorGameMenu() {
       args.forEach((e: any) => {
         if (e.key === 'hide') {
           parsedArgs.hide = e.value === true;
-        } else if (e.key.endsWith('Style')) {
+        } else if (e.key.endsWith('style')) {
           parsedArgs[e.key] = parseStyleString(e.value as string);
         }
       });
