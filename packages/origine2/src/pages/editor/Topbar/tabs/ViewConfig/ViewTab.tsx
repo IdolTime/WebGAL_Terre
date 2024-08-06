@@ -149,7 +149,7 @@ function GameConfigEditorGameMenu() {
             // @ts-ignore
             if (value.args[argKey][newKey]) {
               // @ts-ignore
-              styleContent[argKey].push(`${key}=${value.args[argKey][newKey]}`);
+              styleContent[argKey].push(`${newKey}=${value.args[argKey][newKey]}`);
             }
           });
         }
