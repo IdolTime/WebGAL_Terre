@@ -30,6 +30,9 @@ import {
   Checkbox,
 } from "@fluentui/react-components";
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
+import { EscMenu } from './EscMenu/EscMenu';
+import { SoundSetting } from './SoundSetting/SoundSetting'
+
 
 export default function GameConfig() {
   const t = useTrans("editor.sideBar.gameConfigs.");
@@ -119,6 +122,16 @@ export default function GameConfig() {
         <GameConfigEditor key="packageName" value={getConfigContentAsString('Package_name')}
           onChange={(e: string) => updateGameConfigSimpleByKey('Package_name', e)}/>
       </TabItem>
+
+      <TabItem title={t("options.gameIcon")}>
+        <GameConfigEditorWithImageFileChoose
+          sourceBase="background"
+          extNameList={[".jpg", ".png", ".webp", '.ico']}
+          key="gameIcon"
+          value={getConfigContentAsStringArray('Game_Icon')}
+          onChange={(e: string[]) => updateGameConfigArrayByKey('Game_Icon', e)}
+        />
+      </TabItem>
       {/* <TabItem title={t("options.textboxTheme")}> */}
       {/*  <GameConfigEditorWithSelector key="packageName" value={getConfigContentAsString('Textbox_theme')} */}
       {/*    onChange={(e: string) => updateGameConfigSimpleByKey('Textbox_theme', e)} */}
@@ -171,6 +184,30 @@ export default function GameConfig() {
           value={getConfigContentAsStringArray('Game_r18')}
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_r18', e)}
         />
+      </TabItem>
+      <TabItem title={t("options.escMenu")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('escMenu');
+          }}
+        >
+          {t("escMenu.title")}
+        </Button>
+        <EscMenu key="escMenu" value="ESC_menu_button" />
+      </TabItem>
+      <TabItem title={t("options.sound")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('soundSetting');
+          }}
+        >
+          {t("sound.title")}
+        </Button>
+        <SoundSetting key="soundSetting" />
       </TabItem>
     </>
   );

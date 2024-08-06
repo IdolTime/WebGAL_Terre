@@ -133,6 +133,7 @@ export const zhCn = {
           id: '游戏识别码',
           description: '游戏简介',
           packageName: '游戏包名',
+          gameIcon: '游戏icon',
           textboxTheme: '文本框主题',
           bg: '标题背景图片',
           bgm: '标题背景音乐',
@@ -140,12 +141,20 @@ export const zhCn = {
           mouseCursor: '鼠标光标',
           gameMenu: '游戏菜单',
           openingLogo: '开场logo',
-          R18: '是否显示R18提示'
+          R18: '是否显示R18提示',
+          escMenu: 'ESC菜单',
+          sound: '界面音效'
         },
         gameMenu: {
           achieve: '成就',
           storyline: '故事线',
           beautyGuide: '美女图鉴'
+        },
+        escMenu: {
+          title: 'UI设置'
+        },
+        sound: {
+          title: '音效设置'
         }
       },
 
