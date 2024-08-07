@@ -147,7 +147,7 @@ function GameConfigEditorGameMenu() {
           Object.keys((value.args[argKey])).forEach((styleKey) => {
             let newKey = styleKey as keyof Style;
             // @ts-ignore
-            if (value.args[argKey][newKey]) {
+            if (value.args[argKey][newKey] !== undefined && value.args[argKey][newKey] !== null && value.args[argKey][newKey] !== '') {
               // @ts-ignore
               styleContent[argKey].push(`${newKey}=${value.args[argKey][newKey]}`);
             }
@@ -708,8 +708,8 @@ function parseStyleConfig({
                     {styleProp.type === 'number' ? (
                       <Input
                         type="number"
-                        value={item.args.style?.[styleKey as keyof IStyleConfig] as string || ""}
-                        onChange={(e) => setStyle(styleKey as keyof IStyleConfig, Number(e.target.value))}
+                        value={item.args.style?.[styleKey as keyof IStyleConfig] as string}
+                        onChange={(e) => setStyle(styleKey as keyof IStyleConfig, e.target.value === '' ? '' : Number(e.target.value))}
                       />
                     ) : styleProp.type === 'color' ? (
                       <input
