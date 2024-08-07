@@ -4,6 +4,8 @@
   display: flex;
   flex-flow: column;
   border-radius: var(--radius-md);
+  margin-top: 6px;
+  margin-right: 8px;
 }
 
 .item:hover{
@@ -27,6 +29,7 @@
 //}
 
 .content {
+  margin-top: 4px;
   flex: 1;
   display: flex;
   justify-content: left;

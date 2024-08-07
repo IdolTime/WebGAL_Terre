@@ -739,6 +739,11 @@ export const zhCn = {
             y: " Y",
           }
         },
+        payProduct: {
+          title: "章节付费",
+          initText: "payProduct:;",
+          descText: '此指令会将后面的内容设置为付费内容',
+        },
         unknown: {
           title: "未识别",
           options: {

@@ -195,4 +195,12 @@ setVar:a=人物名称;可以设置字符串`,
     detail: `command showValue:<expression>;`,
     insertText: 'showValue:',
   },
+  {
+    label: 'payProduct',
+    kind: CompletionItemKind.Function,
+    documentation: `章节付费
+    此指令会将后面的内容设置为付费内容1`,
+    detail: `command payProduct:<expression>;`,
+    insertText: 'payProduct:',
+  },
 ];

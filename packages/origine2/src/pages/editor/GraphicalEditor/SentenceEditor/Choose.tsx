@@ -8,12 +8,16 @@ import WhenARG from '../components/WhenARG';
 import { getWhenARGExpression } from '@/utils/utils';
 import TerreToggle from "@/components/terreToggle/TerreToggle";
 import CommonOptions from "../components/CommonOption";
+import { v4 as uuid } from "uuid";
 
 interface IOptions {
   text: string;
   jump: string;
   showCondition: Variable;
   enableCondition: Variable;
+  shouldPay?: boolean;
+  amount?: number;
+  productId?: string;
   style: {
     x?: number;
     y?: number;
@@ -37,7 +41,7 @@ const parse = (script: string) => {
   const mainPart = parts.length > 1 ? parts[1] : parts[0];
   const mainPartNodes = mainPart.split(':');
 
-  const text = mainPartNodes[0].replace(/\${[^{}]*}/, '');
+  const text = mainPartNodes[0].replace(/[\$\#]{[^{}]*}/, '');
   const option: IOptions = {
     text,
     jump: mainPartNodes[1],
@@ -50,7 +54,7 @@ const parse = (script: string) => {
       image: undefined
     },
     showCondition: {},
-    enableCondition: {}
+    enableCondition: {},
   };
 
   // Extract style information
@@ -70,6 +74,29 @@ const parse = (script: string) => {
     });
 
     option.style = style;
+  }
+
+  const payInfoMatch = /\#\{(.*?)\}/.exec(mainPart);
+  if (payInfoMatch) {
+    const payInfoStr = payInfoMatch[1];
+    const payInfoProps = payInfoStr.split(',');
+    let productId = '';
+    let amount = 0;
+
+    payInfoProps.forEach((prop) => {
+      const [key, value] = prop.split('=');
+      if (key === 'productId') {
+        productId = value.trim();
+      } else if (key === 'amount') {
+        amount = isNaN(Number(value.trim())) ? 0 : Number(value.trim());
+      }
+    });
+
+    if (productId !== '' && amount > 0) {
+      option.shouldPay = true;
+      option.productId = productId;
+      option.amount = amount;
+    }
   }
 
   let showCondition = '';
@@ -131,6 +158,29 @@ export default function Choose(props: any) {
     setOptions(newList);
   };
 
+  const setOption = (index: number, key: 'shouldPay' | 'amount', value: boolean | string | number | undefined) => {
+    const newList = [...options];
+    
+    if (value === undefined) {
+      delete newList[index][key];
+    } else {
+      // @ts-ignore
+      newList[index][key] = value;
+    }
+
+    if (key === 'shouldPay') {
+      if (value) {
+        newList[index].productId = uuid();
+        newList[index].amount = 100;
+      } else {
+        delete newList[index].productId;
+        delete newList[index].amount;
+      }
+    }
+
+    setOptions(newList);
+  };
+
   const submit = (_options: any) => {
     const optionStr = _options.map((item: any) => {
       let showCondition = '';
@@ -156,8 +206,15 @@ export default function Choose(props: any) {
       });
 
       const style = styleContent ? `\${${styleContent}}` : '';
+      let mainPart = showCondition + enableCondition + arrow + style;
+      let text = item.text || '';
+      let jump = item.jump || '';
 
-      return showCondition + enableCondition + arrow + style + (item.text || '') + ':' + (item.jump || '');
+      if (item.shouldPay && item.productId && item.amount) {
+        mainPart += `#{productId=${item.productId},amount=${item.amount}}`;
+      }
+
+      return mainPart + text + ':' + jump;
     });
 
     if (props.chooseValue) {
@@ -287,6 +344,27 @@ export default function Choose(props: any) {
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />}
         {item.style.countdown !== undefined && <span style={{ marginLeft: '4px' }}>秒</span>}
+        <span style={{ marginLeft: '32px' }}>付费选项</span>
+        <TerreToggle title="" onChange={(newValue) => {
+          setOption(i, 'shouldPay', newValue);
+        }} onText='是' offText='否' isChecked={!!item.shouldPay} />
+        {!!item.shouldPay && (
+          <>
+            <span style={{ marginLeft: '20px' }}>付费价格</span>
+            <input
+              type="number"
+              value={item.amount}
+              onChange={(ev) => {
+                setOption(i, 'amount', Number(ev.target.value));
+              }}
+              onBlur={() => submit(options)}
+              className={styles.sayInput}
+              placeholder="价格"
+              style={{ width: "10%", margin: "0 6px 0 6px" }}
+            />
+            <span style={{ marginLeft: 4 }}>星光</span>
+          </>
+        )}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '102px' }}>
         <span>条件：</span>

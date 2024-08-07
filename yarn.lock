@@ -3705,6 +3705,11 @@
   resolved "https://registry.npmjs.org/@types/use-sync-external-store/-/use-sync-external-store-0.0.3.tgz"
   integrity sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==
 
+"@types/uuid@^10.0.0":
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-10.0.0.tgz#e9c07fe50da0f53dc24970cca94d619ff03f6f6d"
+  integrity sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==
+
 "@types/yargs-parser@*":
   version "21.0.0"
   resolved "https://registry.npmjs.org/@types/yargs-parser/-/yargs-parser-21.0.0.tgz"
@@ -6335,9 +6340,9 @@ iconv-lite@^0.6.3:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
 idoltime-parser@latest:
-  version "4.4.15"
-  resolved "https://registry.yarnpkg.com/idoltime-parser/-/idoltime-parser-4.4.15.tgz#8d8b952e867c7a20aa6ade5931af51bf6ed62945"
-  integrity sha512-HK7BAS19QvBoxwNUz46zy7LocdtN00rW8Cn9XzDi0f7HdUuqWJKSxREg6UYDsY/5FaLvz9Qtm7Q7UCElbs9DWA==
+  version "4.4.17"
+  resolved "https://registry.yarnpkg.com/idoltime-parser/-/idoltime-parser-4.4.17.tgz#c264de1422d8916cf645649ffae862b6e9c34a88"
+  integrity sha512-52+E0iSLv6uUwNH7U4DLSHwnFylcOZTjPewi+6CXqwaEBrH7dIGpOQ7CvD4MvsGcs9APYjZYap0RCBXLmZ1xRA==
   dependencies:
     chevrotain "^10.5.0"
     cloudlogjs "^1.0.11"
@@ -9827,6 +9832,11 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/utils-merge/-/utils-merge-1.0.1.tgz"
   integrity sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==
+
+uuid@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-10.0.0.tgz#5a95aa454e6e002725c79055fd42aaba30ca6294"
+  integrity sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==
 
 uuid@^9.0.1:
   version "9.0.1"
