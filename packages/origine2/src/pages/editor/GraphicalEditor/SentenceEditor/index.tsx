@@ -51,6 +51,7 @@ import UnlockStoryline from './UnlockStoryline';
 import UnlockAchieve from './UnlockAchieve';
 import ShowValue from './ShowValue';
 import PayProduct from "./PayProduct";
+import FinishTrial from "./FinishTrial";
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -294,5 +295,13 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: PayProduct,
     icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'payProduct.descText')
+  },
+  {
+    type: commandType.finishTrial,
+    title: () => t(tPrefix + 'finishTrial.title'),
+    initialText: () => t(tPrefix + 'finishTrial.initText'),
+    component: FinishTrial,
+    icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'finishTrial.descText')
   }
 ];

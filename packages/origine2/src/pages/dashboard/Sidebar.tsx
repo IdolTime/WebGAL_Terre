@@ -11,7 +11,6 @@ interface ISidebarProps {
   gameList: GameOriginInfo[];
   currentSetGame: string | null;
   setCurrentGame: (currentGame: string) => void;
-  createGame: (name: string) => void;
   refreash?: () => void;
 }
 
@@ -22,14 +21,6 @@ export default function Sidebar(props: ISidebarProps) {
 
   const [createGameFormOpen, setCreateGameFormOpen] = useState(false);
   const [newGameName, setNewGameName] = useState(t('createNewGame.dialog.defaultName') || 'NewGame');
-
-  function createNewGame() {
-    if (newGameName && newGameName.trim() !== '' && !props.gameList.find((item) => item.gName === newGameName.trim())) {
-      props.createGame(newGameName);
-      setCreateGameFormOpen(false);
-      setNewGameName(t('createNewGame.dialog.defaultName') || 'NewGame');
-    }
-  }
 
   return <div className={`${styles.sidebar_main} ${!props.currentSetGame ? styles.sidebar_main_fullwidth : ""}`}>
     <div className={styles.sidebar_top}>
@@ -47,7 +38,7 @@ export default function Sidebar(props: ISidebarProps) {
               if (res.data.status === 'success') {
                 props.setCurrentGame(e.gName);
               } else {
-                await request.post("/api/manageGame/createGame", { gameName: e.gName });
+                await request.post("/api/manageGame/createGame", { gameName: e.gName, gId: e.gId });
                 props.setCurrentGame(e.gName);
               }
             }}

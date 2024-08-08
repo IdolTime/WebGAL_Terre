@@ -273,7 +273,7 @@ export class WebgalFsService {
    * 读取文本文件
    * @param path 要读取的文本文件路径
    */
-  async readTextFile(path: string) {
+  async readTextFile(path: string): Promise<string> {
     return await new Promise((resolve) => {
       fs.readFile(decodeURI(path))
         .then((r) => resolve(r.toString()))

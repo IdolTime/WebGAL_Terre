@@ -34,6 +34,7 @@ const UserProfile = () => {
         text: '退出登录',
         onClick: () => {
           localStorage.removeItem('editorToken');
+          localStorage.removeItem('editorUserInfo');
           dispatch(setUserInfo({
             userId: '',
             userName: '',

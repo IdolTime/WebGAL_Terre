@@ -84,8 +84,8 @@ export default function DashBoard() {
     });
   }
 
-  async function createGame(gameName:string) {
-    const res = await axios.post("/api/manageGame/createGame", { gameName: gameName }).then(r => r.data);
+  async function createGame(gameName:string, gId: number) {
+    const res = await axios.post("/api/manageGame/createGame", { gameName: gameName, gId, }).then(r => r.data);
     logger.info("创建结果：", res);
     messageRef.current!.showMessage(`${gameName} ` + trans('msgs.created'), 2000);
     refreashDashboard();
@@ -144,7 +144,6 @@ export default function DashBoard() {
           }
           <Sidebar
             refreash={refreash}
-            createGame={createGame}
             setCurrentGame={setCurrentGame}
             currentSetGame={currentGame.value}
             gameList={gameInfoList.value} />

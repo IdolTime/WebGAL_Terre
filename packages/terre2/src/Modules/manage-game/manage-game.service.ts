@@ -7,8 +7,9 @@ import * as archiver from 'archiver';
 import { Upload } from '@aws-sdk/lib-storage';
 import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
-import { join } from 'path';
+import { join, extname } from 'path';
 import axios from 'axios';
+import { readdir } from 'fs/promises';
 
 @Injectable()
 export class ManageGameService {
@@ -20,12 +21,12 @@ export class ManageGameService {
   /**
    * 打开游戏文件夹
    */
-  async openGameDictionary(gameName: string) {
+  async openGameDictionary(gameName: string, gId: number) {
     const path = this.webgalFs.getPathFromRoot(`public/games/${gameName}`);
     const isExist = await this.webgalFs.existsDir(path);
 
     if (!isExist) {
-      await this.createGame(gameName);
+      await this.createGame(gameName, gId);
     }
 
     await _open(path);
@@ -45,7 +46,7 @@ export class ManageGameService {
    * 从模板创建游戏
    * @param gameName
    */
-  async createGame(gameName: string): Promise<boolean> {
+  async createGame(gameName: string, gId: number): Promise<boolean> {
     // 检查是否存在这个游戏
     const checkDir = await this.webgalFs.getDirInfo(
       this.webgalFs.getPathFromRoot(`/public/games`),
@@ -65,13 +66,25 @@ export class ManageGameService {
       this.webgalFs.getPathFromRoot('/public/games'),
       gameName,
     );
+    const gameDir = this.webgalFs.getPathFromRoot(
+      `/public/games/${gameName}/game/`,
+    );
     // 递归复制
     await this.webgalFs.copy(
       this.webgalFs.getPathFromRoot(
         '/assets/templates/IdolTime_Template/game/',
       ),
-      this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/`),
+      gameDir,
     );
+
+    const configFile: string | unknown = await this.webgalFs.readTextFile(
+      `${gameDir}/config.txt`,
+    );
+    await this.webgalFs.updateTextFile(
+      `${gameDir}/config.txt`,
+      `${configFile}Game_id:${gId};\n`,
+    );
+
     return true;
   }
 
@@ -521,4 +534,145 @@ export class ManageGameService {
       this.webgalFs.getPathFromRoot(`/public/games/${gameName}`),
     );
   }
+
+  /**
+   * 上传游戏付费配置
+   * @param gameName
+   */
+  async uploadGamePaymentConfig(
+    gameName: string,
+    gId: number,
+    editorToken: string,
+  ) {
+    const dirPath = this.webgalFs.getPathFromRoot(
+      `/public/games/${gameName}/game/scene`,
+    );
+
+    try {
+      const files = await readdir(dirPath);
+      const txtFiles = files.filter((file) => extname(file) === '.txt');
+      const data: IUploadPaymentConfiguration[] = [];
+
+      for (const file of txtFiles) {
+        const filePath = join(dirPath, file);
+        const content = await this.webgalFs.readTextFile(filePath);
+        const sentenceList = content.split('\n');
+
+        for (const sentence of sentenceList) {
+          if (sentence.startsWith('choose:')) {
+            const payInfoMatch = /\#\{(.*?)\}/.exec(sentence);
+            if (payInfoMatch) {
+              const payInfoStr = payInfoMatch[1];
+              const payInfoProps = payInfoStr.split(',');
+              let productId = 0;
+              let amount = 0;
+
+              payInfoProps.forEach((prop) => {
+                const [key, value] = prop.split('=');
+                if (key === 'productId') {
+                  productId = isNaN(Number(value.trim()))
+                    ? 0
+                    : Number(value.trim());
+                } else if (key === 'amount') {
+                  amount = isNaN(Number(value.trim()))
+                    ? 0
+                    : Number(value.trim());
+                }
+              });
+
+              if (productId > 0 && amount > 0) {
+                data.push({
+                  buy_type: 2,
+                  buy_type_text: '付费选项',
+                  sales_type: 1,
+                  sales_type_text: '星石',
+                  sales_amount: amount,
+                  is_pay: 1,
+                  productId,
+                });
+              }
+            }
+          } else if (sentence.startsWith('payProduct:')) {
+            const [command, _mainPart] = sentence.split(':');
+            const mainPart = _mainPart.split(';')[0];
+
+            if (mainPart) {
+              const [productId, ...options] = mainPart.split(' -');
+              let amount: number | null = null;
+              let chapter = 0;
+
+              options.forEach((option) => {
+                const [key, value] = option.split('=');
+                if (key === 'amount') {
+                  amount = isNaN(Number(value.trim()))
+                    ? 0
+                    : Number(value.trim());
+                } else if (key === 'chapter') {
+                  chapter = isNaN(Number(value.trim()))
+                    ? 0
+                    : Number(value.trim());
+                }
+              });
+
+              if (productId && typeof chapter === 'number' && amount > 0) {
+                data.push({
+                  chapter: chapter,
+                  buy_type: 1,
+                  buy_type_text: '章节付费',
+                  sales_type: 1,
+                  sales_type_text: '星石',
+                  sales_amount: amount,
+                  is_pay: 1,
+                  productId: Number(productId),
+                });
+              }
+            }
+          }
+        }
+      }
+
+      const res = await axios.post(
+        `https://test-api.idoltime.games/editor/game/chapter_sales_set`,
+        {
+          gId,
+          sales: data,
+        },
+        {
+          headers: {
+            editorToken,
+          },
+        },
+      );
+
+      if (res.data.code === 0) {
+        return {
+          status: 'success',
+          message: res.data.message,
+        };
+      }
+
+      return {
+        status: 'failed',
+        message: res.data.message,
+      };
+    } catch (error) {
+      console.error('Failed to update payment configuration:', error);
+      return {
+        status: 'failed',
+        message: error.message,
+      };
+    }
+  }
+}
+
+interface IUploadPaymentConfiguration {
+  id?: number;
+  chapter?: number;
+  buy_type: 1 | 2;
+  buy_type_text: string;
+  sales_type: 1;
+  sales_type_text: '星石';
+  sales_amount: number;
+  is_pay: 1;
+  productId: number;
 }

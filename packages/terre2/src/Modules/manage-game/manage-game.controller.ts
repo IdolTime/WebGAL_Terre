@@ -45,7 +45,10 @@ import {
   RenameDto,
   UploadFilesDto,
   UploadGameDto,
+  UploadPaymentConfigurationDto,
 } from './manage-game.dto';
+import { promises as fs } from 'node:fs';
+import nodePath from 'node:path';
 
 @Controller('api/manageGame')
 @ApiTags('Manage Game')
@@ -77,6 +80,7 @@ export class ManageGameController {
   async createGame(@Body() createGameData: CreateGameDto) {
     const createResult = await this.manageGame.createGame(
       createGameData.gameName,
+      createGameData.gId,
     );
     if (createResult) {
       return { status: 'success' };
@@ -138,10 +142,10 @@ export class ManageGameController {
     type: String,
     description: 'Name of the game.',
   }) // <-- Swagger description for the route parameter
-  async openGameDict(@Param('gameName') gameName: string) {
+  async openGameDict(@Param('gameName') gameName: string, @Query('gId') gId) {
     // <-- Use @Param decorator to fetch the gameName
     gameName = decodeURI(gameName); // Optionally decode the URI if necessary
-    this.manageGame.openGameDictionary(gameName).then();
+    this.manageGame.openGameDictionary(gameName, gId).then();
   }
 
   @Get('openGameAssetsDict/:gameName') // <-- Define the route parameter using :gameName
@@ -424,6 +428,27 @@ export class ManageGameController {
     return this.webgalFs.renameFile(
       this.webgalFs.getPathFromRoot(fileOperationDto.source),
       fileOperationDto.newName,
+    );
+  }
+
+  @Post('updatePaymentConfig')
+  @ApiOperation({ summary: 'Update Payment Configuration' })
+  @ApiResponse({
+    status: 200,
+    description: 'Payment configuration updated successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Failed to update payment configuration.',
+  })
+  async updatePaymentConfig(
+    @Body() paymentConfigData: UploadPaymentConfigurationDto,
+    @Headers('editorToken') editorToken: string,
+  ) {
+    return this.manageGame.uploadGamePaymentConfig(
+      paymentConfigData.gameName,
+      paymentConfigData.gId,
+      editorToken,
     );
   }
 }

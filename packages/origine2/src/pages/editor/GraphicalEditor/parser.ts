@@ -40,6 +40,7 @@ const SCRIPT_CONFIG = [
   { scriptString: 'unlockStoryline', scriptType: commandType.unlockStoryline },
   { scriptString: 'showValue', scriptType: commandType.showValue },
   { scriptString: 'payProduct', scriptType: commandType.payProduct },
+  { scriptString: 'finishTrial', scriptType: commandType.finishTrial },
 ];
 
 export const WebgalParser = new SceneParser(() => {

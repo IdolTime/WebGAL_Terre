@@ -199,8 +199,16 @@ setVar:a=人物名称;可以设置字符串`,
     label: 'payProduct',
     kind: CompletionItemKind.Function,
     documentation: `章节付费
-    此指令会将后面的内容设置为付费内容1`,
+    此指令会将后面的内容设置为付费内容`,
     detail: `command payProduct:<expression>;`,
     insertText: 'payProduct:',
+  },
+  {
+    label: 'finishTrial',
+    kind: CompletionItemKind.Function,
+    documentation: `结束试玩
+    此指令会将结束游戏的试玩部分`,
+    detail: `command finishTrial:<expression>;`,
+    insertText: 'finishTrial:true;',
   },
 ];

@@ -3,19 +3,18 @@ import { ISentenceEditorProps } from './index';
 import styles from './sentenceEditor.module.scss';
 import { useValue } from '@/hooks/useValue';
 import { useEffect } from 'react';
-import { v4 as uuId } from 'uuid';
 
 export default function PayProduct(props: ISentenceEditorProps) {
   const name = useValue<string>('');
-  const productId = useValue<string>('');
+  const productId = useValue<number>(0);
   const amount = useValue<number>(100);
   const chapter = useValue<number>(1);
 
   useEffect(() => {
     if (props.sentence.content !== '') {
-      productId.set(props.sentence.content);
+      productId.set(Number(props.sentence.content));
     } else {
-      productId.set(uuId());
+      productId.set(Date.now());
     }
 
     props.sentence.args.forEach((k) => {
@@ -31,7 +30,7 @@ export default function PayProduct(props: ISentenceEditorProps) {
 
   function setContent() {
     
-    let content = `payProduct:${productId.value.trim()}`;
+    let content = `payProduct:${productId.value}`;
 
     content += ` -amount=${amount.value}`;
     content += ` -name=${name.value.trim()}`;

@@ -8,7 +8,6 @@ import WhenARG from '../components/WhenARG';
 import { getWhenARGExpression } from '@/utils/utils';
 import TerreToggle from "@/components/terreToggle/TerreToggle";
 import CommonOptions from "../components/CommonOption";
-import { v4 as uuid } from "uuid";
 
 interface IOptions {
   text: string;
@@ -17,7 +16,7 @@ interface IOptions {
   enableCondition: Variable;
   shouldPay?: boolean;
   amount?: number;
-  productId?: string;
+  productId?: number;
   style: {
     x?: number;
     y?: number;
@@ -80,19 +79,19 @@ const parse = (script: string) => {
   if (payInfoMatch) {
     const payInfoStr = payInfoMatch[1];
     const payInfoProps = payInfoStr.split(',');
-    let productId = '';
+    let productId = 0;
     let amount = 0;
 
     payInfoProps.forEach((prop) => {
       const [key, value] = prop.split('=');
       if (key === 'productId') {
-        productId = value.trim();
+        productId = isNaN(Number(value.trim())) ? 0 : Number(value.trim());
       } else if (key === 'amount') {
         amount = isNaN(Number(value.trim())) ? 0 : Number(value.trim());
       }
     });
 
-    if (productId !== '' && amount > 0) {
+    if (productId > 0 && amount > 0) {
       option.shouldPay = true;
       option.productId = productId;
       option.amount = amount;
@@ -170,7 +169,7 @@ export default function Choose(props: any) {
 
     if (key === 'shouldPay') {
       if (value) {
-        newList[index].productId = uuid();
+        newList[index].productId = Date.now();
         newList[index].amount = 100;
       } else {
         delete newList[index].productId;

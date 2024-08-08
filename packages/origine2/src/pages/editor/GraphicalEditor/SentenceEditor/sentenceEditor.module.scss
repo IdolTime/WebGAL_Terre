@@ -47,3 +47,10 @@
 .iconParkIcon > svg > path{
   stroke: var(--text);
 }
+
+.commandInfo {
+  background-color: rgb(214, 228, 242);
+  color: rgb(96, 148, 194);
+  padding: 2px 4px;
+  border-radius: 2px;
+}

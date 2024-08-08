@@ -744,6 +744,11 @@ export const zhCn = {
           initText: "payProduct:;",
           descText: '此指令会将后面的内容设置为付费内容',
         },
+        finishTrial: {
+          title: "结束试玩",
+          initText: "finishTrial:true;",
+          descText: '此指令会将结束游戏的试玩部分',
+        },
         unknown: {
           title: "未识别",
           options: {

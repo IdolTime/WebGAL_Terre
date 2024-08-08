@@ -16,10 +16,12 @@ export function useGetUserInfo() {
     request.post("https://test-api.idoltime.games/editor/user_info").then((res) => {
       if (res.data.code === 0) {
         console.log("获取用户信息成功", res.data.data);
+        localStorage.setItem("editorUserInfo", JSON.stringify(res.data.data));
         dispatch(setUserInfo(res.data.data));
       } else {
         console.log("获取用户信息失败");
         localStorage.removeItem("editorToken");
+        localStorage.removeItem("editorUserInfo");
         location.hash = '/login';
       }
     });

@@ -48,7 +48,7 @@ export default function GameElement(props: IGameElementProps) {
     3: "上传失败",
   };
 
-  const enterEditor = async (gameName: string) => {
+  const enterEditor = async (gameName: string, gId: number) => {
     const callback = () => {
       dispatch(setEditingGame(gameName));
       dispatch(setDashboardShow(false));
@@ -58,7 +58,7 @@ export default function GameElement(props: IGameElementProps) {
     if (res.data.status === 'success') {
       callback();
     } else {
-      await request.post("/api/manageGame/createGame", { gameName: props.gameInfo.gName });
+      await request.post("/api/manageGame/createGame", { gameName: props.gameInfo.gName, gId: props.gameInfo.gId });
       callback();
     }
   };
@@ -84,7 +84,7 @@ export default function GameElement(props: IGameElementProps) {
   const newGameName = useValue(props.gameInfo.gName);
 
   const openInFileExplorer = () => {
-    api.manageGameControllerOpenGameDict(props.gameInfo.gName);
+    api.manageGameControllerOpenGameDict(props.gameInfo.gName, props.gameInfo.gId);
   };
 
   const previewInNewTab = async () => {
@@ -93,7 +93,7 @@ export default function GameElement(props: IGameElementProps) {
     if (res.data.status === 'success') {
       window.open(`/games/${props.gameInfo.gName}`, "_blank");
     } else {
-      await request.post("/api/manageGame/createGame", { gameName: props.gameInfo.gName });
+      await request.post("/api/manageGame/createGame", { gameName: props.gameInfo.gName, gId: props.gameInfo.gId });
       window.open(`/games/${props.gameInfo.gName}`, "_blank");
     }
   };
@@ -151,7 +151,7 @@ export default function GameElement(props: IGameElementProps) {
             <Button size="small" appearance='primary' onClick={() => uploadGame(props.gameInfo.gName, props.gameInfo.gId)}>
               {statusMap[loadingStatusMap[props.gameInfo.gName] as keyof typeof statusMap] || statusMap[0]}
             </Button>
-            <Button size="small" appearance='primary' onClick={() => enterEditor(props.gameInfo.gName)}>{t('preview.editGame')}</Button>
+            <Button size="small" appearance='primary' onClick={() => enterEditor(props.gameInfo.gName, props.gameInfo.gId)}>{t('preview.editGame')}</Button>
             <Menu>
               <MenuTrigger>
                 <MenuButton appearance='subtle' icon={<MoreVerticalIcon />} />

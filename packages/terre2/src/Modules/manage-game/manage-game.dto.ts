@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateGameDto {
   @ApiProperty({ description: 'The name of the game to be created' })
   gameName: string;
+  gId: number;
 }
 
 export class UploadGameDto {
@@ -102,4 +103,23 @@ export class RenameDto {
 export class CheckGameFolderDto {
   @ApiProperty({ description: 'The name of the game' })
   gameName: string;
+}
+
+export class UploadPaymentConfigurationDto {
+  @ApiProperty({ description: 'The gameId of the game' })
+  gId: number;
+  gameName: string;
+
+  @ApiProperty({ description: 'The payment configuration' })
+  sales?: {
+    id: number;
+    chapter?: number;
+    buy_type: 1 | 2;
+    buy_type_text: string;
+    sales_type: 1;
+    sales_type_text: '星石';
+    sales_amount: number;
+    is_pay: 1;
+    productId: number;
+  }[];
 }

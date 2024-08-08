@@ -30,6 +30,8 @@ import {
   Checkbox,
 } from "@fluentui/react-components";
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
+import { useDispatch } from "react-redux";
+import { setCurrentGameId } from "@/store/statusReducer";
 
 export enum GameMenuKey {
   Game_start_button = 'Game_start_button', // 开始
@@ -62,6 +64,8 @@ interface GameMenuItem {
 export default function GameConfig() {
   const t = useTrans("editor.sideBar.gameConfigs.");
   const state = useSelector((state: RootState) => state.status.editor);
+  const dispatch = useDispatch();
+
 
   // 拿到游戏配置
   const gameConfig = useValue<WebgalConfig>([]);
@@ -149,8 +153,9 @@ export default function GameConfig() {
   }
 
   function parseAndSetGameConfigState(data: string) {
-    console.log(data);
+    console.log('parse config\n', data);
     gameConfig.set(WebgalParser.parseConfig(data));
+    dispatch(setCurrentGameId(Number(gameConfig.value.find(e => e.command === 'Game_id')?.args[0] || '0')));
     if (getConfigContentAsString('Game_key') === '') {
       // 设置默认识别码
       const randomCode = (Math.random() * 100000).toString(16).replace(".", "d");
