@@ -304,4 +304,27 @@ export class WebgalFsService {
       return false;
     }
   }
+
+  /**
+   * 替换图标文件
+   * @param newIconPath 要写入的图标文件路径
+   * @param oldIconPath 读取的图标文件路径
+   */
+  async replaceIconFile(newIconPath, oldIconPath) {
+    //@ts-ignore
+    fs.readFile(newIconPath, (err, data) => {
+      if (err) {
+          console.error('Error reading the new icon file:', err);
+          return;
+      }
+      //@ts-ignore
+      fs.writeFile(oldIconPath, data, (err) => {
+          if (err) {
+              console.error('Error writing the new icon to icon.icns:', err);
+              return;
+          }
+          console.log('Icon replacement successful!');
+      });
+    });
+  }
 }

@@ -23,6 +23,7 @@ import { WebgalConfig } from "idoltime-parser/build/types/configParser/configPar
 import { useValue } from "@/hooks/useValue";
 import { eventBus } from '@/utils/eventBus';
 import ChooseFile from '@/pages/editor/ChooseFile/ChooseFile';
+import FontFile from '@/pages/editor/FontFile/FontFile'
 import { IConfigESCMenus, EMenuKey, ECommandKey } from './escMenuInterface';
 import { defaultEscMenuConfig, getMenuKeyToName, getCommandKey } from './config';
 import { boolMap } from '../SoundSetting/config';
@@ -248,9 +249,12 @@ const processNumericInput = (input: string) => {
         <div className={styles.col3}>
           <div className={styles.item}>
             <span>文字字体</span>
-            <Select style={{ width: '100px' }} value={fontFamily}>
-              <option value={''}>{'默认'}</option>
-            </Select>
+            <FontFile 
+              value={fontFamily} 
+              onChange={(val: string) => {
+                updateConfig(index, 'fontFamily', val);
+              }}
+            />
           </div>
           <div className={styles.item}>
             <span>文字字号</span>

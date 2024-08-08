@@ -123,6 +123,7 @@ export const zhCn = {
           video: '视频',
           vocal: '语音',
           ui: 'UI',
+          font: '字体',
         }
       },
 
