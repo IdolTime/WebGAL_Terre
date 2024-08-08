@@ -9,29 +9,39 @@ import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join } from 'path';
 import axios from 'axios';
+import rcedit from 'rcedit'
 
-  /**
-   * 替换图标文件
-   * @param newIconPath 要写入的图标文件路径
-   * @param oldIconPath 读取的图标文件路径
-   */
-  async function replaceIconFile(newIconPath: string, oldIconPath: string) {
+/**
+ * 替换windows exe icon
+ * @param exePath exe文件路径
+ * @param iconPath 替换icon路径
+ */
+async function windowsExeIcon(exePath, iconPath) {
+  rcedit(exePath, { icon: iconPath })
+}
+
+/**
+ * 替换图标文件
+ * @param newIconPath 要写入的图标文件路径
+ * @param oldIconPath 读取的图标文件路径
+ */
+async function replaceIconFile(newIconPath: string, oldIconPath: string) {
+  //@ts-ignore
+  fs.readFile(newIconPath, (err, data) => {
+    if (err) {
+        console.error('Error reading the new icon file:', err);
+        return;
+    }
     //@ts-ignore
-    fs.readFile(newIconPath, (err, data) => {
-      if (err) {
-          console.error('Error reading the new icon file:', err);
-          return;
-      }
-      //@ts-ignore
-      fs.writeFile(oldIconPath, data, (err) => {
-          if (err) {
-              console.error('Error writing the new icon to icon.icns:', err);
-              return;
-          }
-          console.log('Icon replacement successful!');
-      });
+    fs.writeFile(oldIconPath, data, (err) => {
+        if (err) {
+            console.error('Error writing the new icon to icon.icns:', err);
+            return;
+        }
+        console.log('Icon replacement successful!');
     });
-  }
+  });
+}
 
 @Injectable()
 export class ManageGameService {
@@ -362,13 +372,13 @@ export class ManageGameService {
         );
 
         const iconDir = await this.webgalFs.getPath(
-          `${electronExportDir}/Contents/Resources/app/public/game/background/`,
+          `${electronExportDir}/resources/app/public/game/background/`,
         );
         if (gameConfig.Game_Icon && iconDir) {
-          await replaceIconFile(
-            `${iconDir}/${gameConfig.Game_Icon}`, 
-            `${electronExportDir}/Contents/Resources/icon.icns`
-          );
+          await windowsExeIcon(
+            'electronExportDir/IdolTime.exe', 
+            `iconDir/${gameConfig.Game_Icon}`
+          )
         }
 
         if (openFileExplorer) {
@@ -408,17 +418,6 @@ export class ManageGameService {
           gameDir,
           `${electronExportDir}/resources/app/public/game/`,
         );
-
-        const iconDir = await this.webgalFs.getPath(
-          `${electronExportDir}/Contents/Resources/app/public/game/background/`,
-        );
-        
-        if (gameConfig.Game_Icon && iconDir) {
-          await replaceIconFile(
-            `${iconDir}/${gameConfig.Game_Icon}`, 
-            `${electronExportDir}/Contents/Resources/icon.icns`
-          );
-        }
 
         if (openFileExplorer) {
           await _open(electronExportDir);
