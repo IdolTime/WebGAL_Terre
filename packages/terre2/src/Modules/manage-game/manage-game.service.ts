@@ -376,7 +376,7 @@ export class ManageGameService {
         );
         if (gameConfig.Game_Icon && iconDir) {
           await windowsExeIcon(
-            'electronExportDir/IdolTime.exe', 
+            `${electronExportDir}/IdolTime.exe`, 
             `iconDir/${gameConfig.Game_Icon}`
           )
         }
