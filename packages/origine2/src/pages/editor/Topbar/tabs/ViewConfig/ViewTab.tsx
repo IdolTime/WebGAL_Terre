@@ -134,13 +134,13 @@ function GameConfigEditorGameMenu() {
 
   function updateGameUIConfig() {
     const newConfig = cloneDeep(gameConfig.value);
-    debugger;
+    
 
     function handleUpdate(key: string, value: ButtonItem | ContainerItem | SliderContainerItem | IndicatorContainerItem) {
       const index = newConfig.findIndex(e => e.command === key);
       let styleContent: Record<string, string[]> = {};
       console.log(key, value);
-      debugger;
+      
 
       Object.keys((value.args)).forEach((argKey) => {
         // @ts-ignore
@@ -183,7 +183,7 @@ function GameConfigEditorGameMenu() {
       handleUpdate(key, value);
     }
     console.log(newConfig);
-    debugger;
+    
     gameConfig.set(newConfig);
     updateGameConfig();
   }
@@ -192,7 +192,7 @@ function GameConfigEditorGameMenu() {
     const newConfig = WebgalParser.stringifyConfig(gameConfig.value);
     const form = new URLSearchParams();
     console.log(newConfig);
-    debugger;
+    
     form.append("gameName", state.currentEditingGame);
     form.append("newConfig", newConfig);
     axios.post(`/api/manageGame/setGameConfig/`, form).then(getGameConfig);
@@ -596,7 +596,7 @@ function parseStyleConfig({
           }
         }
       };
-      debugger;
+      
       return newOptions;
     });
   }
