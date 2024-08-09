@@ -134,10 +134,13 @@ function GameConfigEditorGameMenu() {
 
   function updateGameUIConfig() {
     const newConfig = cloneDeep(gameConfig.value);
+    debugger;
 
     function handleUpdate(key: string, value: ButtonItem | ContainerItem | SliderContainerItem | IndicatorContainerItem) {
       const index = newConfig.findIndex(e => e.command === key);
       let styleContent: Record<string, string[]> = {};
+      console.log(key, value);
+      debugger;
 
       Object.keys((value.args)).forEach((argKey) => {
         // @ts-ignore
@@ -179,7 +182,8 @@ function GameConfigEditorGameMenu() {
     for (const [key, value] of Object.entries(options[currentEditScene!]?.other)) {
       handleUpdate(key, value);
     }
-
+    console.log(newConfig);
+    debugger;
     gameConfig.set(newConfig);
     updateGameConfig();
   }
@@ -187,6 +191,8 @@ function GameConfigEditorGameMenu() {
   function updateGameConfig() {
     const newConfig = WebgalParser.stringifyConfig(gameConfig.value);
     const form = new URLSearchParams();
+    console.log(newConfig);
+    debugger;
     form.append("gameName", state.currentEditingGame);
     form.append("newConfig", newConfig);
     axios.post(`/api/manageGame/setGameConfig/`, form).then(getGameConfig);
@@ -590,7 +596,7 @@ function parseStyleConfig({
           }
         }
       };
-
+      debugger;
       return newOptions;
     });
   }
@@ -720,11 +726,19 @@ function parseStyleConfig({
                     ) : (styleProp.type === 'image') ? (
                       <div>
                         <ChooseFile
-                          sourceBase={config.type === 'bg' ? 'background' : 'ui'}
-                          onChange={(file) => config.type === 'bg' && key === 'style' ? setContent(file?.name ?? "") : setStyle(styleKey as keyof IStyleConfig, file?.name ?? "")}
                           extName={[".png", ".jpg", ".jpeg", ".gif"]}
+                          sourceBase={config.type === 'bg' ? 'background' : 'ui'}
+                          onChange={(file) => config.type === 'bg' && key === 'style' 
+                            ? setContent(file?.name ?? "") 
+                            : setStyle(styleKey as keyof IStyleConfig, file?.name ?? "")
+                          }
                         />
-                        <span style={{ marginLeft: 12 }}>{config.type === 'bg' && key === 'style' ? item.content : item.args.style?.[styleKey as keyof IStyleConfig]}</span>
+                        <span style={{ marginLeft: 12 }}>
+                          {config.type === 'bg' && key === 'style' 
+                            ? item.content 
+                            : item.args.style?.[styleKey as keyof IStyleConfig]
+                          }
+                        </span>
                       </div>
                     ) : null}
                   </div>

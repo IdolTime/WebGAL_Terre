@@ -9,15 +9,19 @@ import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join } from 'path';
 import axios from 'axios';
-import rcedit from 'rcedit'
-
+// import rcedit from 'rcedit';
+const rcedit = require('rcedit')
 /**
  * 替换windows exe icon
  * @param exePath exe文件路径
  * @param iconPath 替换icon路径
  */
-async function windowsExeIcon(exePath, iconPath) {
-  rcedit(exePath, { icon: iconPath })
+async function windowsExeIcon(exePath: string, iconPath: string) {
+  try {
+    await rcedit(exePath, { icon: iconPath })
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 /**
@@ -377,7 +381,7 @@ export class ManageGameService {
         if (gameConfig.Game_Icon && iconDir) {
           await windowsExeIcon(
             `${electronExportDir}/IdolTime.exe`, 
-            `iconDir/${gameConfig.Game_Icon}`
+            `${iconDir}/${gameConfig.Game_Icon}`
           )
         }
 
