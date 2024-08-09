@@ -41,8 +41,7 @@
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^5.0.0",
     "vscode-languageserver": "^8.1.0",
-    "ws": "^8.8.1",
-    "rcedit": "^4.0.1"
+    "ws": "^8.8.1"
   },
   "devDependencies": {
     "@aws-sdk/types": "^3.609.0",
