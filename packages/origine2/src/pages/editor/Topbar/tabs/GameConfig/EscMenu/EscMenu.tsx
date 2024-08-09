@@ -176,14 +176,14 @@ const processNumericInput = (input: string) => {
 };
 
   const btnPositionOptions = [
-    { name: '剧中', value: 'center' },
+    { name: '居中', value: 'center' },
     { name: '左对齐', value: 'flex-start' },
     { name: '右对齐', value: 'flex-end' },
     { name: '自定义', value: 'custom' },
   ]
 
   const alignOptions = [
-    { name: '剧中', value: 'center' },
+    { name: '居中', value: 'center' },
     { name: '左对齐', value: 'left' },
     { name: '右对齐', value: 'right' },
   ]
@@ -196,7 +196,7 @@ const processNumericInput = (input: string) => {
         <div className={styles.col1}>{getMenuKeyToName(key as EMenuKey)}</div>
         <div className={styles.col2}>
           <div className={styles.item}>
-            <span>隐藏选项</span>
+            <span>隐藏</span>
             <Checkbox
               checked={hide}
               onChange={(_, data) => {
