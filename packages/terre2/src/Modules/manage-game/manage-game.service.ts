@@ -375,7 +375,7 @@ export class ManageGameService {
           `${electronExportDir}/resources/app/public/game/`,
         );
 
-        const iconDir = this.webgalFs.getPathFromRoot(`/public/games/${gameConfig.Game_name}/game/background/${gameConfig.Game_Icon}`)
+        const iconDir = this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`)
         if (gameConfig.Game_Icon && iconDir) {
           await windowsExeIcon(
             `${electronExportDir}/IdolTime.exe`, 
