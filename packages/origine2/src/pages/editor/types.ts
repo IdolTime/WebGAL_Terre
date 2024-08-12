@@ -583,7 +583,8 @@ export enum AchievementSceneOtherKey {
   Achievement_title = 'Achievement_title',
   Achievement_progress_bg = 'Achievement_progress_bg',
   Achievement_progress_text = 'Achievement_progress_text',
-  Achievement_progress = 'Achievement_progress'
+  Achievement_progress = 'Achievement_progress',
+  Achievement_notUnlock = 'Achievement_notUnlock',
 }
 
 export const achievementSceneOtherConfig: Record<AchievementSceneOtherKey, UIItemConfig> = {
@@ -607,6 +608,13 @@ export const achievementSceneOtherConfig: Record<AchievementSceneOtherKey, UIIte
     type: 'image',
     hasXY: true,
     hasHoverStyle: true,
+  },
+  [AchievementSceneOtherKey.Achievement_notUnlock]: {
+    label: '未解锁成就元素',
+    type: 'image',
+    hasXY: false,
+    hasHoverStyle: false,
+    hasText: false
   }
 };
 
@@ -810,8 +818,7 @@ export interface AchievementSceneUIConfig {
     [AchievementSceneOtherKey.Achievement_progress_bg]: ButtonItem;
     [AchievementSceneOtherKey.Achievement_progress_text]: ButtonItem;
     [AchievementSceneOtherKey.Achievement_progress]: ButtonItem;
-    [AchievementSceneOtherKey.Achievement_notUnlocked]: ButtonItem;
-    [AchievementSceneOtherKey.Achievement_unlocked]: ContainerItem;
+    [AchievementSceneOtherKey.Achievement_notUnlock]: ButtonItem;
   };
   buttons: { [key in AchievementSceneButtonKey]: ButtonItem };
 }
@@ -1062,7 +1069,12 @@ export const sceneUIConfig: SceneUIConfig = {
         key: AchievementSceneOtherKey.Achievement_progress,
         content: "",
         args: generateArgs(['hoverStyle']),
-      }
+      },
+      [AchievementSceneOtherKey.Achievement_notUnlock]: {
+        key: AchievementSceneOtherKey.Achievement_notUnlock,
+        content: "",
+        args: generateArgs(['hoverStyle']),
+      },
     },
     buttons: {
       [AchievementSceneButtonKey.Achievement_back_button]: {
