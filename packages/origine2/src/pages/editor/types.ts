@@ -581,12 +581,33 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
 
 export enum AchievementSceneOtherKey {
   Achievement_title = 'Achievement_title',
+  Achievement_progress_bg = 'Achievement_progress_bg',
+  Achievement_progress_text = 'Achievement_progress_text',
+  Achievement_progress = 'Achievement_progress'
 }
 
 export const achievementSceneOtherConfig: Record<AchievementSceneOtherKey, UIItemConfig> = {
   [AchievementSceneOtherKey.Achievement_title]: {
     label: '标题',
   },
+  [AchievementSceneOtherKey.Achievement_progress_bg]: {
+    label: '成就进度背景',
+    type: 'bg',
+    hasXY: false,
+    hasHoverStyle: false,
+  },
+  [AchievementSceneOtherKey.Achievement_progress_text]: {
+    label: '成就进度文字',
+    type: 'text',
+    hasXY: false,
+    hasHoverStyle: false,
+  },
+  [AchievementSceneOtherKey.Achievement_progress]: {
+    label: '成就进度条',
+    type: 'image',
+    hasXY: true,
+    hasHoverStyle: true,
+  }
 };
 
 export enum StorylineSceneOtherKey {
@@ -778,9 +799,20 @@ export interface StorylineSceneUIConfig {
   buttons: { [key in StorylineSceneButtonKey]: ButtonItem };
 }
 
+/**
+ * 成就页面UI配置项
+ */
 export interface AchievementSceneUIConfig {
   key: Scene.achievement;
-  other: { [key in AchievementSceneOtherKey]: ButtonItem };
+  other: { 
+    // [key in AchievementSceneOtherKey]: ButtonItem;
+    [AchievementSceneOtherKey.Achievement_title]: ButtonItem;
+    [AchievementSceneOtherKey.Achievement_progress_bg]: ButtonItem;
+    [AchievementSceneOtherKey.Achievement_progress_text]: ButtonItem;
+    [AchievementSceneOtherKey.Achievement_progress]: ButtonItem;
+    [AchievementSceneOtherKey.Achievement_notUnlocked]: ButtonItem;
+    [AchievementSceneOtherKey.Achievement_unlocked]: ContainerItem;
+  };
   buttons: { [key in AchievementSceneButtonKey]: ButtonItem };
 }
 
@@ -1016,6 +1048,21 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(['hoverStyle']),
       },
+      [AchievementSceneOtherKey.Achievement_progress_bg]: {
+        key: AchievementSceneOtherKey.Achievement_progress_bg,
+        content: "",
+        args: generateArgs(['hoverStyle']),
+      },
+      [AchievementSceneOtherKey.Achievement_progress_text]: {
+        key: AchievementSceneOtherKey.Achievement_progress_text,
+        content: "",
+        args: generateArgs(['hoverStyle']),
+      },
+      [AchievementSceneOtherKey.Achievement_progress]: {
+        key: AchievementSceneOtherKey.Achievement_progress,
+        content: "",
+        args: generateArgs(['hoverStyle']),
+      }
     },
     buttons: {
       [AchievementSceneButtonKey.Achievement_back_button]: {
