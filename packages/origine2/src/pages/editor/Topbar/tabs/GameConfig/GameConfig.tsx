@@ -156,7 +156,7 @@ export default function GameConfig() {
       <TabItem title={t("options.logoImage")}>
         <GameConfigEditorWithImageFileChoose
           sourceBase="background"
-          extNameList={[".jpg", ".png", ".webp"]}
+          extNameList={[".jpg", ".png", ".webp", '.gif']}
           key="logoImage"
           value={getConfigContentAsStringArray('Game_Logo')}
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_Logo', e)}/>
