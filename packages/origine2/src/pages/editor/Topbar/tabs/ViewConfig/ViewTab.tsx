@@ -295,11 +295,15 @@ function GameConfigEditorGameMenu() {
           <DialogContent>
             <div className={s.group}>
               <span className={s.groupLabel}>其他设置</span>
-              {Object.values((options[currentEditScene || Scene.extra]?.other || {})).map((item) => renderConfig(item, "other", currentEditScene || Scene.extra, setOptions))}
+              {Object.values((options[currentEditScene || Scene.extra]?.other || {}))
+                .map((item) => renderConfig(item, "other", currentEditScene || Scene.extra, setOptions))
+              }
             </div>
             <div className={s.group}>
               <span className={s.groupLabel}>界面按钮</span>
-              {Object.values((options[currentEditScene || Scene.extra]?.buttons || {})).map((item) => renderConfig(item, "buttons", currentEditScene || Scene.extra, setOptions))}
+              {Object.values((options[currentEditScene || Scene.extra]?.buttons || {}))
+                .map((item) => renderConfig(item, "buttons", currentEditScene || Scene.extra, setOptions))
+              }
 
               {/* {Object.values(options.buttons).map((menu, index) => (
                 <div key={index} style={{ marginBlock: "12px" }}>
