@@ -9,24 +9,24 @@ import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join } from 'path';
 import axios from 'axios';
-// import rcedit from 'rcedit';
-const rcedit = require('rcedit')
-/**
- * 替换windows exe icon
- * @param exePath exe文件路径
- * @param iconPath 替换icon路径
- */
-async function updateWinExeIcon(exePath: string, iconPath: string) {
-  try {
-    await rcedit(exePath, { icon: iconPath }).then(() => {
-      console.info('update exe icon successful')
-    }).catch((err) => {
-      console.info('update icon error: ', err)
-    })
-  } catch (error) {
-    console.log(error)
-  }
-}
+import rcedit from 'rcedit';
+// const rcedit = require('rcedit')
+// /**
+//  * 替换windows exe icon
+//  * @param exePath exe文件路径
+//  * @param iconPath 替换icon路径
+//  */
+// async function updateWinExeIcon(exePath: string, iconPath: string) {
+//   try {
+//     await rcedit(exePath, { icon: iconPath }).then(() => {
+//       console.info('update exe icon successful')
+//     }).catch((err) => {
+//       console.info('update icon error: ', err)
+//     })
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
 
 /**
  * 替换图标文件
@@ -57,6 +57,26 @@ export class ManageGameService {
     private readonly logger: ConsoleLogger,
     private readonly webgalFs: WebgalFsService,
   ) {}
+
+  /**
+ * 替换windows exe icon
+ * @param exePath exe文件路径
+ * @param iconPath 替换icon路径
+ */
+  private async updateWinExeIcon(exePath: string, iconPath: string) {
+    const isExist = await this.webgalFs.existsDir(exePath);
+    if (isExist) {
+      try {
+        await rcedit(exePath, { icon: iconPath }).then(() => {
+          console.info('update exe icon successful')
+        }).catch((err) => {
+          console.info('update icon error: ', err)
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
 
   /**
    * 打开游戏文件夹
@@ -381,7 +401,7 @@ export class ManageGameService {
 
         const iconDir = this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`)
         if (gameConfig.Game_Icon && iconDir) {
-          updateWinExeIcon(join(electronExportDir, 'IdolTime.exe'), iconDir)
+          await this.updateWinExeIcon(join(electronExportDir, 'IdolTime.exe'), iconDir)
         }
 
         if (openFileExplorer) {
