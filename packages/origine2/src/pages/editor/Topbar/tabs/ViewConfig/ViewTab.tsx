@@ -88,9 +88,9 @@ export function ViewTab() {
       />
     </TabItem>
     <TabItem title={t("游戏UI自定义")}>
-      {Object.keys(Scene).map((key) => (
+      {Object.keys(Scene).map((key, index) => (
         <Button
-          key={key}
+          key={key + index}
           appearance='primary'
           size="small"
           style={{ height: 30, marginRight: 10 }}
@@ -101,9 +101,7 @@ export function ViewTab() {
           {sceneNameMap[key as keyof typeof Scene]}
         </Button>
       ))}
-      <GameConfigEditorGameMenu
-        key="gameMenu"
-      />
+      <GameConfigEditorGameMenu key="gameMenu" />
     </TabItem>
   </TopbarTab>;
 }
@@ -246,6 +244,8 @@ function GameConfigEditorGameMenu() {
           parsedArgs.hide = e.value === true;
         } else if (e.key.endsWith('style')) {
           parsedArgs[e.key] = parseStyleString(e.value as string);
+        } else if (e.key === 'hoverStyle') {
+          parsedArgs[e.key] = parseStyleString(e.value as string);
         }
       });
     
@@ -293,40 +293,17 @@ function GameConfigEditorGameMenu() {
         <DialogBody>
           <DialogTitle>{sceneNameMap[currentEditScene || Scene.extra]}UI设置</DialogTitle>
           <DialogContent>
-            <div className={s.group}>
+            <div className={s.group} key={'other'}>
               <span className={s.groupLabel}>其他设置</span>
               {Object.values((options[currentEditScene || Scene.extra]?.other || {}))
-                .map((item) => renderConfig(item, "other", currentEditScene || Scene.extra, setOptions))
+                .map((item, index) => renderConfig(item, "other", currentEditScene || Scene.extra, setOptions, index))
               }
             </div>
-            <div className={s.group}>
+            <div className={s.group} key={'buttons'}>
               <span className={s.groupLabel}>界面按钮</span>
               {Object.values((options[currentEditScene || Scene.extra]?.buttons || {}))
-                .map((item) => renderConfig(item, "buttons", currentEditScene || Scene.extra, setOptions))
+                .map((item, index) => renderConfig(item, "buttons", currentEditScene || Scene.extra, setOptions, index))
               }
-
-              {/* {Object.values(options.buttons).map((menu, index) => (
-                <div key={index} style={{ marginBlock: "12px" }}>
-                  <div style={{ display: "flex", alignItems: "center", marginBottom: "6px" }}>
-                    <span style={{ fontSize: '16px', fontWeight: 500, width: "70px" }}>{(keysNameMap as any)[keys[index]]}</span>
-                    <Checkbox checked={menu.args.hide} onChange={(_, data) => {
-                      setHide(index, data.checked as boolean);
-                    }} />
-                    <span>隐藏</span>
-                    <span style={{ marginLeft: '38px' }}>按钮名称</span>
-                    <input value={menu.content}
-                      onChange={(ev) => {
-                        setName(index, ev.target.value.trim());
-                      }}
-                      className={s.sayInput}
-                      placeholder="按钮名称"
-                      style={{ width: "10%", margin: "0 6px 0 12px", color: "#666" }}
-                    />
-                    <Button appearance="primary" size="small" style={{ margin: '0 18px 0 36px' }}>默认样式</Button>
-                    <Button appearance="primary" size="small">选中样式</Button>
-                  </div>
-                </div>
-              ))} */}
             </div>
           </DialogContent>
           <DialogActions>
@@ -364,6 +341,11 @@ function GameConfigEditorWithFileChoose(props: IGameConfigEditor & {
       }}
       extName={props.extNameList}/>
   </div>;
+}
+
+interface IStyleType {
+  style: string;
+  hoverStyle: string;
 }
 
 interface IStyleConfig {
@@ -479,6 +461,7 @@ function renderConfig(
   type: 'buttons' | 'other',
   currentEditScene: Scene,
   setOptions: Dispatch<SetStateAction<SceneUIConfig>>,
+  itemIndex: number,
 ) {
   const key = item.key;
   let config: UIItemConfig & { children: Record<string, UIItemConfig> } | undefined;
@@ -563,6 +546,7 @@ function renderConfig(
     type,
     currentEditScene,
     setOptions,
+    itemIndex,
   });
 }
 
@@ -573,6 +557,7 @@ function parseStyleConfig({
   type,
   currentEditScene,
   setOptions,
+  itemIndex,
 }: {
   styleConfigArr: { label: string; style: IStyleConfig, key: string }[],
   config: UIItemConfig & { children: Record<string, UIItemConfig> } | undefined,
@@ -580,6 +565,7 @@ function parseStyleConfig({
   type: 'buttons' | 'other',
   currentEditScene: Scene,
   setOptions: Dispatch<SetStateAction<SceneUIConfig>>,
+  itemIndex: number,
 }) {
   if (!config) return;
   const key = item.key;
@@ -623,7 +609,7 @@ function parseStyleConfig({
                 ...options[currentEditScene][type][key].args,
                 [styleType]: {
                   // @ts-ignore
-                  ...options[currentEditScene][type][key].args.style,
+                  ...options[currentEditScene][type][key].args[styleType],
                   [styleKey]: value,
                 }
               }
@@ -684,7 +670,7 @@ function parseStyleConfig({
   }
   
   return (
-    <div className={s.row}>
+    <div className={s.row} key={itemIndex + config.label}>
       <span className={s.label}>{config.label}</span>
       <div>
         <Checkbox
@@ -695,8 +681,8 @@ function parseStyleConfig({
         />
         <span>隐藏</span>
       </div>
-      {styleConfigArr.map(({ label, style, key }) => (
-        <Dialog key={key}>
+      {styleConfigArr.map(({ label, style, key }, index: number) => (
+        <Dialog key={key + index}>
           <DialogTrigger disableButtonEnhancement>
             <Button size="small">设置{label}</Button>
           </DialogTrigger>
@@ -713,20 +699,36 @@ function parseStyleConfig({
                     />
                   </div>
                 )}
-                {Object.entries(style).map(([styleKey, styleProp]) => (
-                  <div className={s.row} key={styleKey}>
+                {Object.entries(style).map(([styleKey, styleProp], idx: number) => (
+                  <div className={s.row} key={styleKey + index + idx}>
                     <span className={s.optionLabel}>{styleProp.label}</span>
                     {styleProp.type === 'number' ? (
                       <Input
                         type="number"
-                        value={item.args.style?.[styleKey as keyof IStyleConfig] as string}
-                        onChange={(e) => setStyle(styleKey as keyof IStyleConfig, e.target.value === '' ? '' : Number(e.target.value))}
-                      />
+                        value={
+                          key === 'hoverStyle'
+                            ? (item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string ?? ''
+                            : item.args.style?.[styleKey as keyof IStyleConfig] as string ?? ''
+                        }
+                        onChange={(e) => {
+                          setStyle(
+                            styleKey as keyof IStyleConfig, 
+                            e.target.value === '' ? '' : Number(e.target.value),
+                            key as keyof IStyleType
+                          )                        
+                        }}
+                          />
                     ) : styleProp.type === 'color' ? (
                       <input
                         type="color"
-                        value={item.args.style?.[styleKey as keyof IStyleConfig] as string || ""}
-                        onChange={(e) => setStyle(styleKey as keyof IStyleConfig, e.target.value)}
+                        value={
+                          key === 'hoverStyle'
+                            ? (item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string ?? ''
+                            : item.args.style?.[styleKey as keyof IStyleConfig] as string ?? ''
+                        }
+                        onChange={(e) => {
+                          setStyle(styleKey as keyof IStyleConfig, e.target.value, key as keyof IStyleType)
+                        }}
                       />
                     ) : (styleProp.type === 'image') ? (
                       <div>
@@ -735,13 +737,15 @@ function parseStyleConfig({
                           sourceBase={config.type === 'bg' ? 'background' : 'ui'}
                           onChange={(file) => config.type === 'bg' && key === 'style' 
                             ? setContent(file?.name ?? "") 
-                            : setStyle(styleKey as keyof IStyleConfig, file?.name ?? "")
+                            : setStyle(styleKey as keyof IStyleConfig, file?.name ?? "", key as keyof IStyleType)
                           }
                         />
                         <span style={{ marginLeft: 12 }}>
                           {config.type === 'bg' && key === 'style' 
                             ? item.content 
-                            : item.args.style?.[styleKey as keyof IStyleConfig]
+                            : key === 'hoverStyle'
+                                ? (item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string ?? ''
+                                : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''
                           }
                         </span>
                       </div>
