@@ -15,7 +15,7 @@ import { getDirIcon, getFileIcon } from "@/utils/getFileIcon";
 import TagTitleWrapper from "@/components/TagTitleWrapper/TagTitleWrapper";
 import { api } from "@/api";
 import { RequestParams } from "@/api/Api";
-import { Button, Input, Popover, PopoverSurface, PopoverTrigger, Text } from "@fluentui/react-components";
+import { Button, Input, Popover, PopoverSurface, PopoverTrigger, Text, Toast } from "@fluentui/react-components";
 
 export default function Assets() {
   const t = useTrans("editor.sideBar.assets.");
@@ -273,7 +273,7 @@ function CommonFileButton(props: IFileDescription & {
               e.stopPropagation();
               newFileName.set(props.name);
             }}
-            className={assetsStyles.deleteButton} 
+            className={assetsStyles.deleteButton}
             style={{ display: showRenameCallout.value ? "block" : undefined }}
           >
             <Editor theme="outline" size="18" className={assetsStyles.iconParkIcon} strokeWidth={3} />
@@ -300,8 +300,8 @@ function CommonFileButton(props: IFileDescription & {
       >
         <PopoverTrigger>
           <div
-            onClick={(e) => e.stopPropagation()} 
-            className={assetsStyles.deleteButton} 
+            onClick={(e) => e.stopPropagation()}
+            className={assetsStyles.deleteButton}
             style={{ display: showRenameCallout.value ? "block" : undefined}}
           >
             <DeleteOne theme="outline" size="18" className={assetsStyles.iconParkIcon} strokeWidth={3} />
@@ -339,13 +339,30 @@ function FileUploader({ targetDirectory, uploadUrl, onUpload }: IFileUploaderPro
     setFiles(Array.from(event.target.files!));
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     const formData = new FormData();
     formData.append("targetDirectory", targetDirectory);
-    files.forEach((file) => {
-      formData.append("files", file);
-    });
 
+    let tips = '';
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const validPx = await isValidImgSize(file, 1280, 720);
+      const size = ['image/apng'].includes(file.type) ? 4 : 2;
+      const validSize = file.size / 1024 / 1024;
+      if (validSize <= size && validPx) {
+        formData.append("files", file);
+      }
+      if (validSize > size) {
+        tips += `${file.name}期望小于${size}M  `;
+      }
+      if (!validPx) {
+        tips += `${file.name}尺寸不超过1280*720  `;
+      }
+    }
+    if (tips !== '') {
+      alert(tips);
+    }
     axios.post(uploadUrl, formData).then((response) => {
       if (response.data) {
         onUpload();
@@ -362,3 +379,17 @@ function FileUploader({ targetDirectory, uploadUrl, onUpload }: IFileUploaderPro
     </div>
   );
 }
+
+function isValidImgSize (file: any, width: number, height: number) {
+  return new Promise((resolve, reject) => {
+    let _URL = window.URL || window.webkitURL;
+    let img = new Image();
+    img.onload = function () {
+      let valid = false;
+      console.log('width=', img.width, 'heihgt=', img.height);
+      valid = img.width <= width && img.height <= height;
+      return resolve(valid);
+    };
+    img.src = _URL.createObjectURL(file);
+  });
+};
