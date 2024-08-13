@@ -542,6 +542,7 @@ function renderConfig(
 
   if (config.children) {
     for (const [key, value] of Object.entries(config.children)) {
+      value.type = value.type || 'image';
       const [_styleConfig, _hasHoverStyle] = handleStyle(defaultStyle, value);
       styleConfigArr.push({ label: value.label + '样式', style: _styleConfig, key: value.label + 'Style' });
       
