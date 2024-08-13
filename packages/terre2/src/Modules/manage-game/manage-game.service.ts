@@ -16,9 +16,13 @@ const rcedit = require('rcedit')
  * @param exePath exe文件路径
  * @param iconPath 替换icon路径
  */
-async function windowsExeIcon(exePath: string, iconPath: string) {
+async function updateWinExeIcon(exePath: string, iconPath: string) {
   try {
-    await rcedit(exePath, { icon: iconPath })
+    await rcedit(exePath, { icon: iconPath }).then(() => {
+      console.info('update exe icon successful')
+    }).catch((err) => {
+      console.info('update icon error: ', err)
+    })
   } catch (error) {
     console.log(error)
   }
@@ -377,10 +381,7 @@ export class ManageGameService {
 
         const iconDir = this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`)
         if (gameConfig.Game_Icon && iconDir) {
-          await windowsExeIcon(
-            `${electronExportDir}/IdolTime.exe`, 
-            iconDir
-          )
+          updateWinExeIcon(join(electronExportDir, 'IdolTime.exe'), iconDir)
         }
 
         if (openFileExplorer) {
