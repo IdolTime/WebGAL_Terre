@@ -63,9 +63,10 @@ export class ManageGameService {
  * @param exePath exe文件路径
  * @param iconPath 替换icon路径
  */
-  private async updateWinExeIcon(exePath: string, iconPath: string) {
-    const isExist = await this.webgalFs.existsDir(exePath);
+  private async updateWinExeIcon(exePath: string, iconPath: string, isExist: boolean) {
+    console.info('update exe icon start: ', exePath, iconPath, isExist)
     if (isExist) {
+      console.info('isExist: ', isExist)
       try {
         await rcedit(exePath, { icon: iconPath }).then(() => {
           console.info('update exe icon successful')
@@ -75,6 +76,8 @@ export class ManageGameService {
       } catch (error) {
         console.log(error)
       }
+    } else {
+      console.info('update exe icon end >>>>>')
     }
   }
 
@@ -401,7 +404,21 @@ export class ManageGameService {
 
         const iconDir = this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`)
         if (gameConfig.Game_Icon && iconDir) {
-          await this.updateWinExeIcon(join(electronExportDir, 'IdolTime.exe'), iconDir)
+          const exePath = join(electronExportDir, 'IdolTime.exe')
+          const isExist = await this.webgalFs.existsDir(exePath)
+          setTimeout(async () => {
+            console.info('update exe icon 2000: ', exePath, iconDir, isExist)
+            if (isExist) {
+              await this.updateWinExeIcon(exePath, iconDir, isExist)
+            } else {
+              setTimeout(async () => {
+                console.info('update exe icon 5000: ', exePath, iconDir, isExist)
+                if (isExist) {
+                  await this.updateWinExeIcon(exePath, iconDir, isExist)
+                }
+              }, 5000)
+            }
+          }, 2000)
         }
 
         if (openFileExplorer) {
