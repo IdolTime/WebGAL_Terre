@@ -9,24 +9,9 @@ import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join } from 'path';
 import axios from 'axios';
-import rcedit from 'rcedit';
-// const rcedit = require('rcedit')
-// /**
-//  * 替换windows exe icon
-//  * @param exePath exe文件路径
-//  * @param iconPath 替换icon路径
-//  */
-// async function updateWinExeIcon(exePath: string, iconPath: string) {
-//   try {
-//     await rcedit(exePath, { icon: iconPath }).then(() => {
-//       console.info('update exe icon successful')
-//     }).catch((err) => {
-//       console.info('update icon error: ', err)
-//     })
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
+
+// @ts-ignore
+const rcedit: any = require('rcedit');
 
 /**
  * 替换图标文件
