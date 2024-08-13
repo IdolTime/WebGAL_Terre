@@ -81,7 +81,7 @@ export function ViewTab() {
       />
       <IconWithTextItem
         onClick={() => {
-          window.open(`/games/${currentEditGame}`, "_blank");
+          window.open(`/games/${currentEditGame}?standlone=true`, "_blank");
         }}
         icon={<OpenIcon className={s.iconColor}/>}
         text={t("新标签页预览")}
