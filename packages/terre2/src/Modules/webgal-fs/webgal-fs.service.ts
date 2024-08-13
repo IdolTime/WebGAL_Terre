@@ -203,6 +203,20 @@ export class WebgalFsService {
   }
 
   /**
+ * 检查文件是否存在
+ * @param filePath 文件路径
+ * @returns 
+ */
+async existsFile(filePath: string): Promise<boolean> {
+  try {
+    const stats = await fs.stat(filePath);
+    return stats.isFile(); // 检查路径是否为文件
+  } catch (error) {
+    return false; // 如果发生错误，通常是文件不存在
+  }
+}
+
+  /**
    * 创建一个空文件
    * @param path 文件路径
    */

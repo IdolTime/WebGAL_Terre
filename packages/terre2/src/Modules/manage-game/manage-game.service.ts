@@ -405,7 +405,7 @@ export class ManageGameService {
         const iconDir = this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`)
         if (gameConfig.Game_Icon && iconDir) {
           const exePath = join(electronExportDir, 'IdolTime.exe')
-          const isExist = await this.webgalFs.existsDir(exePath)
+          const isExist = await this.webgalFs.existsFile(exePath)
           setTimeout(async () => {
             console.info('update exe icon 2000: ', exePath, iconDir, isExist)
             if (isExist) {
