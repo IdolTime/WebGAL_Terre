@@ -81,7 +81,7 @@ export function ViewTab() {
       />
       <IconWithTextItem
         onClick={() => {
-          window.open(`/games/${currentEditGame}`, "_blank");
+          window.open(`/games/${currentEditGame}?standalone=true`, "_blank");
         }}
         icon={<OpenIcon className={s.iconColor}/>}
         text={t("新标签页预览")}
@@ -529,6 +529,7 @@ function renderConfig(
 
   if (config.children) {
     for (const [key, value] of Object.entries(config.children)) {
+      value.type = value.type || 'image';
       const [_styleConfig, _hasHoverStyle] = handleStyle(defaultStyle, value);
       styleConfigArr.push({ label: value.label + '样式', style: _styleConfig, key: value.label + 'Style' });
       
