@@ -1,6 +1,7 @@
 echo "Welcome to build IdolTime Editor, the editor of IdolTime."
 # 安装依赖
 yarn install --frozen-lockfile --network-timeout=300000
+npm install rcedit
 
 # 清理
 rm -rf release
