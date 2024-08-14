@@ -37,6 +37,7 @@
     "idoltime-parser": "latest",
     "open": "^8.4.0",
     "rcedit": "^4.0.1",
+    "cross-spawn-windows-exe": "^1.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
