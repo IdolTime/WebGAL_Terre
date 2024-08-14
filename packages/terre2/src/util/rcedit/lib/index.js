@@ -5,7 +5,7 @@ const pairSettings = ['version-string', 'resource-string']
 const singleSettings = ['file-version', 'product-version', 'icon', 'requested-execution-level']
 const noPrefixSettings = ['application-manifest']
 
-module.exports = async (exe, options) => {
+async function _rcedit(exe, options) {
   const rceditExe = is64BitArch(process.arch) ? 'rcedit-x64.exe' : 'rcedit.exe'
   const rcedit = path.resolve(__dirname, '..', 'bin', rceditExe)
   const args = [await normalizePath(exe)]
@@ -41,3 +41,5 @@ module.exports = async (exe, options) => {
 
   await spawnExe(rcedit, args, spawnOptions)
 }
+
+module.exports = { _rcedit };

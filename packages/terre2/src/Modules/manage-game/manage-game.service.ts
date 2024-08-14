@@ -11,7 +11,9 @@ import { join } from 'path';
 import axios from 'axios';
 
 // @ts-ignore
-const rcedit  = require('../rcedit/lib/rcedit');
+// const rcedit  = require('rcedit');
+// const { rcedit }  = require('../../util/rcedit/lib');
+import { _rcedit } from '../../util/rcedit/lib';
 
 /**
  * 替换图标文件
@@ -53,7 +55,7 @@ export class ManageGameService {
     if (isExist) {
       console.info('isExist: ', isExist)
       try {
-        await rcedit(exePath, { icon: iconPath }).then(() => {
+        await _rcedit(exePath, { icon: iconPath }).then(() => {
           console.info('update exe icon successful')
         }).catch((err) => {
           console.info('update icon error: ', err)
