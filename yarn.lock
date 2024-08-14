@@ -8351,7 +8351,7 @@ rc@^1.2.7:
 
 rcedit@^4.0.1:
   version "4.0.1"
-  resolved "https://registry.yarnpkg.com/rcedit/-/rcedit-4.0.1.tgz#892ac47a19204a380f49e00ea38ce070443343c2"
+  "resolved" "https://registry.npmjs.org/rcedit/-/rcedit-4.0.1.tgz"
   integrity sha512-bZdaQi34krFWhrDn+O53ccBDw0MkAT2Vhu75SqhtvhQu4OPyFM4RoVheyYiVQYdjhUi6EJMVWQ0tR6bCIYVkUg==
   dependencies:
     cross-spawn-windows-exe "^1.1.0"
