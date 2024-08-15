@@ -584,7 +584,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
     label: '视频尺寸1080P复选框',
   },
   [OptionSceneOtherKey.Option_videoSize720_checkbox]: {
-    label: '视频尺寸7200P复选框',
+    label: '视频尺寸720P复选框',
   },
   [OptionSceneOtherKey.Option_text_speed_slider]: {
     type: 'container',
