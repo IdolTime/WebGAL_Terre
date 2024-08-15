@@ -9,6 +9,8 @@ import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join } from 'path';
 import axios from 'axios';
+import * as PELibrary from 'pe-library';
+import * as ResEdit from 'resedit';
 
 // @ts-ignore
 // const rcedit  = require('rcedit');
@@ -390,23 +392,30 @@ export class ManageGameService {
         );
 
         const iconDir = this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`)
-        if (gameConfig.Game_Icon && iconDir) {
-          const exePath = join(electronExportDir, 'IdolTime.exe')
-          const isExist = await this.webgalFs.existsFile(exePath)
-          setTimeout(async () => {
-            console.info('update exe icon 2000: ', exePath, iconDir, isExist)
-            if (isExist) {
-              await this.updateWinExeIcon(exePath, iconDir, isExist)
-            } else {
-              setTimeout(async () => {
-                console.info('update exe icon 5000: ', exePath, iconDir, isExist)
-                if (isExist) {
-                  await this.updateWinExeIcon(exePath, iconDir, isExist)
-                }
-              }, 5000)
-            }
-          }, 2000)
-        }
+        const exePath = join(electronExportDir, 'IdolTime.exe')
+        const data = fs.readFileSync(exePath);
+        const exe = PELibrary.NtExecutable.from(data);
+        const res = PELibrary.NtExecutableResource.from(exe);
+        const iconFile = ResEdit.Data.IconFile.from(fs.readFileSync(iconDir))
+
+        ResEdit.Resource.IconGroupEntry.replaceIconsForResource(
+          res.entries,
+          101,
+          1033,
+          iconFile.icons.map((item) => item.data)
+        );
+
+        // write to another binary
+        res.outputResource(exe);
+        const newBinary = exe.generate();
+        fs.writeFileSync(exePath, Buffer.from(newBinary));
+
+     
+        // if (gameConfig.Game_Icon && iconDir) {
+        //   const exePath = join(electronExportDir, 'IdolTime.exe')
+        //   const isExist = await this.webgalFs.existsFile(exePath)
+        //    await this.updateWinExeIcon(exePath, iconDir, isExist)
+        // }
 
         if (openFileExplorer) {
           await _open(electronExportDir);

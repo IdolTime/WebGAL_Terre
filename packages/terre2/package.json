@@ -40,6 +40,7 @@
     "open": "^8.4.0",
     "rcedit": "^4.0.1",
     "reflect-metadata": "^0.1.13",
+    "resedit": "^2.0.2",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^5.0.0",
