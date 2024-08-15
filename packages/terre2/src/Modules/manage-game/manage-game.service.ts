@@ -9,13 +9,16 @@ import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join } from 'path';
 import axios from 'axios';
-import * as PELibrary from 'pe-library';
-import * as ResEdit from 'resedit';
+// import * as PELibrary from 'pe-library';
+// import * as ResEdit from 'resedit';
+
+const PELibrary = require("pe-library/cjs");
+const ResEdit = require("resedit/cjs");
 
 // @ts-ignore
 // const rcedit  = require('rcedit');
 // const { rcedit }  = require('../../util/rcedit/lib');
-import { _rcedit } from '../../util/rcedit/lib';
+// import { _rcedit } from '../../util/rcedit/lib';
 
 /**
  * 替换图标文件
@@ -52,23 +55,23 @@ export class ManageGameService {
  * @param exePath exe文件路径
  * @param iconPath 替换icon路径
  */
-  private async updateWinExeIcon(exePath: string, iconPath: string, isExist: boolean) {
-    console.info('update exe icon start: ', exePath, iconPath, isExist)
-    if (isExist) {
-      console.info('isExist: ', isExist)
-      try {
-        await _rcedit(exePath, { icon: iconPath }).then(() => {
-          console.info('update exe icon successful')
-        }).catch((err) => {
-          console.info('update icon error: ', err)
-        })
-      } catch (error) {
-        console.log(error)
-      }
-    } else {
-      console.info('update exe icon end >>>>>')
-    }
-  }
+  // private async updateWinExeIcon(exePath: string, iconPath: string, isExist: boolean) {
+  //   console.info('update exe icon start: ', exePath, iconPath, isExist)
+  //   if (isExist) {
+  //     console.info('isExist: ', isExist)
+  //     try {
+  //       await _rcedit(exePath, { icon: iconPath }).then(() => {
+  //         console.info('update exe icon successful')
+  //       }).catch((err) => {
+  //         console.info('update icon error: ', err)
+  //       })
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   } else {
+  //     console.info('update exe icon end >>>>>')
+  //   }
+  // }
 
   /**
    * 打开游戏文件夹

@@ -38,6 +38,7 @@
     "fs-extra": "^11.2.0",
     "idoltime-parser": "latest",
     "open": "^8.4.0",
+    "pe-library": "^1.0.1",
     "rcedit": "^4.0.1",
     "reflect-metadata": "^0.1.13",
     "resedit": "^2.0.2",
