@@ -115,15 +115,29 @@ export default function GameElement(props: IGameElementProps) {
     );
   };
 
-  const uploadGame = (gameName: string, gId: number) => {
+  const uploadGame = async (gameName: string, gId: number) => {
     if (loadingStatusMap[gameName] === 1 || loadingStatusMap[gameName] === 2) {
       return;
     }
     setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 1 });
-    request.post("/api/manageGame/uploadGame", { gameName, gId }).then((res) => {
+    const res = await request.post('/api/manageGame/updatePaymentConfig', {
+      gameName,
+      gId,
+    }).then((res) => {
       if (res.data.status === 'success') {
-        setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 2 });
-        notify("上传成功", "success");
+        notify("上传付费配置成功", "success");
+        request.post("/api/manageGame/uploadGame", { gameName, gId }).then((res) => {
+          if (res.data.status === 'success') {
+            setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 2 });
+            notify("上传成功", "success");
+          } else {
+            setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
+            notify(res.data.message, "error");
+          }
+        }).catch((err) => {
+          setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
+          notify(err.message, "error");
+        });
       } else {
         setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
         notify(res.data.message, "error");
