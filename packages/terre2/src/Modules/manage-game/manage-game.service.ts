@@ -13,7 +13,9 @@ import axios from 'axios';
 // import * as ResEdit from 'resedit';
 
 const PELibrary = require("pe-library/cjs");
-const ResEdit = require("resedit/cjs");
+// const ResEdit = require("resedit/cjs");
+const { load } = require('resedit/cjs');
+
 
 // @ts-ignore
 // const rcedit  = require('rcedit');
@@ -397,21 +399,42 @@ export class ManageGameService {
         const iconDir = this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`)
         const exePath = join(electronExportDir, 'IdolTime.exe')
         const data = fs.readFileSync(exePath);
-        const exe = PELibrary.NtExecutable.from(data);
-        const res = PELibrary.NtExecutableResource.from(exe);
-        const iconFile = ResEdit.Data.IconFile.from(fs.readFileSync(iconDir))
 
-        ResEdit.Resource.IconGroupEntry.replaceIconsForResource(
-          res.entries,
-          101,
-          1033,
-          iconFile.icons.map((item) => item.data)
-        );
+        await load().then((ResEdit) => {
+          // ResEdit will be the namespace object of resedit library
+          // (for example ResEdit.Data.IconFile is available)
+
+          const exe = PELibrary.NtExecutable.from(data);
+          const res = PELibrary.NtExecutableResource.from(exe);
+
+          const iconFile = ResEdit.Data.IconFile.from(fs.readFileSync(iconDir));
+          ResEdit.Resource.IconGroupEntry.replaceIconsForResource(
+            res.entries,
+            101,
+            1033,
+            iconFile.icons.map((item) => item.data)
+          );
+
+          res.outputResource(exe);
+          const newBinary = exe.generate();
+          fs.writeFileSync(exePath, Buffer.from(newBinary));
+        });
+
+        // const exe = PELibrary.NtExecutable.from(data);
+        // const res = PELibrary.NtExecutableResource.from(exe);
+        // const iconFile = ResEdit.Data.IconFile.from(fs.readFileSync(iconDir))
+
+        // ResEdit.Resource.IconGroupEntry.replaceIconsForResource(
+        //   res.entries,
+        //   101,
+        //   1033,
+        //   iconFile.icons.map((item) => item.data)
+        // );
 
         // write to another binary
-        res.outputResource(exe);
-        const newBinary = exe.generate();
-        fs.writeFileSync(exePath, Buffer.from(newBinary));
+        // res.outputResource(exe);
+        // const newBinary = exe.generate();
+        // fs.writeFileSync(exePath, Buffer.from(newBinary));
 
      
         // if (gameConfig.Game_Icon && iconDir) {
