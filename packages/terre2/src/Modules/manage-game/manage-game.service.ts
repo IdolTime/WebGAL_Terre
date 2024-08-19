@@ -400,15 +400,15 @@ export class ManageGameService {
         const exePath = join(electronExportDir, 'IdolTime.exe')
         const data = fs.readFileSync(exePath);
 
-        await load().then((ResEdit) => {
+        await load().then((resEdit) => {
           // ResEdit will be the namespace object of resedit library
           // (for example ResEdit.Data.IconFile is available)
 
-          const exe = PELibrary.NtExecutable.from(data);
-          const res = PELibrary.NtExecutableResource.from(exe);
+          const exe = resEdit.NtExecutable.from(data);
+          const res = resEdit.NtExecutableResource.from(exe);
 
-          const iconFile = ResEdit.Data.IconFile.from(fs.readFileSync(iconDir));
-          ResEdit.Resource.IconGroupEntry.replaceIconsForResource(
+          const iconFile = resEdit.Data.IconFile.from(fs.readFileSync(iconDir));
+          resEdit.Resource.IconGroupEntry.replaceIconsForResource(
             res.entries,
             101,
             1033,
@@ -418,7 +418,9 @@ export class ManageGameService {
           res.outputResource(exe);
           const newBinary = exe.generate();
           fs.writeFileSync(exePath, Buffer.from(newBinary));
-        });
+        })
+          .then(() => console.log('wind export icon successful'))
+          .catch(err => console.log('export icon err: ',err));
 
         // const exe = PELibrary.NtExecutable.from(data);
         // const res = PELibrary.NtExecutableResource.from(exe);
