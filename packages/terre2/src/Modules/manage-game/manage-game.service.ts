@@ -9,18 +9,9 @@ import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join } from 'path';
 import axios from 'axios';
-// import * as PELibrary from 'pe-library';
-// import * as ResEdit from 'resedit';
 
-const PELibrary = require("pe-library/cjs");
-// const ResEdit = require("resedit/cjs");
-const { load } = require('resedit/cjs');
+const { spawn } = require('child_process');
 
-
-// @ts-ignore
-// const rcedit  = require('rcedit');
-// const { rcedit }  = require('../../util/rcedit/lib');
-// import { _rcedit } from '../../util/rcedit/lib';
 
 /**
  * 替换图标文件
@@ -57,23 +48,31 @@ export class ManageGameService {
  * @param exePath exe文件路径
  * @param iconPath 替换icon路径
  */
-  // private async updateWinExeIcon(exePath: string, iconPath: string, isExist: boolean) {
-  //   console.info('update exe icon start: ', exePath, iconPath, isExist)
-  //   if (isExist) {
-  //     console.info('isExist: ', isExist)
-  //     try {
-  //       await _rcedit(exePath, { icon: iconPath }).then(() => {
-  //         console.info('update exe icon successful')
-  //       }).catch((err) => {
-  //         console.info('update icon error: ', err)
-  //       })
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   } else {
-  //     console.info('update exe icon end >>>>>')
-  //   }
-  // }
+  private async updateExeIcon(exePath: string, iconPath: string, isExist: boolean) {
+    if (isExist) {
+      console.info('isExist: ', isExist)
+      const command = this.webgalFs.getPathFromRoot(
+        '/assets/rcedit/bin/rcedit-x64.exe'
+      );
+      const args = [exePath, '--set-icon', iconPath];
+
+      const child = spawn(command, args);
+
+      child.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+      });
+
+      child.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+      });
+
+      child.on('close', (code) => {
+        console.log(`子进程退出，退出码 ${code}`);
+      });
+    } else {
+      console.info('update exe icon end >>>>>')
+    }
+  }
 
   /**
    * 打开游戏文件夹
@@ -396,54 +395,16 @@ export class ManageGameService {
           `${electronExportDir}/resources/app/public/game/`,
         );
 
-        const iconDir = this.webgalFs.getPathFromRoot(`/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`)
-        const exePath = join(electronExportDir, 'IdolTime.exe')
-        const data = fs.readFileSync(exePath);
+        const iconDir = this.webgalFs.getPathFromRoot(
+          `/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`
+        );
+        const exePath = join(electronExportDir, 'IdolTime.exe');
 
-        await load().then((resEdit) => {
-          // ResEdit will be the namespace object of resedit library
-          // (for example ResEdit.Data.IconFile is available)
-
-          const exe = resEdit.NtExecutable.from(data);
-          const res = resEdit.NtExecutableResource.from(exe);
-
-          const iconFile = resEdit.Data.IconFile.from(fs.readFileSync(iconDir));
-          resEdit.Resource.IconGroupEntry.replaceIconsForResource(
-            res.entries,
-            101,
-            1033,
-            iconFile.icons.map((item) => item.data)
-          );
-
-          res.outputResource(exe);
-          const newBinary = exe.generate();
-          fs.writeFileSync(exePath, Buffer.from(newBinary));
-        })
-          .then(() => console.log('wind export icon successful'))
-          .catch(err => console.log('export icon err: ',err));
-
-        // const exe = PELibrary.NtExecutable.from(data);
-        // const res = PELibrary.NtExecutableResource.from(exe);
-        // const iconFile = ResEdit.Data.IconFile.from(fs.readFileSync(iconDir))
-
-        // ResEdit.Resource.IconGroupEntry.replaceIconsForResource(
-        //   res.entries,
-        //   101,
-        //   1033,
-        //   iconFile.icons.map((item) => item.data)
-        // );
-
-        // write to another binary
-        // res.outputResource(exe);
-        // const newBinary = exe.generate();
-        // fs.writeFileSync(exePath, Buffer.from(newBinary));
-
-     
-        // if (gameConfig.Game_Icon && iconDir) {
-        //   const exePath = join(electronExportDir, 'IdolTime.exe')
-        //   const isExist = await this.webgalFs.existsFile(exePath)
-        //    await this.updateWinExeIcon(exePath, iconDir, isExist)
-        // }
+        if (gameConfig.Game_Icon && iconDir) {
+          const exePath = join(electronExportDir, 'IdolTime.exe')
+          const isExist = await this.webgalFs.existsFile(exePath)
+           await this.updateExeIcon(exePath, iconDir, isExist)
+        }
 
         if (openFileExplorer) {
           await _open(electronExportDir);
