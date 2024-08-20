@@ -178,6 +178,7 @@ export default function Choose(props: any) {
     }
 
     setOptions(newList);
+    return newList;
   };
 
   const submit = (_options: any) => {
@@ -345,7 +346,8 @@ export default function Choose(props: any) {
         {item.style.countdown !== undefined && <span style={{ marginLeft: '4px' }}>秒</span>}
         <span style={{ marginLeft: '32px' }}>付费选项</span>
         <TerreToggle title="" onChange={(newValue) => {
-          setOption(i, 'shouldPay', newValue);
+          const newOptions = setOption(i, 'shouldPay', newValue);
+          submit(newOptions);
         }} onText='是' offText='否' isChecked={!!item.shouldPay} />
         {!!item.shouldPay && (
           <>
