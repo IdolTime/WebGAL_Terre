@@ -31,7 +31,7 @@ self.addEventListener('fetch', (event) => {
   const ignoreResources = ['.mp4', '.flv', '.webm', '.txt'];
 
   const url = event.request.url;
-  let shouldReturningFromCache = !!(url.match('/assets/') || url.match('/game/'));
+  let shouldReturningFromCache = !!(url.match('/assets/') || url.match('/game/')) && url.indexOf('api.') === -1;
   const shouldIgnore = ignoreResources.some((x) => url.endsWith(x));
 
   if (shouldReturningFromCache) {
