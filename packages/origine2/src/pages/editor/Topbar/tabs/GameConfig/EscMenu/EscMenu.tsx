@@ -210,7 +210,8 @@ const processNumericInput = (input: string) => {
             <Input
               style={{ width: '100px' }}
               value={name}
-              placeholder={getMenuKeyToName(key as EMenuKey)}
+              // placeholder={getMenuKeyToName(key as EMenuKey)}
+              placeholder={''}
               onChange={(e) => {
                 const newValue = e.target.value as string;
                 updateConfig(index, 'name', newValue);
