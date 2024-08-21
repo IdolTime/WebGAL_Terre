@@ -4916,9 +4916,9 @@ cross-env@^7.0.3:
   dependencies:
     cross-spawn "^7.0.1"
 
-cross-spawn-windows-exe@^1.1.0:
+cross-spawn-windows-exe@^1.1.0, cross-spawn-windows-exe@^1.2.0:
   version "1.2.0"
-  resolved "https://registry.npmjs.org/cross-spawn-windows-exe/-/cross-spawn-windows-exe-1.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/cross-spawn-windows-exe/-/cross-spawn-windows-exe-1.2.0.tgz#46253b0f497676e766faf4a7061004618b5ac5ec"
   integrity sha512-mkLtJJcYbDCxEG7Js6eUnUNndWjyUZwJ3H7bErmmtOYU/Zb99DyUkpamuIZE0b3bhmJyZ7D90uS6f+CGxRRjOw==
   dependencies:
     "@malept/cross-spawn-promise" "^1.1.0"
@@ -5945,6 +5945,15 @@ fs-extra@10.1.0, fs-extra@^10.0.0:
     jsonfile "^6.0.1"
     universalify "^2.0.0"
 
+fs-extra@^11.2.0:
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.2.0.tgz#e70e17dfad64232287d01929399e0ea7c86b0e5b"
+  integrity sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
 fs-extra@^9.1.0:
   version "9.1.0"
   resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-9.1.0.tgz"
@@ -6334,10 +6343,10 @@ iconv-lite@^0.6.3:
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
-idoltime-parser@latest:
-  version "4.4.18"
-  resolved "https://registry.yarnpkg.com/idoltime-parser/-/idoltime-parser-4.4.18.tgz#48151c7c7cccdf12b0aa46c46c129706f006f98c"
-  integrity sha512-tShiwP436PURfLkCtwooJZkwBwSNJVOkRQIXwA/anCqIas155MPrtypURFfHpnqFq/qFVQ97uv7oGlgb2jN2Xw==
+idoltime-parser@4.4.19:
+  version "4.4.19"
+  resolved "https://registry.yarnpkg.com/idoltime-parser/-/idoltime-parser-4.4.19.tgz#647228a1f07aac5859601a04fdce583c02385cca"
+  integrity sha512-0gnfHZNjuKzTLf1yUfvFbgvZ8g6Z6vp4LG8gUlXjzJZ4EYiBcmgt8DDyJSI/3EhiZBbehgmwXp9h/n1+xIUlKQ==
   dependencies:
     chevrotain "^10.5.0"
     cloudlogjs "^1.0.11"
@@ -8064,6 +8073,11 @@ path-type@^4.0.0:
   resolved "https://registry.npmjs.org/path-type/-/path-type-4.0.0.tgz"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
+pe-library@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/pe-library/-/pe-library-1.0.1.tgz#02735430885a622576a53cd8827658b7d2fada0e"
+  integrity sha512-nh39Mo1eGWmZS7y+mK/dQIqg7S1lp38DpRxkyoHf0ZcUs/HDc+yyTjuOtTvSMZHmfSLuSQaX945u05Y2Q6UWZg==
+
 picocolors@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/picocolors/-/picocolors-1.0.0.tgz"
@@ -8556,6 +8570,13 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/requires-port/-/requires-port-1.0.0.tgz"
   integrity sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==
+
+resedit@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/resedit/-/resedit-2.0.2.tgz#875adfb3eb975e27e4d0bec1214b8ccc37509d5d"
+  integrity sha512-UKTnq602iVe+W5SyRAQx/WdWMnlDiONfXBLFg/ur4QE4EQQ8eP7Jgm5mNXdK12kKawk1vvXPja2iXKqZiGDW6Q==
+  dependencies:
+    pe-library "^1.0.1"
 
 reselect@^4.1.8:
   version "4.1.8"

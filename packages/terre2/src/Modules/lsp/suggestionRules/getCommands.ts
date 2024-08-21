@@ -211,4 +211,11 @@ setVar:a=人物名称;可以设置字符串`,
     detail: `command finishTrial:<expression>;`,
     insertText: 'finishTrial:true;',
   },
+  {
+    label: 'moveCamera',
+    kind: CompletionItemKind.Function,
+    documentation: `移动坐标`,
+    detail: `command moveCamera:<expression>;`,
+    insertText: 'moveCamera:',
+  },
 ];

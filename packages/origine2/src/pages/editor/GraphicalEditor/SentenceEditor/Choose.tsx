@@ -320,7 +320,7 @@ export default function Choose(props: any) {
           }}
           onBlur={() => submit(options)}
           className={styles.sayInput}
-          placeholder="文字大小"
+          placeholder="文字颜色"
           style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
       </div>

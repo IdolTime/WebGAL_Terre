@@ -4,3 +4,66 @@
   height: 25px;
   width: 25px;
 }
+
+.sayInput {
+  box-shadow: none;
+  appearance: none;
+  outline: none;
+  background: var(--bg-input);
+  border: var(--border-md);
+  padding: 6px 6px 6px 6px;
+  border-radius: var(--radius-md);
+  // font-size: 95%;
+  width: 50%;
+}
+
+.group {
+  border-radius: 10px;
+  border: 1px solid #eee;
+  padding: 10px 20px;
+  position: relative;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.groupLabel {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  font-weight: bold;
+  font-size: 20px;
+  background-color: #fff;
+  padding: 0 5px;
+}
+
+.label {
+  margin-right: 20px;
+  font-weight: 500;
+  font-size: 16px;
+  width: 125px;
+}
+
+.optionLabel {
+  margin-right: 20px;
+  font-weight: 500;
+  font-size: 16px;
+  width: 70px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+  gap: 12px;
+}
+
+.dialogContent {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px; // 根据需要调整列间距
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}

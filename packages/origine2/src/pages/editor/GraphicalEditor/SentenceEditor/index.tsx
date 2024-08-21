@@ -52,6 +52,7 @@ import UnlockAchieve from './UnlockAchieve';
 import ShowValue from './ShowValue';
 import PayProduct from "./PayProduct";
 import FinishTrial from "./FinishTrial";
+import MoveCamera from "./MoveCamera";
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -303,5 +304,13 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: FinishTrial,
     icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'finishTrial.descText')
+  },
+  {
+    type: commandType.moveCamera,
+    title: () => t(tPrefix + 'moveCamera.title'),
+    initialText: () => t(tPrefix + 'moveCamera.initText'),
+    component: MoveCamera,
+    icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'moveCamera.descText')
   }
 ];

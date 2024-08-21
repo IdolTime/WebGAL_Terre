@@ -41,6 +41,7 @@ const SCRIPT_CONFIG = [
   { scriptString: 'showValue', scriptType: commandType.showValue },
   { scriptString: 'payProduct', scriptType: commandType.payProduct },
   { scriptString: 'finishTrial', scriptType: commandType.finishTrial },
+  { scriptString: 'moveCamera', scriptType: commandType.moveCamera },
 ];
 
 export const WebgalParser = new SceneParser(() => {

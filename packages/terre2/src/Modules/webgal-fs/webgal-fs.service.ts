@@ -203,6 +203,20 @@ export class WebgalFsService {
   }
 
   /**
+ * 检查文件是否存在
+ * @param filePath 文件路径
+ * @returns 
+ */
+async existsFile(filePath: string): Promise<boolean> {
+  try {
+    const stats = await fs.stat(filePath);
+    return stats.isFile(); // 检查路径是否为文件
+  } catch (error) {
+    return false; // 如果发生错误，通常是文件不存在
+  }
+}
+
+  /**
    * 创建一个空文件
    * @param path 文件路径
    */
@@ -303,5 +317,28 @@ export class WebgalFsService {
       console.error(error);
       return false;
     }
+  }
+
+  /**
+   * 替换图标文件
+   * @param newIconPath 要写入的图标文件路径
+   * @param oldIconPath 读取的图标文件路径
+   */
+  async replaceIconFile(newIconPath, oldIconPath) {
+    //@ts-ignore
+    fs.readFile(newIconPath, (err, data) => {
+      if (err) {
+          console.error('Error reading the new icon file:', err);
+          return;
+      }
+      //@ts-ignore
+      fs.writeFile(oldIconPath, data, (err) => {
+          if (err) {
+              console.error('Error writing the new icon to icon.icns:', err);
+              return;
+          }
+          console.log('Icon replacement successful!');
+      });
+    });
   }
 }

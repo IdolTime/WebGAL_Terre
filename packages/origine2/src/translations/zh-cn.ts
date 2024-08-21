@@ -123,6 +123,7 @@ export const zhCn = {
           video: '视频',
           vocal: '语音',
           ui: 'UI',
+          font: '字体',
         }
       },
 
@@ -133,6 +134,7 @@ export const zhCn = {
           id: '游戏识别码',
           description: '游戏简介',
           packageName: '游戏包名',
+          gameIcon: '游戏icon',
           textboxTheme: '文本框主题',
           bg: '标题背景图片',
           bgm: '标题背景音乐',
@@ -140,12 +142,20 @@ export const zhCn = {
           mouseCursor: '鼠标光标',
           gameMenu: '游戏菜单',
           openingLogo: '开场logo',
-          R18: '是否显示R18提示'
+          R18: '是否显示R18提示',
+          escMenu: 'ESC菜单',
+          sound: '界面音效'
         },
         gameMenu: {
           achieve: '成就',
           storyline: '故事线',
           beautyGuide: '美女图鉴'
+        },
+        escMenu: {
+          title: 'UI设置'
+        },
+        sound: {
+          title: '音效设置'
         }
       },
 
@@ -668,8 +678,13 @@ export const zhCn = {
             name: "变量名称",
             value: "表达式",
             maxValue: "最大值",
-            minValue: "最小值"
-          }
+            minValue: "最小值",
+            globalValue: '全局变量',
+            randomValue: '随机变量',
+            yes: '是',
+            no: '否'
+          },
+          errorTips: '请先填写最小值和最大值'
         },
         unlockStoryline: {
           title: "解锁故事线",
@@ -748,6 +763,20 @@ export const zhCn = {
           title: "结束试玩",
           initText: "finishTrial:true;",
           descText: '此指令会将结束游戏的试玩部分',
+        },
+        moveCamera: {
+          title: "移动镜头",
+          initText: "moveCamera:;",
+          descText: '移动镜头',
+          options: {
+            duration: "移动时间",
+            next: "自动进行下一步",
+          },
+          transform: {
+            title: "移动到坐标",
+            x: " X",
+            y: " Y",
+          }
         },
         unknown: {
           title: "未识别",

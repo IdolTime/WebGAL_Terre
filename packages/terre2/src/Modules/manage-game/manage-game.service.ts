@@ -11,12 +11,69 @@ import { join, extname } from 'path';
 import axios from 'axios';
 import { readdir } from 'fs/promises';
 
+const { spawn } = require('child_process');
+
+
+/**
+ * 替换图标文件
+ * @param newIconPath 要写入的图标文件路径
+ * @param oldIconPath 读取的图标文件路径
+ */
+async function replaceIconFile(newIconPath: string, oldIconPath: string) {
+  //@ts-ignore
+  fs.readFile(newIconPath, (err, data) => {
+    if (err) {
+        console.error('Error reading the new icon file:', err);
+        return;
+    }
+    //@ts-ignore
+    fs.writeFile(oldIconPath, data, (err) => {
+        if (err) {
+            console.error('Error writing the new icon to icon.icns:', err);
+            return;
+        }
+        console.log('Icon replacement successful!');
+    });
+  });
+}
+
 @Injectable()
 export class ManageGameService {
   constructor(
     private readonly logger: ConsoleLogger,
     private readonly webgalFs: WebgalFsService,
   ) {}
+
+  /**
+ * 替换windows exe icon
+ * @param exePath exe文件路径
+ * @param iconPath 替换icon路径
+ */
+  private async updateExeIcon(exePath: string, iconPath: string, isExist: boolean) {
+    if (isExist) {
+      console.info('isExist: ', isExist)
+      const command = this.webgalFs.getPathFromRoot(
+        '/assets/rcedit/bin/rcedit-x64.exe'
+      );
+      const args = [exePath, '--set-icon', iconPath];
+
+      const child = spawn(command, args);
+
+      child.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+      });
+
+      child.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+      });
+
+      child.on('close', (code) => {
+        console.log(`子进程退出，退出码 ${code}`);
+      });
+    } else {
+      console.info('update exe icon end >>>>>')
+    }
+  }
 
   /**
    * 打开游戏文件夹
@@ -31,7 +88,6 @@ export class ManageGameService {
 
     await _open(path);
   }
-
   /**
    * 打开游戏资源文件夹
    */
@@ -229,12 +285,14 @@ export class ManageGameService {
       Description: string;
       Game_key: string;
       Package_name: string;
+      Game_Icon: string;
     }
     const config: Config = {
       Game_name: '',
       Description: '',
       Game_key: '',
       Package_name: '',
+      Game_Icon: '',
     };
     // 根据 GameName 找到游戏所在目录
     const gameDir = this.webgalFs.getPathFromRoot(
@@ -350,6 +408,17 @@ export class ManageGameService {
           `${electronExportDir}/resources/app/public/game/`,
         );
 
+        const iconDir = this.webgalFs.getPathFromRoot(
+          `/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`
+        );
+        const exePath = join(electronExportDir, 'IdolTime.exe');
+
+        if (gameConfig.Game_Icon && iconDir) {
+          const exePath = join(electronExportDir, 'IdolTime.exe')
+          const isExist = await this.webgalFs.existsFile(exePath)
+           await this.updateExeIcon(exePath, iconDir, isExist)
+        }
+
         if (openFileExplorer) {
           await _open(electronExportDir);
         }
@@ -387,13 +456,14 @@ export class ManageGameService {
           gameDir,
           `${electronExportDir}/resources/app/public/game/`,
         );
+
         if (openFileExplorer) {
           await _open(electronExportDir);
         }
       }
       if (process.platform === 'darwin') {
         const electronExportDir = this.webgalFs.getPath(
-          `${exportDir}/WebGAL.app`,
+          `${exportDir}/${gameName}.app`,
         );
         await this.webgalFs.mkdir(electronExportDir, '');
         await this.webgalFs.copy(
@@ -424,6 +494,17 @@ export class ManageGameService {
           gameDir,
           `${electronExportDir}/Contents/Resources/app/public/game/`,
         );
+
+        const iconDir = await this.webgalFs.getPath(
+          `${electronExportDir}/Contents/Resources/app/public/game/background/`,
+        );
+        
+        if (gameConfig.Game_Icon && iconDir) {
+          await replaceIconFile(
+            `${iconDir}/${gameConfig.Game_Icon}`, 
+            `${electronExportDir}/Contents/Resources/icon.icns`
+          );
+        }
 
         if (openFileExplorer) {
           await _open(exportDir);

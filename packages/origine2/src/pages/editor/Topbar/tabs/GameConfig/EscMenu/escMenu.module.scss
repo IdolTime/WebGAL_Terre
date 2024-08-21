@@ -1,0 +1,84 @@
+
+
+.row {
+    display: flex;
+    align-items: baseline;
+    margin: 20px 0;
+    padding: 0 5px;
+    border-radius: 5px;
+
+    &:nth-child(even) {
+        background-color: rgba(211, 211, 211, 0.3);
+      }
+
+    .col1 {
+        flex: 1;
+    }
+    .col2 {
+        flex: 4;
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+
+        .item {
+            display: flex;
+            align-items: center;
+            width: 50%;
+            margin: 10px 0;
+
+            .btnImage {
+                display: flex;
+                flex-direction: column;
+
+                & > label {
+                    margin-right: 10px;
+                }
+                
+                & > span {
+                    display: inline-block;
+                    max-width: 135px;
+                    white-space: nowrap;
+                    overflow: hidden; 
+                    text-overflow: ellipsis;
+                }
+            }
+        }
+    }
+    .col3 {
+        flex: 7;
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            & > span {
+                margin-right: 5px;
+            }
+            
+            &:nth-child(1) {
+                width: 32%;
+            }
+            &:nth-child(2) {
+                width: 27%;
+            }
+            &:nth-child(3) {
+                width: 32%;
+            }
+            &:nth-child(4) {
+                width: 22%;
+            }
+            &:nth-child(5) {
+                width: 27%;
+            }
+            &:nth-child(6) {
+                width: 27%;
+            }
+            &:nth-child(6) {
+                width: 27%;
+            }
+        }
+    }
+}

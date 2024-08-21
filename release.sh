@@ -1,7 +1,9 @@
 echo "Welcome to build IdolTime Editor, the editor of IdolTime."
 # 安装依赖
 yarn install --frozen-lockfile --network-timeout=300000
-
+# npm install cross-spawn-windows-exe
+# npm install cross-spawn
+# npm install @malept/cross-spawn-promise
 # 清理
 rm -rf release
 
