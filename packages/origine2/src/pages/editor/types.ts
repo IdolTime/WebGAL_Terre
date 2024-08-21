@@ -129,6 +129,7 @@ export const titleSceneButtonConfig: Record<TitleSceneButtonKey, UIItemConfig> =
   [TitleSceneButtonKey.Game_start_button]: {
     hasHoverStyle: true,
     label: '开始游戏',
+    positionType: 'absolute'
   },
   [TitleSceneButtonKey.Game_achievement_button]: {
     hasHoverStyle: true,
@@ -491,19 +492,19 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
 export enum OptionSceneOtherKey {
   Option_title = 'Option_title',
   Option_bg = 'Option_bg',
-  Option_window_label = 'Option_window_label',
-  Option_text_speed_label = 'Option_text_speed_label',
-  Option_global_volume_label = 'Option_global_volume_label',
-  Option_bg_music_volume_label = 'Option_bg_music_volume_label',
-  Option_effect_volume_label = 'Option_effect_volume_label',
-  Option_voice_volume_label = 'Option_voice_volume_label',
-  Option_voice_slider = 'Option_voice_slider',
-  Option_text_speed_slider = 'Option_text_speed_slider',
+  // Option_window_label = 'Option_window_label',
+  // Option_text_speed_label = 'Option_text_speed_label',
+  // Option_global_volume_label = 'Option_global_volume_label',
+  // Option_bg_music_volume_label = 'Option_bg_music_volume_label',
+  // Option_effect_volume_label = 'Option_effect_volume_label',
+  // Option_voice_volume_label = 'Option_voice_volume_label',
+  // Option_voice_slider = 'Option_voice_slider',
+  // Option_text_speed_slider = 'Option_text_speed_slider',
   Option_global_volume_slider = 'Option_global_volume_slider',
-  Option_bg_music_volume_slider = 'Option_bg_music_volume_slider',
+  // Option_bg_music_volume_slider = 'Option_bg_music_volume_slider',
   Option_effect_volume_slider = 'Option_effect_volume_slider',
-  Option_fullscreen_checkbox_label = 'Option_fullscreen_checkbox_label',
-  Option_window_checkbox_label = 'Option_window_checkbox_label',
+  // Option_fullscreen_checkbox_label = 'Option_fullscreen_checkbox_label',
+  // Option_window_checkbox_label = 'Option_window_checkbox_label',
   Option_fullscreen_checkbox = 'Option_fullscreen_checkbox',
   Option_window_checkbox = 'Option_window_checkbox',
   Option_videoSize1080_checkbox = 'Option_videoSize1080_checkbox',
@@ -521,144 +522,144 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
     type: 'bg',
     hasHoverStyle: false,
   },
-  [OptionSceneOtherKey.Option_window_label]: {
-    type: 'container',
-    label: '画面模式',
-    children: {
-      [CommonItemKey.content]: {
-        type: 'text',
-        label: '画面模式文字元素',
-      },
-      [CommonItemKey.background]: {
-        type: 'image',
-        hasText: false,
-        label: '画面模式背景',
-      },
-    }
-  },
-  [OptionSceneOtherKey.Option_text_speed_label]: {
-    type: 'container',
-    label: '文本速度',
-    children: {
-      [CommonItemKey.content]: {
-        type: 'text',
-        label: '文本速度文字元素',
-      },
-      [CommonItemKey.background]: {
-        type: 'image',
-        hasText: false,
-        label: '文本速度背景',
-      },
-    }
-  },
-  [OptionSceneOtherKey.Option_global_volume_label]: {
-    type: 'container',
-    label: '全局音量',
-    children: {
-      [CommonItemKey.content]: {
-        type: 'text',
-        label: '全局音量文字元素',
-      },
-      [CommonItemKey.background]: {
-        type: 'image',
-        hasText: false,
-        label: '全局音量背景',
-      },
-    }
-  },
-  [OptionSceneOtherKey.Option_bg_music_volume_label]: {
-    type: 'container',
-    label: '背景音量',
-    children: {
-      [CommonItemKey.content]: {
-        type: 'text',
-        label: '背景音量文字元素',
-      },
-      [CommonItemKey.background]: {
-        type: 'image',
-        hasText: false,
-        label: '背景音量背景',
-      },
-    }
-  },
-  [OptionSceneOtherKey.Option_effect_volume_label]: {
-    type: 'container',
-    label: '音效音量',
-    children: {
-      [CommonItemKey.content]: {
-        type: 'text',
-        label: '音效音量文字元素',
-      },
-      [CommonItemKey.background]: {
-        type: 'image',
-        hasText: false,
-        label: '音效音量背景',
-      },
-    }
-  },
-  [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: {
-    type: 'container',
-    label: '全屏模式',
-    children: {
-      [CommonItemKey.content]: {
-        type: 'text',
-        label: '全屏模式文字元素',
-      },
-      [CommonItemKey.background]: {
-        type: 'image',
-        hasText: false,
-        label: '全屏模式背景',
-      },
-    }
-  },
-  [OptionSceneOtherKey.Option_window_checkbox_label]: {
-    type: 'container',
-    label: '窗口模式',
-    children: {
-      [CommonItemKey.content]: {
-        type: 'text',
-        label: '窗口模式文字元素',
-      },
-      [CommonItemKey.background]: {
-        type: 'image',
-        hasText: false,
-        label: '窗口模式背景',
-      },
-    }
-  },
-  [OptionSceneOtherKey.Option_voice_volume_label]: {
-    type: 'container',
-    label: '语音音量',
-    children: {
-      [CommonItemKey.content]: {
-        type: 'text',
-        label: '语音音量文字元素',
-      },
-      [CommonItemKey.background]: {
-        type: 'image',
-        hasText: false,
-        label: '语音音量背景',
-      },
-    }
-  },
-  [OptionSceneOtherKey.Option_voice_slider]: {
-    type: 'container',
-    label: '语音音量',
-    children: {
-      [SliderItemKey.slider]: {
-        label: '语音音量滑动条',
-        hasHoverStyle: false,
-      },
-      [SliderItemKey.sliderBg]: {
-        hasHoverStyle: false,
-        label: '语音音量滑动条背景',
-      },
-      [SliderItemKey.sliderThumb]: {
-        hasHoverStyle: false,
-        label: '语音音量滑动条拇指',
-      },
-    }
-  },
+  // [OptionSceneOtherKey.Option_window_label]: {
+  //   type: 'container',
+  //   label: '画面模式',
+  //   children: {
+  //     [CommonItemKey.content]: {
+  //       type: 'text',
+  //       label: '画面模式文字元素',
+  //     },
+  //     [CommonItemKey.background]: {
+  //       type: 'image',
+  //       hasText: false,
+  //       label: '画面模式背景',
+  //     },
+  //   }
+  // },
+  // [OptionSceneOtherKey.Option_text_speed_label]: {
+  //   type: 'container',
+  //   label: '文本速度',
+  //   children: {
+  //     [CommonItemKey.content]: {
+  //       type: 'text',
+  //       label: '文本速度文字元素',
+  //     },
+  //     [CommonItemKey.background]: {
+  //       type: 'image',
+  //       hasText: false,
+  //       label: '文本速度背景',
+  //     },
+  //   }
+  // },
+  // [OptionSceneOtherKey.Option_global_volume_label]: {
+  //   type: 'container',
+  //   label: '全局音量',
+  //   children: {
+  //     [CommonItemKey.content]: {
+  //       type: 'text',
+  //       label: '全局音量文字元素',
+  //     },
+  //     [CommonItemKey.background]: {
+  //       type: 'image',
+  //       hasText: false,
+  //       label: '全局音量背景',
+  //     },
+  //   }
+  // },
+  // [OptionSceneOtherKey.Option_bg_music_volume_label]: {
+  //   type: 'container',
+  //   label: '背景音量',
+  //   children: {
+  //     [CommonItemKey.content]: {
+  //       type: 'text',
+  //       label: '背景音量文字元素',
+  //     },
+  //     [CommonItemKey.background]: {
+  //       type: 'image',
+  //       hasText: false,
+  //       label: '背景音量背景',
+  //     },
+  //   }
+  // },
+  // [OptionSceneOtherKey.Option_effect_volume_label]: {
+  //   type: 'container',
+  //   label: '音效音量',
+  //   children: {
+  //     [CommonItemKey.content]: {
+  //       type: 'text',
+  //       label: '音效音量文字元素',
+  //     },
+  //     [CommonItemKey.background]: {
+  //       type: 'image',
+  //       hasText: false,
+  //       label: '音效音量背景',
+  //     },
+  //   }
+  // },
+  // [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: {
+  //   type: 'container',
+  //   label: '全屏模式',
+  //   children: {
+  //     [CommonItemKey.content]: {
+  //       type: 'text',
+  //       label: '全屏模式文字元素',
+  //     },
+  //     [CommonItemKey.background]: {
+  //       type: 'image',
+  //       hasText: false,
+  //       label: '全屏模式背景',
+  //     },
+  //   }
+  // },
+  // [OptionSceneOtherKey.Option_window_checkbox_label]: {
+  //   type: 'container',
+  //   label: '窗口模式',
+  //   children: {
+  //     [CommonItemKey.content]: {
+  //       type: 'text',
+  //       label: '窗口模式文字元素',
+  //     },
+  //     [CommonItemKey.background]: {
+  //       type: 'image',
+  //       hasText: false,
+  //       label: '窗口模式背景',
+  //     },
+  //   }
+  // },
+  // [OptionSceneOtherKey.Option_voice_volume_label]: {
+  //   type: 'container',
+  //   label: '语音音量',
+  //   children: {
+  //     [CommonItemKey.content]: {
+  //       type: 'text',
+  //       label: '语音音量文字元素',
+  //     },
+  //     [CommonItemKey.background]: {
+  //       type: 'image',
+  //       hasText: false,
+  //       label: '语音音量背景',
+  //     },
+  //   }
+  // },
+  // [OptionSceneOtherKey.Option_voice_slider]: {
+  //   type: 'container',
+  //   label: '语音音量',
+  //   children: {
+  //     [SliderItemKey.slider]: {
+  //       label: '语音音量滑动条',
+  //       hasHoverStyle: false,
+  //     },
+  //     [SliderItemKey.sliderBg]: {
+  //       hasHoverStyle: false,
+  //       label: '语音音量滑动条背景',
+  //     },
+  //     [SliderItemKey.sliderThumb]: {
+  //       hasHoverStyle: false,
+  //       label: '语音音量滑动条拇指',
+  //     },
+  //   }
+  // },
   [OptionSceneOtherKey.Option_global_volume_slider]: {
     type: 'container',
     label: '全局音量',
@@ -677,24 +678,24 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
       },
     }
   },
-  [OptionSceneOtherKey.Option_bg_music_volume_slider]: {
-    type: 'container',
-    label: '背景音量',
-    children: {
-      [SliderItemKey.slider]: {
-        label: '背景音量滑动条',
-        hasHoverStyle: false,
-      },
-      [SliderItemKey.sliderBg]: {
-        hasHoverStyle: false,
-        label: '背景音量滑动条背景',
-      },
-      [SliderItemKey.sliderThumb]: {
-        hasHoverStyle: false,
-        label: '背景音量滑动条拇指',
-      },
-    }
-  },
+  // [OptionSceneOtherKey.Option_bg_music_volume_slider]: {
+  //   type: 'container',
+  //   label: '背景音量',
+  //   children: {
+  //     [SliderItemKey.slider]: {
+  //       label: '背景音量滑动条',
+  //       hasHoverStyle: false,
+  //     },
+  //     [SliderItemKey.sliderBg]: {
+  //       hasHoverStyle: false,
+  //       label: '背景音量滑动条背景',
+  //     },
+  //     [SliderItemKey.sliderThumb]: {
+  //       hasHoverStyle: false,
+  //       label: '背景音量滑动条拇指',
+  //     },
+  //   }
+  // },
   [OptionSceneOtherKey.Option_effect_volume_slider]: {
     type: 'container',
     label: '音效音量',
@@ -743,24 +744,24 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
   [OptionSceneOtherKey.Option_videoSize720_checkbox]: {
     label: '视频尺寸720P复选框',
   },
-  [OptionSceneOtherKey.Option_text_speed_slider]: {
-    type: 'container',
-    label: '文本速度滑动条',
-    children: {
-      [SliderItemKey.slider]: {
-        label: '文本速度滑动条',
-        hasHoverStyle: false,
-      },
-      [SliderItemKey.sliderBg]: {
-        hasHoverStyle: false,
-        label: '文本速度滑动条背景',
-      },
-      [SliderItemKey.sliderThumb]: {
-        hasHoverStyle: false,
-        label: '文本速度滑动条拇指',
-      },
-    }
-  },
+  // [OptionSceneOtherKey.Option_text_speed_slider]: {
+  //   type: 'container',
+  //   label: '文本速度滑动条',
+  //   children: {
+  //     [SliderItemKey.slider]: {
+  //       label: '文本速度滑动条',
+  //       hasHoverStyle: false,
+  //     },
+  //     [SliderItemKey.sliderBg]: {
+  //       hasHoverStyle: false,
+  //       label: '文本速度滑动条背景',
+  //     },
+  //     [SliderItemKey.sliderThumb]: {
+  //       hasHoverStyle: false,
+  //       label: '文本速度滑动条拇指',
+  //     },
+  //   }
+  // },
 };
 
 export enum AchievementSceneOtherKey {
@@ -1063,24 +1064,24 @@ export interface OptionSceneUIConfig {
   other: {
     [OptionSceneOtherKey.Option_bg]: ButtonItem,
     [OptionSceneOtherKey.Option_title]: ButtonItem,
-    [OptionSceneOtherKey.Option_window_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_text_speed_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_text_speed_slider]: SliderContainerItem,
-    [OptionSceneOtherKey.Option_bg_music_volume_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_bg_music_volume_slider]: SliderContainerItem,
-    [OptionSceneOtherKey.Option_effect_volume_label]: ContainerItem,
+    // [OptionSceneOtherKey.Option_window_label]: ContainerItem,
+    // [OptionSceneOtherKey.Option_text_speed_label]: ContainerItem,
+    // [OptionSceneOtherKey.Option_text_speed_slider]: SliderContainerItem,
+    // [OptionSceneOtherKey.Option_bg_music_volume_label]: ContainerItem,
+    // [OptionSceneOtherKey.Option_bg_music_volume_slider]: SliderContainerItem,
+    // [OptionSceneOtherKey.Option_effect_volume_label]: ContainerItem,
     [OptionSceneOtherKey.Option_effect_volume_slider]: SliderContainerItem,
     [OptionSceneOtherKey.Options_light_slider]: SliderContainerItem;
-    [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: ContainerItem,
+    // [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: ContainerItem,
     [OptionSceneOtherKey.Option_fullscreen_checkbox]: ButtonItem,
-    [OptionSceneOtherKey.Option_window_checkbox_label]: ContainerItem,
+    // [OptionSceneOtherKey.Option_window_checkbox_label]: ContainerItem,
     [OptionSceneOtherKey.Option_window_checkbox]: ButtonItem,
     [OptionSceneOtherKey.Option_videoSize1080_checkbox]: ButtonItem
     [OptionSceneOtherKey.Option_videoSize720_checkbox]: ButtonItem
-    [OptionSceneOtherKey.Option_global_volume_label]: ContainerItem,
+    // [OptionSceneOtherKey.Option_global_volume_label]: ContainerItem,
     [OptionSceneOtherKey.Option_global_volume_slider]: SliderContainerItem,
-    [OptionSceneOtherKey.Option_voice_slider]: SliderContainerItem,
-    [OptionSceneOtherKey.Option_voice_volume_label]: ContainerItem
+    // [OptionSceneOtherKey.Option_voice_slider]: SliderContainerItem,
+    // [OptionSceneOtherKey.Option_voice_volume_label]: ContainerItem
   };
   buttons: { [key in OptionSceneButtonKey]: ButtonItem };
 }
@@ -1410,51 +1411,51 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(['hoverStyle']),
       },
-      [OptionSceneOtherKey.Option_window_label]: {
-        key: OptionSceneOtherKey.Option_window_label,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
-      },
-      [OptionSceneOtherKey.Option_text_speed_label]: {
-        key: OptionSceneOtherKey.Option_text_speed_label,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
-      },
-      [OptionSceneOtherKey.Option_voice_volume_label]: {
-        key: OptionSceneOtherKey.Option_voice_volume_label,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
-      },
-      [OptionSceneOtherKey.Option_window_checkbox_label]: {
-        key: OptionSceneOtherKey.Option_text_speed_label,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
-      },
-      [OptionSceneOtherKey.Option_global_volume_label]: {
-        key: OptionSceneOtherKey.Option_global_volume_label,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
-      },
-      [OptionSceneOtherKey.Option_bg_music_volume_label]: {
-        key: OptionSceneOtherKey.Option_bg_music_volume_label,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
-      },
-      [OptionSceneOtherKey.Option_effect_volume_label]: {
-        key: OptionSceneOtherKey.Option_effect_volume_label,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
-      },
-      [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: {
-        key: OptionSceneOtherKey.Option_fullscreen_checkbox_label,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
-      },
-      [OptionSceneOtherKey.Option_bg_music_volume_slider]: {
-        key: OptionSceneOtherKey.Option_bg_music_volume_slider,
-        content: "",
-        args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
-      },
+      // [OptionSceneOtherKey.Option_window_label]: {
+      //   key: OptionSceneOtherKey.Option_window_label,
+      //   content: "",
+      //   args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
+      // },
+      // [OptionSceneOtherKey.Option_text_speed_label]: {
+      //   key: OptionSceneOtherKey.Option_text_speed_label,
+      //   content: "",
+      //   args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
+      // },
+      // [OptionSceneOtherKey.Option_voice_volume_label]: {
+      //   key: OptionSceneOtherKey.Option_voice_volume_label,
+      //   content: "",
+      //   args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
+      // },
+      // [OptionSceneOtherKey.Option_window_checkbox_label]: {
+      //   key: OptionSceneOtherKey.Option_text_speed_label,
+      //   content: "",
+      //   args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
+      // },
+      // [OptionSceneOtherKey.Option_global_volume_label]: {
+      //   key: OptionSceneOtherKey.Option_global_volume_label,
+      //   content: "",
+      //   args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
+      // },
+      // [OptionSceneOtherKey.Option_bg_music_volume_label]: {
+      //   key: OptionSceneOtherKey.Option_bg_music_volume_label,
+      //   content: "",
+      //   args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
+      // },
+      // [OptionSceneOtherKey.Option_effect_volume_label]: {
+      //   key: OptionSceneOtherKey.Option_effect_volume_label,
+      //   content: "",
+      //   args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
+      // },
+      // [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: {
+      //   key: OptionSceneOtherKey.Option_fullscreen_checkbox_label,
+      //   content: "",
+      //   args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
+      // },
+      // [OptionSceneOtherKey.Option_bg_music_volume_slider]: {
+      //   key: OptionSceneOtherKey.Option_bg_music_volume_slider,
+      //   content: "",
+      //   args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
+      // },
       [OptionSceneOtherKey.Option_effect_volume_slider]: {
         key: OptionSceneOtherKey.Option_effect_volume_slider,
         content: "",
@@ -1465,11 +1466,11 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
-      [OptionSceneOtherKey.Option_text_speed_slider]: {
-        key: OptionSceneOtherKey.Option_text_speed_slider,
-        content: "",
-        args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
-      },
+      // [OptionSceneOtherKey.Option_text_speed_slider]: {
+      //   key: OptionSceneOtherKey.Option_text_speed_slider,
+      //   content: "",
+      //   args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
+      // },
       [OptionSceneOtherKey.Option_fullscreen_checkbox]: {
         key: OptionSceneOtherKey.Option_fullscreen_checkbox,
         content: "",
@@ -1496,11 +1497,11 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
-      [OptionSceneOtherKey.Option_voice_slider]: {
-        key: OptionSceneOtherKey.Option_voice_slider,
-        content: "",
-        args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
-      },
+      // [OptionSceneOtherKey.Option_voice_slider]: {
+      //   key: OptionSceneOtherKey.Option_voice_slider,
+      //   content: "",
+      //   args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
+      // },
     },
     buttons: {
       [OptionSceneButtonKey.Option_back_button]: {
