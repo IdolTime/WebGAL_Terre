@@ -754,6 +754,20 @@ export const zhCn = {
             y: " Y",
           }
         },
+        moveCamera: {
+          title: "移动镜头",
+          initText: "moveCamera:;",
+          descText: '移动镜头',
+          options: {
+            duration: "移动时间",
+            next: "自动进行下一步",
+          },
+          transform: {
+            title: "移动到坐标",
+            x: " X",
+            y: " Y",
+          }
+        },
         unknown: {
           title: "未识别",
           options: {

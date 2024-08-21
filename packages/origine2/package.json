@@ -40,7 +40,7 @@
     "redux-persist": "^6.0.0",
     "sass": "^1.51.0",
     "swr": "^2.2.4",
-    "idoltime-parser": "latest"
+    "idoltime-parser": "4.4.19"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.182",

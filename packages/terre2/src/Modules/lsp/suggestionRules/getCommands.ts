@@ -195,4 +195,11 @@ setVar:a=人物名称;可以设置字符串`,
     detail: `command showValue:<expression>;`,
     insertText: 'showValue:',
   },
+  {
+    label: 'moveCamera',
+    kind: CompletionItemKind.Function,
+    documentation: `移动坐标`,
+    detail: `command moveCamera:<expression>;`,
+    insertText: 'moveCamera:',
+  },
 ];
