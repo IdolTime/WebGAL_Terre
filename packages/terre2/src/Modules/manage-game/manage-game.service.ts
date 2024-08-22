@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { _open } from 'src/util/open';
 import { IFileInfo, WebgalFsService } from '../webgal-fs/webgal-fs.service';
@@ -11,8 +12,7 @@ import { join, extname } from 'path';
 import axios from 'axios';
 import { readdir } from 'fs/promises';
 
-const { spawn } = require('child_process');
-
+import { spawn } from 'child_process';
 
 /**
  * 替换图标文件
@@ -20,19 +20,19 @@ const { spawn } = require('child_process');
  * @param oldIconPath 读取的图标文件路径
  */
 async function replaceIconFile(newIconPath: string, oldIconPath: string) {
-  //@ts-ignore
+  // @ts-ignore
   fs.readFile(newIconPath, (err, data) => {
     if (err) {
-        console.error('Error reading the new icon file:', err);
-        return;
+      console.error('Error reading the new icon file:', err);
+      return;
     }
-    //@ts-ignore
+    // @ts-ignore
     fs.writeFile(oldIconPath, data, (err) => {
-        if (err) {
-            console.error('Error writing the new icon to icon.icns:', err);
-            return;
-        }
-        console.log('Icon replacement successful!');
+      if (err) {
+        console.error('Error writing the new icon to icon.icns:', err);
+        return;
+      }
+      console.log('Icon replacement successful!');
     });
   });
 }
@@ -45,15 +45,19 @@ export class ManageGameService {
   ) {}
 
   /**
- * 替换windows exe icon
- * @param exePath exe文件路径
- * @param iconPath 替换icon路径
- */
-  private async updateExeIcon(exePath: string, iconPath: string, isExist: boolean) {
+   * 替换windows exe icon
+   * @param exePath exe文件路径
+   * @param iconPath 替换icon路径
+   */
+  private async updateExeIcon(
+    exePath: string,
+    iconPath: string,
+    isExist: boolean,
+  ) {
     if (isExist) {
-      console.info('isExist: ', isExist)
+      console.info('isExist: ', isExist);
       const command = this.webgalFs.getPathFromRoot(
-        '/assets/rcedit/bin/rcedit-x64.exe'
+        '/assets/rcedit/bin/rcedit-x64.exe',
       );
       const args = [exePath, '--set-icon', iconPath];
 
@@ -71,7 +75,7 @@ export class ManageGameService {
         console.log(`子进程退出，退出码 ${code}`);
       });
     } else {
-      console.info('update exe icon end >>>>>')
+      console.info('update exe icon end >>>>>');
     }
   }
 
@@ -204,6 +208,7 @@ export class ManageGameService {
         {
           gId,
           approvalLink,
+          fileName: key,
         },
         {
           headers: {
@@ -409,14 +414,14 @@ export class ManageGameService {
         );
 
         const iconDir = this.webgalFs.getPathFromRoot(
-          `/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`
+          `/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`,
         );
         const exePath = join(electronExportDir, 'IdolTime.exe');
 
         if (gameConfig.Game_Icon && iconDir) {
-          const exePath = join(electronExportDir, 'IdolTime.exe')
-          const isExist = await this.webgalFs.existsFile(exePath)
-           await this.updateExeIcon(exePath, iconDir, isExist)
+          const exePath = join(electronExportDir, 'IdolTime.exe');
+          const isExist = await this.webgalFs.existsFile(exePath);
+          await this.updateExeIcon(exePath, iconDir, isExist);
         }
 
         if (openFileExplorer) {
@@ -498,11 +503,11 @@ export class ManageGameService {
         const iconDir = await this.webgalFs.getPath(
           `${electronExportDir}/Contents/Resources/app/public/game/background/`,
         );
-        
+
         if (gameConfig.Game_Icon && iconDir) {
           await replaceIconFile(
-            `${iconDir}/${gameConfig.Game_Icon}`, 
-            `${electronExportDir}/Contents/Resources/icon.icns`
+            `${iconDir}/${gameConfig.Game_Icon}`,
+            `${electronExportDir}/Contents/Resources/icon.icns`,
           );
         }
 
