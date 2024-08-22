@@ -1,5 +1,4 @@
-import { InfoConfig, ICollectionImages } from '@/pages/editor/Topbar/tabs/ViewConfig/confg'
-
+import { InfoConfig, ICollectionImages } from '@/pages/editor/Topbar/tabs/ViewConfig/confg';
 
 export enum TitleSceneButtonKey {
   Game_start_button = 'Game_start_button', // 开始
@@ -10,6 +9,7 @@ export enum TitleSceneButtonKey {
   Game_option_button = 'Game_option_button', // 设置
   Game_load_button = 'Game_load_button', // 读取
   Game_continue_button = 'Game_continue_button', // 继续游戏
+  Game_progression_button = 'Game_progression_button', // 进度
 }
 
 export interface UIItemConfig {
@@ -22,28 +22,28 @@ export interface UIItemConfig {
   positionType?: 'absolute' | 'relative';
   customStyle?: {
     marginLeft?: {
-      type: 'number',
-      label: string,
+      type: 'number';
+      label: string;
     };
     marginRight?: {
-      type: 'number',
-      label: string,
-    },
+      type: 'number';
+      label: string;
+    };
     columnGap?: {
-      type: 'number',
-      label: string,
-    },
+      type: 'number';
+      label: string;
+    };
     rowGap?: {
-      type: 'number',
-      label: string,
-    },
+      type: 'number';
+      label: string;
+    };
     gap?: {
-      type: 'number',
-      label: string,
-    },
-  },
-  info?: InfoConfig,
-  images?: ICollectionImages
+      type: 'number';
+      label: string;
+    };
+  };
+  info?: InfoConfig;
+  images?: ICollectionImages;
 }
 
 export enum IndicatorItemKey {
@@ -69,22 +69,22 @@ export enum SliderItemKey {
 export enum collectionItemInfoKey {
   collectionInfo = 'collection_info',
   collectionImages = 'collection_images',
-  collectionVideos = 'collection_videos'
+  collectionVideos = 'collection_videos',
 }
 export interface CollectionItemKey {
   key: AllKey;
-  content: "";
+  content: '';
   args: {
     hide: boolean;
     style?: Style;
     info?: InfoConfig;
     images?: ICollectionImages;
-  }
+  };
 }
 
 export interface ContainerItem {
   key: AllKey;
-  content: "";
+  content: '';
   args: {
     hide: boolean;
     style?: Style;
@@ -95,24 +95,24 @@ export interface ContainerItem {
     backgroundHoverStyle?: Style;
     extraStyle?: Style;
     extraHoverStyle?: Style;
-  }
+  };
 }
 
 export interface SliderContainerItem {
   key: AllKey;
-  content: "";
+  content: '';
   args: {
     hide: boolean;
     style?: Style;
     sliderStyle?: Style;
     sliderBgStyle?: Style;
     sliderThumbStyle?: Style;
-  }
+  };
 }
 
 export interface IndicatorContainerItem {
   key: AllKey;
-  content: "";
+  content: '';
   args: {
     hide: boolean;
     style?: Style;
@@ -122,7 +122,7 @@ export interface IndicatorContainerItem {
     indicatorLeftHoverStyle?: Style;
     indicatorRightStyle?: Style;
     indicatorRightHoverStyle?: Style;
-  }
+  };
 }
 
 export const titleSceneButtonConfig: Record<TitleSceneButtonKey, UIItemConfig> = {
@@ -158,13 +158,20 @@ export const titleSceneButtonConfig: Record<TitleSceneButtonKey, UIItemConfig> =
     hasHoverStyle: true,
     label: '继续游戏',
   },
+  [TitleSceneButtonKey.Game_progression_button]: {
+    hasHoverStyle: true,
+    label: '进度与成就',
+  },
 };
 
 export enum LoadSceneButtonKey {
   Load_back_button = 'Load_back_button',
 }
 
-export const loadSceneButtonConfig: Record<LoadSceneButtonKey, UIItemConfig & { children?: Record<string, UIItemConfig> }> = {
+export const loadSceneButtonConfig: Record<
+  LoadSceneButtonKey,
+  UIItemConfig & { children?: Record<string, UIItemConfig> }
+> = {
   [LoadSceneButtonKey.Load_back_button]: {
     hasHoverStyle: true,
     label: '返回',
@@ -186,7 +193,6 @@ export enum AchievementSceneButtonKey {
   Achievement_back_button = 'Achievement_back_button',
 }
 
-
 export const achievementSceneButtonConfig: Record<AchievementSceneButtonKey, UIItemConfig> = {
   [AchievementSceneButtonKey.Achievement_back_button]: {
     label: '返回',
@@ -197,6 +203,13 @@ export enum ExtraSceneButtonKey {
   Extra_back_button = 'Extra_back_button',
   Extra_bgm_button = 'Extra_bgm_button',
   Extra_video_button = 'Extra_video_button',
+}
+
+export enum ProgressSceneButtonKey {
+  Progress_back_button = 'Progress_back_button',
+  Progress_chapter_button = 'Progress_chapter_button',
+  Progress_achievement_button = 'Progress_achievement_button',
+  Progress_affinity_button = 'Progress_affinity_button',
 }
 
 export const extraSceneButtonConfig: Record<ExtraSceneButtonKey, UIItemConfig> = {
@@ -211,6 +224,21 @@ export const extraSceneButtonConfig: Record<ExtraSceneButtonKey, UIItemConfig> =
   },
 };
 
+export const progressSceneButtonConfig: Record<ProgressSceneButtonKey, UIItemConfig> = {
+  [ProgressSceneButtonKey.Progress_back_button]: {
+    label: '返回',
+  },
+  [ProgressSceneButtonKey.Progress_achievement_button]: {
+    label: '切换成就标签',
+  },
+  [ProgressSceneButtonKey.Progress_chapter_button]: {
+    label: '切换章节标签',
+  },
+  [ProgressSceneButtonKey.Progress_affinity_button]: {
+    label: '切换好感度标签',
+  },
+};
+
 export enum ExtraSceneOtherKey {
   Extra_title = 'Extra_title',
   Extra_bg = 'Extra_bg',
@@ -221,9 +249,12 @@ export enum ExtraSceneOtherKey {
   Extra_video_locked_item_bg = 'Extra_video_locked_item_bg',
 }
 
-export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
-  children?: { [key: string]: UIItemConfig }
-}> = {
+export const extraSceneOtherConfig: Record<
+  ExtraSceneOtherKey,
+  UIItemConfig & {
+    children?: { [key: string]: UIItemConfig };
+  }
+> = {
   [ExtraSceneOtherKey.Extra_title]: {
     label: '标题',
   },
@@ -277,7 +308,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
         hasText: false,
         label: '播放按钮',
       },
-    }
+    },
   },
   [ExtraSceneOtherKey.Extra_video_unlocked_item]: {
     type: 'container',
@@ -294,7 +325,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
         hasText: false,
         label: 'video元素背景',
       },
-    }
+    },
   },
   [ExtraSceneOtherKey.Extra_video_locked_item_bg]: {
     label: '未解锁VIDEO元素背景',
@@ -316,7 +347,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
             type: 'number',
             label: '右边距',
           },
-        }
+        },
       },
       [IndicatorItemKey.indicatorRight]: {
         hasHoverStyle: true,
@@ -327,7 +358,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
             type: 'number',
             label: '左边距',
           },
-        }
+        },
       },
       [IndicatorItemKey.indicator]: {
         hasHoverStyle: true,
@@ -340,7 +371,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
           },
         },
       },
-    }
+    },
   },
 };
 
@@ -357,7 +388,7 @@ export const optionSceneButtonConfig: Record<OptionSceneButtonKey, UIItemConfig>
 export enum CollectionSceneButtonKey {
   Collection_back_button = 'Collection_back_button',
   Collection_detail_dialog_prev_button = 'Collection_detail_dialog_prev_button',
-  Collection_detail_dialog_next_button = 'Collection_detail_dialog_next_button'
+  Collection_detail_dialog_next_button = 'Collection_detail_dialog_next_button',
 }
 
 export enum CollectionSceneOtherKey {
@@ -381,10 +412,13 @@ export const collectionSceneButtonConfig: Record<CollectionSceneButtonKey, UIIte
   },
   [CollectionSceneButtonKey.Collection_detail_dialog_next_button]: {
     label: '详情弹窗下一个按钮元素',
-  }
+  },
 };
 
-export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemConfig & { children?: Record<string, UIItemConfig> }> = {
+export const collectionSceneOtherConfig: Record<
+  CollectionSceneOtherKey,
+  UIItemConfig & { children?: Record<string, UIItemConfig> }
+> = {
   [CollectionSceneOtherKey.Collection_title]: {
     type: 'image',
     label: '标题',
@@ -392,7 +426,7 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   [CollectionSceneOtherKey.Collection_bg]: {
     label: '背景',
     type: 'bg',
-    hasHoverStyle: false
+    hasHoverStyle: false,
   },
   [CollectionSceneOtherKey.Collection_img1]: {
     label: '图鉴1',
@@ -415,8 +449,8 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '详情界面信息图片列表',
         hasXY: false,
         hasHoverStyle: false,
-      }
-    }
+      },
+    },
   },
   [CollectionSceneOtherKey.Collection_img2]: {
     label: '图鉴2',
@@ -439,8 +473,8 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '详情界面信息图片列表',
         hasXY: false,
         hasHoverStyle: false,
-      }
-    }
+      },
+    },
   },
   [CollectionSceneOtherKey.Collection_img3]: {
     type: 'container',
@@ -463,8 +497,8 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '详情界面信息图片列表',
         hasXY: false,
         hasHoverStyle: false,
-      }
-    }
+      },
+    },
   },
   [CollectionSceneOtherKey.Collection_detail_title]: {
     type: 'image',
@@ -473,20 +507,43 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   [CollectionSceneOtherKey.Collection_detail_bg]: {
     label: '详情界面背景',
     type: 'bg',
-    hasHoverStyle: false
+    hasHoverStyle: false,
   },
   [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
     type: 'bg',
     label: '详情弹窗元素背景',
-    hasHoverStyle: false
+    hasHoverStyle: false,
   },
   [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
     label: '详情弹窗元素样式',
     type: 'text',
     hasHoverStyle: false,
-    hasXY: false
-  }
+    hasXY: false,
+  },
+};
+
+export enum ProgressSceneOtherKey {
+  Progress_title = 'Progress_title',
+  Progress_bg = 'Progress_bg',
+  Progress_content_container = 'Progress_content_container',
 }
+
+export const progressSceneOtherConfig: Record<ProgressSceneOtherKey, UIItemConfig> = {
+  [ProgressSceneOtherKey.Progress_title]: {
+    type: 'image',
+    label: '标题',
+  },
+  [ProgressSceneOtherKey.Progress_bg]: {
+    label: '背景',
+    type: 'bg',
+    hasHoverStyle: false,
+  },
+  [ProgressSceneOtherKey.Progress_content_container]: {
+    type: 'container',
+    label: '内容容器',
+    hasHoverStyle: false,
+  },
+};
 
 export enum OptionSceneOtherKey {
   Option_title = 'Option_title',
@@ -508,10 +565,13 @@ export enum OptionSceneOtherKey {
   Option_window_checkbox = 'Option_window_checkbox',
   Option_videoSize1080_checkbox = 'Option_videoSize1080_checkbox',
   Option_videoSize720_checkbox = 'Option_videoSize720_checkbox',
-  Options_light_slider = 'Options_light_slider'
+  Options_light_slider = 'Options_light_slider',
 }
 
-export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & { children?: Record<string, UIItemConfig> }> = {
+export const optionSceneOtherConfig: Record<
+  OptionSceneOtherKey,
+  UIItemConfig & { children?: Record<string, UIItemConfig> }
+> = {
   [OptionSceneOtherKey.Option_title]: {
     type: 'image',
     label: '标题',
@@ -534,7 +594,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasText: false,
         label: '画面模式背景',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_text_speed_label]: {
     type: 'container',
@@ -549,7 +609,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasText: false,
         label: '文本速度背景',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_global_volume_label]: {
     type: 'container',
@@ -564,7 +624,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasText: false,
         label: '全局音量背景',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_bg_music_volume_label]: {
     type: 'container',
@@ -579,7 +639,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasText: false,
         label: '背景音量背景',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_effect_volume_label]: {
     type: 'container',
@@ -594,7 +654,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasText: false,
         label: '音效音量背景',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: {
     type: 'container',
@@ -609,7 +669,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasText: false,
         label: '全屏模式背景',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_window_checkbox_label]: {
     type: 'container',
@@ -624,7 +684,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasText: false,
         label: '窗口模式背景',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_voice_volume_label]: {
     type: 'container',
@@ -639,7 +699,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasText: false,
         label: '语音音量背景',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_voice_slider]: {
     type: 'container',
@@ -657,7 +717,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasHoverStyle: false,
         label: '语音音量滑动条拇指',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_global_volume_slider]: {
     type: 'container',
@@ -675,7 +735,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasHoverStyle: false,
         label: '全局音量滑动条拇指',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_bg_music_volume_slider]: {
     type: 'container',
@@ -693,7 +753,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasHoverStyle: false,
         label: '背景音量滑动条拇指',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_effect_volume_slider]: {
     type: 'container',
@@ -711,7 +771,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasHoverStyle: false,
         label: '音效音量滑动条拇指',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Options_light_slider]: {
     type: 'container',
@@ -729,7 +789,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasHoverStyle: false,
         label: '亮度滑动条拇指',
       },
-    }
+    },
   },
   [OptionSceneOtherKey.Option_fullscreen_checkbox]: {
     label: '全屏模式复选框',
@@ -759,7 +819,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
         hasHoverStyle: false,
         label: '文本速度滑动条拇指',
       },
-    }
+    },
   },
 };
 
@@ -798,8 +858,8 @@ export const achievementSceneOtherConfig: Record<AchievementSceneOtherKey, UIIte
     type: 'image',
     hasXY: false,
     hasHoverStyle: false,
-    hasText: false
-  }
+    hasText: false,
+  },
 };
 
 export enum StorylineSceneOtherKey {
@@ -820,7 +880,10 @@ export enum LoadSceneOtherKey {
   Load_indicator = 'Load_indicator',
 }
 
-export const loadSceneOtherConfig: Record<LoadSceneOtherKey, UIItemConfig & { children?: Record<string, UIItemConfig> }> = {
+export const loadSceneOtherConfig: Record<
+  LoadSceneOtherKey,
+  UIItemConfig & { children?: Record<string, UIItemConfig> }
+> = {
   [LoadSceneOtherKey.Load_bg]: {
     hasHoverStyle: false,
     label: '背景',
@@ -857,8 +920,8 @@ export const loadSceneOtherConfig: Record<LoadSceneOtherKey, UIItemConfig & { ch
       [CommonItemKey.extra]: {
         type: 'text',
         label: '存档文字',
-      }
-    }
+      },
+    },
   },
   [LoadSceneOtherKey.Load_locked_item]: {
     label: '未解锁存档元素',
@@ -872,7 +935,7 @@ export const loadSceneOtherConfig: Record<LoadSceneOtherKey, UIItemConfig & { ch
         type: 'number',
         label: '列间距',
       },
-    }
+    },
   },
   [LoadSceneOtherKey.Load_indicator]: {
     type: 'container',
@@ -889,7 +952,7 @@ export const loadSceneOtherConfig: Record<LoadSceneOtherKey, UIItemConfig & { ch
             type: 'number',
             label: '右边距',
           },
-        }
+        },
       },
       [IndicatorItemKey.indicatorRight]: {
         hasHoverStyle: true,
@@ -900,7 +963,7 @@ export const loadSceneOtherConfig: Record<LoadSceneOtherKey, UIItemConfig & { ch
             type: 'number',
             label: '左边距',
           },
-        }
+        },
       },
       [IndicatorItemKey.indicator]: {
         hasHoverStyle: true,
@@ -913,7 +976,7 @@ export const loadSceneOtherConfig: Record<LoadSceneOtherKey, UIItemConfig & { ch
           },
         },
       },
-    }
+    },
   },
 };
 
@@ -937,39 +1000,39 @@ export const titleSceneOtherConfig: Record<TitleSceneOtherKey, UIItemConfig> = {
 
 export interface Info {
   name?: {
-    type: 'number',
-    label: string,
-  },
+    type: 'number';
+    label: string;
+  };
   height?: {
-    type: 'number',
-    label: string,
-  },
+    type: 'number';
+    label: string;
+  };
 
   weight?: {
-    type: 'number',
-    label: string,
-  },
+    type: 'number';
+    label: string;
+  };
 
   bustSize?: {
-    type: 'number',
-    label: string,
-  },
+    type: 'number';
+    label: string;
+  };
   waistSize?: {
-    type: 'number',
-    label: string,
-  },
+    type: 'number';
+    label: string;
+  };
   hipSize: {
-    type: 'number',
-    label: string,
-  },
+    type: 'number';
+    label: string;
+  };
   description: {
-    type: 'number',
-    label: string,
-  },
+    type: 'number';
+    label: string;
+  };
   image: {
-    type: 'string',
-    label: 'string'
-  }
+    type: 'string';
+    label: 'string';
+  };
 }
 
 export interface Style {
@@ -990,24 +1053,50 @@ export interface Style {
   marginRight?: number;
 }
 
-export type ButtonKey = LoadSceneButtonKey | TitleSceneButtonKey | OptionSceneButtonKey | StorylineSceneButtonKey | AchievementSceneButtonKey | ExtraSceneButtonKey | CollectionSceneButtonKey;
-export type OtherKey = LoadSceneOtherKey | TitleSceneOtherKey | OptionSceneOtherKey | StorylineSceneOtherKey | AchievementSceneOtherKey | ExtraSceneOtherKey | CollectionSceneOtherKey;
+export type ButtonKey =
+  | LoadSceneButtonKey
+  | TitleSceneButtonKey
+  | OptionSceneButtonKey
+  | StorylineSceneButtonKey
+  | AchievementSceneButtonKey
+  | ExtraSceneButtonKey
+  | CollectionSceneButtonKey
+  | ProgressSceneOtherKey;
+export type OtherKey =
+  | LoadSceneOtherKey
+  | TitleSceneOtherKey
+  | OptionSceneOtherKey
+  | StorylineSceneOtherKey
+  | AchievementSceneOtherKey
+  | ExtraSceneOtherKey
+  | CollectionSceneOtherKey
+  | ProgressSceneButtonKey;
 type AllKey = ButtonKey | OtherKey;
 
 export interface ButtonItem {
   key: AllKey;
-  content: string,
+  content: string;
   args: {
-    hide: boolean,
-    style: Style,
-    hoverStyle?: Style
-  }
+    hide: boolean;
+    style: Style;
+    hoverStyle?: Style;
+  };
 }
 
 export interface TitleSceneUIConfig {
   key: Scene.title;
   other: { [key in TitleSceneOtherKey]: ButtonItem };
   buttons: { [key in TitleSceneButtonKey]: ButtonItem };
+}
+
+export interface ProgressSceneUIConfig {
+  key: Scene.progressAndAchievement;
+  other: {
+    [ProgressSceneOtherKey.Progress_bg]: ButtonItem;
+    [ProgressSceneOtherKey.Progress_title]: ButtonItem;
+    [ProgressSceneOtherKey.Progress_content_container]: ContainerItem;
+  };
+  buttons: { [key in ProgressSceneButtonKey]: ButtonItem };
 }
 
 export interface LoadSceneUIConfig {
@@ -1033,7 +1122,7 @@ export interface StorylineSceneUIConfig {
  */
 export interface AchievementSceneUIConfig {
   key: Scene.achievement;
-  other: { 
+  other: {
     // [key in AchievementSceneOtherKey]: ButtonItem;
     [AchievementSceneOtherKey.Achievement_title]: ButtonItem;
     [AchievementSceneOtherKey.Achievement_progress_bg]: ButtonItem;
@@ -1061,56 +1150,55 @@ export interface ExtraSceneUIConfig {
 export interface OptionSceneUIConfig {
   key: Scene.option;
   other: {
-    [OptionSceneOtherKey.Option_bg]: ButtonItem,
-    [OptionSceneOtherKey.Option_title]: ButtonItem,
-    [OptionSceneOtherKey.Option_window_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_text_speed_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_text_speed_slider]: SliderContainerItem,
-    [OptionSceneOtherKey.Option_bg_music_volume_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_bg_music_volume_slider]: SliderContainerItem,
-    [OptionSceneOtherKey.Option_effect_volume_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_effect_volume_slider]: SliderContainerItem,
+    [OptionSceneOtherKey.Option_bg]: ButtonItem;
+    [OptionSceneOtherKey.Option_title]: ButtonItem;
+    [OptionSceneOtherKey.Option_window_label]: ContainerItem;
+    [OptionSceneOtherKey.Option_text_speed_label]: ContainerItem;
+    [OptionSceneOtherKey.Option_text_speed_slider]: SliderContainerItem;
+    [OptionSceneOtherKey.Option_bg_music_volume_label]: ContainerItem;
+    [OptionSceneOtherKey.Option_bg_music_volume_slider]: SliderContainerItem;
+    [OptionSceneOtherKey.Option_effect_volume_label]: ContainerItem;
+    [OptionSceneOtherKey.Option_effect_volume_slider]: SliderContainerItem;
     [OptionSceneOtherKey.Options_light_slider]: SliderContainerItem;
-    [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_fullscreen_checkbox]: ButtonItem,
-    [OptionSceneOtherKey.Option_window_checkbox_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_window_checkbox]: ButtonItem,
-    [OptionSceneOtherKey.Option_videoSize1080_checkbox]: ButtonItem
-    [OptionSceneOtherKey.Option_videoSize720_checkbox]: ButtonItem
-    [OptionSceneOtherKey.Option_global_volume_label]: ContainerItem,
-    [OptionSceneOtherKey.Option_global_volume_slider]: SliderContainerItem,
-    [OptionSceneOtherKey.Option_voice_slider]: SliderContainerItem,
-    [OptionSceneOtherKey.Option_voice_volume_label]: ContainerItem
+    [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: ContainerItem;
+    [OptionSceneOtherKey.Option_fullscreen_checkbox]: ButtonItem;
+    [OptionSceneOtherKey.Option_window_checkbox_label]: ContainerItem;
+    [OptionSceneOtherKey.Option_window_checkbox]: ButtonItem;
+    [OptionSceneOtherKey.Option_videoSize1080_checkbox]: ButtonItem;
+    [OptionSceneOtherKey.Option_videoSize720_checkbox]: ButtonItem;
+    [OptionSceneOtherKey.Option_global_volume_label]: ContainerItem;
+    [OptionSceneOtherKey.Option_global_volume_slider]: SliderContainerItem;
+    [OptionSceneOtherKey.Option_voice_slider]: SliderContainerItem;
+    [OptionSceneOtherKey.Option_voice_volume_label]: ContainerItem;
   };
   buttons: { [key in OptionSceneButtonKey]: ButtonItem };
 }
 
 export interface InfonItem {
   key: AllKey;
-  content: string,
+  content: string;
   args: {
-    hide: boolean,
-    style?: Style,
-    info?: InfoConfig,
-    images?: ICollectionImages
-  }
+    hide: boolean;
+    style?: Style;
+    info?: InfoConfig;
+    images?: ICollectionImages;
+  };
 }
 
 export interface CollectionSceneUIConfig {
   key: Scene.collection;
   other: {
-    [CollectionSceneOtherKey.Collection_bg]: ButtonItem,
-    [CollectionSceneOtherKey.Collection_title]: ButtonItem,
-    [CollectionSceneOtherKey.Collection_img1]: InfonItem,
-    [CollectionSceneOtherKey.Collection_img2]: InfonItem,
-    [CollectionSceneOtherKey.Collection_img3]: InfonItem,
-    [CollectionSceneOtherKey.Collection_detail_title]: ButtonItem,
-    [CollectionSceneOtherKey.Collection_detail_bg]: ButtonItem,
-    [CollectionSceneOtherKey.Collection_detail_dialog_bg]: ButtonItem,
-    [CollectionSceneOtherKey.Collection_detail_dialog_text]: ButtonItem
+    [CollectionSceneOtherKey.Collection_bg]: ButtonItem;
+    [CollectionSceneOtherKey.Collection_title]: ButtonItem;
+    [CollectionSceneOtherKey.Collection_img1]: InfonItem;
+    [CollectionSceneOtherKey.Collection_img2]: InfonItem;
+    [CollectionSceneOtherKey.Collection_img3]: InfonItem;
+    [CollectionSceneOtherKey.Collection_detail_title]: ButtonItem;
+    [CollectionSceneOtherKey.Collection_detail_bg]: ButtonItem;
+    [CollectionSceneOtherKey.Collection_detail_dialog_bg]: ButtonItem;
+    [CollectionSceneOtherKey.Collection_detail_dialog_text]: ButtonItem;
   };
   buttons: { [key in CollectionSceneButtonKey]: ButtonItem };
-
 }
 
 export enum Scene {
@@ -1121,6 +1209,7 @@ export enum Scene {
   extra = 'extra',
   option = 'option',
   collection = 'collection',
+  progressAndAchievement = 'progressAndAchievement',
 }
 
 export const sceneNameMap: Record<Scene, string> = {
@@ -1131,56 +1220,62 @@ export const sceneNameMap: Record<Scene, string> = {
   extra: '鉴赏界面',
   option: '选项界面',
   collection: '图鉴界面',
+  progressAndAchievement: '进度与成就',
 };
 
 export interface SceneUIConfig {
-  [Scene.title]?: TitleSceneUIConfig,
-  [Scene.load]?: LoadSceneUIConfig,
-  [Scene.storyline]?: StorylineSceneUIConfig,
-  [Scene.achievement]?: AchievementSceneUIConfig,
-  [Scene.extra]?: ExtraSceneUIConfig,
-  [Scene.option]?: OptionSceneUIConfig
-  [Scene.collection]: CollectionSceneUIConfig
-};
+  [Scene.title]?: TitleSceneUIConfig;
+  [Scene.load]?: LoadSceneUIConfig;
+  [Scene.storyline]?: StorylineSceneUIConfig;
+  [Scene.achievement]?: AchievementSceneUIConfig;
+  [Scene.extra]?: ExtraSceneUIConfig;
+  [Scene.option]?: OptionSceneUIConfig;
+  [Scene.collection]?: CollectionSceneUIConfig;
+  [Scene.progressAndAchievement]?: ProgressSceneUIConfig;
+}
 
 export const SceneKeyMap = {
   [Scene.title]: {
     buttons: TitleSceneButtonKey,
-    other: TitleSceneOtherKey
+    other: TitleSceneOtherKey,
   },
   [Scene.load]: {
     buttons: LoadSceneButtonKey,
-    other: LoadSceneOtherKey
+    other: LoadSceneOtherKey,
   },
   [Scene.storyline]: {
     buttons: StorylineSceneButtonKey,
-    other: StorylineSceneOtherKey
+    other: StorylineSceneOtherKey,
   },
   [Scene.achievement]: {
     buttons: AchievementSceneButtonKey,
-    other: AchievementSceneOtherKey
+    other: AchievementSceneOtherKey,
   },
   [Scene.extra]: {
     buttons: ExtraSceneButtonKey,
-    other: ExtraSceneOtherKey
+    other: ExtraSceneOtherKey,
   },
   [Scene.option]: {
     buttons: OptionSceneButtonKey,
-    other: OptionSceneOtherKey
+    other: OptionSceneOtherKey,
   },
   [Scene.collection]: {
     buttons: CollectionSceneButtonKey,
-    other: CollectionSceneOtherKey
+    other: CollectionSceneOtherKey,
+  },
+  [Scene.progressAndAchievement]: {
+    buttons: ProgressSceneButtonKey,
+    other: ProgressSceneOtherKey,
   },
 };
 
 const generateArgs = (extraStyles: string[] = []) => {
   const args = {
     hide: false,
-    style: {}
+    style: {},
   };
 
-  extraStyles.forEach(style => {
+  extraStyles.forEach((style) => {
     // @ts-ignore
     args[style] = {};
   });
@@ -1194,390 +1289,471 @@ export const sceneUIConfig: SceneUIConfig = {
     other: {
       [TitleSceneOtherKey.Title_img]: {
         key: TitleSceneOtherKey.Title_img,
-        content: "",
+        content: '',
         args: {
           hide: false,
-          style: {}
-        }
+          style: {},
+        },
       },
       [TitleSceneOtherKey.Title_bgm]: {
         key: TitleSceneOtherKey.Title_bgm,
-        content: "",
+        content: '',
         args: generateArgs(),
-      }
+      },
     },
     buttons: {
       [TitleSceneButtonKey.Game_start_button]: {
         key: TitleSceneButtonKey.Game_start_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [TitleSceneButtonKey.Game_load_button]: {
         key: TitleSceneButtonKey.Game_load_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [TitleSceneButtonKey.Game_option_button]: {
         key: TitleSceneButtonKey.Game_option_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [TitleSceneButtonKey.Game_storyline_button]: {
         key: TitleSceneButtonKey.Game_storyline_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [TitleSceneButtonKey.Game_achievement_button]: {
         key: TitleSceneButtonKey.Game_achievement_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [TitleSceneButtonKey.Game_extra_button]: {
         key: TitleSceneButtonKey.Game_extra_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [TitleSceneButtonKey.Game_collection_button]: {
         key: TitleSceneButtonKey.Game_collection_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [TitleSceneButtonKey.Game_continue_button]: {
         key: TitleSceneButtonKey.Game_continue_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
-    }
+      [TitleSceneButtonKey.Game_progression_button]: {
+        key: TitleSceneButtonKey.Game_progression_button,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+    },
   },
   [Scene.load]: {
     key: Scene.load,
     other: {
       [LoadSceneOtherKey.Load_bg]: {
         key: LoadSceneOtherKey.Load_bg,
-        content: "",
+        content: '',
         args: generateArgs(),
       },
       [LoadSceneOtherKey.Load_title]: {
         key: LoadSceneOtherKey.Load_title,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [LoadSceneOtherKey.Load_item]: {
         key: LoadSceneOtherKey.Load_item,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'extraStyle', 'contentHoverStyle', 'backgroundHoverStyle', 'extraHoverStyle']),
+        content: '',
+        args: generateArgs([
+          'contentStyle',
+          'backgroundStyle',
+          'extraStyle',
+          'contentHoverStyle',
+          'backgroundHoverStyle',
+          'extraHoverStyle',
+        ]),
       },
       [LoadSceneOtherKey.Load_indicator]: {
         key: LoadSceneOtherKey.Load_indicator,
-        content: "",
-        args: generateArgs(['indicatorStyle', 'indicatorHoverStyle', 'indicatorLeftStyle', 'indicatorLeftHoverStyle', 'indicatorRightStyle', 'indicatorRightHoverStyle']),
+        content: '',
+        args: generateArgs([
+          'indicatorStyle',
+          'indicatorHoverStyle',
+          'indicatorLeftStyle',
+          'indicatorLeftHoverStyle',
+          'indicatorRightStyle',
+          'indicatorRightHoverStyle',
+        ]),
       },
       [LoadSceneOtherKey.Load_locked_item]: {
         key: LoadSceneOtherKey.Load_locked_item,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
     },
     buttons: {
       [LoadSceneButtonKey.Load_back_button]: {
         key: LoadSceneButtonKey.Load_back_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
-    }
+    },
   },
   [Scene.storyline]: {
     key: Scene.storyline,
     other: {
       [StorylineSceneOtherKey.Storyline_title]: {
         key: StorylineSceneOtherKey.Storyline_title,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
     },
     buttons: {
       [StorylineSceneButtonKey.Storyline_back_button]: {
         key: StorylineSceneButtonKey.Storyline_back_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
-    }
+    },
   },
   [Scene.achievement]: {
     key: Scene.achievement,
     other: {
       [AchievementSceneOtherKey.Achievement_title]: {
         key: AchievementSceneOtherKey.Achievement_title,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [AchievementSceneOtherKey.Achievement_progress_bg]: {
         key: AchievementSceneOtherKey.Achievement_progress_bg,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [AchievementSceneOtherKey.Achievement_progress_text]: {
         key: AchievementSceneOtherKey.Achievement_progress_text,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [AchievementSceneOtherKey.Achievement_progress]: {
         key: AchievementSceneOtherKey.Achievement_progress,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [AchievementSceneOtherKey.Achievement_notUnlock]: {
         key: AchievementSceneOtherKey.Achievement_notUnlock,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
     },
     buttons: {
       [AchievementSceneButtonKey.Achievement_back_button]: {
         key: AchievementSceneButtonKey.Achievement_back_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
-    }
+    },
   },
   [Scene.extra]: {
     key: Scene.extra,
     other: {
       [ExtraSceneOtherKey.Extra_title]: {
         key: ExtraSceneOtherKey.Extra_title,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [ExtraSceneOtherKey.Extra_bgm_unlocked_item]: {
         key: ExtraSceneOtherKey.Extra_bgm_unlocked_item,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'extraStyle', 'backgroundHoverStyle', 'extraHoverStyle']),
+        content: '',
+        args: generateArgs([
+          'contentStyle',
+          'backgroundStyle',
+          'extraStyle',
+          'backgroundHoverStyle',
+          'extraHoverStyle',
+        ]),
       },
       [ExtraSceneOtherKey.Extra_bgm_locked_item_bg]: {
         key: ExtraSceneOtherKey.Extra_bgm_locked_item_bg,
-        content: "",
+        content: '',
         args: generateArgs(),
       },
       [ExtraSceneOtherKey.Extra_indicator]: {
         key: ExtraSceneOtherKey.Extra_indicator,
-        content: "",
-        args: generateArgs(['indicatorStyle', 'indicatorHoverStyle', 'indicatorLeftStyle', 'indicatorLeftHoverStyle', 'indicatorRightStyle', 'indicatorRightHoverStyle']),
+        content: '',
+        args: generateArgs([
+          'indicatorStyle',
+          'indicatorHoverStyle',
+          'indicatorLeftStyle',
+          'indicatorLeftHoverStyle',
+          'indicatorRightStyle',
+          'indicatorRightHoverStyle',
+        ]),
       },
       [ExtraSceneOtherKey.Extra_bg]: {
         key: ExtraSceneOtherKey.Extra_bg,
-        content: "",
+        content: '',
         args: generateArgs(),
       },
       [ExtraSceneOtherKey.Extra_video_locked_item_bg]: {
         key: ExtraSceneOtherKey.Extra_video_locked_item_bg,
-        content: "",
+        content: '',
         args: generateArgs(),
       },
       [ExtraSceneOtherKey.Extra_video_unlocked_item]: {
         key: ExtraSceneOtherKey.Extra_video_unlocked_item,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'extraStyle', 'contentHoverStyle', 'backgroundHoverStyle', 'extraHoverStyle']),
+        content: '',
+        args: generateArgs([
+          'contentStyle',
+          'backgroundStyle',
+          'extraStyle',
+          'contentHoverStyle',
+          'backgroundHoverStyle',
+          'extraHoverStyle',
+        ]),
       },
     },
     buttons: {
       [ExtraSceneButtonKey.Extra_back_button]: {
         key: ExtraSceneButtonKey.Extra_back_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [ExtraSceneButtonKey.Extra_video_button]: {
         key: ExtraSceneButtonKey.Extra_video_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [ExtraSceneButtonKey.Extra_bgm_button]: {
         key: ExtraSceneButtonKey.Extra_bgm_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
-    }
+    },
   },
   [Scene.option]: {
     key: Scene.option,
     other: {
       [OptionSceneOtherKey.Option_bg]: {
         key: OptionSceneOtherKey.Option_bg,
-        content: "",
+        content: '',
         args: generateArgs(),
       },
       [OptionSceneOtherKey.Option_title]: {
         key: OptionSceneOtherKey.Option_title,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [OptionSceneOtherKey.Option_window_label]: {
         key: OptionSceneOtherKey.Option_window_label,
-        content: "",
+        content: '',
         args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
       },
       [OptionSceneOtherKey.Option_text_speed_label]: {
         key: OptionSceneOtherKey.Option_text_speed_label,
-        content: "",
+        content: '',
         args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
       },
       [OptionSceneOtherKey.Option_voice_volume_label]: {
         key: OptionSceneOtherKey.Option_voice_volume_label,
-        content: "",
+        content: '',
         args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
       },
       [OptionSceneOtherKey.Option_window_checkbox_label]: {
         key: OptionSceneOtherKey.Option_text_speed_label,
-        content: "",
+        content: '',
         args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
       },
       [OptionSceneOtherKey.Option_global_volume_label]: {
         key: OptionSceneOtherKey.Option_global_volume_label,
-        content: "",
+        content: '',
         args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
       },
       [OptionSceneOtherKey.Option_bg_music_volume_label]: {
         key: OptionSceneOtherKey.Option_bg_music_volume_label,
-        content: "",
+        content: '',
         args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
       },
       [OptionSceneOtherKey.Option_effect_volume_label]: {
         key: OptionSceneOtherKey.Option_effect_volume_label,
-        content: "",
+        content: '',
         args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
       },
       [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: {
         key: OptionSceneOtherKey.Option_fullscreen_checkbox_label,
-        content: "",
+        content: '',
         args: generateArgs(['contentStyle', 'backgroundStyle', 'backgroundHoverStyle']),
       },
       [OptionSceneOtherKey.Option_bg_music_volume_slider]: {
         key: OptionSceneOtherKey.Option_bg_music_volume_slider,
-        content: "",
+        content: '',
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
       [OptionSceneOtherKey.Option_effect_volume_slider]: {
         key: OptionSceneOtherKey.Option_effect_volume_slider,
-        content: "",
+        content: '',
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
       [OptionSceneOtherKey.Options_light_slider]: {
         key: OptionSceneOtherKey.Options_light_slider,
-        content: "",
+        content: '',
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
       [OptionSceneOtherKey.Option_text_speed_slider]: {
         key: OptionSceneOtherKey.Option_text_speed_slider,
-        content: "",
+        content: '',
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
       [OptionSceneOtherKey.Option_fullscreen_checkbox]: {
         key: OptionSceneOtherKey.Option_fullscreen_checkbox,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [OptionSceneOtherKey.Option_window_checkbox]: {
         key: OptionSceneOtherKey.Option_window_checkbox,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
 
       [OptionSceneOtherKey.Option_videoSize1080_checkbox]: {
         key: OptionSceneOtherKey.Option_videoSize1080_checkbox,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [OptionSceneOtherKey.Option_videoSize720_checkbox]: {
         key: OptionSceneOtherKey.Option_videoSize720_checkbox,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [OptionSceneOtherKey.Option_global_volume_slider]: {
         key: OptionSceneOtherKey.Option_global_volume_slider,
-        content: "",
+        content: '',
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
       [OptionSceneOtherKey.Option_voice_slider]: {
         key: OptionSceneOtherKey.Option_voice_slider,
-        content: "",
+        content: '',
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
     },
     buttons: {
       [OptionSceneButtonKey.Option_back_button]: {
         key: OptionSceneButtonKey.Option_back_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
-      }
-    }
+      },
+    },
   },
   [Scene.collection]: {
     key: Scene.collection,
     other: {
       [CollectionSceneOtherKey.Collection_bg]: {
         key: CollectionSceneOtherKey.Collection_bg,
-        content: "",
+        content: '',
         args: generateArgs(),
       },
       [CollectionSceneOtherKey.Collection_title]: {
         key: CollectionSceneOtherKey.Collection_title,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
 
       [CollectionSceneOtherKey.Collection_img1]: {
         key: CollectionSceneOtherKey.Collection_img1,
-        content: "",
+        content: '',
         args: generateArgs(['info', 'images']),
       },
       [CollectionSceneOtherKey.Collection_img2]: {
         key: CollectionSceneOtherKey.Collection_img2,
-        content: "",
+        content: '',
         args: generateArgs(['info', 'images']),
       },
       [CollectionSceneOtherKey.Collection_img3]: {
         key: CollectionSceneOtherKey.Collection_img3,
-        content: "",
+        content: '',
         args: generateArgs(['info', 'images']),
       },
       [CollectionSceneOtherKey.Collection_detail_title]: {
         key: CollectionSceneOtherKey.Collection_detail_title,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [CollectionSceneOtherKey.Collection_detail_bg]: {
         key: CollectionSceneOtherKey.Collection_detail_bg,
-        content: "",
+        content: '',
         args: generateArgs(),
       },
 
       [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
         key: CollectionSceneOtherKey.Collection_detail_dialog_bg,
-        content: "",
+        content: '',
         args: generateArgs(),
       },
       [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
         key: CollectionSceneOtherKey.Collection_detail_dialog_text,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
-      }
+      },
     },
     buttons: {
       [CollectionSceneButtonKey.Collection_back_button]: {
         key: CollectionSceneButtonKey.Collection_back_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [CollectionSceneButtonKey.Collection_detail_dialog_prev_button]: {
         key: CollectionSceneButtonKey.Collection_detail_dialog_prev_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
       },
       [CollectionSceneButtonKey.Collection_detail_dialog_next_button]: {
         key: CollectionSceneButtonKey.Collection_detail_dialog_next_button,
-        content: "",
+        content: '',
         args: generateArgs(['hoverStyle']),
-      }
-    }
+      },
+    },
+  },
+  [Scene.progressAndAchievement]: {
+    key: Scene.progressAndAchievement,
+    other: {
+      [ProgressSceneOtherKey.Progress_title]: {
+        key: ProgressSceneOtherKey.Progress_title,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+      [ProgressSceneOtherKey.Progress_bg]: {
+        key: ProgressSceneOtherKey.Progress_bg,
+        content: '',
+        args: generateArgs(),
+      },
+      [ProgressSceneOtherKey.Progress_content_container]: {
+        key: ProgressSceneOtherKey.Progress_content_container,
+        content: '',
+        args: generateArgs(),
+      },
+    },
+    buttons: {
+      [ProgressSceneButtonKey.Progress_back_button]: {
+        key: ProgressSceneButtonKey.Progress_back_button,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+      [ProgressSceneButtonKey.Progress_achievement_button]: {
+        key: ProgressSceneButtonKey.Progress_achievement_button,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+      [ProgressSceneButtonKey.Progress_chapter_button]: {
+        key: ProgressSceneButtonKey.Progress_chapter_button,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+      [ProgressSceneButtonKey.Progress_affinity_button]: {
+        key: ProgressSceneButtonKey.Progress_affinity_button,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+    },
   },
 };
 
@@ -1588,7 +1764,8 @@ export const sceneButtonConfig = {
   [Scene.achievement]: achievementSceneButtonConfig,
   [Scene.extra]: extraSceneButtonConfig,
   [Scene.option]: optionSceneButtonConfig,
-  [Scene.collection]: collectionSceneButtonConfig
+  [Scene.collection]: collectionSceneButtonConfig,
+  [Scene.progressAndAchievement]: progressSceneButtonConfig,
 };
 
 export const sceneOtherConfig = {
@@ -1598,5 +1775,6 @@ export const sceneOtherConfig = {
   [Scene.achievement]: achievementSceneOtherConfig,
   [Scene.extra]: extraSceneOtherConfig,
   [Scene.option]: optionSceneOtherConfig,
-  [Scene.collection]: collectionSceneOtherConfig
+  [Scene.collection]: collectionSceneOtherConfig,
+  [Scene.progressAndAchievement]: progressSceneOtherConfig,
 };

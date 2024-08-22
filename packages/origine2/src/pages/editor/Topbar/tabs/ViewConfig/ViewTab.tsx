@@ -58,7 +58,7 @@ import { cloneDeep } from 'lodash';
 import { useValue } from '@/hooks/useValue';
 import axios from 'axios';
 import { WebgalParser } from '@/pages/editor/GraphicalEditor/parser';
-import { CollectionInfo } from './CollectionImgInfo'
+import { CollectionInfo } from './CollectionImgInfo';
 import { 
   IStyleConfig,
   defaultStyle,
@@ -66,7 +66,7 @@ import {
   defaultInfo,
   ICollectionImages,
   defaultCollectionImages
-} from './confg'
+} from './confg';
 
 interface IGameConfigEditor {
   key: string;
@@ -335,13 +335,13 @@ function GameConfigEditorGameMenu() {
         <DialogBody>
           <DialogTitle>{sceneNameMap[currentEditScene || Scene.extra]}UI设置</DialogTitle>
           <DialogContent>
-            <div className={s.group} key={'other'}>
+            <div className={s.group} key="other">
               <span className={s.groupLabel}>其他设置</span>
               {Object.values(options[currentEditScene || Scene.extra]?.other || {}).map((item, index) =>
                 renderConfig(item, 'other', currentEditScene || Scene.extra, setOptions, index),
               )}
             </div>
-            <div className={s.group} key={'buttons'}>
+            <div className={s.group} key="buttons">
               <span className={s.groupLabel}>界面按钮</span>
               {Object.values(options[currentEditScene || Scene.extra]?.buttons || {}).map((item, index) =>
                 renderConfig(item, 'buttons', currentEditScene || Scene.extra, setOptions, index),
@@ -512,14 +512,14 @@ function renderConfig(
           key: 'info',
           style: {},
           info: defaultInfo
-        })
+        });
       } else if (key === collectionItemInfoKey.collectionImages) {
         styleConfigArr.push({
           label: '详情图片列表',
           key: key,
           style: {},
           images: defaultCollectionImages
-        })
+        });
       } else {
         styleConfigArr.push({ 
           label: value.label + '样式', 
@@ -621,17 +621,16 @@ function parseStyleConfig({
         },
       };
 
+      
       if (
-        (config?.positionType === 'relative' && (styleKey === 'x' || styleKey === 'y') && value !== undefined) ||
-        value !== ''
-      ) {
+        (config?.positionType === 'relative' && (styleKey === 'x' || styleKey === 'y') && !value)) {
         // @ts-ignore
         newOptions[currentEditScene][type][key].args.style.position = 'relative';
       } else {
         // @ts-ignore
         delete newOptions[currentEditScene][type][key].args.style.position;
       }
-
+      
       return newOptions;
     });
   }
@@ -676,7 +675,7 @@ function parseStyleConfig({
               args: {
                 // @ts-ignore
                 ...options[currentEditScene][type][key].args,
-                ['images']: {
+                'images': {
                   // @ts-ignore
                   ...options[currentEditScene][type][key].args['images'],
                   [imgKey]: value,
@@ -705,7 +704,7 @@ function parseStyleConfig({
               args: {
                 // @ts-ignore
                 ...options[currentEditScene][type][key].args,
-                ['info']: {
+                'info': {
                   // @ts-ignore
                   ...options[currentEditScene][type][key].args['info'],
                   [infoKey]: value,
@@ -737,7 +736,7 @@ function parseStyleConfig({
         setInfo={setInfo}
         setImage={setImage}
       />
-    )
+    );
   }
 
   if (config.type === 'bgm') {
@@ -816,7 +815,7 @@ function parseStyleConfig({
                     ) : styleProp.type === 'image' ? (
                       <div>
                         <ChooseFile
-                          extName={['.png', '.jpg', '.jpeg', '.gif']}
+                          extName={['.png', '.jpg', '.jpeg', '.gif', '.webp']}
                           sourceBase={config.type === 'bg' ? 'background' : 'ui'}
                           onChange={(file) =>
                             config.type === 'bg' && key === 'style'
@@ -828,8 +827,8 @@ function parseStyleConfig({
                           {config.type === 'bg' && key === 'style'
                             ? item.content
                             : key === 'hoverStyle'
-                            ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
-                            : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''}
+                              ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                              : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''}
                         </span>
                       </div>
                     ) : null}
