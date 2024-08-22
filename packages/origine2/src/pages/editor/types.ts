@@ -10,6 +10,7 @@ export enum TitleSceneButtonKey {
   Game_load_button = 'Game_load_button', // 读取
   Game_continue_button = 'Game_continue_button', // 继续游戏
   Game_progression_button = 'Game_progression_button', // 进度
+  Game_affinity_button = 'Game_affinity_button', // 好感度
 }
 
 export interface UIItemConfig {
@@ -162,6 +163,10 @@ export const titleSceneButtonConfig: Record<TitleSceneButtonKey, UIItemConfig> =
     hasHoverStyle: true,
     label: '进度与成就',
   },
+  [TitleSceneButtonKey.Game_affinity_button]: {
+    hasHoverStyle: true,
+    label: '好感度',
+  },
 };
 
 export enum LoadSceneButtonKey {
@@ -212,6 +217,16 @@ export enum ProgressSceneButtonKey {
   Progress_affinity_button = 'Progress_affinity_button',
 }
 
+export enum AffinitySceneButtonKey {
+  Affinity_back_button = 'Affinity_back_button',
+}
+
+export const AffinitySceneButtonConfig: Record<AffinitySceneButtonKey, UIItemConfig> = {
+  [AffinitySceneButtonKey.Affinity_back_button]: {
+    label: '返回',
+  },
+};
+
 export const extraSceneButtonConfig: Record<ExtraSceneButtonKey, UIItemConfig> = {
   [ExtraSceneButtonKey.Extra_back_button]: {
     label: '返回',
@@ -221,6 +236,12 @@ export const extraSceneButtonConfig: Record<ExtraSceneButtonKey, UIItemConfig> =
   },
   [ExtraSceneButtonKey.Extra_video_button]: {
     label: '切换VIDEO标签',
+  },
+};
+
+export const affinitySceneButtonConfig: Record<AffinitySceneButtonKey, UIItemConfig> = {
+  [AffinitySceneButtonKey.Affinity_back_button]: {
+    label: '返回',
   },
 };
 
@@ -528,6 +549,7 @@ export enum ProgressSceneOtherKey {
   Progress_content_container = 'Progress_content_container',
 }
 
+
 export const progressSceneOtherConfig: Record<ProgressSceneOtherKey, UIItemConfig> = {
   [ProgressSceneOtherKey.Progress_title]: {
     type: 'image',
@@ -542,6 +564,58 @@ export const progressSceneOtherConfig: Record<ProgressSceneOtherKey, UIItemConfi
     type: 'container',
     label: '内容容器',
     hasHoverStyle: false,
+  },
+};
+
+export enum AffinitySceneOtherKey {
+  Affinity_title = 'Affinity_title',
+  Affinity_bg = 'Affinity_bg',
+  Affinity_item_container = 'Affinity_item_container',
+  Affinity_locked_item = 'Affinity_locked_item',
+  Affinity_unlocked_item = 'Affinity_unlocked_item',
+}
+
+export const affinitySceneOtherConfig: Record<AffinitySceneOtherKey, UIItemConfig & { children?: Record<string, UIItemConfig> }> = {
+  [AffinitySceneOtherKey.Affinity_title]: {
+    type: 'image',
+    label: '标题',
+  },
+  [AffinitySceneOtherKey.Affinity_bg]: {
+    label: '背景',
+    type: 'bg',
+    hasHoverStyle: false,
+  },
+  [AffinitySceneOtherKey.Affinity_item_container]: {
+    type: 'container',
+    label: '好感度列表容器',
+    hasHoverStyle: false,
+    positionType: 'relative',
+    customStyle: {
+      gap: {
+        label: '间距',
+        type: 'number',
+      }
+    }
+  },
+  [AffinitySceneOtherKey.Affinity_unlocked_item]: {
+    label: '角色已解锁卡片',
+    type: 'container',
+    hasXY: false,
+    hasHoverStyle: false,
+    children: {
+      [CommonItemKey.content]: {
+        type: 'placeholder',
+        label: '卡片',
+      },
+      [CommonItemKey.extra]: {
+        type: 'text',
+        label: '好感度文字',
+      },
+    },
+  },
+  [AffinitySceneOtherKey.Affinity_locked_item]: {
+    label: '角色未解锁卡片',
+    hasXY: false,
   },
 };
 
@@ -1061,7 +1135,8 @@ export type ButtonKey =
   | AchievementSceneButtonKey
   | ExtraSceneButtonKey
   | CollectionSceneButtonKey
-  | ProgressSceneOtherKey;
+  | ProgressSceneButtonKey
+  | AffinitySceneButtonKey;
 export type OtherKey =
   | LoadSceneOtherKey
   | TitleSceneOtherKey
@@ -1070,7 +1145,8 @@ export type OtherKey =
   | AchievementSceneOtherKey
   | ExtraSceneOtherKey
   | CollectionSceneOtherKey
-  | ProgressSceneButtonKey;
+  | ProgressSceneOtherKey
+  | AffinitySceneOtherKey;
 type AllKey = ButtonKey | OtherKey;
 
 export interface ButtonItem {
@@ -1097,6 +1173,18 @@ export interface ProgressSceneUIConfig {
     [ProgressSceneOtherKey.Progress_content_container]: ContainerItem;
   };
   buttons: { [key in ProgressSceneButtonKey]: ButtonItem };
+}
+
+export interface AffinitySceneUIConfig {
+  key: Scene.affinity;
+  other: {
+    [AffinitySceneOtherKey.Affinity_bg]: ButtonItem;
+    [AffinitySceneOtherKey.Affinity_title]: ButtonItem;
+    [AffinitySceneOtherKey.Affinity_locked_item]: ButtonItem;
+    [AffinitySceneOtherKey.Affinity_unlocked_item]: ContainerItem;
+    [AffinitySceneOtherKey.Affinity_item_container]: ContainerItem;
+  };
+  buttons: { [key in AffinitySceneButtonKey]: ButtonItem };
 }
 
 export interface LoadSceneUIConfig {
@@ -1210,6 +1298,7 @@ export enum Scene {
   option = 'option',
   collection = 'collection',
   progressAndAchievement = 'progressAndAchievement',
+  affinity = 'affinity',
 }
 
 export const sceneNameMap: Record<Scene, string> = {
@@ -1221,6 +1310,7 @@ export const sceneNameMap: Record<Scene, string> = {
   option: '选项界面',
   collection: '图鉴界面',
   progressAndAchievement: '进度与成就',
+  affinity: '亲密度',
 };
 
 export interface SceneUIConfig {
@@ -1232,6 +1322,7 @@ export interface SceneUIConfig {
   [Scene.option]?: OptionSceneUIConfig;
   [Scene.collection]?: CollectionSceneUIConfig;
   [Scene.progressAndAchievement]?: ProgressSceneUIConfig;
+  [Scene.affinity]?: AffinitySceneUIConfig;
 }
 
 export const SceneKeyMap = {
@@ -1266,6 +1357,10 @@ export const SceneKeyMap = {
   [Scene.progressAndAchievement]: {
     buttons: ProgressSceneButtonKey,
     other: ProgressSceneOtherKey,
+  },
+  [Scene.affinity]: {
+    buttons: AffinitySceneButtonKey,
+    other: AffinitySceneOtherKey,
   },
 };
 
@@ -1344,6 +1439,11 @@ export const sceneUIConfig: SceneUIConfig = {
       },
       [TitleSceneButtonKey.Game_progression_button]: {
         key: TitleSceneButtonKey.Game_progression_button,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+      [TitleSceneButtonKey.Game_affinity_button]: {
+        key: TitleSceneButtonKey.Game_affinity_button,
         content: '',
         args: generateArgs(['hoverStyle']),
       },
@@ -1755,6 +1855,48 @@ export const sceneUIConfig: SceneUIConfig = {
       },
     },
   },
+  [Scene.affinity]: {
+    key: Scene.affinity,
+    other: {
+      [AffinitySceneOtherKey.Affinity_title]: {
+        key: AffinitySceneOtherKey.Affinity_title,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+      [AffinitySceneOtherKey.Affinity_item_container]: {
+        key: AffinitySceneOtherKey.Affinity_item_container,
+        content: '',
+        args: generateArgs(),
+      },
+      [AffinitySceneOtherKey.Affinity_bg]: {
+        key: AffinitySceneOtherKey.Affinity_bg,
+        content: '',
+        args: generateArgs(),
+      },
+      [AffinitySceneOtherKey.Affinity_locked_item]: {
+        key: AffinitySceneOtherKey.Affinity_locked_item,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+      [AffinitySceneOtherKey.Affinity_unlocked_item]: {
+        key: AffinitySceneOtherKey.Affinity_unlocked_item,
+        content: '',
+        args: generateArgs([
+          'contentStyle',
+          'extraStyle',
+          'contentHoverStyle',
+          'extraHoverStyle',
+        ]),
+      },
+    },
+    buttons: {
+      [AffinitySceneButtonKey.Affinity_back_button]: {
+        key: AffinitySceneButtonKey.Affinity_back_button,
+        content: '',
+        args: generateArgs(['hoverStyle']),
+      },
+    }
+  }
 };
 
 export const sceneButtonConfig = {
@@ -1766,6 +1908,7 @@ export const sceneButtonConfig = {
   [Scene.option]: optionSceneButtonConfig,
   [Scene.collection]: collectionSceneButtonConfig,
   [Scene.progressAndAchievement]: progressSceneButtonConfig,
+  [Scene.affinity]: affinitySceneButtonConfig,
 };
 
 export const sceneOtherConfig = {
@@ -1777,4 +1920,5 @@ export const sceneOtherConfig = {
   [Scene.option]: optionSceneOtherConfig,
   [Scene.collection]: collectionSceneOtherConfig,
   [Scene.progressAndAchievement]: progressSceneOtherConfig,
+  [Scene.affinity]: affinitySceneOtherConfig,
 };

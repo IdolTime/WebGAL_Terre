@@ -53,6 +53,7 @@ import ShowValue from './ShowValue';
 import PayProduct from "./PayProduct";
 import FinishTrial from "./FinishTrial";
 import MoveCamera from "./MoveCamera";
+import ChangeAffinity from './ChangeAffinity';
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -312,5 +313,13 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: MoveCamera,
     icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'moveCamera.descText')
+  },
+  {
+    type: commandType.changeAffinity,
+    title: () => t(tPrefix + 'changeAffinity.title'),
+    initialText: () => t(tPrefix + 'changeAffinity.initText'),
+    component: ChangeAffinity,
+    icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'changeAffinity.descText')
   }
 ];

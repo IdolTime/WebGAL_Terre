@@ -778,6 +778,15 @@ export const zhCn = {
             y: " Y",
           }
         },
+        changeAffinity: {
+          title: "修改好感度",
+          initText: "changeAffinity:;",
+          descText: '修改好感度',
+          options: {
+            role: "选择角色头像",
+            number: "数字",
+          },
+        },
         unknown: {
           title: "未识别",
           options: {
