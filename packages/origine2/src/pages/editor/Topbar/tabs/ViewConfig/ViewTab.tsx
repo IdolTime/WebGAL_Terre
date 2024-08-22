@@ -627,8 +627,11 @@ function parseStyleConfig({
         // @ts-ignore
         newOptions[currentEditScene][type][key].args.style.position = 'relative';
       } else {
-        // @ts-ignore
-        delete newOptions[currentEditScene][type][key].args.style.position;
+        config?.positionType === 'absolute'
+          // @ts-ignore
+          ? newOptions[currentEditScene][type][key].args.style.position = config.positionType
+          // @ts-ignore
+          : delete newOptions[currentEditScene][type][key].args.style.position;
       }
       
       return newOptions;

@@ -130,6 +130,7 @@ export const titleSceneButtonConfig: Record<TitleSceneButtonKey, UIItemConfig> =
   [TitleSceneButtonKey.Game_start_button]: {
     hasHoverStyle: true,
     label: '开始游戏',
+    positionType: 'absolute'
   },
   [TitleSceneButtonKey.Game_achievement_button]: {
     hasHoverStyle: true,
