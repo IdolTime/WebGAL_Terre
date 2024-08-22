@@ -785,6 +785,7 @@ export const zhCn = {
           options: {
             role: "选择角色头像",
             number: "数字",
+            sound: "选择音效",
           },
         },
         unknown: {
