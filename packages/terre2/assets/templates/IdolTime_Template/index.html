@@ -7,6 +7,34 @@
   <link rel="manifest" href="./manifest.json" />
   <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
   <title>IdolTime</title>
+  <style>
+    :root {
+        --screenWidth: 2560px;
+        --screenHeight: 1440px;
+
+        --options_checkbox_top: 478px;
+        --options_checkbox_left: 882px;
+
+        --options_checkbox_window_top: 436px;
+        --options_checkbox_window_left: 1322px;
+
+
+        --options_checkbox_1080P_top: calc(266px*2);
+        --options_checkbox_1080P_left: calc(441px*2);
+
+        --options_checkbox_720P_top: calc(266px*2);
+        --options_checkbox_720P_left: calc(640px*2);
+
+        --options_light_slider_top: 890px;
+        --options_light_slider_left: 1244px;
+
+        --options_sound_slider_top: 750px;
+        --options_sound_slider_left: 1244px;
+
+        --options_light_main_top: 1020px;
+        --options_light_main_left: 1244px;
+    }
+  </style>
   <script>
     function PubSub() {
       this.subscribers = {};
@@ -41,7 +69,7 @@
 
     window.pubsub = new PubSub();
   </script>
-  <script type="module" crossorigin src="./assets/index-d6d6b44c.js"></script>
+  <script type="module" crossorigin src="./assets/index-ef27b9c3.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -49,8 +77,8 @@
   <!--快速显示落地页，让用户感知不到加载的过程-->
   <div id="ebg"></div>
   <div id="Title_enter_page" style="
-            width: 2560px;
-            height: 1440px;
+            width: 1920px;
+            height: 1080px;
             overflow: hidden;
             position: absolute;
             top: 0;
@@ -122,8 +150,19 @@
     window.isSafari = isSafari();
     window.isIOSDevice = isIOSDevice;
     function resize() {
-      const targetHeight = 1440;
-      const targetWidth = 2560;
+      let targetHeight = 1440;
+      let targetWidth = 2560;
+
+      const gameSizeVal = window.localStorage.getItem('game-screen-size');
+      const sizeArr = gameSizeVal && typeof gameSizeVal === 'string' && gameSizeVal?.split('x') || []
+      console.log('sizeArr', sizeArr, gameSizeVal)
+      if (sizeArr.length > 0) {
+        targetWidth = parseInt(sizeArr[0]) * 2;
+        targetHeight = parseInt(sizeArr[1]) * 2;
+      }
+
+      document.documentElement.style.setProperty('--screenWidth', `${targetWidth}px`);
+      document.documentElement.style.setProperty('--screenHeight', `${targetHeight}px`);
 
       const h = window.innerHeight; // 窗口高度
       const w = window.innerWidth; // 窗口宽度
@@ -141,6 +180,17 @@
       const title = document.getElementById('Title_enter_page');
       const ebg = document.getElementById('ebg');
       const elements = [root, title];
+
+      if (root) {
+        root.style.width = `${targetWidth}px`;
+        root.style.height = `${targetHeight}px`;
+      }
+
+      if (title) {
+        title.style.width = `${targetWidth}px`;
+        title.style.height = `${targetHeight}px`;
+      }
+
       if (w > h) {
         const ebg = document.getElementById('ebg');
         if (ebg) {
@@ -189,6 +239,10 @@
           element.style.transform = transform;
         }
       }
+
+      if (sizeArr.length > 0 && sizeArr[0] === '1920') {
+        setStyleProps();
+      }
     }
 
     if (!isIOSDevice) {
@@ -225,6 +279,33 @@
       root.style.left = '50%';
       root.style.top = '50%';
       root.style.transform = 'translate(-50%,-50%)';
+    }
+
+    function setStyleProps() {
+      const rootEle = document.documentElement;
+        const MS = 3;
+        const MSTop = 3.2;
+
+        rootEle.style.setProperty('--options_checkbox_top', `${239 * MS}px`);
+        rootEle.style.setProperty('--options_checkbox_left', `${441 * MS}px`);
+
+        rootEle.style.setProperty('--options_checkbox_window_top', `${218 * MSTop}px`);
+        rootEle.style.setProperty('--options_checkbox_window_left', `${661 * MS}px`);
+
+        rootEle.style.setProperty('--options_checkbox_1080P_top', `${266 * MSTop}px`);
+        rootEle.style.setProperty('--options_checkbox_1080P_left', `${441 * MS}px`);
+
+        rootEle.style.setProperty('--options_checkbox_720P_top', `${266 * MSTop}px`);
+        rootEle.style.setProperty('--options_checkbox_720P_left', `${640 * MS}px`);
+
+        rootEle.style.setProperty('--options_light_slider_top', `${445 * MS}px`);
+        rootEle.style.setProperty('--options_light_slider_left', `${622 * MS}px`);
+
+        rootEle.style.setProperty('--options_sound_slider_top', `${375 * MS}px`);
+        rootEle.style.setProperty('--options_sound_slider_left', `${622 * MS}px`);
+
+        rootEle.style.setProperty('--options_light_main_top', `${510 * MS}px`);
+        rootEle.style.setProperty('--options_light_main_left', `${622 * MS}px`);
     }
 
   </script>
