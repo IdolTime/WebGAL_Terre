@@ -717,7 +717,7 @@ export const zhCn = {
         unlockAchieve: {
           title: "解锁成就",
           initText: 'unlockAchieve:;',
-          descText: '切换背景图片',
+          descText: '解锁后的成就将显示在成就页面中',
           tips: {
             edit: '提示：解锁后的成就将显示在成就页面中。'
           },
@@ -787,6 +787,29 @@ export const zhCn = {
             number: "数字",
             sound: "选择音效",
           },
+        },
+        unlockAffinity: {
+          title: "解锁好感人物",
+          initText: 'unlockAffinity:;',
+          descText: '解锁后的好感人物将显示在好感度页面中。',
+          tips: {
+            edit: '提示：解锁后的好感人物将显示在好感页面中。'
+          },
+          options: {
+            file: {
+              title: '好感人物图片文件',
+              placeholder: '未选择'
+            },
+            name: {
+              title: "解锁人物",
+              placeholder: "请填写人物名称"
+            },
+            axis: {
+              title: '解锁按钮坐标',
+              x: 'X',
+              y: 'Y'
+            }
+          }
         },
         unknown: {
           title: "未识别",

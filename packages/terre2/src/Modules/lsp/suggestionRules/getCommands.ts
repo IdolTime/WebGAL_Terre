@@ -218,4 +218,11 @@ setVar:a=人物名称;可以设置字符串`,
     detail: `command moveCamera:<expression>;`,
     insertText: 'moveCamera:',
   },
+  {
+    label: 'unlockAffinity',
+    kind: CompletionItemKind.Function,
+    documentation: `解锁好感人物`,
+    detail: `command unlockAffinity:<expression>;`,
+    insertText: 'unlockAffinity:',
+  },
 ];

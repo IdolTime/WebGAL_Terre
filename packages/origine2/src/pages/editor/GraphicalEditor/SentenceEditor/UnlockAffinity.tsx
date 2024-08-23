@@ -11,30 +11,24 @@ import { useEffect } from 'react';
 
 
 /**
- * 成就系统-解锁成就
+ * 好感度系统-解锁好感人物
  */
-export default function UnlockAchieve(props: ISentenceEditorProps) {
-  const t = useTrans('editor.graphical.sentences.unlockAchieve.');
-  const isNoFile = props.sentence.content === '';
+export default function UnlockAffinity(props: ISentenceEditorProps) {
+  const t = useTrans('editor.graphical.sentences.unlockAffinity.');
   const bgFile = useValue(props.sentence.content);
-  const unlockName = useValue(getArgByKey(props.sentence, 'unlockname').toString() ?? '');
-  const condition = useValue(getArgByKey(props.sentence, 'condition').toString() ?? '');
-  const unlockSeries = useValue(getArgByKey(props.sentence, 'series').toString() ?? '');
-  const { updateExpandIndex } = useExpand();
+  const name = useValue(getArgByKey(props.sentence, 'name').toString() ?? '');
 
   const x = useValue<string>('');
   const y = useValue<string>('');
 
   useEffect(() => {
     props.sentence.args.forEach((k) => {
-      if (k.key === 'unlockname') {
-        unlockName.set(k.value.toString());
+      if (k.key === 'name') {
+        name.set(k.value.toString());
       } else if (k.key === 'x') {
         x.set(String(k.value));
       } else if (k.key === 'y') {
         y.set(String(k.value));
-      } else if (k.key === 'condition') {
-        condition.set(k.value.toString());
       }
     });
   }, []);
@@ -42,18 +36,13 @@ export default function UnlockAchieve(props: ISentenceEditorProps) {
   const submit = () => {
     const axisX = x.value !== '' ? ` -x=${x.value}` : '';
     const axisY = y.value !== '' ? ` -y=${y.value}` : '';
-    const name = unlockName.value !== '' ? ` -unlockname=${unlockName.value}` : '';
-    const unlockCondition = condition.value !== '' ? ` -condition=${condition.value}` : ''; 
+    const nameValue = name.value !== '' ? ` -name=${name.value}` : '';
 
     let content = '';
     if (bgFile.value !== 'none') {
-      content = `unlockAchieve:${bgFile.value}${axisX}${axisY}${name}${unlockCondition} -next;`;
+      content = `unlockAffinity:${bgFile.value}${axisX}${axisY}${nameValue} -next;`;
       props.onSubmit(content);
     } 
-    // else {
-    //   content = `unlockAchieve:${bgFile.value} -next;`;
-    // }
-    
   };
 
   return ( 
@@ -74,14 +63,14 @@ export default function UnlockAchieve(props: ISentenceEditorProps) {
         </CommonOptions>
         <CommonOptions key="2" title={t('options.name.title')}>
           <input
-            value={unlockName.value}
+            value={name.value}
             onBlur={submit}
             className={styles.sayInput}
             style={{ width: '200px' }}
             placeholder={t('options.name.placeholder')}
             onChange={(ev) => {
               const newValue = ev.target.value;
-              unlockName.set(newValue);
+              name.set(newValue);
             }}
           />
         </CommonOptions>
@@ -111,19 +100,6 @@ export default function UnlockAchieve(props: ISentenceEditorProps) {
               const newValue = e.target.value;
               y.set(newValue ?? '');
             }}  
-          />
-        </CommonOptions>
-        <CommonOptions key="4" title={t('options.condition.title')}>
-          <input
-            value={condition.value}
-            onBlur={submit}
-            className={styles.sayInput}
-            style={{ width: '200px' }}
-            placeholder={t('options.condition.placeholder')}
-            onChange={(ev) => {
-              const newValue = ev.target.value;
-              condition.set(newValue);
-            }}
           />
         </CommonOptions>
       </div>

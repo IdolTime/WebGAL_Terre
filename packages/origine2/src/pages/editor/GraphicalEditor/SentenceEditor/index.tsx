@@ -49,6 +49,7 @@ import SetTransition from "./SetTransition";
 import GetUserInput from "./GetUserInput";
 import UnlockStoryline from './UnlockStoryline';
 import UnlockAchieve from './UnlockAchieve';
+import UnlockAffinity from './UnlockAffinity';
 import ShowValue from './ShowValue';
 import PayProduct from "./PayProduct";
 import FinishTrial from "./FinishTrial";
@@ -321,5 +322,13 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: ChangeAffinity,
     icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'changeAffinity.descText')
-  }
+  },
+  {
+    type: commandType.unlockAffinity,
+    title: () => t(tPrefix + 'unlockAffinity.title'),
+    initialText: () => t(tPrefix + 'unlockAffinity.initText'),
+    component: UnlockAffinity,
+    icon: <Unlock theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'unlockAffinity.descText')
+  },
 ];

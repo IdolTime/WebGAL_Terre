@@ -43,6 +43,7 @@ const SCRIPT_CONFIG = [
   { scriptString: 'finishTrial', scriptType: commandType.finishTrial },
   { scriptString: 'moveCamera', scriptType: commandType.moveCamera },
   { scriptString: 'changeAffinity', scriptType: commandType.changeAffinity },
+  { scriptString: 'unlockAffinity', scriptType: commandType.unlockAffinity },
 ];
 
 export const WebgalParser = new SceneParser(() => {

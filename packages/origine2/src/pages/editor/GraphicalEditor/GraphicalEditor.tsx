@@ -218,7 +218,6 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
                             </div>
                           </div>
                           {showSentence.value[i] && <SentenceEditor sentence={sentence} index={index} onSubmit={(newSentence) => {
-                            console.log('newSentence1231232312', newSentence);
                             updateSentenceByIndex(newSentence, i);
                           }}/>}
                         </div>
