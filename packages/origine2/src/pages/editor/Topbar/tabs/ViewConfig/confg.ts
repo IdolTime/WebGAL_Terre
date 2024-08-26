@@ -54,38 +54,38 @@ export interface IStyleConfig {
 }
 
 export const defaultStyle: IStyleConfig = {
-    x: {
-        type: 'number',
-        label: 'x',
-    },
-    y: {
-        type: 'number',
-        label: 'y',
-    },
-    scale: {
-        type: 'number',
-        label: '缩放',
-    },
-    fontSize: {
-        type: 'number',
-        label: '字体大小',
-    },
-    fontColor: {
-        type: 'color',
-        label: '字体颜色',
-    },
-    image: {
-        type: 'image',
-        label: '图片',
-    },
-    width: {
-        type: 'number',
-        label: '宽度',
-    },
-    height: {
-        type: 'number',
-        label: '高度',
-    },
+  x: {
+    type: 'number',
+    label: 'x',
+  },
+  y: {
+    type: 'number',
+    label: 'y',
+  },
+  scale: {
+    type: 'number',
+    label: '缩放',
+  },
+  fontSize: {
+    type: 'number',
+    label: '字体大小',
+  },
+  fontColor: {
+    type: 'color',
+    label: '字体颜色',
+  },
+  image: {
+    type: 'image',
+    label: '图片',
+  },
+  width: {
+    type: 'number',
+    label: '宽度',
+  },
+  height: {
+    type: 'number',
+    label: '高度',
+  },
 };
 
 export interface InfoConfig {
@@ -124,38 +124,38 @@ export interface InfoConfig {
 }
 
 export const defaultInfo: InfoConfig = {
-    name: {
-        type: 'string',
-        label: '名字'
-    },
-    height: {
-        type: 'number',
-        label: '身高'
-    },
-    weight: {
-        type: 'number',
-        label: '体重'
-    },
-    bustSize: {
-        type: 'number',
-        label: '胸围'
-    },
-    waistSize: {
-        type: 'number',
-        label: '腰围'
-    },
-    hipSize: {
-        type: 'number',
-        label: '臀围'
-    },
-    description: {
-        type: 'string',
-        label: '描述'
-    },
-    image: {
-        type: 'string',
-        label: '图片'
-    }
+  name: {
+    type: 'string',
+    label: '名字'
+  },
+  height: {
+    type: 'number',
+    label: '身高'
+  },
+  weight: {
+    type: 'number',
+    label: '体重'
+  },
+  bustSize: {
+    type: 'number',
+    label: '胸围'
+  },
+  waistSize: {
+    type: 'number',
+    label: '腰围'
+  },
+  hipSize: {
+    type: 'number',
+    label: '臀围'
+  },
+  description: {
+    type: 'string',
+    label: '描述'
+  },
+  image: {
+    type: 'string',
+    label: '图片'
+  }
 };
 
 export interface ICollectionImages  {
@@ -202,44 +202,87 @@ export interface ICollectionImages  {
 }
 
 export const defaultCollectionImages: ICollectionImages = {
-    img1: {
-        type: 'string',
-        label: '图片1'
-    },
-    img2: {
-        type: 'string',
-        label: '图片2'
-    },
-    img3: {
-        type: 'string',
-        label: '图片3'
-    },
-    img4: {
-        type: 'string',
-        label: '图片4'
-    },
-    img5: {
-        type: 'string',
-        label: '图片5'
-    },
-    img6: {
-        type: 'string',
-        label: '图片6'
-    },
-    img7: {
-        type: 'string',
-        label: '图片7'
-    },
-    img8: {
-        type: 'string',
-        label: '图片8'
-    },
-    img9: {
-        type: 'string',
-        label: '图片9'
-    },
-    img10: {
-        type: 'string',
-        label: '图片10'
-    }
+  img1: {
+    type: 'string',
+    label: '图片1'
+  },
+  img2: {
+    type: 'string',
+    label: '图片2'
+  },
+  img3: {
+    type: 'string',
+    label: '图片3'
+  },
+  img4: {
+    type: 'string',
+    label: '图片4'
+  },
+  img5: {
+    type: 'string',
+    label: '图片5'
+  },
+  img6: {
+    type: 'string',
+    label: '图片6'
+  },
+  img7: {
+    type: 'string',
+    label: '图片7'
+  },
+  img8: {
+    type: 'string',
+    label: '图片8'
+  },
+  img9: {
+    type: 'string',
+    label: '图片9'
+  },
+  img10: {
+    type: 'string',
+    label: '图片10'
+  }
+};
+
+export const defaultCollectionVideos = {
+  video1: {
+    type: 'string',
+    label: '视频1'
+  },
+  video2: {
+    type: 'string',
+    label: '视频2'
+  },
+  video3: {
+    type: 'string',
+    label: '视频3'
+  },
+  video4: {
+    type: 'string',
+    label: '视频4'
+  },
+  video5: {
+    type: 'string',
+    label: '视频5'
+  },
+  video6: {
+    type: 'string',
+    label: '视频6'
+  },
+  video7: {
+    type: 'string',
+    label: '视频7'
+  },
+  video8: {
+    type: 'string',
+    label: '视频8'
+  },
+  video9: {
+    type: 'string',
+    label: '视频9',
+  },
+  video10: {
+    type: 'string',
+    label: '视频10',
+  }
 }

@@ -1,4 +1,4 @@
-import { InfoConfig, ICollectionImages } from '@/pages/editor/Topbar/tabs/ViewConfig/confg'
+import { InfoConfig, ICollectionImages, defaultCollectionVideos } from '@/pages/editor/Topbar/tabs/ViewConfig/confg'
 
 
 export enum TitleSceneButtonKey {
@@ -14,7 +14,7 @@ export enum TitleSceneButtonKey {
 
 export interface UIItemConfig {
   label: string;
-  type?: 'image' | 'text' | 'container' | 'placeholder' | 'bgm' | 'bg';
+  type?: 'image' | 'text' | 'container' | 'placeholder' | 'bgm' | 'bg' | 'video';
   hasHoverStyle?: boolean;
   hasXY?: boolean;
   hasWidthHeight?: boolean;
@@ -79,6 +79,7 @@ export interface CollectionItemKey {
     style?: Style;
     info?: InfoConfig;
     images?: ICollectionImages;
+    videos?: typeof defaultCollectionVideos;
   }
 }
 
@@ -416,7 +417,13 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '详情界面信息图片列表',
         hasXY: false,
         hasHoverStyle: false,
-      }
+      },
+      [collectionItemInfoKey.collectionVideos]: {
+        type: 'video',
+        label: '详情界面信息视频列表',
+        hasXY: false,
+        hasHoverStyle: false,
+      },
     }
   },
   [CollectionSceneOtherKey.Collection_img2]: {
@@ -440,7 +447,13 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '详情界面信息图片列表',
         hasXY: false,
         hasHoverStyle: false,
-      }
+      },
+      [collectionItemInfoKey.collectionVideos]: {
+        type: 'video',
+        label: '详情界面信息视频列表',
+        hasXY: false,
+        hasHoverStyle: false,
+      },
     }
   },
   [CollectionSceneOtherKey.Collection_img3]: {
@@ -464,7 +477,13 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '详情界面信息图片列表',
         hasXY: false,
         hasHoverStyle: false,
-      }
+      },
+      [collectionItemInfoKey.collectionVideos]: {
+        type: 'video',
+        label: '详情界面信息视频列表',
+        hasXY: false,
+        hasHoverStyle: false,
+      },
     }
   },
   [CollectionSceneOtherKey.Collection_detail_title]: {
@@ -487,7 +506,7 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     hasHoverStyle: false,
     hasXY: false
   }
-}
+};
 
 export enum OptionSceneOtherKey {
   Option_title = 'Option_title',
@@ -1086,14 +1105,15 @@ export interface OptionSceneUIConfig {
   buttons: { [key in OptionSceneButtonKey]: ButtonItem };
 }
 
-export interface InfonItem {
+export interface InfoItem {
   key: AllKey;
   content: string,
   args: {
     hide: boolean,
     style?: Style,
     info?: InfoConfig,
-    images?: ICollectionImages
+    images?: ICollectionImages,
+    videos?: typeof defaultCollectionVideos,
   }
 }
 
@@ -1102,9 +1122,9 @@ export interface CollectionSceneUIConfig {
   other: {
     [CollectionSceneOtherKey.Collection_bg]: ButtonItem,
     [CollectionSceneOtherKey.Collection_title]: ButtonItem,
-    [CollectionSceneOtherKey.Collection_img1]: InfonItem,
-    [CollectionSceneOtherKey.Collection_img2]: InfonItem,
-    [CollectionSceneOtherKey.Collection_img3]: InfonItem,
+    [CollectionSceneOtherKey.Collection_img1]: InfoItem,
+    [CollectionSceneOtherKey.Collection_img2]: InfoItem,
+    [CollectionSceneOtherKey.Collection_img3]: InfoItem,
     [CollectionSceneOtherKey.Collection_detail_title]: ButtonItem,
     [CollectionSceneOtherKey.Collection_detail_bg]: ButtonItem,
     [CollectionSceneOtherKey.Collection_detail_dialog_bg]: ButtonItem,

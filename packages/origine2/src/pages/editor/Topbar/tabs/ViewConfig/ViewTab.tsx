@@ -58,15 +58,16 @@ import { cloneDeep } from 'lodash';
 import { useValue } from '@/hooks/useValue';
 import axios from 'axios';
 import { WebgalParser } from '@/pages/editor/GraphicalEditor/parser';
-import { CollectionInfo } from './CollectionImgInfo'
+import { CollectionInfo } from './CollectionImgInfo';
 import { 
   IStyleConfig,
   defaultStyle,
   InfoConfig,
   defaultInfo,
   ICollectionImages,
-  defaultCollectionImages
-} from './confg'
+  defaultCollectionImages,
+  defaultCollectionVideos
+} from './confg';
 
 interface IGameConfigEditor {
   key: string;
@@ -182,12 +183,14 @@ function GameConfigEditorGameMenu() {
               styleContent[argKey].push(`${newKey}=${value.args[argKey][newKey]}`);
             }
           });
-        } else if (argKey.toLowerCase().endsWith('info') || argKey.toLowerCase().endsWith('images')) {
+        } else if (argKey.toLowerCase().endsWith('info') || argKey.toLowerCase().endsWith('images') || argKey === 'videos') {
           styleContent[argKey] = [];
           // @ts-ignore
           Object.keys(value.args[argKey]).forEach((infoKey) => {
             let newKey = argKey.toLowerCase().endsWith('info') && infoKey as keyof InfoConfig || 
-              argKey.toLowerCase().endsWith('images') && infoKey as keyof ICollectionImages;
+              argKey.toLowerCase().endsWith('images') && infoKey as keyof ICollectionImages || 
+              argKey === 'videos' && infoKey as keyof typeof defaultCollectionVideos;
+
             // @ts-ignore
             if (value.args[argKey][newKey] !== undefined && value.args[argKey][newKey] !== null && value.args[argKey][newKey] !== '') {
               // @ts-ignore
@@ -289,6 +292,8 @@ function GameConfigEditorGameMenu() {
           parsedArgs[e.key] = parseStyleString(e.value as string);
         } else if (e.key === 'images') {
           parsedArgs[e.key] = parseStyleString(e.value as string);
+        } else if (e.key === 'videos') {
+          parsedArgs[e.key] = parseStyleString(e.value as string);
         }
       });
 
@@ -335,13 +340,13 @@ function GameConfigEditorGameMenu() {
         <DialogBody>
           <DialogTitle>{sceneNameMap[currentEditScene || Scene.extra]}UI设置</DialogTitle>
           <DialogContent>
-            <div className={s.group} key={'other'}>
+            <div className={s.group} key="other">
               <span className={s.groupLabel}>其他设置</span>
               {Object.values(options[currentEditScene || Scene.extra]?.other || {}).map((item, index) =>
                 renderConfig(item, 'other', currentEditScene || Scene.extra, setOptions, index),
               )}
             </div>
-            <div className={s.group} key={'buttons'}>
+            <div className={s.group} key="buttons">
               <span className={s.groupLabel}>界面按钮</span>
               {Object.values(options[currentEditScene || Scene.extra]?.buttons || {}).map((item, index) =>
                 renderConfig(item, 'buttons', currentEditScene || Scene.extra, setOptions, index),
@@ -493,7 +498,7 @@ function renderConfig(
   config.type = config.type || 'image';
 
   const [styleConfig, hasHoverStyle] = handleStyle(defaultStyle, config);
-  const styleConfigArr: { label: string; style: IStyleConfig; key: string, info?: InfoConfig, images?: ICollectionImages }[] = [
+  const styleConfigArr: { label: string; style: IStyleConfig; key: string, info?: InfoConfig, images?: ICollectionImages, videos?: typeof defaultCollectionVideos }[] = [
     { label: '默认样式', style: styleConfig, key: 'style' },
   ];
 
@@ -512,14 +517,21 @@ function renderConfig(
           key: 'info',
           style: {},
           info: defaultInfo
-        })
+        });
       } else if (key === collectionItemInfoKey.collectionImages) {
         styleConfigArr.push({
           label: '详情图片列表',
           key: key,
           style: {},
           images: defaultCollectionImages
-        })
+        });
+      } else if (key === 'collection_videos') {
+        styleConfigArr.push({
+          label: '详情视频列表',
+          key: key,
+          style: {},
+          videos: defaultCollectionVideos,
+        });
       } else {
         styleConfigArr.push({ 
           label: value.label + '样式', 
@@ -663,7 +675,7 @@ function parseStyleConfig({
     });
   }
 
-  function setImage(imgKey: keyof ICollectionImages, value: string) {
+  function setFile(fileType: 'videos' | 'images', fileKey: keyof ICollectionImages | keyof typeof defaultCollectionVideos, value: string) {
     setOptions((options) => {
       const newOptions = {
         ...options,
@@ -678,10 +690,10 @@ function parseStyleConfig({
               args: {
                 // @ts-ignore
                 ...options[currentEditScene][type][key].args,
-                ['images']: {
+                [fileType]: {
                   // @ts-ignore
-                  ...options[currentEditScene][type][key].args['images'],
-                  [imgKey]: value,
+                  ...options[currentEditScene][type][key].args[fileType],
+                  [fileKey]: value,
                 },
               },
             },
@@ -707,7 +719,7 @@ function parseStyleConfig({
               args: {
                 // @ts-ignore
                 ...options[currentEditScene][type][key].args,
-                ['info']: {
+                'info': {
                   // @ts-ignore
                   ...options[currentEditScene][type][key].args['info'],
                   [infoKey]: value,
@@ -737,9 +749,9 @@ function parseStyleConfig({
         setStyle={setStyle}
         setHide={setHide}
         setInfo={setInfo}
-        setImage={setImage}
+        setFile={setFile}
       />
-    )
+    );
   }
 
   if (config.type === 'bgm') {
@@ -830,8 +842,8 @@ function parseStyleConfig({
                           {config.type === 'bg' && key === 'style'
                             ? item.content
                             : key === 'hoverStyle'
-                            ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
-                            : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''}
+                              ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                              : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''}
                         </span>
                       </div>
                     ) : null}
