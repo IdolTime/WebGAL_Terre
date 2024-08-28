@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import TopbarTab from '@/pages/editor/Topbar/components/TopbarTab';
 import { TabItem } from '@/pages/editor/Topbar/components/TabItem';
 import { useDispatch, useSelector } from 'react-redux';
@@ -51,6 +52,7 @@ import {
   UIItemConfig,
   CollectionItemKey,
   collectionItemInfoKey,
+  SliderItemKey,
 } from '@/pages/editor/types';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ChooseFile from '@/pages/editor/ChooseFile/ChooseFile';
@@ -74,6 +76,12 @@ interface IGameConfigEditor {
   value: string;
   onChange: Function;
 }
+
+const sliderKeyArr = [
+  SliderItemKey.slider, 
+  SliderItemKey.sliderBg, 
+  SliderItemKey.sliderThumb
+];
 
 export function ViewTab() {
   const dispatch = useDispatch();
@@ -164,6 +172,8 @@ function GameConfigEditorGameMenu() {
   function updateGameUIConfig() {
     const newConfig = cloneDeep(gameConfig.value);
 
+    console.log(newConfig);
+  
     function handleUpdate(
       key: string,
       value: ButtonItem | ContainerItem | SliderContainerItem | IndicatorContainerItem,
@@ -172,7 +182,7 @@ function GameConfigEditorGameMenu() {
       let styleContent: Record<string, string[]> = {};
       Object.keys(value.args).forEach((argKey) => {
         // @ts-ignore
-        if (argKey.toLowerCase().endsWith('style') && value.args[argKey]) {
+        if (argKey.toLowerCase().endsWith('style') && value.args[argKey] || sliderKeyArr.includes(argKey)) {
           styleContent[argKey] = [];
           // @ts-ignore
           Object.keys(value.args[argKey]).forEach((styleKey) => {
@@ -197,7 +207,7 @@ function GameConfigEditorGameMenu() {
               styleContent[argKey].push(`${newKey}=${value.args[argKey][newKey]}`);
             }
           });
-        } 
+        }
       });
 
       const options: any[] = [{ key: 'hide', value: value.args.hide }];
@@ -284,7 +294,7 @@ function GameConfigEditorGameMenu() {
       args.forEach((e: any) => {
         if (e.key === 'hide') {
           parsedArgs.hide = e.value === true;
-        } else if (e.key.endsWith('style')) {
+        } else if (e.key.endsWith('style') || sliderKeyArr.includes(e.key)) {
           parsedArgs[e.key] = parseStyleString(e.value as string);
         } else if (e.key === 'hoverStyle') {
           parsedArgs[e.key] = parseStyleString(e.value as string);
@@ -476,7 +486,6 @@ function renderConfig(
   const key = item.key;
   let config: (UIItemConfig & { children: Record<string, UIItemConfig> }) | undefined;
 
-
   if (type === 'buttons') {
     const sceneConfig = sceneButtonConfig[currentEditScene];
 
@@ -536,7 +545,7 @@ function renderConfig(
         styleConfigArr.push({ 
           label: value.label + '样式', 
           style: _styleConfig, 
-          key: value.label + 'Style' 
+          key: sliderKeyArr.includes(key as any) ? key : value.label + 'Style' 
         });
       }
 
@@ -645,7 +654,7 @@ function parseStyleConfig({
           // @ts-ignore
           : delete newOptions[currentEditScene][type][key].args.style.position;
       }
-
+      console.log(newOptions);
       return newOptions;
     });
   }
@@ -769,17 +778,33 @@ function parseStyleConfig({
     );
   }
 
+  const getChooseFileName = (key: string, item: ButtonItem, styleKey: any, type?: string) => {
+    let fileName = '';
+    if (type === 'bg' && key === 'style') {
+      fileName = item.content;
+    } else if (key === 'hoverStyle') {
+      fileName = (item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string;
+    } else if (sliderKeyArr.includes(key as any)) {
+      // @ts-ignore
+      fileName = item.args[key]?.[styleKey as keyof IStyleConfig] as string ?? '';
+    } else {
+      fileName = item.args.style?.[styleKey as keyof IStyleConfig] as string ?? '';
+    }
+
+    return fileName;
+  };
+
   return (
     <div className={s.row} key={itemIndex + config.label}>
       <span className={s.label}>{config.label}</span>
-      <div>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         <Checkbox
           checked={item.args.hide}
           onChange={(_, data) => {
             setHide(data.checked as boolean);
           }}
         />
-        <span>隐藏</span>
+        <span style={{ display: 'inline-block', width: '30px' }}>隐藏</span>
       </div>
       {styleConfigArr.map(({ label, style, key }, index: number) => (
         <Dialog key={key + index}>
@@ -839,11 +864,12 @@ function parseStyleConfig({
                           }
                         />
                         <span style={{ marginLeft: 12 }}>
-                          {config.type === 'bg' && key === 'style'
+                          {getChooseFileName(key, item as ButtonItem, styleKey, config.type,)}
+                          {/* {config.type === 'bg' && key === 'style'
                             ? item.content
                             : key === 'hoverStyle'
                               ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
-                              : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''}
+                              : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''} */}
                         </span>
                       </div>
                     ) : null}
