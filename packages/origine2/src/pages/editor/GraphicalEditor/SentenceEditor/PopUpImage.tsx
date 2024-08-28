@@ -155,7 +155,7 @@ export default function PopUpImage(props: ISentenceEditorProps) {
                 <CommonOptions key="1" title={t("options.file.title")}>
                     <>
                         {figureFile.value + "\u00a0\u00a0"}
-                        <ChooseFile sourceBase="figure" onChange={(fileDesc) => {
+                        <ChooseFile sourceBase="image" onChange={(fileDesc) => {
                             figureFile.set(fileDesc?.name ?? "");
                             submit();
                         }}

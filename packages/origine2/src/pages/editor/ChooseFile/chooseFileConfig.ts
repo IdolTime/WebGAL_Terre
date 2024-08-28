@@ -13,6 +13,7 @@ dirnameToDisplayNameMap.set('video', () => t(tPrefix + 'video'));
 dirnameToDisplayNameMap.set('vocal', () => t(tPrefix + 'vocal'));
 dirnameToDisplayNameMap.set('ui', () => t(tPrefix + 'ui'));
 dirnameToDisplayNameMap.set('font', () => t(tPrefix + 'font'));
+dirnameToDisplayNameMap.set('image', () => t(tPrefix + 'image'));
 
 export const dirNameToExtNameMap = new Map();
 
@@ -26,3 +27,4 @@ dirNameToExtNameMap.set('video', ['.mp4', '.flv']);
 dirNameToExtNameMap.set('vocal', ['.mp3', '.ogg', '.wav']);
 dirNameToExtNameMap.set('ui', ['.jpg', '.png', '.webp']);
 dirNameToExtNameMap.set('font', ['.otf', '.ttf']);
+dirNameToExtNameMap.set('image', ['.png', '.webp', '.apng']);

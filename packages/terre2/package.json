@@ -36,7 +36,7 @@
     "cross-spawn-windows-exe": "^1.2.0",
     "dotenv": "^16.4.5",
     "fs-extra": "^11.2.0",
-    "idoltime-parser": "4.4.22",
+    "idoltime-parser": "4.4.24",
     "open": "^8.4.0",
     "pe-library": "^1.0.1",
     "rcedit": "^4.0.1",
