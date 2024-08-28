@@ -24,7 +24,8 @@ import {
   People,
   SwitchThemes, Transform,
   VideoTwo,
-  Unlock
+  Unlock,
+  ImageFiles
 } from "@icon-park/react";
 import ChangeBg from "./ChangeBg";
 import ChangeFigure from "./ChangeFigure";
@@ -55,6 +56,7 @@ import PayProduct from "./PayProduct";
 import FinishTrial from "./FinishTrial";
 import MoveCamera from "./MoveCamera";
 import ChangeAffinity from './ChangeAffinity';
+import PopUpImage from './PopUpImage'
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -330,5 +332,13 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: UnlockAffinity,
     icon: <Unlock theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'unlockAffinity.descText')
+  },
+  {
+    type: commandType.popUpImage,
+    title: () => t(tPrefix + 'popUpImage.title'),
+    initialText: () => t(tPrefix + 'popUpImage.initText'),
+    component: PopUpImage,
+    icon: <ImageFiles theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'popUpImage.descText')
   },
 ];

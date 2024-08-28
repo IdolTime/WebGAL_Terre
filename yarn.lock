@@ -6343,10 +6343,10 @@ iconv-lite@^0.6.3:
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
-idoltime-parser@4.4.21:
-  version "4.4.21"
-  resolved "https://registry.yarnpkg.com/idoltime-parser/-/idoltime-parser-4.4.21.tgz#f593b970af5032ac6b66ef66ac637c11ef0d45d4"
-  integrity sha512-l7QjpgtbWvh1St+GQYtU0WQSSFy4Q0C1tlZx33IOqRIb+EXCPa6kj9QN+watnrv8oWSxa0lrnOEO2HuIvV179w==
+idoltime-parser@4.4.22:
+  version "4.4.22"
+  resolved "https://registry.yarnpkg.com/idoltime-parser/-/idoltime-parser-4.4.22.tgz#4f91bbf9bd65f83065a5a3f92c9fb1e4e02da1d3"
+  integrity sha512-8yvFfrsugwYjsHGv3jGpnv1qD/e86QXliu+9riJp9oTTV8rR8qhMoU6cSWDs+MenI1hLmKSlm7KqtUiIyiPDww==
   dependencies:
     chevrotain "^10.5.0"
     cloudlogjs "^1.0.11"
