@@ -36,11 +36,12 @@ const UserProfile = () => {
           localStorage.removeItem('editorToken');
           localStorage.removeItem('editorUserInfo');
           dispatch(setUserInfo({
-            userId: '',
+            userId: 0,
             userName: '',
             nickName: '',
             avatar: '',
             email: '',
+            editorType: 1,
           }));
           dispatch(setEditorToken(''));
           console.log('退出登录 clicked');
