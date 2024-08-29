@@ -41,6 +41,14 @@ changeFigure:testFigure03.png -left -next;`,
     insertText: 'changeFigure',
   },
   {
+    label: 'popUpImage',
+    kind: CompletionItemKind.Function,
+    documentation: `更新弹窗图片
+    popUpImage:testFigure03.png -left -next;`,
+    detail: `command popUpImage:<fileName> [-left] [-right] [id=figureId] [-next];`,
+    insertText: 'popUpImage',
+  },
+  {
     label: 'miniAvatar',
     kind: CompletionItemKind.Function,
     documentation: `放置小头像

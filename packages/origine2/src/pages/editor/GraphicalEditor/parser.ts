@@ -44,6 +44,7 @@ const SCRIPT_CONFIG = [
   { scriptString: 'moveCamera', scriptType: commandType.moveCamera },
   { scriptString: 'changeAffinity', scriptType: commandType.changeAffinity },
   { scriptString: 'unlockAffinity', scriptType: commandType.unlockAffinity },
+  { scriptString: 'popUpImage', scriptType: commandType.popUpImage },
 ];
 
 export const WebgalParser = new SceneParser(() => {

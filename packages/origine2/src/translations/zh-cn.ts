@@ -124,6 +124,7 @@ export const zhCn = {
           vocal: '语音',
           ui: 'UI',
           font: '字体',
+          image: '图片'
         }
       },
 
@@ -357,6 +358,61 @@ export const zhCn = {
             },
             tips: {
               setEffect: "提示：效果只有在切换到不同立绘或关闭之前的立绘再重新添加时生效。如果你要为现有的立绘设置效果，请使用单独的设置效果命令",
+            },
+            duration: {
+              title: "动画所需时间",
+              placeholder: "动画所需时间（毫秒）"
+            },
+            animationType: {
+              title: "动画设置",
+              flag: "唇形同步与眨眼",
+              lipSync: {
+                title: "唇形同步",
+                mouthOpen: "张开嘴",
+                mouthHalfOpen: "半张嘴",
+                mouthClose: "闭上嘴",
+              },
+              blink: {
+                title: "眨眼",
+                eyesOpen: "睁开眼睛",
+                eyesClose: "闭上眼睛",
+              },
+            }
+          }
+        },
+        popUpImage: {
+          title: '弹窗图片',
+          initText: "popUpImage:选择弹窗图片文件;",
+          descText: '添加或切换指定位置的弹窗图片',
+          options: {
+            hide: {
+              title: "关闭弹窗图片",
+              on: "关闭弹窗图片",
+              off: '显示弹窗图片',
+              choose: '选择弹窗图片文件'
+            },
+            file: {
+              title: '弹窗图片文件',
+            },
+            position: {
+              title: "弹窗图片位置",
+              options: {
+                left: '左侧',
+                center: '中间',
+                right: '右侧'
+              }
+            },
+            id: {
+              title: "弹窗图片ID（可选）",
+              placeholder: "弹窗图片 ID"
+            },
+            displayEffect: {
+              title: "显示效果",
+              on: "显示",
+              off: "不显示"
+            },
+            tips: {
+              setEffect: "提示：效果只有在切换到不同立绘或关闭之前的立绘再重新添加时生效。如果你要为现有的弹窗图片设置效果，请使用单独的设置效果命令",
             },
             duration: {
               title: "动画所需时间",
