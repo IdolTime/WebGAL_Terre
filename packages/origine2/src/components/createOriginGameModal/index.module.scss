@@ -1,0 +1,540 @@
+.modalTitleBg {
+  width: 228px;
+  height: 47px;
+  background: url('@/assets/modalTitleBg.webp') no-repeat center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  font-family: "SourceHan-Serif";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 22px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -56px;
+}
+
+.modalClose {
+  width: 36px;
+  height: 36px;
+  opacity: 0.5;
+  background: url('@/assets/modalClose.svg') no-repeat center center;
+  cursor: pointer;
+  position: absolute;
+  top: -50px;
+  right: 0;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.modalTitle {
+  display: flex;
+  justify-content: center;
+
+  div {
+    width: 538px;
+    height: 42px;
+    background: linear-gradient(90deg, rgba(226, 150, 176, 0.00) 7.09%, #E296B0 38.86%, #E296B0 64.65%, rgba(226, 150, 176, 0.00) 100%);
+    text-align: center;
+    color: #FFF8EA;
+    font-family: "PingFang SC";
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 42px;
+  }
+}
+
+.modalForm {
+  margin-top: 24px;
+}
+
+.formItem {
+  font-family: 'SourceHan-Serif';
+  color: #707083;
+
+  &:focus {
+    border-color: #D4C1E6;
+  }
+
+  &:hover {
+    border-color: #D4C1E6;
+  }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    /* 更改背景色为白色 */
+    -webkit-text-fill-color: #707083 !important;
+    /* 更改文字颜色为深灰色 */
+    transition: background-color 5000s ease-in-out 0s;
+    /* 防止 Chrome 中的背景色闪烁 */
+  }
+}
+
+.uploadContainer {
+  width: 206px;
+  height: 126px;
+  border-radius: 8px;
+  background: #FDF4FF;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 20px;
+  position: relative;
+
+  &:hover {
+    border: 1px solid #D4C1E6;
+  }
+
+  img {
+    width: 40px;
+  }
+
+  .uploadImg {
+    width: 94px;
+    height: 94px;
+    object-fit: contain;
+  }
+
+  div {
+    color: #707083;
+    text-align: center;
+    font-family: "SourceHan-Serif";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin-top: 12px;
+  }
+
+  .uploadClose {
+    width: 20px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: end;
+  margin-top: 20px;
+  align-items: center;
+  margin-right: -10px;
+
+  .modalFooterCancel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 117px;
+    height: 47px;
+    background: url('@/assets/cancelBg.svg') no-repeat center center;
+    cursor: pointer;
+    color: #FFF;
+    font-family: "SourceHan-Serif";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+
+    img {
+      margin-top: 3px;
+    }
+
+    &:hover {
+      background: url('@/assets/cancelHover.svg') no-repeat center center;
+    }
+  }
+
+  .modalFooterConfirm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 141px;
+    height: 71px;
+    background: url('@/assets/confirmSel.svg') no-repeat center center;
+    cursor: not-allowed;
+    color: #FFF;
+    font-family: "SourceHan-Serif";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    opacity: 0.7;
+    margin-left: -10px;
+
+    img {
+      margin-top: 3px;
+    }
+
+    &.modalFooterConfirmNel {
+      opacity: 1;
+      cursor: pointer;
+
+      &:hover {
+        background: url('@/assets/confirmHover.svg') no-repeat center center;
+      }
+    }
+  }
+}
+
+.modalSubtitle {
+  color: #333;
+  text-align: center;
+  font-family: "SourceHan-Serif";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-top: 24px;
+}
+
+.editModalTips {
+  color: #707083;
+  text-align: center;
+  font-family: "SourceHan-Serif";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-top: 12px;
+}
+
+.submitModalTips {
+  color: #333;
+  text-align: center;
+  font-family: "SourceHan-Serif";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  margin-top: 24px;
+}
+
+.editImgContainer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+
+  img {
+    height: 182px;
+    object-fit: contain;
+  }
+}
+
+.editDownload {
+  margin-top: 36px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  height: 130px;
+}
+
+.editDownloadWindows {
+  width: 151px;
+  height: 44px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.51);
+  border: 1px solid #FFF;
+  cursor: pointer;
+  color: #885FB1;
+  font-family: "SourceHan-Serif";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  box-sizing: border-box;
+
+  div {
+    width: 26px;
+    height: 26px;
+    background-image: url('@/assets/windowsNor.svg');
+  }
+
+  &:hover {
+    border: 1px solid #B072EF;
+    color: #B072EF;
+
+    div {
+      background-image: url('@/assets/windowsNel.svg');
+    }
+  }
+}
+
+.editDownloadMacImg {
+  width: 151px;
+  height: 44px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.51);
+  border: 1px solid #FFF;
+  cursor: pointer;
+  color: #885FB1;
+  font-family: "SourceHan-Serif";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  box-sizing: border-box;
+
+  div {
+    width: 26px;
+    height: 26px;
+    background-image: url('@/assets/macNor.svg');
+  }
+}
+
+.editDownloadMac {
+  .editDownloadMacList {
+    width: 151px;
+    height: 74px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 1px solid #B072EF;
+    background: rgba(255, 255, 255, 0.51);
+    box-sizing: border-box;
+    padding: 12px;
+    margin-top: 12px;
+    color: #707083;
+    font-family: "PingFang SC";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    flex-direction: column;
+    gap: 12px;
+    display: none;
+
+    div {
+      cursor: pointer;
+
+      &:hover {
+        color: #B072EF;
+      }
+    }
+  }
+
+  &:hover {
+    .editDownloadMacImg {
+      border: 1px solid #B072EF;
+      color: #B072EF;
+
+      div {
+        background-image: url('@/assets/macNel.svg');
+      }
+    }
+
+    .editDownloadMacList {
+      display: flex;
+    }
+  }
+}
+
+.editModalFooter {
+  margin-top: 77px;
+  color: #707083;
+  text-align: center;
+  font-family: "PingFang SC";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.submitBg {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+
+  img {
+    width: 259px;
+  }
+}
+
+.modalList {
+  margin-top: 40px;
+  height: 500px;
+  overflow-y: scroll;
+}
+
+.modalTable {
+  border-radius: 8px;
+  background: #FEF5FA;
+  overflow: hidden;
+  color: #707083;
+  font-family: "SourceHan-Serif";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+
+  .modalTableHead {
+    display: flex;
+    background: #F6EDF2;
+    line-height: 46px;
+    height: 46px;
+  }
+
+  .modalTableHead1 {
+    width: 8%;
+    text-align: center;
+    padding: 5px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 46px;
+
+    img {
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .modalTableHead2 {
+    width: 13%;
+    padding: 0 5px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .modalTableHead3 {
+    width: 20%;
+    padding: 0 5px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .modalTableHead4 {
+    width: 10%;
+    text-align: center;
+    padding: 0 5px;
+    box-sizing: border-box;
+  }
+
+  .modalTableHead5 {
+    width: 12%;
+    text-align: center;
+    padding: 0 5px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .modalTableHeadDesc {
+    width: 20%;
+    text-align: center;
+    padding: 0 5px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .modalTableHead6 {
+    width: 17%;
+    padding: 0 5px;
+    box-sizing: border-box;
+  }
+
+  .modalTableHeadOption {
+    width: 20%;
+    padding-right: 25px;
+    padding-left: 5px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+
+    div {
+      color: #B072EF;
+      cursor: pointer;
+    }
+  }
+
+  .modalTableBody {
+    display: flex;
+    height: 46px;
+    align-items: center;
+    border-bottom: 1px solid #F1E9FD;
+    box-sizing: border-box;
+  }
+}
+
+.modalBack {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 20px;
+  color: #707083;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  cursor: pointer;
+  margin-left: 140px;
+
+  img {
+    width: 20px;
+  }
+}
+
+.nullContainer {
+  padding: 200px 0;
+  display: flex;
+  justify-content: center;
+
+  div {
+    width: 269px;
+    height: 150px;
+    background: url('@/assets/modalNullBg.webp') no-repeat center center;
+    background-size: cover;
+    padding-top: 30px;
+    box-sizing: border-box;
+    color: rgba(112, 112, 131, .9);
+    text-align: center;
+    font-family: "SourceHan-Serif";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 46px;
+  }
+}
+
+.row {
+  display: flex;
+  flex-flow: row wrap;
+  min-width: 0;
+}
+
+.col {
+  display: block;
+  flex: 0 0 50%;
+  max-width: 50%;
+}

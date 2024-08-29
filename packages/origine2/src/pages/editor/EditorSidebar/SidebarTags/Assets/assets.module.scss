@@ -154,3 +154,19 @@
 .iconParkIcon>svg>path {
   stroke: var(--text);
 }
+
+.materialBtns {
+  display: flex;
+  margin: 0 8px 8px 8px;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.spin {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

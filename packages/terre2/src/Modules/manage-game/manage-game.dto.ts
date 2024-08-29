@@ -4,6 +4,20 @@ export class CreateGameDto {
   @ApiProperty({ description: 'The name of the game to be created' })
   gameName: string;
   gId: number;
+  localInfo?: {
+    classificationIds: number[];
+    coverPic: string;
+    description: string;
+    detailPic: string;
+    gType: string;
+    gameView: number;
+    isFree: number;
+    name: string;
+    salesAmount: number;
+    summary: string;
+    tags: number[];
+    tryPlay: number;
+  };
 }
 
 export class UploadGameDto {
@@ -121,5 +135,20 @@ export class UploadPaymentConfigurationDto {
     sales_amount: number;
     is_pay: 1;
     productId: number;
+  }[];
+}
+
+export interface GameMaterialItem {
+  resourceType: number;
+  resourceTypeName: string;
+  resourceList: {
+    resourceId: number;
+    resourceName: string;
+    index: number;
+    resourceUrl: string;
+    resourceSize: string;
+    resourceFormat: string;
+    size: string;
+    resolvingPower: string;
   }[];
 }

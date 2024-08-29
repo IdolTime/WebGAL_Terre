@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useValue } from "../../hooks/useValue";
 import axios from "axios";
 import { logger } from "../../utils/logger";
@@ -65,6 +65,17 @@ export default function DashBoard() {
   // 游戏列表
   const gameInfoList = useValue<Array<GameOriginInfo>>([]);
 
+  const gameInfoTempRef = useRef<{
+    local: Array<GameOriginInfo>,
+    server: Array<GameOriginInfo>,
+  }>({
+    local: [],
+    server: [],
+  });
+
+  const [loadingFromServer, setLoadingFromServer] = useState(true);
+  const [loadingFromLocal, setLoadingFromLocal] = useState(true);
+
   async function getGameListFromServer(): Promise<Array<GameOriginInfo>> {
     if (!userInfo.userId) {
       return [];
@@ -84,29 +95,91 @@ export default function DashBoard() {
     });
   }
 
-  async function createGame(gameName:string, gId: number) {
-    const res = await axios.post("/api/manageGame/createGame", { gameName: gameName, gId, }).then(r => r.data);
+  async function createGame(gameName:string, gId: number, localInfo: any) {
+    const res = await axios.post("/api/manageGame/createGame", { gameName: gameName, gId, localInfo }).then(r => r.data);
     logger.info("创建结果：", res);
     messageRef.current!.showMessage(`${gameName} ` + trans('msgs.created'), 2000);
-    refreashDashboard();
+    refreshDashboard();
     setCurrentGame(null);
+
+    return res;
   }
 
-  function refreashDashboard() {
+  async function getDirInfo() {
+    return await axios.get("/api/manageGame/gameList").then(r => r.data);
+  }
+
+  function refreshDashboard() {
+    gameInfoTempRef.current = {
+      local: [],
+      server: [],
+    };
+    setLoadingFromLocal(true);
+    setLoadingFromServer(true);
     getGameListFromServer().then(gameList => {
-      logger.info("返回的游戏列表", gameList);
-      gameInfoList.set(gameList);
+      logger.info("服务器返回的游戏列表", gameList);
+      gameInfoTempRef.current.server = gameList;
+    }).finally(() => {
+      setTimeout(() => {
+        setLoadingFromServer(false);
+      }, 16);
+    });
+    getDirInfo().then(response => {
+      const gameList = (response as Array<IFileInfo>)
+        .filter(e => e.isDir)
+        .map(e => e.name);
+      logger.info("本地返回的游戏列表", gameList);
+
+      const getGameInfoList = gameList.map(
+        async (gameName) : Promise<GameOriginInfo | null> => {
+          const gameConfigData = (await axios.get(`/api/manageGame/getGameConfig/${gameName}`)).data;
+          const gameConfig = WebgalParser.parseConfig(gameConfigData);
+          const coverName = gameConfig.find(e => e.command === "Title_img")?.args?.join('') ?? "";
+          const src = `/games/${gameName}/game/background/${coverName}`;
+          const gId = gameConfig.find(e => e.command === "Game_id")?.args?.join('') ?? "";
+
+          if (gId && gId !== '0') {
+            return null;
+          }
+
+          return {
+            gId: 0,
+            authorId: userInfo.userId,
+            authorName: userInfo.userName,
+            authorNickName: userInfo.nickName,
+            authorAvatar: userInfo.avatar,
+            gType: '0',
+            gName: gameName,
+            state: '0',
+            gCover: src,
+            publicResource: 0,
+            isAdmin: false,
+          };
+        });
+
+      Promise.all(getGameInfoList).then(list => {
+        gameInfoTempRef.current.local = list.filter(x => x !== null) as Array<GameOriginInfo>;
+      });
+    }).finally(() => {
+      setTimeout(() => {
+        setLoadingFromLocal(false);
+      }, 16);
     });
   }
 
   useEffect(() => {
-    refreashDashboard();
-
+    refreshDashboard();
   }, []);
 
-  const refreash = () => {
+  useEffect(() => {
+    if (!loadingFromLocal && !loadingFromServer) {
+      gameInfoList.set(gameInfoTempRef.current.server.concat(gameInfoTempRef.current.local));
+    }
+  }, [loadingFromLocal, loadingFromServer]);
+
+  const refresh = () => {
     gameInfoList.set([]);
-    refreashDashboard();
+    refreshDashboard();
     setCurrentGame(null);
   };
 
@@ -143,10 +216,12 @@ export default function DashBoard() {
                 />
           }
           <Sidebar
-            refreash={refreash}
+            createGame={createGame}
+            refresh={refresh}
             setCurrentGame={setCurrentGame}
             currentSetGame={currentGame.value}
-            gameList={gameInfoList.value} />
+            gameList={gameInfoList.value}
+          />
         </div>
       </div>}
   </>;

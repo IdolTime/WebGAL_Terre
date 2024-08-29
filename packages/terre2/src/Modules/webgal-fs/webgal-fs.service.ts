@@ -341,4 +341,20 @@ async existsFile(filePath: string): Promise<boolean> {
       });
     });
   }
+
+  async writeJSONFile(path: string, data: any) {
+    return await new Promise((resolve) => {
+      fs.writeFile(decodeURI(path), JSON.stringify(data))
+        .then(() => resolve('Created.'))
+        .catch(() => resolve('Path error or no right.'));
+    });
+  }
+
+  async readJSONFile(path: string) {
+    return await new Promise((resolve) => {
+      fs.readFile(decodeURI(path))
+        .then((r) => resolve(JSON.parse(r.toString())))
+        .catch(() => resolve('file not exist'));
+    });
+  }
 }

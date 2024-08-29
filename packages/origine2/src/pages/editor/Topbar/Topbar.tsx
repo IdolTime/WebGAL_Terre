@@ -32,6 +32,8 @@ export default function TopBar() {
   const PaddingTopIcon = bundleIcon(PaddingTop24Filled, PaddingTop24Regular);
   const EyeOffIcon = bundleIcon(EyeOff24Filled, EyeOff24Regular);
 
+  const userInfo = useSelector((state: RootState) => state.userData.userInfo);
+
   const handleChange = (newValue: boolean) => {
     dispatch(setEditMode(newValue));
   };
@@ -90,8 +92,8 @@ export default function TopBar() {
         onClick={() => handleTabClick(TopbarTabs.Settings)}/>
       {/* <TopbarTabButton text={t("帮助")} isActive={currentTopbarTab === TopbarTabs.Help}
         onClick={() => handleTabClick(TopbarTabs.Help)}/> */}
-      <TopbarTabButton text={t("导出")} isActive={currentTopbarTab === TopbarTabs.Export}
-        onClick={() => handleTabClick(TopbarTabs.Export)}/>
+      {userInfo.editorType === 2 && <TopbarTabButton text={t("导出")} isActive={currentTopbarTab === TopbarTabs.Export}
+        onClick={() => handleTabClick(TopbarTabs.Export)}/>}
       {isShowAddSceneTab &&
         <TopbarTabButtonSpecial text={t("添加语句")} isActive={currentTopbarTab === TopbarTabs.AddSentence}
           onClick={() => handleTabClick(TopbarTabs.AddSentence)}/>}

@@ -13,6 +13,7 @@ import axios from 'axios';
 import { readdir } from 'fs/promises';
 
 import { spawn } from 'child_process';
+import { CreateGameDto, GameMaterialItem } from './manage-game.dto';
 
 /**
  * 替换图标文件
@@ -106,7 +107,11 @@ export class ManageGameService {
    * 从模板创建游戏
    * @param gameName
    */
-  async createGame(gameName: string, gId: number): Promise<boolean> {
+  async createGame(
+    gameName: string,
+    gId: number,
+    localInfo?: CreateGameDto['localInfo'],
+  ): Promise<boolean> {
     // 检查是否存在这个游戏
     const checkDir = await this.webgalFs.getDirInfo(
       this.webgalFs.getPathFromRoot(`/public/games`),
@@ -121,6 +126,7 @@ export class ManageGameService {
     if (isThisGameExist) {
       return false;
     }
+
     // 创建文件夹
     await this.webgalFs.mkdir(
       this.webgalFs.getPathFromRoot('/public/games'),
@@ -145,7 +151,82 @@ export class ManageGameService {
       `${configFile}Game_id:${gId};\n`,
     );
 
+    if (localInfo) {
+      await this.webgalFs.writeJSONFile(`${gameDir}/gameInfo.json`, localInfo);
+    }
+
     return true;
+  }
+
+  // 同步资源
+  async syncMaterials(editorToken: string, gameName: string): Promise<void> {
+    try {
+      const res = await axios.get(
+        'https://test-api.idoltime.games/editor/sync/resource',
+        {
+          headers: {
+            editorToken,
+          },
+        },
+      );
+
+      if (res.data.code !== 0) {
+        throw new Error(res.data.message);
+      }
+
+      const list = res.data.data as GameMaterialItem[];
+      const fileNameMap = {
+        1: 'animation',
+        2: 'background',
+        3: 'bgm',
+        4: 'figure',
+        5: 'texture',
+        6: 'ui',
+        7: 'video',
+      };
+
+      const gameDir = this.webgalFs.getPathFromRoot(
+        `/public/games/${gameName}/game/`,
+      );
+
+      // 收集所有的下载任务
+      const downloadTasks = list.flatMap((item) => {
+        const folder = fileNameMap[item.resourceType];
+        return item.resourceList.map((resource) => {
+          const fileName = `${resource.resourceName}_${resource.resourceId}`;
+          const ext = resource.resourceUrl.split('.').pop();
+          const filePath = join(gameDir, folder, `${fileName}.${ext}`);
+
+          // 返回一个新的 Promise，表示下载任务
+          return axios({
+            method: 'get',
+            url: resource.resourceUrl,
+            responseType: 'arraybuffer', // 改为 arraybuffer 来处理二进制数据
+          })
+            .then((response) => {
+              return new Promise<void>((resolve, reject) => {
+                // 写入文件
+                fs.writeFileSync(filePath, response.data);
+                console.log(`Download destination: ${filePath}`);
+                console.log(`File ${fileName} downloaded successfully`);
+                resolve();
+              });
+            })
+            .catch((err) => {
+              throw new Error(
+                `资源 ${resource.resourceName} 下载失败: ${err.message}`,
+              );
+            });
+        });
+      });
+
+      // 等待所有下载任务完成
+      await Promise.all(downloadTasks);
+      console.log('All resources downloaded successfully');
+    } catch (error) {
+      console.error('Error syncing materials:', error.message);
+      throw error; // 重新抛出错误以便调用者处理
+    }
   }
 
   /**
@@ -160,8 +241,36 @@ export class ManageGameService {
       `/Exported_Games/${gameName}`,
     );
     const now = Date.now();
-    const key = `${gId}_${now}_web.zip`;
     const gameWebDir = join(gameDir, 'web');
+    const gameRootDir = this.webgalFs.getPathFromRoot(
+      `/public/games/${gameName}/game/`,
+    );
+
+    try {
+      const localInfo = await this.webgalFs.readJSONFile(
+        `${gameRootDir}/gameInfo.json`,
+      );
+      const res = await axios.post(
+        `https://test-api.idoltime.games/editor/game/add`,
+        localInfo,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            editorToken: token,
+          },
+        },
+      );
+
+      if (res.data.code !== 0) {
+        throw new Error(res.data.message);
+      }
+
+      gId = res.data.data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+
+    const key = `${gId}_${now}_web.zip`;
     const zipFilePath = `${gameDir}/${key}`;
 
     // 创建压缩包

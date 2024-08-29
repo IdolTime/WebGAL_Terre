@@ -5,7 +5,7 @@ import { setDashboardShow, setEditingGame } from "../../store/statusReducer";
 import { useValue } from "../../hooks/useValue";
 import useVarTrans from "@/hooks/useVarTrans";
 import { GameInfo, GameOriginInfo } from "./DashBoard";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "@/api";
 import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Input, Menu, MenuButton, MenuItem, MenuList, MenuPopover, MenuTrigger, Toast, Toaster, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
 import { Delete24Filled, Delete24Regular, FolderOpen24Filled, FolderOpen24Regular, MoreVertical24Filled, MoreVertical24Regular, Open24Filled, Open24Regular, Rename24Filled, Rename24Regular, bundleIcon } from "@fluentui/react-icons";
@@ -15,7 +15,7 @@ interface IGameElementProps {
   gameInfo: GameOriginInfo;
   checked: boolean;
   onClick: () => void;
-  refreash?: () => void;
+  refresh?: () => void;
 }
 
 export default function GameElement(props: IGameElementProps) {
@@ -30,6 +30,10 @@ export default function GameElement(props: IGameElementProps) {
   const RenameIcon = bundleIcon(Rename24Filled, Rename24Regular);
   const DeleteIcon = bundleIcon(Delete24Filled, Delete24Regular);
   const [loadingStatusMap, setLoadingStatusMap] = useState<{ [key: string]: number }>({});
+  const currentGameInfoRef = useRef({
+    gName: '',
+    gId: 0,
+  });
 
   const toasterId = useId("toaster");
   const { dispatchToast } = useToastController(toasterId);
@@ -81,6 +85,7 @@ export default function GameElement(props: IGameElementProps) {
 
   const isShowDeleteDialog = useValue(false);
   const isShowRenameDialog = useValue(false);
+  const isShowCreateGameDialog = useValue(false);
   const newGameName = useValue(props.gameInfo.gName);
 
   const openInFileExplorer = () => {
@@ -102,23 +107,30 @@ export default function GameElement(props: IGameElementProps) {
     axios.post("/api/manageGame/rename",
       { source: `public/games/${gameName}/`, newName: newGameName }
     ).then(() => {
-      props.refreash?.();
+      props.refresh?.();
       isShowRenameDialog.set(false);
     });
   };
 
   const deleteThisGame = () => {
     axios.post("/api/manageGame/delete", { source: `public/games/${props.gameInfo.gName}` }).then(() => {
-      props.refreash?.();
+      props.refresh?.();
       isShowDeleteDialog.set(false);
     }
     );
   };
 
-  const uploadGame = async (gameName: string, gId: number) => {
+  const uploadGame = async (gameName: string, gId: number, type = 0) => {
     if (loadingStatusMap[gameName] === 1 || loadingStatusMap[gameName] === 2) {
       return;
     }
+
+    if (gId === 0 && type === 0) {
+      isShowCreateGameDialog.set(true);
+      currentGameInfoRef.current = { gName: gameName, gId: gId };
+      return;
+    }
+
     setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 1 });
     const res = await request.post('/api/manageGame/updatePaymentConfig', {
       gameName,
@@ -146,6 +158,10 @@ export default function GameElement(props: IGameElementProps) {
       setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
       notify(err.message, "error");
     });
+  };
+
+  const createOriginGameInfo = async () => {
+    
   };
 
   return (
@@ -217,6 +233,25 @@ export default function GameElement(props: IGameElementProps) {
             <DialogActions>
               <Button appearance='secondary' onClick={() => isShowDeleteDialog.set(false)}>{t('$common.exit')}</Button>
               <Button appearance='primary' onClick={deleteThisGame}>{t('$common.delete')}</Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
+      {/* 确认创建游戏对话框 */}
+      <Dialog
+        open={isShowCreateGameDialog.value}
+        onOpenChange={() => isShowCreateGameDialog.set(!isShowCreateGameDialog.value)}
+      >
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>上传游戏</DialogTitle>
+            <DialogContent>是否上传游戏且在“创作者中心”-“作品管理”中创建该游戏？</DialogContent>
+            <DialogActions>
+              <Button appearance='secondary' onClick={() => isShowCreateGameDialog.set(false)}>{t('$common.exit')}</Button>
+              <Button appearance='primary' onClick={() => {
+                isShowCreateGameDialog.set(false);
+                uploadGame(currentGameInfoRef.current.gName, currentGameInfoRef.current.gId, 1);
+              }}>{t('$common.create')}</Button>
             </DialogActions>
           </DialogBody>
         </DialogSurface>

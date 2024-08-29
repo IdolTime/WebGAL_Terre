@@ -15,7 +15,9 @@ import { getDirIcon, getFileIcon } from "@/utils/getFileIcon";
 import TagTitleWrapper from "@/components/TagTitleWrapper/TagTitleWrapper";
 import { api } from "@/api";
 import { RequestParams } from "@/api/Api";
-import { Button, Input, Popover, PopoverSurface, PopoverTrigger, Text, Toast } from "@fluentui/react-components";
+import { Button, Input, Popover, PopoverSurface, PopoverTrigger, Text, Toast, Toaster, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
+import { ArrowClockwise16Filled, ArrowClockwise16Regular, bundleIcon } from "@fluentui/react-icons";
+import { request } from "@/utils/request";
 
 export default function Assets() {
   const t = useTrans("editor.sideBar.assets.");
@@ -37,10 +39,24 @@ export default function Assets() {
   const currentDirExtNameKey = currentDirExtName.value.toString();
   const dispatch = useDispatch();
   const tags = useSelector((state: RootState) => state.status.editor.tags);
+  const [syncing, setSyncing] = useState(false);
+
+  const SpinIcon = bundleIcon(ArrowClockwise16Filled, ArrowClockwise16Regular);
 
   function open_assets() {
     api.manageGameControllerOpenGameAssetsDict( gameName, { subFolder: currentDirName }).then();
   }
+
+  const toasterId = useId("toaster_assets");
+  const { dispatchToast } = useToastController(toasterId);
+
+  const notify = (title: string, type: ToastIntent) =>
+    dispatchToast(
+      <Toast>
+        <ToastTitle>{title}</ToastTitle>
+      </Toast>,
+      { position: 'top', timeout: 3000, intent: type }
+    );
 
   /**
    * 新建文件夹
@@ -60,6 +76,16 @@ export default function Assets() {
      * 更新当前目录内的文件
      */
     getFileList(gameName, currentDirName, currentDirExtName.value).then(result => {
+      result.sort((a, b) => {
+        if (a.isDir && !b.isDir) {
+          return -1; // a should come before b
+        }
+        if (!a.isDir && b.isDir) {
+          return 1; // b should come before a
+        }
+        return 0; // keep original order if both are the same
+      });
+      
       currentDirFiles.set(result);
     });
 
@@ -150,6 +176,24 @@ export default function Assets() {
     });
   }
 
+
+  const syncMaterial = () => {
+    setSyncing(true);
+    request.post("/api/manageGame/syncMaterials", {
+      data: { gameName }
+    }).then((res) => {
+      if (res.data.status === 'success') {
+        notify("同步成功", "success");
+      } else {
+        notify("同步失败" + res.data.message ? `: ${res.data.message}` : '', "error");
+      }
+    }).catch((error) => {
+      notify("同步失败" + error.message ? `: ${error.message}` : '', "error");
+    }).finally(() => {
+      setSyncing(false);
+    });
+  };
+
   return (
     <div style={{ height: "100%", overflow: "auto", display: "flex", flexFlow: "column" }}>
       {/* <TagTitleWrapper title={t("title")} extra={<div className="tag_title_button" onClick={open_assets}>
@@ -223,6 +267,12 @@ export default function Assets() {
           <FolderOpen theme="outline" size="18" strokeWidth={3} className={assetsStyles.iconParkIcon} />
         </div>
       </div>
+      <div className={assetsStyles.materialBtns}>
+        <Button appearance="primary" size="small" onClick={() => {
+          window.open('http://ec2-13-229-109-223.ap-southeast-1.compute.amazonaws.com:3000/en/creativeCenter/materialMall', '_blank');
+        }}>素材商城</Button>
+        <Button disabled={syncing} icon={<SpinIcon className={syncing ? assetsStyles.spin : ""} />} appearance="primary" size="small" onClick={syncMaterial}>同步素材</Button>
+      </div>
       <div className={assetsStyles.fileList}>
         {currentDirName !== "" && <div style={{ display: "flex", alignItems: "center", padding: "0 8px" }}>
           {t("supportFileTypes")} {currentDirExtName.value.map(e => {
@@ -232,6 +282,7 @@ export default function Assets() {
         }
         {currentFileList}
       </div>
+      <Toaster toasterId={toasterId} />
     </div>
   );
 }

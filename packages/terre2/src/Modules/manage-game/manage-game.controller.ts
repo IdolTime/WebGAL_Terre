@@ -46,8 +46,6 @@ import {
   UploadGameDto,
   UploadPaymentConfigurationDto,
 } from './manage-game.dto';
-import { promises as fs } from 'node:fs';
-import nodePath from 'node:path';
 
 @Controller('api/manageGame')
 @ApiTags('Manage Game')
@@ -72,6 +70,21 @@ export class ManageGameController {
     );
   }
 
+  @Post('syncMaterials')
+  @ApiResponse({ status: 200, description: 'Returned game materials.' })
+  async syncMaterials(
+    @Headers('editorToken') editorToken: string,
+    @Body() body: { data: { gameName: string } },
+  ) {
+    try {
+      await this.manageGame.syncMaterials(editorToken, body.data.gameName);
+
+      return { status: 'success' };
+    } catch (error) {
+      return { status: 'failed', data: null, message: error.message };
+    }
+  }
+
   @Post('createGame')
   @ApiOperation({ summary: 'Create a new game' })
   @ApiResponse({ status: 200, description: 'Game creation result.' })
@@ -80,6 +93,7 @@ export class ManageGameController {
     const createResult = await this.manageGame.createGame(
       createGameData.gameName,
       createGameData.gId,
+      createGameData.localInfo,
     );
     if (createResult) {
       return { status: 'success' };
