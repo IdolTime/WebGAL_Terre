@@ -9,6 +9,7 @@ export default function PayProduct(props: ISentenceEditorProps) {
   const productId = useValue<number>(0);
   const amount = useValue<number>(100);
   const chapter = useValue<number>(1);
+  const error = useValue<string>('');
 
   useEffect(() => {
     if (props.sentence.content !== '') {
@@ -36,11 +37,17 @@ export default function PayProduct(props: ISentenceEditorProps) {
     content += ` -name=${name.value.trim()}`;
     content += ` -chapter=${chapter.value}`;
 
+    if (!name.value) {
+      error.set('请填写章节名称');
+    } else {
+      error.set('');
+    }
+
     props.onSubmit(content + ';');
   }
 
   return (
-    <div className={styles.sentenceEditorContent}>
+    <div className={styles.sentenceEditorContent} style={{ paddingBottom: 20 }}>
       <div className={styles.editItem}>
         <CommonOptions title="付费ID" key="payProduct-1">
           <input
@@ -51,16 +58,19 @@ export default function PayProduct(props: ISentenceEditorProps) {
           />
         </CommonOptions>
         <CommonOptions title="章节名称" key="payProduct-2">
-          <input 
-            className={styles.sayInput}
-            style={{ width: '80px' }}
-            value={name.value} 
-            onChange={(e) => {
-              const newValue = e.target.value;
-              name.set(newValue ?? '');
-            }}
-            onBlur={setContent}
-          />
+          <div style={{ position: 'relative' }}>
+            <input 
+              className={styles.sayInput}
+              style={{ width: '80px' }}
+              value={name.value} 
+              onChange={(e) => {
+                const newValue = e.target.value;
+                name.set(newValue ?? '');
+              }}
+              onBlur={setContent}
+            />
+            <p style={{ position: 'absolute', bottom: -33, color: '#e12222', whiteSpace: 'nowrap' }}>{error.value}</p>
+          </div>
         </CommonOptions>
         <CommonOptions title='付费金额' key="payProduct-4">
           <span style={{ marginRight: '8px' }}>定价</span>
