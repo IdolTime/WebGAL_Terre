@@ -3,7 +3,7 @@ import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { _open } from 'src/util/open';
 import { IFileInfo, WebgalFsService } from '../webgal-fs/webgal-fs.service';
 import * as process from 'process';
-import { resolve } from 'path';
+import { basename, resolve } from 'path';
 import * as archiver from 'archiver';
 import { Upload } from '@aws-sdk/lib-storage';
 import { S3Client } from '@aws-sdk/client-s3';
@@ -143,17 +143,40 @@ export class ManageGameService {
       gameDir,
     );
 
-    const configFile: string | unknown = await this.webgalFs.readTextFile(
+    let configFile: string = await this.webgalFs.readTextFile(
       `${gameDir}/config.txt`,
     );
+
+    if (localInfo) {
+      const fileName = basename(localInfo.detailPic);
+      configFile = configFile.replace(/(Title_img:)[^;\s]+/, `$1${fileName}`);
+
+      axios({
+        method: 'get',
+        url: localInfo.detailPic,
+        responseType: 'arraybuffer', // 改为 arraybuffer 来处理二进制数据
+      })
+        .then((response) => {
+          return new Promise<void>((resolve, reject) => {
+            // 写入文件
+            fs.writeFileSync(
+              join(gameDir, 'background', fileName),
+              response.data,
+            );
+            console.log(`File ${fileName} downloaded successfully`);
+            resolve();
+          });
+        })
+        .catch((err) => {
+          console.log(`资源 ${localInfo.detailPic} 下载失败: ${err.message}`);
+        });
+      await this.webgalFs.writeJSONFile(`${gameDir}/gameInfo.json`, localInfo);
+    }
+
     await this.webgalFs.updateTextFile(
       `${gameDir}/config.txt`,
       `${configFile}Game_id:${gId};\n`,
     );
-
-    if (localInfo) {
-      await this.webgalFs.writeJSONFile(`${gameDir}/gameInfo.json`, localInfo);
-    }
 
     return true;
   }
@@ -266,6 +289,19 @@ export class ManageGameService {
       }
 
       gId = res.data.data;
+
+      const configFile: string = await this.webgalFs.readTextFile(
+        `${gameRootDir}/config.txt`,
+      );
+      const newGameId = gId;
+      const updatedText = configFile.replace(
+        /(Game_id:)\d+;/,
+        `$1${newGameId};`,
+      );
+      await this.webgalFs.updateTextFile(
+        `${gameRootDir}/config.txt`,
+        updatedText,
+      );
     } catch (error) {
       throw new Error(error.message);
     }
