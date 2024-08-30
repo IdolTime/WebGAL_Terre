@@ -41,6 +41,10 @@ export interface UIItemConfig {
       type: 'number',
       label: string,
     },
+    alignPosition?: {
+      type: 'string',
+      label: string,
+    }
   },
   info?: InfoConfig,
   images?: ICollectionImages
@@ -308,6 +312,12 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
     label: '翻页指示器',
     hasHoverStyle: false,
     hasWidthHeight: false,
+    customStyle: {
+      alignPosition: {
+        type: 'string',
+        label: '对齐方式',
+      }
+    },
     children: {
       [IndicatorItemKey.indicatorLeft]: {
         hasHoverStyle: true,
@@ -1010,6 +1020,7 @@ export interface Style {
   height?: number;
   marginLeft?: number;
   marginRight?: number;
+  alignPosition?: 'top' | 'bottom';
 }
 
 export type ButtonKey = LoadSceneButtonKey | TitleSceneButtonKey | OptionSceneButtonKey | StorylineSceneButtonKey | AchievementSceneButtonKey | ExtraSceneButtonKey | CollectionSceneButtonKey;

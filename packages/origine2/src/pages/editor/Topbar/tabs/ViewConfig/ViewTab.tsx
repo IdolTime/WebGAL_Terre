@@ -32,6 +32,7 @@ import {
   DialogBody,
   DialogActions,
   Checkbox,
+  Select
 } from '@fluentui/react-components';
 import { WebgalConfig } from 'idoltime-parser/build/types/configParser/configParser';
 import {
@@ -68,7 +69,8 @@ import {
   defaultInfo,
   ICollectionImages,
   defaultCollectionImages,
-  defaultCollectionVideos
+  defaultCollectionVideos,
+  alignPositionOptions
 } from './confg';
 
 interface IGameConfigEditor {
@@ -824,6 +826,28 @@ function parseStyleConfig({
                 {Object.entries(style).map(([styleKey, styleProp], idx: number) => (
                   <div className={s.row} key={styleKey + index + idx}>
                     <span className={s.optionLabel}>{styleProp.label}</span>
+
+                    {styleKey === 'alignPosition' && (
+                      <Select
+                        value={
+                          key === 'hoverStyle'
+                          ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                          : (item.args.style?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                        }
+                        onChange={(e, data) => {
+                            setStyle(
+                              styleKey as keyof IStyleConfig,
+                              data.value as string,
+                              key as keyof IStyleType,
+                            );
+                        }}
+                      >
+                        {alignPositionOptions.map((item: { name: string, value: string }, index: number) => {
+                          return <option key={item.value + index} value={item.value}>{item.name}</option>
+                        })}
+                      </Select>
+                    )}
+
                     {styleProp.type === 'number' ? (
                       <Input
                         type="number"

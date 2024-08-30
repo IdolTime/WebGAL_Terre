@@ -51,6 +51,10 @@ export interface IStyleConfig {
         type: 'number';
         label: string;
     };
+    alignPosition?: {
+      type: 'string';
+      label: string;
+    };
 }
 
 export const defaultStyle: IStyleConfig = {
@@ -286,3 +290,10 @@ export const defaultCollectionVideos = {
     label: '视频10',
   }
 }
+
+
+export const alignPositionOptions = [
+  { name: '默认', value: '' },
+  { name: '顶部居中', value: 'top-center' },
+  { name: '底部居中', value: 'bottom-center' }
+]

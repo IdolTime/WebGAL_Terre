@@ -182,7 +182,7 @@ export class ManageGameController {
       .then(() => this.logger.log(`${gameName} export as web app`));
   }
 
-  @Get('ejectGameAsExe/:gameName')
+  @Get('ejectGameAsExe/:gameName/:gamePackageName')
   @ApiOperation({ summary: 'Eject Game As EXE' })
   @ApiResponse({
     status: 200,
@@ -193,10 +193,19 @@ export class ManageGameController {
     type: String,
     description: 'Name of the game to be exported as EXE.',
   })
-  async ejectGameAsExe(@Param('gameName') gameName: string) {
+  @ApiParam({
+    name: 'gamePackageName',
+    type: String,
+    description: 'Description of the gamePackageName parameter.',
+})
+  async ejectGameAsExe(
+    @Param('gameName') gameName: string, 
+    @Param('gamePackageName') gamePackageName: string
+  ) {
     gameName = decodeURI(gameName);
+    gamePackageName = decodeURI(gamePackageName);
     this.manageGame
-      .exportGame(gameName, 'electron-windows')
+      .exportGame(gameName, 'electron-windows', true, gamePackageName)
       .then(() => this.logger.log(`${gameName} export as exe`));
   }
 

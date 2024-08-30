@@ -1,7 +1,7 @@
 import styles from "../topbarTabs.module.scss";
 import {useValue} from "../../../../../hooks/useValue";
 import axios from "axios";
-import {useSelector} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {RootState} from "../../../../../store/origineStore";
 import React, {useState, useEffect, useRef, useMemo} from "react";
 import {cloneDeep} from "lodash";
@@ -32,11 +32,13 @@ import {
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
 import { EscMenu } from './EscMenu/EscMenu';
 import { SoundSetting } from './SoundSetting/SoundSetting'
+import { setGamePackageName } from "@/store/statusReducer";
 
 
 export default function GameConfig() {
   const t = useTrans("editor.sideBar.gameConfigs.");
   const state = useSelector((state: RootState) => state.status.editor);
+  const dispatch = useDispatch();
 
   // 拿到游戏配置
   const gameConfig = useValue<WebgalConfig>([]);
@@ -101,6 +103,12 @@ export default function GameConfig() {
       // 设置默认识别码
       const randomCode = (Math.random() * 100000).toString(16).replace(".", "d");
       updateGameConfigSimpleByKey("Game_key", randomCode);
+    }
+
+    // 游戏包名
+    const gamePackageName = getConfigContentAsString('Package_name')
+    if (gamePackageName) {
+      dispatch(setGamePackageName(gamePackageName));
     }
   }
 
