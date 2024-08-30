@@ -76,6 +76,7 @@ export default function DashBoard() {
   const [loadingFromServer, setLoadingFromServer] = useState(true);
   const [loadingFromLocal, setLoadingFromLocal] = useState(true);
 
+
   async function getGameListFromServer(): Promise<Array<GameOriginInfo>> {
     if (!userInfo.userId) {
       return [];
@@ -96,6 +97,12 @@ export default function DashBoard() {
   }
 
   async function createGame(gameName:string, gId: number, localInfo: any) {
+    gameInfoList.value.forEach(e => {
+      if (e.gName === gameName) {
+        messageRef.current!.showMessage(`${gameName} 已经存在`, 2000);
+        return;
+      }
+    });
     const res = await axios.post("/api/manageGame/createGame", { gameName: gameName, gId, localInfo }).then(r => r.data);
     logger.info("创建结果：", res);
     messageRef.current!.showMessage(`${gameName} ` + trans('msgs.created'), 2000);
