@@ -242,33 +242,33 @@ export class ManageGameService {
     );
     const now = Date.now();
     const gameWebDir = join(gameDir, 'web');
-    const gameRootDir = this.webgalFs.getPathFromRoot(
-      `/public/games/${gameName}/game/`,
-    );
+    // const gameRootDir = this.webgalFs.getPathFromRoot(
+    //   `/public/games/${gameName}/game/`,
+    // );
 
-    try {
-      const localInfo = await this.webgalFs.readJSONFile(
-        `${gameRootDir}/gameInfo.json`,
-      );
-      const res = await axios.post(
-        `https://test-api.idoltime.games/editor/game/add`,
-        localInfo,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            editorToken: token,
-          },
-        },
-      );
+    // try {
+    //   const localInfo = await this.webgalFs.readJSONFile(
+    //     `${gameRootDir}/gameInfo.json`,
+    //   );
+    //   const res = await axios.post(
+    //     `https://test-api.idoltime.games/editor/game/add`,
+    //     localInfo,
+    //     {
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         editorToken: token,
+    //       },
+    //     },
+    //   );
 
-      if (res.data.code !== 0) {
-        throw new Error(res.data.message);
-      }
+    //   if (res.data.code !== 0) {
+    //     throw new Error(res.data.message);
+    //   }
 
-      gId = res.data.data;
-    } catch (error) {
-      throw new Error(error.message);
-    }
+    //   gId = res.data.data;
+    // } catch (error) {
+    //   throw new Error(error.message);
+    // }
 
     const key = `${gId}_${now}_web.zip`;
     const zipFilePath = `${gameDir}/${key}`;
