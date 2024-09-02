@@ -48,7 +48,7 @@ export class ManageGameService {
  * @param exePath exe文件路径
  * @param iconPath 替换icon路径
  */
-  private async updateExeIcon(exePath: string, iconPath: string, isExist: boolean) {
+  private async updateExeIcon(exePath: string, iconPath: string, isExist: boolean, callback) {
     if (isExist) {
       console.info('isExist: ', isExist)
       const command = this.webgalFs.getPathFromRoot(
@@ -69,6 +69,7 @@ export class ManageGameService {
       child.on('close', (code) => {
         console.log(`update exe icon end >>>>> ${code}`);
       });
+      setTimeout(callback && callback(), 1000)
     } else {
       console.info('update exe icon end >>>>>')
     }
@@ -407,7 +408,12 @@ export class ManageGameService {
 
         if (gameConfig.Game_Icon && iconDir) {
           const isExist = await this.webgalFs.existsFile(exePath)
-           await this.updateExeIcon(exePath, iconDir, isExist)
+           await this.updateExeIcon(exePath, iconDir, isExist, () => {
+              if (exePath && gamePackageName) {
+                // 如果有配置新包名称，替换原来的应用名称
+                this.webgalFs.renameFile(exePath, `${appName}.exe`);
+              }
+           })
 
           //  if (exePath && gamePackageName) {
           //  // 如果有配置新包名称，替换原来的应用名称

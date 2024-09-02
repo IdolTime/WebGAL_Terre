@@ -1,10 +1,10 @@
 {
-  "name": "idoltime",
+  "name": "projectx",
   "version": "1.0.0",
   "description": "idolTime Electron Support",
   "main": "main.js",
   "repository": "https://github.com/WebGAL-Technical-Committee/WebGAL-Electron-Project.git",
-  "author": "idoltime",
+  "author": "project xx",
   "license": "MPL-2.0",
   "companyName": "project x",
   "scripts": {
