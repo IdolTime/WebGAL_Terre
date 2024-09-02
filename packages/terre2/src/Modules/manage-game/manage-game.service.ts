@@ -48,7 +48,7 @@ export class ManageGameService {
  * @param exePath exe文件路径
  * @param iconPath 替换icon路径
  */
-  private async updateExeIcon(exePath: string, iconPath: string, isExist: boolean, callback) {
+  private async updateExeIcon(exePath: string, iconPath: string, isExist: boolean, callback?: ()=> void) {
     if (isExist) {
       console.info('isExist: ', isExist)
       const command = this.webgalFs.getPathFromRoot(
@@ -68,8 +68,13 @@ export class ManageGameService {
 
       child.on('close', (code) => {
         console.log(`update exe icon end >>>>> ${code}`);
+        if (code === 0) {
+          console.log('Icon replacement successful!');
+          callback && callback();
+        } else {
+          console.error('Icon replacement failed!');
+        }
       });
-      setTimeout(callback && callback(), 1000)
     } else {
       console.info('update exe icon end >>>>>')
     }
