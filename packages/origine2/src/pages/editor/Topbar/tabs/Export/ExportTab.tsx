@@ -46,10 +46,10 @@ export function ExportTab() {
       { position: 'top', timeout: 3000, intent: type }
     );
 
-  if (!gid && userInfo.editorType !== 2) return null;
+  // if (!gid && userInfo.editorType !== 2) return null;
 
   return <TopbarTab>
-    {userInfo.editorType === 2 && <TabItem title={t("$导出")}>
+    <TabItem title={t("$导出")}>
       <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsWeb(gameName)}
         icon={<GlobeIcon aria-label="Export Web" className={s.iconColor}/>}
         text={t('commandBar.items.release.items.web')}/>
@@ -59,7 +59,7 @@ export function ExportTab() {
       {/* <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsAndroid(gameName)}
         icon={<img src={AndroidIcon} className={s.iconColor} alt="Export Android"/>}
         text={t('commandBar.items.release.items.android')}/> */}
-    </TabItem>}
+    </TabItem>
     {!!gid && (
       <TabItem title="上传付费配置">
         <IconWithTextItem onClick={() => {
