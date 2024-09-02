@@ -21,6 +21,14 @@ export interface UIItemConfig {
   hasText?: boolean;
   positionType?: 'absolute' | 'relative';
   customStyle?: {
+    marginTop?: {
+      type: 'number',
+      label: string,
+    };
+    marginBottom?: {
+      type: 'number',
+      label: string,
+    },
     marginLeft?: {
       type: 'number',
       label: string,
@@ -43,6 +51,14 @@ export interface UIItemConfig {
     },
     alignPosition?: {
       type: 'string',
+      label: string,
+    },
+    customColor?: {
+      type: 'color',
+      label: string,
+    },
+    customFontSize?: {
+      type: 'number',
       label: string,
     }
   },
@@ -382,6 +398,10 @@ export enum CollectionSceneOtherKey {
   Collection_detail_title = 'Collection_detail_title',
   Collection_detail_dialog_bg = 'Collection_detail_dialog_bg',
   Collection_detail_dialog_text = 'Collection_detail_dialog_text',
+  Collection_detail_left_bg = 'Collection_detail_left_bg',
+  Collection_detail_right_content_bg = 'Collection_detail_right_content_bg',
+  Collection_detail_right_thumbnail_bg = 'Collection_detail_right_thumbnail_bg',
+  Collection_detail_right_desc_bg = 'Collection_detail_right_desc_bg',
 }
 
 export const collectionSceneButtonConfig: Record<CollectionSceneButtonKey, UIItemConfig> = {
@@ -409,7 +429,6 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   [CollectionSceneOtherKey.Collection_img1]: {
     label: '图鉴1',
     type: 'container',
-    hasXY: false,
     hasHoverStyle: false,
     children: {
       [collectionItemInfoKey.collectionInfo]: {
@@ -421,6 +440,7 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
       [CommonItemKey.content]: {
         type: 'text',
         label: '详情界面信息',
+        hasXY: false,
       },
       [collectionItemInfoKey.collectionImages]: {
         type: 'image',
@@ -439,7 +459,6 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   [CollectionSceneOtherKey.Collection_img2]: {
     label: '图鉴2',
     type: 'container',
-    hasXY: false,
     hasHoverStyle: false,
     children: {
       [collectionItemInfoKey.collectionInfo]: {
@@ -469,7 +488,6 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   [CollectionSceneOtherKey.Collection_img3]: {
     type: 'container',
     label: '图鉴3',
-    hasXY: false,
     hasHoverStyle: false,
     children: {
       [collectionItemInfoKey.collectionInfo]: {
@@ -508,14 +526,85 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
     type: 'bg',
     label: '详情弹窗元素背景',
-    hasHoverStyle: false
+    hasHoverStyle: false,
+    hasXY: false
   },
   [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
     label: '详情弹窗元素样式',
     type: 'text',
     hasHoverStyle: false,
     hasXY: false
-  }
+  },
+  [CollectionSceneOtherKey.Collection_detail_left_bg]: {
+    label: '详情界面左侧内容元素',
+    type: 'container',
+    hasHoverStyle: false,
+    hasXY: false,
+    // children: {
+    //   [CommonItemKey.content]: {
+    //     type: 'placeholder',
+    //     label: '左侧文字元素',
+    //     hasHoverStyle: false,
+    //   },
+    //   [CommonItemKey.background]: {
+    //     type: 'image',
+    //     hasText: false,
+    //     label: '左侧图片元素',
+    //     hasHoverStyle: false,
+    //   },
+    // }
+  },
+  [CollectionSceneOtherKey.Collection_detail_right_content_bg]: {
+    label: '详情界面右侧内容元素',
+    type: 'bg',
+    hasHoverStyle: false,
+    customStyle: {
+      alignPosition: {
+        type: 'string',
+        label: '对齐方式',
+      },
+      marginTop: {
+        type: 'number',
+        label: '上边距',
+      },
+      marginBottom: {
+        type: 'number',
+        label: '下边距',
+      }
+    }
+  },
+  [CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg]: {
+    label: '详情界面右侧缩略图元素',
+    type: 'bg',
+    hasHoverStyle: false
+  },
+  [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: {
+    label: '详情界面右侧信息元素',
+    type: 'bg',
+    hasHoverStyle: false,
+    customStyle: {
+      alignPosition: {
+        type: 'string',
+        label: '对齐方式',
+      },
+      marginTop: {
+        type: 'number',
+        label: '上边距',
+      },
+      marginBottom: {
+        type: 'number',
+        label: '下边距',
+      },
+      customColor: {
+        type: 'color',
+        label: '文字颜色',
+      },
+      customFontSize: {
+        type: 'number',
+        label: '文字大小',
+      }
+    }
+  },
 };
 
 export enum OptionSceneOtherKey {
@@ -1020,7 +1109,11 @@ export interface Style {
   height?: number;
   marginLeft?: number;
   marginRight?: number;
+  marginTop?: number;
+  marginBottom?: number;
   alignPosition?: 'top' | 'bottom';
+  customColor?: string;
+  customFontSize?: number;
 }
 
 export type ButtonKey = LoadSceneButtonKey | TitleSceneButtonKey | OptionSceneButtonKey | StorylineSceneButtonKey | AchievementSceneButtonKey | ExtraSceneButtonKey | CollectionSceneButtonKey;
@@ -1141,7 +1234,11 @@ export interface CollectionSceneUIConfig {
     [CollectionSceneOtherKey.Collection_detail_title]: ButtonItem,
     [CollectionSceneOtherKey.Collection_detail_bg]: ButtonItem,
     [CollectionSceneOtherKey.Collection_detail_dialog_bg]: ButtonItem,
-    [CollectionSceneOtherKey.Collection_detail_dialog_text]: ButtonItem
+    [CollectionSceneOtherKey.Collection_detail_dialog_text]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_left_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_right_content_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: ButtonItem,
   };
   buttons: { [key in CollectionSceneButtonKey]: ButtonItem };
 
@@ -1583,7 +1680,6 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(),
       },
-
       [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
         key: CollectionSceneOtherKey.Collection_detail_dialog_bg,
         content: "",
@@ -1593,6 +1689,26 @@ export const sceneUIConfig: SceneUIConfig = {
         key: CollectionSceneOtherKey.Collection_detail_dialog_text,
         content: "",
         args: generateArgs(['hoverStyle']),
+      },
+      [CollectionSceneOtherKey.Collection_detail_left_bg]: {
+        key: CollectionSceneOtherKey.Collection_detail_left_bg,
+        content: "",
+        args: generateArgs(),
+      },
+      [CollectionSceneOtherKey.Collection_detail_right_content_bg]: {
+        key: CollectionSceneOtherKey.Collection_detail_right_content_bg,
+        content: "",
+        args: generateArgs(),
+      },
+      [CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg]: {
+        key: CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg,
+        content: "",
+        args: generateArgs(),
+      },
+            [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: {
+        key: CollectionSceneOtherKey.Collection_detail_right_desc_bg,
+        content: "",
+        args: generateArgs(),
       }
     },
     buttons: {

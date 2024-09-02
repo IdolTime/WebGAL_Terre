@@ -74,3 +74,10 @@
   display: flex;
   align-items: center;
 }
+
+.rowHover {
+  border-radius: 3px;
+  &:hover {
+    background-color: #eee;
+  }
+}

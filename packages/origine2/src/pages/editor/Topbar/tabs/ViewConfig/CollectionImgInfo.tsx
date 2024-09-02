@@ -65,7 +65,7 @@ export const CollectionInfo: FC<IProps> = (props: IProps) => {
   } = props;
 
   return (
-    <div key={itemIndex} className={s.flex}>
+    <div key={itemIndex} className={`${s.flex} ${s.rowHover}`}>
       <div className={s.row}>
         <span className={s.label}>{config?.label}</span>
       </div>

@@ -173,8 +173,6 @@ function GameConfigEditorGameMenu() {
 
   function updateGameUIConfig() {
     const newConfig = cloneDeep(gameConfig.value);
-
-    console.log(newConfig);
   
     function handleUpdate(
       key: string,
