@@ -409,16 +409,16 @@ export class ManageGameService {
           const isExist = await this.webgalFs.existsFile(exePath)
            await this.updateExeIcon(exePath, iconDir, isExist)
 
-           if (exePath && gamePackageName) {
-           // 如果有配置新包名称，替换原来的应用名称
-            await this.webgalFs.renameFile(exePath, `${appName}.exe`);
-           }
+          //  if (exePath && gamePackageName) {
+          //  // 如果有配置新包名称，替换原来的应用名称
+          //   await this.webgalFs.renameFile(exePath, `${appName}.exe`);
+          //  }
         }
 
-        if (exePath && gamePackageName) {
-          // 如果有配置新包名称，替换原来的应用名称
-           await this.webgalFs.renameFile(exePath, `${appName}.exe`);
-        }
+        // if (exePath && gamePackageName) {
+        //   // 如果有配置新包名称，替换原来的应用名称
+        //    await this.webgalFs.renameFile(exePath, `${appName}.exe`);
+        // }
 
         if (openFileExplorer) {
           await _open(electronExportDir);
