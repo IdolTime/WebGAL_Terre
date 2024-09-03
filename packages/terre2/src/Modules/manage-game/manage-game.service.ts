@@ -421,17 +421,7 @@ export class ManageGameService {
                 this.webgalFs.renameFile(exePath, `${appName}.exe`);
               }
            })
-
-          //  if (exePath && gamePackageName) {
-          //  // 如果有配置新包名称，替换原来的应用名称
-          //   await this.webgalFs.renameFile(exePath, `${appName}.exe`);
-          //  }
         }
-
-        // if (exePath && gamePackageName) {
-        //   // 如果有配置新包名称，替换原来的应用名称
-        //    await this.webgalFs.renameFile(exePath, `${appName}.exe`);
-        // }
 
         if (openFileExplorer) {
           await _open(electronExportDir);

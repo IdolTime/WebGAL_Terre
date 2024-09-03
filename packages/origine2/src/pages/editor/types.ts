@@ -523,18 +523,6 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     type: 'bg',
     hasHoverStyle: false
   },
-  [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
-    type: 'bg',
-    label: '详情弹窗元素背景',
-    hasHoverStyle: false,
-    hasXY: false
-  },
-  [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
-    label: '详情弹窗元素样式',
-    type: 'text',
-    hasHoverStyle: false,
-    hasXY: false
-  },
   [CollectionSceneOtherKey.Collection_detail_left_bg]: {
     label: '详情界面左侧内容元素',
     type: 'container',
@@ -604,6 +592,18 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '文字大小',
       }
     }
+  },
+  [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
+    type: 'bg',
+    label: '详情界面二级弹窗元素背景',
+    hasHoverStyle: false,
+    hasXY: false
+  },
+  [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
+    label: '详情界面二级弹窗元素样式',
+    type: 'text',
+    hasHoverStyle: false,
+    hasXY: false
   },
 };
 
@@ -1233,12 +1233,12 @@ export interface CollectionSceneUIConfig {
     [CollectionSceneOtherKey.Collection_img3]: InfoItem,
     [CollectionSceneOtherKey.Collection_detail_title]: ButtonItem,
     [CollectionSceneOtherKey.Collection_detail_bg]: ButtonItem,
-    [CollectionSceneOtherKey.Collection_detail_dialog_bg]: ButtonItem,
-    [CollectionSceneOtherKey.Collection_detail_dialog_text]: ButtonItem,
     [CollectionSceneOtherKey.Collection_detail_left_bg]: ButtonItem,
     [CollectionSceneOtherKey.Collection_detail_right_content_bg]: ButtonItem,
     [CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg]: ButtonItem,
     [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_dialog_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_dialog_text]: ButtonItem,
   };
   buttons: { [key in CollectionSceneButtonKey]: ButtonItem };
 
@@ -1680,16 +1680,6 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(),
       },
-      [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
-        key: CollectionSceneOtherKey.Collection_detail_dialog_bg,
-        content: "",
-        args: generateArgs(),
-      },
-      [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
-        key: CollectionSceneOtherKey.Collection_detail_dialog_text,
-        content: "",
-        args: generateArgs(['hoverStyle']),
-      },
       [CollectionSceneOtherKey.Collection_detail_left_bg]: {
         key: CollectionSceneOtherKey.Collection_detail_left_bg,
         content: "",
@@ -1705,11 +1695,21 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(),
       },
-            [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: {
+      [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: {
         key: CollectionSceneOtherKey.Collection_detail_right_desc_bg,
         content: "",
         args: generateArgs(),
-      }
+      },
+      [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
+        key: CollectionSceneOtherKey.Collection_detail_dialog_bg,
+        content: "",
+        args: generateArgs(),
+      },
+      [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
+        key: CollectionSceneOtherKey.Collection_detail_dialog_text,
+        content: "",
+        args: generateArgs(['hoverStyle']),
+      },
     },
     buttons: {
       [CollectionSceneButtonKey.Collection_back_button]: {
