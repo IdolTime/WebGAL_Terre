@@ -172,6 +172,7 @@ export default function GameElement(props: IGameElementProps) {
           alt={props.gameInfo.gName}
           className={styles.gameElement_cover}
         />
+        {props.gameInfo.gId === 0 && <span className={styles.gameElement_main_local_label}>本地游戏</span>}
         <div className={styles.gameElement_title}>
           <span>{props.gameInfo.gName}</span>
         </div>

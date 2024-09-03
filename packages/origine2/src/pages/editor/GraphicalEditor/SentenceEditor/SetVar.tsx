@@ -11,17 +11,17 @@ export default function SetVar(props: ISentenceEditorProps) {
   const arr = props.sentence.content.split('=');
   const name = useValue(arr[0] ?? '');
   const value = useValue(arr[1] ?? '');
-  const minValue = useValue<number | undefined>(undefined);
-  const maxValue = useValue<number | undefined>(undefined);
+  const minValue = useValue("");
+  const maxValue = useValue("");
   const globalVariable = useValue<boolean | undefined>(undefined);
   const randomVariable = useValue<boolean | undefined>(undefined);
 
   useEffect(() => {
     props.sentence.args.forEach((k) => {
       if (k.key === 'minValue') {
-        minValue.set(Number(k.value));
+        minValue.set(String(k.value));
       } else if (k.key === 'maxValue') {
-        maxValue.set(Number(k.value));
+        maxValue.set(String(k.value));
       } else if (k.key === 'global') {
         globalVariable.set(k.value as boolean);
       } else if (k.key === 'random') {
@@ -33,11 +33,11 @@ export default function SetVar(props: ISentenceEditorProps) {
   function setContent() {
     let content = `setVar:${name.value.trim()}=${value.value.trim()}`;
 
-    if (typeof minValue.value === 'number') {
+    if (!!minValue.value && typeof minValue.value === 'string') {
       content += ` -minValue=${minValue.value}`;
     }
 
-    if (typeof maxValue.value === 'number') {
+    if (!!maxValue.value && typeof maxValue.value === 'string') {
       content += ` -maxValue=${maxValue.value}`;
     }
 
@@ -80,7 +80,7 @@ export default function SetVar(props: ISentenceEditorProps) {
             }}
           />
         </CommonOptions>
-        <CommonOptions title={t('options.globalValue')} key='3'>
+        <CommonOptions title={t('options.globalValue')} key='31'>
           <TerreToggle 
             title=""
             onText={t('options.yes')} 
@@ -97,7 +97,7 @@ export default function SetVar(props: ISentenceEditorProps) {
             value={minValue.value}
             type="number"
             onChange={(ev) => {
-              const newValue = Number(ev.target.value.trim());
+              const newValue = ev.target.value.trim();
               minValue.set(newValue);
             }}
             onBlur={setContent}
@@ -110,7 +110,7 @@ export default function SetVar(props: ISentenceEditorProps) {
             value={maxValue.value}
             type="number"
             onChange={(ev) => {
-              const newValue = Number(ev.target.value.trim());
+              const newValue = ev.target.value.trim();
               maxValue.set(newValue);
             }}
             onBlur={setContent}
@@ -126,8 +126,8 @@ export default function SetVar(props: ISentenceEditorProps) {
             isChecked={!!randomVariable.value} 
             onChange={(newValue) => {
               if (!minValue.value || !maxValue.value) {
-                alert(t('errorTips'))
-                return 
+                alert(t('errorTips'));
+                return; 
               }
               
               randomVariable.set(newValue);
