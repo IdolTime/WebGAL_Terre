@@ -270,25 +270,30 @@ export class ManageGameService {
     );
 
     try {
-      const localInfo = await this.webgalFs.readJSONFile(
-        `${gameRootDir}/gameInfo.json`,
-      );
-      const res = await axios.post(
-        `https://test-api.idoltime.games/editor/game/add`,
-        localInfo,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            editorToken: token,
-          },
-        },
-      );
+      if (!gId) {
+        const localInfo = await this.webgalFs.readJSONFile(
+          `${gameRootDir}/gameInfo.json`,
+        );
 
-      if (res.data.code !== 0) {
-        throw new Error(res.data.message);
+        if (typeof localInfo === 'object') {
+          const res = await axios.post(
+            `https://test-api.idoltime.games/editor/game/add`,
+            localInfo,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                editorToken: token,
+              },
+            },
+          );
+
+          if (res.data.code !== 0) {
+            throw new Error(res.data.message);
+          }
+
+          gId = res.data.data;
+        }
       }
-
-      gId = res.data.data;
 
       const configFile: string = await this.webgalFs.readTextFile(
         `${gameRootDir}/config.txt`,
