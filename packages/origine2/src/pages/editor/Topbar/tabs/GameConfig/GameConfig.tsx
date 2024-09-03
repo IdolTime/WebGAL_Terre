@@ -140,6 +140,10 @@ export default function GameConfig() {
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_Icon', e)}
         />
       </TabItem>
+      <TabItem title={t("options.gameId")}>
+        <GameConfigEditor key="Game_Id" value={getConfigContentAsString('Game_Id')}
+          onChange={(e: string) => updateGameConfigSimpleByKey('Game_Id', e)}/>
+      </TabItem>
       {/* <TabItem title={t("options.textboxTheme")}> */}
       {/*  <GameConfigEditorWithSelector key="packageName" value={getConfigContentAsString('Textbox_theme')} */}
       {/*    onChange={(e: string) => updateGameConfigSimpleByKey('Textbox_theme', e)} */}
@@ -384,9 +388,9 @@ function GameConfigEditorR18(props: IGameConfigEditorMulti) {
     [true, true],
     [false, false]
   ]);
-  
+
   return (
-    <Checkbox 
+    <Checkbox
       checked={props.value?.length ? boolMap.get(props.value[0]) : false}
       onChange={(e) => handleCheckboxChange(e)}
     />
