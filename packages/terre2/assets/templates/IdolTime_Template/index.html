@@ -5,6 +5,9 @@
   <link rel="icon" type="image/x-icon" href="./icons/favicon.ico" id="dynamic-favicon" />
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
   <link rel="manifest" href="./manifest.json" />
+  <!-- pre-sdk -->
+  <link rel="stylesheet" href="https://pre-doc.moyibian.com/GcpWebSdk.min.css"
+  type="text/css" />
   <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
   <title>IdolTime</title>
   <style>
@@ -69,7 +72,7 @@
 
     window.pubsub = new PubSub();
   </script>
-  <script type="module" crossorigin src="./assets/index-47f76390.js"></script>
+  <script type="module" crossorigin src="./assets/index-76f66d2a.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -340,6 +343,7 @@
     })
   </script>
   
+  <script src="https://pre-doc.moyibian.com/GcpWebSdk.min.js"></script>
   <!--<script type="module" src="/src/Core/util/resize.ts"></script>-->
   <!--<script src="lib/live2d.min.js"></script>-->
   <!--<script src="lib/live2dcubismcore.min.js"></script>-->
@@ -408,10 +412,9 @@
       window.enterPromise();
       delete window.enterPromise;
     }
-
-    window.onload = () => {
-      enter()
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+      enter();
+    });
   </script>
 </body>
 
