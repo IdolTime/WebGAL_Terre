@@ -66,7 +66,7 @@ export const CollectionInfo: FC<IProps> = (props: IProps) => {
 
   return (
     <div key={itemIndex} className={`${s.flex} ${s.rowHover}`}>
-      <div className={s.row}>
+      <div className={s.row} style={{ paddingRight: '10px' }}>
         <span className={s.label}>{config?.label}</span>
       </div>
       <Checkbox
