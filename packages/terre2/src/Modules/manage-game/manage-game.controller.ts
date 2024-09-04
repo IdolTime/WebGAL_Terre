@@ -46,6 +46,7 @@ import {
   UploadFilesDto,
   UploadGameDto,
 } from './manage-game.dto';
+import { existsSync, mkdirSync, rmSync } from 'node:fs';
 
 @Controller('api/manageGame')
 @ApiTags('Manage Game')
@@ -197,10 +198,10 @@ export class ManageGameController {
     name: 'gamePackageName',
     type: String,
     description: 'Description of the gamePackageName parameter.',
-})
+  })
   async ejectGameAsExe(
-    @Param('gameName') gameName: string, 
-    @Param('gamePackageName') gamePackageName: string
+    @Param('gameName') gameName: string,
+    @Param('gamePackageName') gamePackageName: string,
   ) {
     gameName = decodeURI(gameName);
     gamePackageName = decodeURI(gamePackageName);
@@ -375,6 +376,15 @@ export class ManageGameController {
       return Buffer.concat([markerBuffer, encryptedBuffer]);
     };
 
+    // 确保目标目录存在，如果不存在则创建它
+    const targetDirectory = uploadFilesDto.targetDirectory;
+    if (!existsSync(targetDirectory)) {
+      mkdirSync(targetDirectory, { recursive: true });
+    } else if (uploadFilesDto.clearTargetDirectory) {
+      rmSync(targetDirectory, { recursive: true, force: true });
+      mkdirSync(targetDirectory, { recursive: true });
+    }
+
     const fileInfos: IUploadFileInfo[] = files.map((file) => {
       let encryptedFile = file.buffer;
       const encryptedFileFormat = ['.mp4', '.flv', '.webm', '.ogv'];
@@ -388,7 +398,8 @@ export class ManageGameController {
 
       return { fileName: file.originalname, file: encryptedFile };
     });
-    return this.webgalFs.writeFiles(uploadFilesDto.targetDirectory, fileInfos);
+
+    return this.webgalFs.writeFiles(targetDirectory, fileInfos);
   }
 
   @Post('mkdir')
