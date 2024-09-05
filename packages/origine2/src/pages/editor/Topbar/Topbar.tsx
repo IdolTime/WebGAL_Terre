@@ -92,8 +92,8 @@ export default function TopBar() {
         onClick={() => handleTabClick(TopbarTabs.Settings)}/>
       {/* <TopbarTabButton text={t("帮助")} isActive={currentTopbarTab === TopbarTabs.Help}
         onClick={() => handleTabClick(TopbarTabs.Help)}/> */}
-      <TopbarTabButton text={t("导出")} isActive={currentTopbarTab === TopbarTabs.Export}
-        onClick={() => handleTabClick(TopbarTabs.Export)}/>
+      {userInfo.editorType === 2 && <TopbarTabButton text={t("导出")} isActive={currentTopbarTab === TopbarTabs.Export}
+        onClick={() => handleTabClick(TopbarTabs.Export)}/>}
       {isShowAddSceneTab &&
         <TopbarTabButtonSpecial text={t("添加语句")} isActive={currentTopbarTab === TopbarTabs.AddSentence}
           onClick={() => handleTabClick(TopbarTabs.AddSentence)}/>}

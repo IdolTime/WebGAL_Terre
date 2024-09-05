@@ -46,7 +46,7 @@ export function ExportTab() {
       { position: 'top', timeout: 3000, intent: type }
     );
 
-  // if (!gid && userInfo.editorType !== 2) return null;
+  if (!gid && userInfo.editorType !== 2) return null;
 
   return <TopbarTab>
     <TabItem title={t("$导出")}>
