@@ -269,7 +269,7 @@ export default function Assets() {
       </div>
       <div className={assetsStyles.materialBtns}>
         <Button appearance="primary" size="small" onClick={() => {
-          window.open('http://ec2-13-229-109-223.ap-southeast-1.compute.amazonaws.com:3000/en/creativeCenter/materialMall', '_blank');
+          window.open('http://ec2-13-229-109-223.ap-southeast-1.compute.amazonaws.com:3000/creativeCenter/materialMall', '_blank');
         }}>素材商城</Button>
         <Button disabled={syncing} icon={<SpinIcon className={syncing ? assetsStyles.spin : ""} />} appearance="primary" size="small" onClick={syncMaterial}>同步素材</Button>
       </div>

@@ -3,16 +3,14 @@ import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { _open } from 'src/util/open';
 import { IFileInfo, WebgalFsService } from '../webgal-fs/webgal-fs.service';
 import * as process from 'process';
-import { basename, resolve } from 'path';
+import { basename, dirname, resolve } from 'path';
 import * as archiver from 'archiver';
-import { Upload } from '@aws-sdk/lib-storage';
-import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join, extname } from 'path';
 import axios from 'axios';
 import { readdir } from 'fs/promises';
 
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import { CreateGameDto, GameMaterialItem } from './manage-game.dto';
 
 /**
@@ -269,11 +267,19 @@ export class ManageGameService {
     const gameRootDir = this.webgalFs.getPathFromRoot(
       `/public/games/${gameName}/game/`,
     );
-    const mobileGameRootDir = this.webgalFs.getPathFromRoot(
-      `/public/templates/wap/`,
+    const bundleFile = process.platform === 'darwin' ? 'ToPack' : 'ToPack.exe';
+    // 获取打包工具
+    const bundleCommand = this.webgalFs.getPathFromRoot(
+      '/assets/tools/' + bundleFile,
     );
 
-    await this.webgalFs.copyDirAsync(mobileGameRootDir, gameMobileDir);
+    const args = [gameRootDir, gameMobileDir];
+
+    spawnSync(bundleCommand, args, {
+      env: process.env, // 使用相同的环境变量
+      stdio: 'inherit', // 继承标准输入输出，便于调试
+      cwd: dirname(bundleCommand),
+    });
 
     try {
       if (!gId) {
@@ -411,6 +417,7 @@ export class ManageGameService {
 
       // 删除本地压缩包
       fs.unlinkSync(zipFilePath);
+      fs.unlinkSync(mobileZipFilePath);
 
       if (approvalResData.code === 0) {
         return true;
@@ -437,39 +444,6 @@ export class ManageGameService {
       archive.directory(sourceDir, false);
       archive.finalize();
     });
-  }
-
-  private async uploadToS3(filePath: string, key: string): Promise<void> {
-    const fileStream = fs.createReadStream(filePath);
-
-    const target = {
-      Bucket: 'idol-editor',
-      Key: key,
-      Body: fileStream,
-    };
-
-    try {
-      const parallelUploads3 = new Upload({
-        client: new S3Client({
-          region: process.env.AWS_REGION,
-          credentials: {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          },
-        }),
-        params: target,
-        queueSize: 4, // optional concurrency configuration
-        leavePartsOnError: false, // optional manually handle dropped parts
-      });
-
-      parallelUploads3.on('httpUploadProgress', (progress) => {
-        console.log(progress);
-      });
-
-      await parallelUploads3.done();
-    } catch (e) {
-      console.log(e);
-    }
   }
 
   // 获取游戏配置
