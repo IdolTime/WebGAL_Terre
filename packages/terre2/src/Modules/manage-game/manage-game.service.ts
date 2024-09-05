@@ -265,9 +265,15 @@ export class ManageGameService {
     );
     const now = Date.now();
     const gameWebDir = join(gameDir, 'web');
+    const gameMobileDir = join(gameDir, 'wap');
     const gameRootDir = this.webgalFs.getPathFromRoot(
       `/public/games/${gameName}/game/`,
     );
+    const mobileGameRootDir = this.webgalFs.getPathFromRoot(
+      `/public/templates/wap/`,
+    );
+
+    await this.webgalFs.copyDirAsync(mobileGameRootDir, gameMobileDir);
 
     try {
       if (!gId) {
@@ -312,42 +318,74 @@ export class ManageGameService {
     }
 
     const key = `${gId}_${now}_web.zip`;
+    const mobileKey = `${gId}_${now + 100}_wap.zip`;
     const zipFilePath = `${gameDir}/${key}`;
+    const mobileZipFilePath = `${gameDir}/${mobileKey}`;
 
     // 创建压缩包
-    await this.compressDirectory(gameWebDir, zipFilePath);
+    await Promise.all([
+      this.compressDirectory(gameWebDir, zipFilePath),
+      this.compressDirectory(gameMobileDir, mobileZipFilePath),
+    ]);
 
-    const res = await axios.post(
-      `https://test-api.idoltime.games/editor/game/game_put_object_pre_sign`,
-      { fileName: key },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          editorToken: token,
+    // 上传压缩包
+    const [res, res2] = await Promise.all([
+      axios.post(
+        `https://test-api.idoltime.games/editor/game/game_put_object_pre_sign`,
+        { fileName: key },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            editorToken: token,
+          },
         },
-      },
-    );
+      ),
+      axios.post(
+        `https://test-api.idoltime.games/editor/game/game_put_object_pre_sign`,
+        { fileName: mobileKey },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            editorToken: token,
+          },
+        },
+      ),
+    ]);
 
     const resData = res.data;
+    const res2Data = res2.data;
 
-    if (resData.code === 0) {
+    if (resData.code === 0 && res2Data.code === 0) {
       const url = resData.data as string;
       const fileStream = fs.createReadStream(zipFilePath);
+      const mobileFileStream = fs.createReadStream(mobileZipFilePath);
       const fileSize = fs.statSync(zipFilePath).size;
+      const mobileFileSize = fs.statSync(mobileZipFilePath).size;
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const axios2 = require('axios');
 
-      const uploadRes = await axios2.put(url, fileStream, {
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'Content-Length': fileSize.toString(),
-        },
-        body: fileStream,
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-      });
+      const [uploadRes, uploadRes2] = await Promise.all([
+        axios2.put(url, fileStream, {
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'Content-Length': fileSize.toString(),
+          },
+          body: fileStream,
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        }),
+        axios2.put(res2Data.data as string, mobileFileStream, {
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'Content-Length': mobileFileSize.toString(),
+          },
+          body: mobileFileStream,
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        }),
+      ]);
 
-      if (uploadRes.status !== 200) {
+      if (uploadRes.status !== 200 || uploadRes2.status !== 200) {
         throw new Error('上传失败');
       }
 
@@ -359,6 +397,7 @@ export class ManageGameService {
           gId,
           approvalLink,
           fileName: key,
+          mobileFileName: mobileKey,
         },
         {
           headers: {
@@ -379,7 +418,7 @@ export class ManageGameService {
         throw new Error(approvalResData.message);
       }
     } else {
-      throw new Error(resData.message);
+      throw new Error(resData.code !== 0 ? resData.message : res2Data.message);
     }
   }
 
