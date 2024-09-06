@@ -6,6 +6,7 @@ const mapper = new Map();
 
 export function animateCursor(node: HTMLElement | null, frames: string[], delay: number) {
   let frameIndex = 0;
+  // @ts-ignore
   let timer;
   let marker = Date.now();
 
@@ -32,6 +33,7 @@ export function animateCursor(node: HTMLElement | null, frames: string[], delay:
   mapper.set(node, timer);
 
   return () => {
+      // @ts-ignore
     clearInterval(timer);
     mapper.delete(node);
   };
