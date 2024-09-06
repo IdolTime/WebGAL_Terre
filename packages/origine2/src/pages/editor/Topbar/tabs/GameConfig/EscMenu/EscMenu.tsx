@@ -190,7 +190,7 @@ const processNumericInput = (input: string) => {
 
 
   function renderConfig(data: IConfigESCMenus, index: number) {
-    const { key, hide, name, btnImage, btnPosition, fontFamily, fontSize, fontColor, align, x, y, scale } = data;
+    const { key, hide, name, btnImage, btnSound, btnPosition, fontFamily, fontSize, fontColor, align, x, y, scale } = data;
     return (
       <div className={styles.row} key={key}>
         <div className={styles.col1}>{getMenuKeyToName(key as EMenuKey)}</div>
@@ -232,6 +232,21 @@ const processNumericInput = (input: string) => {
               }}
             />
           </div>
+          <div className={styles.item} style={{ flexWrap: 'wrap' }}>
+            <span className={styles.btnImage}>
+              <label>按钮点击音效</label>
+              <span title={btnSound}>{btnSound}</span>
+            </span>
+            <ChooseFile
+              sourceBase={'bgm'}
+              extName={[".mp3", ".ogg", ".wav"]}
+              onChange={(file) => {
+                const se = file?.name ?? '';
+                updateConfig(index, 'btnSound', se);
+              }}
+            />
+          </div>
+
           <div className={styles.item}>
             <span>按钮位置</span>
             <Select 

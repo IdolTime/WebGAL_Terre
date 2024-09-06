@@ -243,3 +243,35 @@ export const defaultCollectionImages: ICollectionImages = {
     label: '图片10'
   }
 };
+
+export interface IBtnSoundConfig {
+  clickSound?: {
+    type: 'string';
+    label: string;
+  };
+  hoverSound?: {
+    type: 'string';
+    label: string;
+  }
+}
+
+
+export const defaultBtnSoundConfig: IBtnSoundConfig  = {
+  clickSound: {
+    type: 'string',
+    label: '点击音效'
+  },
+  // hoverSound: {
+  //   type: 'string',
+  //   label: '悬停音效'
+  // }
+}
+
+export interface IStyleConfigArr {
+  label: string; 
+  style: IStyleConfig; 
+  key: string;
+  info?: InfoConfig;
+  images?: ICollectionImages;
+  btnSound?: IBtnSoundConfig;
+}

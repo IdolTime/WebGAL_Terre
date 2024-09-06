@@ -1,4 +1,4 @@
-import { InfoConfig, ICollectionImages } from '@/pages/editor/Topbar/tabs/ViewConfig/confg';
+import { InfoConfig, ICollectionImages, IBtnSoundConfig } from '@/pages/editor/Topbar/tabs/ViewConfig/confg';
 
 export enum TitleSceneButtonKey {
   Game_start_button = 'Game_start_button', // 开始
@@ -17,6 +17,7 @@ export interface UIItemConfig {
   label: string;
   type?: 'image' | 'text' | 'container' | 'placeholder' | 'bgm' | 'bg';
   hasHoverStyle?: boolean;
+  hasButtonSound?: boolean;
   hasXY?: boolean;
   hasWidthHeight?: boolean;
   hasText?: boolean;
@@ -45,6 +46,7 @@ export interface UIItemConfig {
   };
   info?: InfoConfig;
   images?: ICollectionImages;
+  btnSound?: IBtnSoundConfig;
 }
 
 export enum IndicatorItemKey {
@@ -80,6 +82,7 @@ export interface CollectionItemKey {
     style?: Style;
     info?: InfoConfig;
     images?: ICollectionImages;
+    btnSound?: IBtnSoundConfig;
   };
 }
 
@@ -96,6 +99,7 @@ export interface ContainerItem {
     backgroundHoverStyle?: Style;
     extraStyle?: Style;
     extraHoverStyle?: Style;
+    btnSound?: IBtnSoundConfig;
   };
 }
 
@@ -108,6 +112,7 @@ export interface SliderContainerItem {
     sliderStyle?: Style;
     sliderBgStyle?: Style;
     sliderThumbStyle?: Style;
+    btnSound?: IBtnSoundConfig;
   };
 }
 
@@ -123,6 +128,7 @@ export interface IndicatorContainerItem {
     indicatorLeftHoverStyle?: Style;
     indicatorRightStyle?: Style;
     indicatorRightHoverStyle?: Style;
+    btnSound?: IBtnSoundConfig;
   };
 }
 
@@ -130,43 +136,53 @@ export const titleSceneButtonConfig: Record<TitleSceneButtonKey, UIItemConfig> =
   [TitleSceneButtonKey.Game_start_button]: {
     hasHoverStyle: true,
     label: '开始游戏',
-    positionType: 'absolute'
+    positionType: 'absolute',
+    hasButtonSound: true,
   },
   [TitleSceneButtonKey.Game_achievement_button]: {
     hasHoverStyle: true,
     label: '成就',
+    hasButtonSound: true,
   },
   [TitleSceneButtonKey.Game_storyline_button]: {
     hasHoverStyle: true,
     label: '故事线',
+    hasButtonSound: true,
   },
   [TitleSceneButtonKey.Game_extra_button]: {
     hasHoverStyle: true,
     label: '鉴赏',
+    hasButtonSound: true,
   },
   [TitleSceneButtonKey.Game_collection_button]: {
     hasHoverStyle: true,
     label: '图鉴',
+    hasButtonSound: true,
   },
   [TitleSceneButtonKey.Game_option_button]: {
     hasHoverStyle: true,
     label: '设置',
+    hasButtonSound: true,
   },
   [TitleSceneButtonKey.Game_load_button]: {
     hasHoverStyle: true,
     label: '读取存档',
+    hasButtonSound: true,
   },
   [TitleSceneButtonKey.Game_continue_button]: {
     hasHoverStyle: true,
     label: '继续游戏',
+    hasButtonSound: true,
   },
   [TitleSceneButtonKey.Game_progression_button]: {
     hasHoverStyle: true,
     label: '进度与成就',
+    hasButtonSound: true,
   },
   [TitleSceneButtonKey.Game_affinity_button]: {
     hasHoverStyle: true,
     label: '好感度',
+    hasButtonSound: true,
   },
 };
 
@@ -181,6 +197,7 @@ export const loadSceneButtonConfig: Record<
   [LoadSceneButtonKey.Load_back_button]: {
     hasHoverStyle: true,
     label: '返回',
+    hasButtonSound: true
   },
 };
 
@@ -192,6 +209,7 @@ export const storylineSceneButtonConfig: Record<StorylineSceneButtonKey, UIItemC
   [StorylineSceneButtonKey.Storyline_back_button]: {
     hasHoverStyle: true,
     label: '返回',
+    hasButtonSound: true
   },
 };
 
@@ -202,6 +220,7 @@ export enum AchievementSceneButtonKey {
 export const achievementSceneButtonConfig: Record<AchievementSceneButtonKey, UIItemConfig> = {
   [AchievementSceneButtonKey.Achievement_back_button]: {
     label: '返回',
+    hasButtonSound: true
   },
 };
 
@@ -225,39 +244,48 @@ export enum AffinitySceneButtonKey {
 export const AffinitySceneButtonConfig: Record<AffinitySceneButtonKey, UIItemConfig> = {
   [AffinitySceneButtonKey.Affinity_back_button]: {
     label: '返回',
+    hasButtonSound: true
   },
 };
 
 export const extraSceneButtonConfig: Record<ExtraSceneButtonKey, UIItemConfig> = {
   [ExtraSceneButtonKey.Extra_back_button]: {
     label: '返回',
+    hasButtonSound: true
   },
   [ExtraSceneButtonKey.Extra_bgm_button]: {
     label: '切换BGM标签',
+    hasButtonSound: true
   },
   [ExtraSceneButtonKey.Extra_video_button]: {
     label: '切换VIDEO标签',
+    hasButtonSound: true
   },
 };
 
 export const affinitySceneButtonConfig: Record<AffinitySceneButtonKey, UIItemConfig> = {
   [AffinitySceneButtonKey.Affinity_back_button]: {
     label: '返回',
+    hasButtonSound: true
   },
 };
 
 export const progressSceneButtonConfig: Record<ProgressSceneButtonKey, UIItemConfig> = {
   [ProgressSceneButtonKey.Progress_back_button]: {
     label: '返回',
+    hasButtonSound: true
   },
   [ProgressSceneButtonKey.Progress_achievement_button]: {
     label: '切换成就标签',
+    hasButtonSound: true
   },
   [ProgressSceneButtonKey.Progress_chapter_button]: {
     label: '切换章节标签',
+    hasButtonSound: true
   },
   [ProgressSceneButtonKey.Progress_affinity_button]: {
     label: '切换好感度标签',
+    hasButtonSound: true
   },
 };
 
@@ -404,6 +432,7 @@ export enum OptionSceneButtonKey {
 export const optionSceneButtonConfig: Record<OptionSceneButtonKey, UIItemConfig> = {
   [OptionSceneButtonKey.Option_back_button]: {
     label: '返回',
+    hasButtonSound: true
   },
 };
 
@@ -428,12 +457,15 @@ export enum CollectionSceneOtherKey {
 export const collectionSceneButtonConfig: Record<CollectionSceneButtonKey, UIItemConfig> = {
   [CollectionSceneButtonKey.Collection_back_button]: {
     label: '返回',
+    hasButtonSound: true
   },
   [CollectionSceneButtonKey.Collection_detail_dialog_prev_button]: {
     label: '详情弹窗上一个按钮元素',
+    hasButtonSound: true
   },
   [CollectionSceneButtonKey.Collection_detail_dialog_next_button]: {
     label: '详情弹窗下一个按钮元素',
+    hasButtonSound: true
   },
 };
 
@@ -1157,6 +1189,7 @@ export interface ButtonItem {
     hide: boolean;
     style: Style;
     hoverStyle?: Style;
+    btnSound?: IBtnSoundConfig;
   };
 }
 
@@ -1197,7 +1230,9 @@ export interface LoadSceneUIConfig {
     [LoadSceneOtherKey.Load_locked_item]: ButtonItem;
     [LoadSceneOtherKey.Load_indicator]: IndicatorContainerItem;
   };
-  buttons: { [key in LoadSceneButtonKey]: ButtonItem };
+  buttons: { 
+    [key in LoadSceneButtonKey]: ButtonItem
+  };
 }
 
 export interface StorylineSceneUIConfig {
@@ -1271,6 +1306,7 @@ export interface InfonItem {
     style?: Style;
     info?: InfoConfig;
     images?: ICollectionImages;
+    btnSound?: IBtnSoundConfig;
   };
 }
 

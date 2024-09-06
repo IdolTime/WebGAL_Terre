@@ -65,7 +65,10 @@ import {
   InfoConfig,
   defaultInfo,
   ICollectionImages,
-  defaultCollectionImages
+  defaultCollectionImages,
+  IStyleConfigArr,
+  IBtnSoundConfig,
+  defaultBtnSoundConfig
 } from './confg';
 
 interface IGameConfigEditor {
@@ -194,7 +197,22 @@ function GameConfigEditorGameMenu() {
               styleContent[argKey].push(`${newKey}=${value.args[argKey][newKey]}`);
             }
           });
-        } 
+        } else if (argKey == "btnSound") {
+          // console.log(argKey);
+          // debugger;
+
+          styleContent[argKey] = [];
+          // @ts-ignore
+          Object.keys(value.args[argKey]).forEach((btnSoundKey) => {
+            // @ts-ignore
+            let val = value.args[argKey][btnSoundKey];
+            if (val == undefined || val == null || val == '') {
+              return
+            }
+            // @ts-ignore
+            styleContent[argKey].push(`${btnSoundKey}=${val}`);
+          });
+        }
       });
 
       const options: any[] = [{ key: 'hide', value: value.args.hide }];
@@ -277,19 +295,24 @@ function GameConfigEditorGameMenu() {
       };
 
       const parsedArgs: any = { hide: false, style: {} };
+      const parsedKeys = ['hoverStyle', 'info', 'images', 'btnSound']
 
       args.forEach((e: any) => {
         if (e.key === 'hide') {
           parsedArgs.hide = e.value === true;
-        } else if (e.key.endsWith('style')) {
-          parsedArgs[e.key] = parseStyleString(e.value as string);
-        } else if (e.key === 'hoverStyle') {
-          parsedArgs[e.key] = parseStyleString(e.value as string);
-        } else if (e.key === 'info') {
-          parsedArgs[e.key] = parseStyleString(e.value as string);
-        } else if (e.key === 'images') {
+        } else if (e.key.endsWith('style') || parsedKeys.includes(e.key)) {
           parsedArgs[e.key] = parseStyleString(e.value as string);
         }
+        
+        // else if (e.key === 'hoverStyle') {
+        //   parsedArgs[e.key] = parseStyleString(e.value as string);
+        // } else if (e.key === 'info') {
+        //   parsedArgs[e.key] = parseStyleString(e.value as string);
+        // } else if (e.key === 'images') {
+        //   parsedArgs[e.key] = parseStyleString(e.value as string);
+        // } else if (e.key === 'btnSound') {
+        //   parsedArgs[e.key] = parseStyleString(e.value as string);
+        // } 
       });
 
       return parsedArgs;
@@ -493,12 +516,16 @@ function renderConfig(
   config.type = config.type || 'image';
 
   const [styleConfig, hasHoverStyle] = handleStyle(defaultStyle, config);
-  const styleConfigArr: { label: string; style: IStyleConfig; key: string, info?: InfoConfig, images?: ICollectionImages }[] = [
-    { label: '默认样式', style: styleConfig, key: 'style' },
+  const styleConfigArr: IStyleConfigArr[] = [
+    { label: '默认样式', style: styleConfig, key: 'style' }
   ];
 
   if (hasHoverStyle) {
-    styleConfigArr.push({ label: '选中样式', style: { ...styleConfig }, key: 'hoverStyle' });
+    styleConfigArr.push({ 
+      label: '选中样式', 
+      style: { ...styleConfig }, 
+      key: 'hoverStyle' 
+    });
   }
 
   if (config.children) {
@@ -538,6 +565,16 @@ function renderConfig(
     }
   }
 
+  // 按钮按钮点击音效配置项
+  if (config?.hasButtonSound) { 
+    styleConfigArr.push({ 
+      label: '按钮音效', 
+      key: 'buttonSound',
+      style: {},
+      btnSound: { ...defaultBtnSoundConfig }
+    });
+  }
+
   return parseStyleConfig({
     styleConfigArr,
     config,
@@ -558,7 +595,8 @@ function parseStyleConfig({
   setOptions,
   itemIndex,
 }: {
-  styleConfigArr: { label: string; style: IStyleConfig; key: string }[];
+  // styleConfigArr: { label: string; style: IStyleConfig; key: string }[];
+  styleConfigArr: IStyleConfigArr[]
   config: (UIItemConfig & { children: Record<string, UIItemConfig> }) | undefined;
   item: ButtonItem | IndicatorContainerItem | SliderContainerItem | ContainerItem | CollectionItemKey;
   type: 'buttons' | 'other';
@@ -586,7 +624,6 @@ function parseStyleConfig({
           },
         },
       };
-
       return newOptions;
     });
   }
@@ -721,6 +758,40 @@ function parseStyleConfig({
     });
   }
 
+  /**
+   * 
+   * @param btnTypeKey 按钮类型：‘clickSound’ | 'hoverSound' => IBtnSoundConfig
+   * @param value 声音文件
+   */
+  function setButtonSound(btnTypeKey: keyof IBtnSoundConfig, value: string) {
+    setOptions((options) => {
+      const newOptions = {
+        ...options,
+        [currentEditScene]: {
+          ...options[currentEditScene],
+          [type]: {
+            // @ts-ignore
+            ...options[currentEditScene][type],
+            [key]: {
+              // @ts-ignore
+              ...options[currentEditScene][type][key],
+              args: {
+                // @ts-ignore
+                ...options[currentEditScene][type][key].args,
+                'btnSound': {
+                  // @ts-ignore
+                  ...options[currentEditScene][type][key].args['btnSound'],
+                  [btnTypeKey]: value,
+                },
+              },
+            },
+          },
+        },
+      };
+      return newOptions;
+    });
+  }
+
   // 图鉴界面
   if (key.includes('Collection_img')) {
     return  (
@@ -769,7 +840,7 @@ function parseStyleConfig({
         />
         <span>隐藏</span>
       </div>
-      {styleConfigArr.map(({ label, style, key }, index: number) => (
+      {styleConfigArr.map(({ label, style, key, btnSound }, index: number) => (
         <Dialog key={key + index}>
           <DialogTrigger disableButtonEnhancement>
             <Button size="small">设置{label}</Button>
@@ -778,6 +849,25 @@ function parseStyleConfig({
             <DialogBody>
               <DialogTitle>{label}</DialogTitle>
               <DialogContent className={s.dialogContent}>
+
+                {key === 'buttonSound' && btnSound && 
+                  Object.keys(btnSound).map((soundKey: string, idx: number) => {
+                    return <div className={s.row} key={soundKey + idx}>
+                      <GameConfigEditorWithFileChoose
+                        title={'点击音效'}
+                        extNameList={['.mp3', '.ogg', '.wav']}
+                        sourceBase="bgm"
+                        key={soundKey}
+                        // @ts-ignore
+                        value={item?.args?.btnSound?.[soundKey] ?? ''}
+                        onChange={(val: string) => {
+                          setButtonSound(soundKey as keyof IBtnSoundConfig, val);
+                        }}
+                      />
+                    </div>
+                  })
+                }
+
                 {style.fontSize && key === 'style' && (
                   <div className={s.row}>
                     <span className={s.optionLabel}>文字</span>
