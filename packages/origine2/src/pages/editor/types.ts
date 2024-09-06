@@ -410,9 +410,11 @@ export const collectionSceneButtonConfig: Record<CollectionSceneButtonKey, UIIte
   },
   [CollectionSceneButtonKey.Collection_detail_dialog_prev_button]: {
     label: '详情弹窗上一个按钮元素',
+    hasXY: false,
   },
   [CollectionSceneButtonKey.Collection_detail_dialog_next_button]: {
     label: '详情弹窗下一个按钮元素',
+    hasXY: false,
   }
 };
 
@@ -546,11 +548,8 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     label: '详情界面右侧内容元素',
     type: 'bg',
     hasHoverStyle: false,
+    hasXY: false,
     customStyle: {
-      alignPosition: {
-        type: 'string',
-        label: '对齐方式',
-      },
       marginTop: {
         type: 'number',
         label: '上边距',
@@ -564,12 +563,14 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   [CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg]: {
     label: '详情界面右侧缩略图元素',
     type: 'bg',
-    hasHoverStyle: false
+    hasHoverStyle: false,
+    hasXY: false,
   },
   [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: {
     label: '详情界面右侧信息元素',
     type: 'bg',
     hasHoverStyle: false,
+    hasXY: false,
     customStyle: {
       alignPosition: {
         type: 'string',
