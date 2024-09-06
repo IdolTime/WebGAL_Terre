@@ -42,6 +42,7 @@ export interface GameOriginInfo {
   gCover: string,
   publicResource: number,
   isAdmin: boolean,
+  isLocal: boolean,
 }
 
 export default function DashBoard() {
@@ -76,6 +77,7 @@ export default function DashBoard() {
   const [loadingFromServer, setLoadingFromServer] = useState(true);
   const [loadingFromLocal, setLoadingFromLocal] = useState(true);
 
+
   async function getGameListFromServer(): Promise<Array<GameOriginInfo>> {
     if (!userInfo.userId) {
       return [];
@@ -96,6 +98,12 @@ export default function DashBoard() {
   }
 
   async function createGame(gameName:string, gId: number, localInfo: any) {
+    gameInfoList.value.forEach(e => {
+      if (e.gName === gameName) {
+        messageRef.current!.showMessage(`${gameName} 已经存在`, 2000);
+        return;
+      }
+    });
     const res = await axios.post("/api/manageGame/createGame", { gameName: gameName, gId, localInfo }).then(r => r.data);
     logger.info("创建结果：", res);
     messageRef.current!.showMessage(`${gameName} ` + trans('msgs.created'), 2000);
@@ -154,6 +162,7 @@ export default function DashBoard() {
             gCover: src,
             publicResource: 0,
             isAdmin: false,
+            isLocal: true,
           };
         });
 
@@ -173,7 +182,30 @@ export default function DashBoard() {
 
   useEffect(() => {
     if (!loadingFromLocal && !loadingFromServer) {
-      gameInfoList.set(gameInfoTempRef.current.server.concat(gameInfoTempRef.current.local));
+      const gameListObject = gameInfoTempRef.current.server.reduce((p, c) => {
+        p[c.gName] = c;
+        return p;
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      }, {} as { [key: string]: GameOriginInfo });
+
+      gameInfoTempRef.current.local.forEach(e => {
+        if (!gameListObject[e.gName]) {
+          gameListObject[e.gName] = e;
+        }
+      });
+      const list = Object.values(gameListObject);
+
+      list.sort((a, b) => {
+        if (a.isLocal && !b.isLocal) {
+          return 1; // a 应该排在 b 后面
+        }
+        if (!a.isLocal && b.isLocal) {
+          return -1; // a 应该排在 b 前面
+        }
+        return 0; // 顺序不变
+      });
+
+      gameInfoList.set(list);
     }
   }, [loadingFromLocal, loadingFromServer]);
 

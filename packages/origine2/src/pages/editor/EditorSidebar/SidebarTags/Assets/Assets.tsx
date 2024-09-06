@@ -269,7 +269,7 @@ export default function Assets() {
       </div>
       <div className={assetsStyles.materialBtns}>
         <Button appearance="primary" size="small" onClick={() => {
-          window.open('http://ec2-13-229-109-223.ap-southeast-1.compute.amazonaws.com:3000/en/creativeCenter/materialMall', '_blank');
+          window.open('http://ec2-13-229-109-223.ap-southeast-1.compute.amazonaws.com:3000/creativeCenter/materialMall', '_blank');
         }}>素材商城</Button>
         <Button disabled={syncing} icon={<SpinIcon className={syncing ? assetsStyles.spin : ""} />} appearance="primary" size="small" onClick={syncMaterial}>同步素材</Button>
       </div>
@@ -398,22 +398,29 @@ function FileUploader({ targetDirectory, uploadUrl, onUpload }: IFileUploaderPro
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      // const validPx = await isValidImgSize(file, 1280, 720);
-      const size = ['image/apng'].includes(file.type) ? 4 : 2;
-      const validSize = file.size / 1024 / 1024;
-      if (validSize <= size) {
-        formData.append("files", file);
-      }
-      if (validSize > size) {
-        tips += `${file.name}期望小于${size}M  `;
-      }
+
+      if (file.type.includes('image')) {
+        // const validPx = await isValidImgSize(file, 1280, 720);
+        const size = ['image/apng'].includes(file.type) ? 4 : 2;
+        const validSize = file.size / 1024 / 1024;
+        if (validSize <= size) {
+          formData.append("files", file);
+        }
+        if (validSize > size) {
+          tips += `${file.name}期望小于${size}M  `;
+        }
       // if (!validPx) {
       //   tips += `${file.name}尺寸不超过1280*720  `;
       // }
+      } else {
+        formData.append("files", file);
+      }
+
+      if (tips !== '') {
+        alert(tips);
+      }
     }
-    if (tips !== '') {
-      alert(tips);
-    }
+
     axios.post(uploadUrl, formData).then((response) => {
       if (response.data) {
         onUpload();

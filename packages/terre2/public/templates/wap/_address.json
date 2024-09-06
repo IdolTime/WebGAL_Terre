@@ -1,0 +1,18 @@
+{
+    "base": "6f8a94ae72669786b017f2f20c7d8a26_1724111486.bundle",
+    "background/bf适配场景.png": "b276b91bee878a4d002deef2887e4f8a_1724402798.bundle",
+    "background/bg.png": "c20ca6bd1fd3abf4f386060e3c304362_1724111486.bundle",
+    "background/title-bg.png": "089017df5328800bc8d9c1e8236ddbc0_1724111486.bundle",
+    "background/场景.png": "1fea13e8d27260d35160f3d924e7765e_1724402800.bundle",
+    "figure/hiyori_pro_zh/hiyori_pro_t11.model3.json": "0ba6ac195ec64ae57c8f3db64cc67050_1724338264.bundle",
+    "figure/Gantzert_Felixander/Gantzert_Felixander.model3.json": "25e0199af50ca2a4c373acb77c744363_1724136400.bundle",
+    "figure/法医1920x1125/法医.model3.json": "a07e98b58e87c4474471c2b6207f91c3_1724402815.bundle",
+    "figure/动态立绘_1554p/动态立绘_1554p.json": "1c5212964412b497ae497bb0d226b39e_1724659902.bundle",
+    "figure/静态立绘_1554p.png": "0c1afad799b972e119a3037d9cc8b6fe_1724402802.bundle",
+    "scene/start.txt": "dc605665843b9641080adbccf73dd1dc_1724951106.bundle",
+    "scene/付费.txt": "de171395608986c4c05952d59ac10c6b_1724111486.bundle",
+    "scene/免费.txt": "93e6684d43e20f7de97bc80462c7aafd_1724111486.bundle",
+    "bgm/s_Title.mp3": "675f0cd002ba8025e84951b06ce61cd4_1724111486.mp3",
+    "video/竖版视频.mp4": "c16cd354e4901a9f31a195676fb65729_1724402802.mp4",
+    "vocal/v1.wav": "f059f542c2be86f202e58df4bfefb7a7_1724111486.wav"
+}

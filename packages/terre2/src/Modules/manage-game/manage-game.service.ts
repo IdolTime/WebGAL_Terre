@@ -3,16 +3,14 @@ import { ConsoleLogger, Injectable } from '@nestjs/common';
 import { _open } from 'src/util/open';
 import { IFileInfo, WebgalFsService } from '../webgal-fs/webgal-fs.service';
 import * as process from 'process';
-import { resolve } from 'path';
+import { basename, dirname, resolve } from 'path';
 import * as archiver from 'archiver';
-import { Upload } from '@aws-sdk/lib-storage';
-import { S3Client } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { join, extname } from 'path';
 import axios from 'axios';
 import { readdir } from 'fs/promises';
 
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import { CreateGameDto, GameMaterialItem } from './manage-game.dto';
 
 /**
@@ -143,17 +141,40 @@ export class ManageGameService {
       gameDir,
     );
 
-    const configFile: string | unknown = await this.webgalFs.readTextFile(
+    let configFile: string = await this.webgalFs.readTextFile(
       `${gameDir}/config.txt`,
     );
+
+    if (localInfo) {
+      const fileName = basename(localInfo.detailPic);
+      configFile = configFile.replace(/(Title_img:)[^;\s]+/, `$1${fileName}`);
+
+      axios({
+        method: 'get',
+        url: localInfo.detailPic,
+        responseType: 'arraybuffer', // 改为 arraybuffer 来处理二进制数据
+      })
+        .then((response) => {
+          return new Promise<void>((resolve, reject) => {
+            // 写入文件
+            fs.writeFileSync(
+              join(gameDir, 'background', fileName),
+              response.data,
+            );
+            console.log(`File ${fileName} downloaded successfully`);
+            resolve();
+          });
+        })
+        .catch((err) => {
+          console.log(`资源 ${localInfo.detailPic} 下载失败: ${err.message}`);
+        });
+      await this.webgalFs.writeJSONFile(`${gameDir}/gameInfo.json`, localInfo);
+    }
+
     await this.webgalFs.updateTextFile(
       `${gameDir}/config.txt`,
       `${configFile}Game_id:${gId};\n`,
     );
-
-    if (localInfo) {
-      await this.webgalFs.writeJSONFile(`${gameDir}/gameInfo.json`, localInfo);
-    }
 
     return true;
   }
@@ -242,71 +263,135 @@ export class ManageGameService {
     );
     const now = Date.now();
     const gameWebDir = join(gameDir, 'web');
+    const gameMobileDir = join(gameDir, 'wap');
     const gameRootDir = this.webgalFs.getPathFromRoot(
       `/public/games/${gameName}/game/`,
     );
+    const bundleFile = process.platform === 'darwin' ? 'ToPack' : 'ToPack.exe';
+    // 获取打包工具
+    const bundleCommand = this.webgalFs.getPathFromRoot(
+      '/assets/tools/' + bundleFile,
+    );
+
+    const args = [gameRootDir, gameMobileDir];
+
+    spawnSync(bundleCommand, args, {
+      env: process.env, // 使用相同的环境变量
+      stdio: 'inherit', // 继承标准输入输出，便于调试
+      cwd: dirname(bundleCommand),
+    });
 
     try {
-      const localInfo = await this.webgalFs.readJSONFile(
-        `${gameRootDir}/gameInfo.json`,
+      if (!gId) {
+        const localInfo = await this.webgalFs.readJSONFile(
+          `${gameRootDir}/gameInfo.json`,
+        );
+
+        if (typeof localInfo === 'object') {
+          const res = await axios.post(
+            `https://test-api.idoltime.games/editor/game/add`,
+            localInfo,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                editorToken: token,
+              },
+            },
+          );
+
+          if (res.data.code !== 0) {
+            throw new Error(res.data.message);
+          }
+
+          gId = res.data.data;
+        }
+      }
+
+      const configFile: string = await this.webgalFs.readTextFile(
+        `${gameRootDir}/config.txt`,
       );
-      const res = await axios.post(
-        `https://test-api.idoltime.games/editor/game/add`,
-        localInfo,
+      const newGameId = gId;
+      const updatedText = configFile.replace(
+        /(Game_id:)\d+;/,
+        `$1${newGameId};`,
+      );
+      await this.webgalFs.updateTextFile(
+        `${gameRootDir}/config.txt`,
+        updatedText,
+      );
+    } catch (error) {
+      throw new Error(error.message);
+    }
+
+    const key = `${gId}_${now}_web.zip`;
+    const mobileKey = `${gId}_${now + 100}_wap.zip`;
+    const zipFilePath = `${gameDir}/${key}`;
+    const mobileZipFilePath = `${gameDir}/${mobileKey}`;
+
+    // 创建压缩包
+    await Promise.all([
+      this.compressDirectory(gameWebDir, zipFilePath),
+      this.compressDirectory(gameMobileDir, mobileZipFilePath),
+    ]);
+
+    // 上传压缩包
+    const [res, res2] = await Promise.all([
+      axios.post(
+        `https://test-api.idoltime.games/editor/game/game_put_object_pre_sign`,
+        { fileName: key },
         {
           headers: {
             'Content-Type': 'application/json',
             editorToken: token,
           },
         },
-      );
-
-      if (res.data.code !== 0) {
-        throw new Error(res.data.message);
-      }
-
-      gId = res.data.data;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-
-    const key = `${gId}_${now}_web.zip`;
-    const zipFilePath = `${gameDir}/${key}`;
-
-    // 创建压缩包
-    await this.compressDirectory(gameWebDir, zipFilePath);
-
-    const res = await axios.post(
-      `https://test-api.idoltime.games/editor/game/game_put_object_pre_sign`,
-      { fileName: key },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          editorToken: token,
+      ),
+      axios.post(
+        `https://test-api.idoltime.games/editor/game/game_put_object_pre_sign`,
+        { fileName: mobileKey },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            editorToken: token,
+          },
         },
-      },
-    );
+      ),
+    ]);
 
     const resData = res.data;
+    const res2Data = res2.data;
 
-    if (resData.code === 0) {
+    if (resData.code === 0 && res2Data.code === 0) {
       const url = resData.data as string;
       const fileStream = fs.createReadStream(zipFilePath);
+      const mobileFileStream = fs.createReadStream(mobileZipFilePath);
       const fileSize = fs.statSync(zipFilePath).size;
+      const mobileFileSize = fs.statSync(mobileZipFilePath).size;
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const axios2 = require('axios');
 
-      const uploadRes = await axios2.put(url, fileStream, {
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'Content-Length': fileSize.toString(),
-        },
-        body: fileStream,
-        maxContentLength: Infinity,
-        maxBodyLength: Infinity,
-      });
+      const [uploadRes, uploadRes2] = await Promise.all([
+        axios2.put(url, fileStream, {
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'Content-Length': fileSize.toString(),
+          },
+          body: fileStream,
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        }),
+        axios2.put(res2Data.data as string, mobileFileStream, {
+          headers: {
+            'Content-Type': 'application/octet-stream',
+            'Content-Length': mobileFileSize.toString(),
+          },
+          body: mobileFileStream,
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity,
+        }),
+      ]);
 
-      if (uploadRes.status !== 200) {
+      if (uploadRes.status !== 200 || uploadRes2.status !== 200) {
         throw new Error('上传失败');
       }
 
@@ -318,6 +403,7 @@ export class ManageGameService {
           gId,
           approvalLink,
           fileName: key,
+          mobileFileName: mobileKey,
         },
         {
           headers: {
@@ -331,6 +417,7 @@ export class ManageGameService {
 
       // 删除本地压缩包
       fs.unlinkSync(zipFilePath);
+      fs.unlinkSync(mobileZipFilePath);
 
       if (approvalResData.code === 0) {
         return true;
@@ -338,7 +425,7 @@ export class ManageGameService {
         throw new Error(approvalResData.message);
       }
     } else {
-      throw new Error(resData.message);
+      throw new Error(resData.code !== 0 ? resData.message : res2Data.message);
     }
   }
 
@@ -357,39 +444,6 @@ export class ManageGameService {
       archive.directory(sourceDir, false);
       archive.finalize();
     });
-  }
-
-  private async uploadToS3(filePath: string, key: string): Promise<void> {
-    const fileStream = fs.createReadStream(filePath);
-
-    const target = {
-      Bucket: 'idol-editor',
-      Key: key,
-      Body: fileStream,
-    };
-
-    try {
-      const parallelUploads3 = new Upload({
-        client: new S3Client({
-          region: process.env.AWS_REGION,
-          credentials: {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          },
-        }),
-        params: target,
-        queueSize: 4, // optional concurrency configuration
-        leavePartsOnError: false, // optional manually handle dropped parts
-      });
-
-      parallelUploads3.on('httpUploadProgress', (progress) => {
-        console.log(progress);
-      });
-
-      await parallelUploads3.done();
-    } catch (e) {
-      console.log(e);
-    }
   }
 
   // 获取游戏配置

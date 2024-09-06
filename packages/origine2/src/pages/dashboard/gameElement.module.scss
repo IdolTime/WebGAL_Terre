@@ -7,11 +7,20 @@
   transition: all 0.33s;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .gameElement_main:hover {
   background: var(--bg-card-hover);
   box-shadow: var(--shadow-md);
+}
+
+.gameElement_main_local_label {
+  position: absolute;
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
 }
 
 .gameElement_main:hover:has(.gameElement_action:hover) {
