@@ -294,6 +294,6 @@ export const defaultCollectionVideos = {
 
 export const alignPositionOptions = [
   { name: '默认', value: '' },
-  { name: '顶部居中', value: 'top-center' },
-  { name: '底部居中', value: 'bottom-center' }
+  { name: '顶部对齐', value: 'top-center' },
+  { name: '底部对齐', value: 'bottom-center' }
 ]

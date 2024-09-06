@@ -9,6 +9,8 @@
   <title>IdolTime</title>
   <style>
     :root {
+        --scale-factor: 0.5;
+
         --screenWidth: 2560px;
         --screenHeight: 1440px;
 
@@ -69,7 +71,7 @@
 
     window.pubsub = new PubSub();
   </script>
-  <script type="module" crossorigin src="./assets/index-374818f6.js"></script>
+  <script type="module" crossorigin src="./assets/index-31d25869.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -285,6 +287,8 @@
       const rootEle = document.documentElement;
         const MS = 3;
         const MSTop = 3.2;
+
+        rootEle.style.setProperty('--scale-factor', 0.3333);
 
         rootEle.style.setProperty('--options_checkbox_top', `${239 * MS}px`);
         rootEle.style.setProperty('--options_checkbox_left', `${441 * MS}px`);
