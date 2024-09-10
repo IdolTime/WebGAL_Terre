@@ -24,7 +24,7 @@ jobs:
       - name: Compress
         run: 7z a -tzip IdolTime_Editor_Mac.zip release/*
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: IdolTime_Editor_Mac
           path: IdolTime_Editor_Mac.zip
@@ -45,7 +45,7 @@ jobs:
       - name: Compress
         run: 7z a -tzip IdolTime_Editor_Windows.zip release/*
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: IdolTime_Editor_Windows
           path: IdolTime_Editor_Windows.zip
@@ -67,7 +67,7 @@ jobs:
         shell: bash
         run: mkdir bundle && yarn nsis-bundle
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: IdolTime_Editor_Windows_Setup
           path: bundle/IdolTime_Editor_Setup.exe
