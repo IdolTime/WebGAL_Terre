@@ -10,6 +10,8 @@
   <title>IdolTime</title>
   <style>
     :root {
+        --scale-factor: 0.5;
+
         --screenWidth: 2560px;
         --screenHeight: 1440px;
 
@@ -26,10 +28,10 @@
         --options_checkbox_720P_top: calc(266px*2);
         --options_checkbox_720P_left: calc(640px*2);
 
-        --options_light_slider_top: 890px;
+        --options_light_slider_top: 750px;
         --options_light_slider_left: 1244px;
 
-        --options_sound_slider_top: 750px;
+        --options_sound_slider_top: 890px;
         --options_sound_slider_left: 1244px;
 
         --options_light_main_top: 1020px;
@@ -86,7 +88,7 @@
       margin-left: 30px;
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-ac655511.js"></script>
+  <script type="module" crossorigin src="./assets/index-4b6717d3.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -201,8 +203,7 @@
       let targetWidth = 2560;
 
       const gameSizeVal = window.localStorage.getItem('game-screen-size');
-      const sizeArr = gameSizeVal && typeof gameSizeVal === 'string' && gameSizeVal?.split('x') || []
-      console.log('sizeArr', sizeArr, gameSizeVal)
+      const sizeArr = gameSizeVal && typeof gameSizeVal === 'string' && gameSizeVal?.split('x') || [];
       if (sizeArr.length > 0) {
         targetWidth = parseInt(sizeArr[0]) * 2;
         targetHeight = parseInt(sizeArr[1]) * 2;
@@ -333,10 +334,12 @@
         const MS = 3;
         const MSTop = 3.2;
 
+        rootEle.style.setProperty('--scale-factor', 0.3333);
+
         rootEle.style.setProperty('--options_checkbox_top', `${239 * MS}px`);
         rootEle.style.setProperty('--options_checkbox_left', `${441 * MS}px`);
 
-        rootEle.style.setProperty('--options_checkbox_window_top', `${218 * MSTop}px`);
+        rootEle.style.setProperty('--options_checkbox_window_top', `728px`);
         rootEle.style.setProperty('--options_checkbox_window_left', `${661 * MS}px`);
 
         rootEle.style.setProperty('--options_checkbox_1080P_top', `${266 * MSTop}px`);
@@ -345,13 +348,13 @@
         rootEle.style.setProperty('--options_checkbox_720P_top', `${266 * MSTop}px`);
         rootEle.style.setProperty('--options_checkbox_720P_left', `${640 * MS}px`);
 
-        rootEle.style.setProperty('--options_light_slider_top', `${445 * MS}px`);
+        rootEle.style.setProperty('--options_light_slider_top', `1148px`);
         rootEle.style.setProperty('--options_light_slider_left', `${622 * MS}px`);
 
-        rootEle.style.setProperty('--options_sound_slider_top', `${375 * MS}px`);
+        rootEle.style.setProperty('--options_sound_slider_top', `1370px`);
         rootEle.style.setProperty('--options_sound_slider_left', `${622 * MS}px`);
 
-        rootEle.style.setProperty('--options_light_main_top', `${510 * MS}px`);
+        rootEle.style.setProperty('--options_light_main_top', `1577px`);
         rootEle.style.setProperty('--options_light_main_left', `${622 * MS}px`);
     }
 
