@@ -60,6 +60,15 @@ export default function Assets() {
      * 更新当前目录内的文件
      */
     getFileList(gameName, currentDirName, currentDirExtName.value).then(result => {
+      result.sort((a, b) => {
+        if (a.isDir && !b.isDir) {
+          return -1; // a should come before b
+        }
+        if (!a.isDir && b.isDir) {
+          return 1; // b should come before a
+        }
+        return 0; // keep original order if both are the same
+      });
       currentDirFiles.set(result);
     });
 

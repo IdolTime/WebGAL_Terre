@@ -5954,15 +5954,6 @@ fs-extra@10.1.0, fs-extra@^10.0.0:
     jsonfile "^6.0.1"
     universalify "^2.0.0"
 
-fs-extra@^11.2.0:
-  version "11.2.0"
-  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.2.0.tgz#e70e17dfad64232287d01929399e0ea7c86b0e5b"
-  integrity sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==
-  dependencies:
-    graceful-fs "^4.2.0"
-    jsonfile "^6.0.1"
-    universalify "^2.0.0"
-
 fs-extra@^9.1.0:
   version "9.1.0"
   resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-9.1.0.tgz"
@@ -6352,10 +6343,10 @@ iconv-lite@^0.6.3:
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
-idoltime-parser@4.4.19:
-  version "4.4.19"
-  resolved "https://registry.yarnpkg.com/idoltime-parser/-/idoltime-parser-4.4.19.tgz#647228a1f07aac5859601a04fdce583c02385cca"
-  integrity sha512-0gnfHZNjuKzTLf1yUfvFbgvZ8g6Z6vp4LG8gUlXjzJZ4EYiBcmgt8DDyJSI/3EhiZBbehgmwXp9h/n1+xIUlKQ==
+idoltime-parser@4.4.24:
+  version "4.4.24"
+  resolved "https://registry.yarnpkg.com/idoltime-parser/-/idoltime-parser-4.4.24.tgz#f01ee07f0ca76732986f49da78a870a433df33f9"
+  integrity sha512-TYigDVu7hjU+Apm9PmpHpBQPOXwBTQugcOfxeUaUxrJME2vLnKy0zZqEcXRubZpa7C33De4WZMwDSgx3dzAHag==
   dependencies:
     chevrotain "^10.5.0"
     cloudlogjs "^1.0.11"

@@ -70,7 +70,10 @@ import {
   ICollectionImages,
   defaultCollectionImages,
   defaultCollectionVideos,
-  alignPositionOptions
+  alignPositionOptions,
+  IBtnSoundConfig,
+  IStyleConfigArr,
+  defaultBtnSoundConfig
 } from './confg';
 import { EscMenu } from '@/pages/editor/Topbar/tabs/GameConfig/EscMenu/EscMenu';
 import { SoundSetting } from '@/pages/editor/Topbar/tabs/GameConfig/SoundSetting/SoundSetting';
@@ -316,19 +319,12 @@ function GameConfigEditorGameMenu() {
       };
 
       const parsedArgs: any = { hide: false, style: {} };
+      const parsedKeys = ['hoverStyle', 'info', 'images', 'btnSound', 'videos'];
 
       args.forEach((e: any) => {
         if (e.key === 'hide') {
           parsedArgs.hide = e.value === true;
-        } else if (e.key.endsWith('style') || sliderKeyArr.includes(e.key)) {
-          parsedArgs[e.key] = parseStyleString(e.value as string);
-        } else if (e.key === 'hoverStyle') {
-          parsedArgs[e.key] = parseStyleString(e.value as string);
-        } else if (e.key === 'info') {
-          parsedArgs[e.key] = parseStyleString(e.value as string);
-        } else if (e.key === 'images') {
-          parsedArgs[e.key] = parseStyleString(e.value as string);
-        } else if (e.key === 'videos') {
+        } else if (e.key.endsWith('style') || parsedKeys.includes(e.key)) {
           parsedArgs[e.key] = parseStyleString(e.value as string);
         }
       });
@@ -533,7 +529,7 @@ function renderConfig(
   config.type = config.type || 'image';
 
   const [styleConfig, hasHoverStyle] = handleStyle(defaultStyle, config);
-  const styleConfigArr: { label: string; style: IStyleConfig; key: string, info?: InfoConfig, images?: ICollectionImages, videos?: typeof defaultCollectionVideos }[] = [
+  const styleConfigArr: IStyleConfigArr[] = [
     { label: '默认样式', style: styleConfig, key: 'style' },
   ];
 
@@ -584,6 +580,16 @@ function renderConfig(
       }
     }
   }
+  
+  // 按钮按钮点击音效配置项
+  if (config?.hasButtonSound) { 
+    styleConfigArr.push({ 
+      label: '按钮音效', 
+      key: 'buttonSound',
+      style: {},
+      btnSound: { ...defaultBtnSoundConfig }
+    });
+  }
 
   return parseStyleConfig({
     styleConfigArr,
@@ -605,7 +611,7 @@ function parseStyleConfig({
   setOptions,
   itemIndex,
 }: {
-  styleConfigArr: { label: string; style: IStyleConfig; key: string }[];
+  styleConfigArr: IStyleConfigArr[];
   config: (UIItemConfig & { children: Record<string, UIItemConfig> }) | undefined;
   item: ButtonItem | IndicatorContainerItem | SliderContainerItem | ContainerItem | CollectionItemKey;
   type: 'buttons' | 'other';
@@ -669,7 +675,7 @@ function parseStyleConfig({
       };
 
       if (
-        (config?.positionType === 'relative' && (styleKey === 'x' || styleKey === 'y') && value !== undefined) && value !== ''
+        (config?.positionType === 'relative' && (styleKey === 'x' || styleKey === 'y') && !value)
       ) {
         // @ts-ignore
         newOptions[currentEditScene][type][key].args.style.position = 'relative';
@@ -768,6 +774,40 @@ function parseStyleConfig({
     });
   }
 
+  /**
+   * 
+   * @param btnTypeKey 按钮类型：‘clickSound’ | 'hoverSound' => IBtnSoundConfig
+   * @param value 声音文件
+   */
+  function setButtonSound(btnTypeKey: keyof IBtnSoundConfig, value: string) {
+    setOptions((options) => {
+      const newOptions = {
+        ...options,
+        [currentEditScene]: {
+          ...options[currentEditScene],
+          [type]: {
+            // @ts-ignore
+            ...options[currentEditScene][type],
+            [key]: {
+              // @ts-ignore
+              ...options[currentEditScene][type][key],
+              args: {
+                // @ts-ignore
+                ...options[currentEditScene][type][key].args,
+                'btnSound': {
+                  // @ts-ignore
+                  ...options[currentEditScene][type][key].args['btnSound'],
+                  [btnTypeKey]: value,
+                },
+              },
+            },
+          },
+        },
+      };
+      return newOptions;
+    });
+  }
+
   // 图鉴界面
   if (key.includes('Collection_img')) {
     return  (
@@ -832,7 +872,7 @@ function parseStyleConfig({
         />
         <span style={{ display: 'inline-block', width: '30px' }}>隐藏</span>
       </div>
-      {styleConfigArr.map(({ label, style, key }, index: number) => (
+      {styleConfigArr.map(({ label, style, key, btnSound }, index: number) => (
         <Dialog key={key + index}>
           <DialogTrigger disableButtonEnhancement>
             <Button size="small">设置{label}</Button>
@@ -841,6 +881,24 @@ function parseStyleConfig({
             <DialogBody>
               <DialogTitle>{label}</DialogTitle>
               <DialogContent className={s.dialogContent}>
+                {key === 'buttonSound' && btnSound && 
+                  Object.keys(btnSound).map((soundKey: string, idx: number) => {
+                    return <div className={s.row} key={soundKey + idx}>
+                      <GameConfigEditorWithFileChoose
+                        title={'点击音效'}
+                        extNameList={['.mp3', '.ogg', '.wav']}
+                        sourceBase="bgm"
+                        key={soundKey}
+                        // @ts-ignore
+                        value={item?.args?.btnSound?.[soundKey] ?? ''}
+                        onChange={(val: string) => {
+                          setButtonSound(soundKey as keyof IBtnSoundConfig, val);
+                        }}
+                      />
+                    </div>
+                  })
+                }
+
                 {style.fontSize && key === 'style' && (
                   <div className={s.row}>
                     <span className={s.optionLabel}>文字</span>
@@ -903,7 +961,7 @@ function parseStyleConfig({
                     ) : styleProp.type === 'image' ? (
                       <div>
                         <ChooseFile
-                          extName={['.png', '.jpg', '.jpeg', '.gif']}
+                          extName={['.png', '.jpg', '.jpeg', '.gif', '.webp']}
                           sourceBase={config.type === 'bg' ? 'background' : 'ui'}
                           onChange={(file) =>
                             config.type === 'bg' && key === 'style'
