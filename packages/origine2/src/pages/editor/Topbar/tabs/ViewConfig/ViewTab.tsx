@@ -58,6 +58,8 @@ import { cloneDeep } from 'lodash';
 import { useValue } from '@/hooks/useValue';
 import axios from 'axios';
 import { WebgalParser } from '@/pages/editor/GraphicalEditor/parser';
+import { EscMenu } from '@/pages/editor/Topbar/tabs/GameConfig/EscMenu/EscMenu';
+import { SoundSetting } from '@/pages/editor/Topbar/tabs/GameConfig/SoundSetting/SoundSetting';
 import { CollectionInfo } from './CollectionImgInfo';
 import { 
   IStyleConfig,
@@ -135,7 +137,31 @@ export function ViewTab() {
             {sceneNameMap[key as keyof typeof Scene]}
           </Button>
         ))}
-        <GameConfigEditorGameMenu key="gameMenu" />
+        <GameConfigEditorGameMenu key="customGameMenu" />
+      </TabItem>
+      <TabItem title={t("ESC菜单")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('escMenu');
+          }}
+        >
+          {t('UI设置')}
+        </Button>
+        <EscMenu key="escMenu" value="ESC_menu_button" />
+      </TabItem>
+      <TabItem title={t("界面音效")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('soundSetting');
+          }}
+        >
+          {t('音效设置')}
+        </Button>
+        <SoundSetting key="soundSetting" />
       </TabItem>
     </TopbarTab>
   );
@@ -815,7 +841,7 @@ function parseStyleConfig({
 
   if (config.type === 'bgm') {
     return (
-      <div style={{ marginTop: 12 }}>
+      <div style={{ marginTop: 12 }} key={key + itemIndex}>
         <GameConfigEditorWithFileChoose
           title={config.label}
           extNameList={['.mp3', '.ogg', '.wav']}
