@@ -52,6 +52,7 @@ export class ManageGameService {
     exePath: string,
     iconPath: string,
     isExist: boolean,
+    callback?: () => void,
   ) {
     if (isExist) {
       console.info('isExist: ', isExist);
@@ -71,7 +72,13 @@ export class ManageGameService {
       });
 
       child.on('close', (code) => {
-        console.log(`子进程退出，退出码 ${code}`);
+        console.log(`update exe icon end >>>>> ${code}`);
+        if (code === 0) {
+          console.log('Icon replacement successful!');
+          callback && callback();
+        } else {
+          console.error('Icon replacement failed!');
+        }
       });
     } else {
       console.info('update exe icon end >>>>>');
@@ -499,11 +506,15 @@ export class ManageGameService {
     gameName: string,
     ejectPlatform: 'web' | 'electron-windows' | 'android',
     openFileExplorer = true,
+    gamePackageName?: string,
   ) {
     // 根据 GameName 找到游戏所在目录
     const gameDir = this.webgalFs.getPathFromRoot(
       `/public/games/${gameName}/game/`,
     );
+
+    // 导出包名，如果配置中没有，则默认使用游戏名
+    const appName = (gamePackageName && gamePackageName) || gameName;
 
     // 如果导出文件夹不存在就创建
     if (!(await this.webgalFs.existsDir('Exported_Games')))
@@ -579,12 +590,17 @@ export class ManageGameService {
         const iconDir = this.webgalFs.getPathFromRoot(
           `/public/games/${gameName}/game/background/${gameConfig.Game_Icon}`,
         );
+
         const exePath = join(electronExportDir, 'IdolTime.exe');
 
         if (gameConfig.Game_Icon && iconDir) {
-          const exePath = join(electronExportDir, 'IdolTime.exe');
           const isExist = await this.webgalFs.existsFile(exePath);
-          await this.updateExeIcon(exePath, iconDir, isExist);
+          await this.updateExeIcon(exePath, iconDir, isExist, () => {
+            if (exePath && gamePackageName) {
+              // 如果有配置新包名称，替换原来的应用名称
+              this.webgalFs.renameFile(exePath, `${appName}.exe`);
+            }
+          });
         }
 
         if (openFileExplorer) {
@@ -631,7 +647,7 @@ export class ManageGameService {
       }
       if (process.platform === 'darwin') {
         const electronExportDir = this.webgalFs.getPath(
-          `${exportDir}/${gameName}.app`,
+          `${exportDir}/${appName}.app`,
         );
         await this.webgalFs.mkdir(electronExportDir, '');
         await this.webgalFs.copy(

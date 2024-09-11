@@ -1,11 +1,12 @@
 {
-  "name": "webgal-electron-project",
+  "name": "idoltime",
   "version": "1.0.0",
-  "description": "WebGAL Electron Support",
+  "description": "idolTime Electron Support",
   "main": "main.js",
   "repository": "https://github.com/WebGAL-Technical-Committee/WebGAL-Electron-Project.git",
-  "author": "Mahiru <makinoharashoko@outlook.com>",
+  "author": "project x",
   "license": "MPL-2.0",
+  "companyName": "project x",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder",

@@ -23,7 +23,7 @@ import { WebgalConfig } from "idoltime-parser/build/types/configParser/configPar
 import { useValue } from "@/hooks/useValue";
 import { eventBus } from '@/utils/eventBus';
 import ChooseFile from '@/pages/editor/ChooseFile/ChooseFile';
-import FontFile from '@/pages/editor/FontFile/FontFile'
+import FontFile from '@/pages/editor/FontFile/FontFile';
 import { IConfigESCMenus, EMenuKey, ECommandKey } from './escMenuInterface';
 import { defaultEscMenuConfig, getMenuKeyToName, getCommandKey } from './config';
 import { boolMap } from '../SoundSetting/config';
@@ -63,52 +63,52 @@ export const EscMenu: FC<IProps> = (props: IProps) => {
 
   useEffect(() => {
     if (gameConfig.value?.length) {
-      const newOptions = cloneDeep(editOptions)
-        gameConfig.value.forEach(item => {
-          switch (item.command) {
-            case ECommandKey.ContinueGameButton:
-              newOptions[0] = {
-                ...newOptions[0],
-                ...parseStringArray(item.options)
-              }
-              break;
-            case ECommandKey.BackToLevelButton:
-              newOptions[1] = {
-                ...newOptions[1],
-                ...parseStringArray(item.options)
-              };
-              break;
-              case ECommandKey.SettingButton:
-                newOptions[2] = {
-                  ...newOptions[2],
-                  ...parseStringArray(item.options)
-                };
-              break;
-            case ECommandKey.ExitGameButton:
-              newOptions[3] = {
-                ...newOptions[3],
-                ...parseStringArray(item.options)
-              };
-              break;
-          }
-        })
-        setEditOptions(newOptions);
+      const newOptions = cloneDeep(editOptions);
+      gameConfig.value.forEach(item => {
+        switch (item.command) {
+        case ECommandKey.ContinueGameButton:
+          newOptions[0] = {
+            ...newOptions[0],
+            ...parseStringArray(item.options)
+          };
+          break;
+        case ECommandKey.BackToLevelButton:
+          newOptions[1] = {
+            ...newOptions[1],
+            ...parseStringArray(item.options)
+          };
+          break;
+        case ECommandKey.SettingButton:
+          newOptions[2] = {
+            ...newOptions[2],
+            ...parseStringArray(item.options)
+          };
+          break;
+        case ECommandKey.ExitGameButton:
+          newOptions[3] = {
+            ...newOptions[3],
+            ...parseStringArray(item.options)
+          };
+          break;
+        }
+      });
+      setEditOptions(newOptions);
     }
 
-}, [gameConfig.value])
+  }, [gameConfig.value]);
 
-function parseStringArray(arr: any[]) {
-  const obj = {}
-   arr.forEach((item: { key: string, value: string }) => {
+  function parseStringArray(arr: any[]) {
+    const obj = {};
+    arr.forEach((item: { key: string, value: string }) => {
       item.value?.split(',').forEach(pair => {
-          const [key, value] = pair?.split('=');
-          const val = key === 'hide' ? boolMap.get(value) : value;
-          // @ts-ignore
-          obj[key] = val
+        const [key, value] = (pair || '').split('=');
+        const val = key === 'hide' ? boolMap.get(value) : value;
+        // @ts-ignore
+        obj[key] = val;
       });
-  });
-  return obj;
-}
+    });
+    return obj;
+  }
 
   const updateGameConfig = () => {
     const newConfig = cloneDeep(gameConfig.value);
@@ -123,25 +123,25 @@ function parseStringArray(arr: any[]) {
         // @ts-ignore
         if (!notIncludeKeys.includes(key) && item[key]) {
           // @ts-ignore
-          vals.push(`${key}=${item[key]}`)
+          vals.push(`${key}=${item[key]}`);
         }
       });
 
       newOptions.push({
-          key: item.key,
-          value: vals.join(',')
-      })
+        key: item.key,
+        value: vals.join(',')
+      });
 
       const index = newConfig.findIndex(e => e.command === item.type);
       if (index >= 0) {
-        newConfig[index].options = newOptions
+        newConfig[index].options = newOptions;
       } else {
         newConfig.push({command: getCommandKey(item.key as EMenuKey), args: [], options: [...newOptions]});
       }
-    })
+    });
 
     gameConfig.set(newConfig);
-  }
+  };
 
   const submit = () => {
     updateGameConfig();
@@ -150,43 +150,43 @@ function parseStringArray(arr: any[]) {
     form.append("gameName", state.currentEditingGame);
     form.append("newConfig", newConfig);
     axios.post(`/api/manageGame/setGameConfig/`, form).then(getGameConfig);
-  }
+  };
 
   const updateConfig = (idx: number, key: string, value: boolean | string | number) => {
     const newOptions = [...editOptions];
     // @ts-ignore
     newOptions[idx][key] = value;
-    setEditOptions(newOptions)
-  }
+    setEditOptions(newOptions);
+  };
 
   // 封装提取数字部分并处理非数字字符的函数
-const processNumericInput = (input: string) => {
-  const regex = /^\d*$/; // 正则表达式，匹配数字
-  let newValue = input;
-  if (newValue.length > 0 && !(/^\d/.test(newValue))) {
+  const processNumericInput = (input: string) => {
+    const regex = /^\d*$/; // 正则表达式，匹配数字
+    let newValue = input;
+    if (newValue.length > 0 && !(/^\d/.test(newValue))) {
       return '';
-  }
-  //@ts-ignore
-  const numberPart = newValue.match(/^\d*/)[0];
-  const nonNumberPart = newValue.substring(numberPart.length);
-  if (nonNumberPart.length > 0) {
+    }
+    // @ts-ignore
+    const numberPart = newValue.match(/^\d*/)[0];
+    const nonNumberPart = newValue.substring(numberPart.length);
+    if (nonNumberPart.length > 0) {
       newValue = numberPart + nonNumberPart.replace(/\D/g, '');
-  }
-  return newValue;
-};
+    }
+    return newValue;
+  };
 
   const btnPositionOptions = [
     { name: '居中', value: 'center' },
     { name: '左对齐', value: 'flex-start' },
     { name: '右对齐', value: 'flex-end' },
     { name: '自定义', value: 'custom' },
-  ]
+  ];
 
   const alignOptions = [
     { name: '居中', value: 'center' },
     { name: '左对齐', value: 'left' },
     { name: '右对齐', value: 'right' },
-  ]
+  ];
 
 
   function renderConfig(data: IConfigESCMenus, index: number) {
@@ -211,7 +211,7 @@ const processNumericInput = (input: string) => {
               style={{ width: '100px' }}
               value={name}
               // placeholder={getMenuKeyToName(key as EMenuKey)}
-              placeholder={''}
+              placeholder=""
               onChange={(e) => {
                 const newValue = e.target.value as string;
                 updateConfig(index, 'name', newValue);
@@ -224,7 +224,7 @@ const processNumericInput = (input: string) => {
               <span title={btnImage}>{btnImage}</span>
             </span>
             <ChooseFile
-              sourceBase={'ui'}
+              sourceBase="ui"
               extName={['.png', '.jpg', '.jpeg', '.gif']}
               onChange={(file) => {
                 const img = file?.name ?? '';
@@ -238,7 +238,7 @@ const processNumericInput = (input: string) => {
               <span title={btnSound}>{btnSound}</span>
             </span>
             <ChooseFile
-              sourceBase={'bgm'}
+              sourceBase="bgm"
               extName={[".mp3", ".ogg", ".wav"]}
               onChange={(file) => {
                 const se = file?.name ?? '';
@@ -246,7 +246,6 @@ const processNumericInput = (input: string) => {
               }}
             />
           </div>
-
           <div className={styles.item}>
             <span>按钮位置</span>
             <Select 
@@ -279,7 +278,7 @@ const processNumericInput = (input: string) => {
               value={fontSize as string}
               onChange={(e) => {
                 let newValue = e.target.value as string;
-                newValue = processNumericInput(newValue)
+                newValue = processNumericInput(newValue);
                 updateConfig(index, 'fontSize', newValue);
               }}
             />
@@ -293,7 +292,7 @@ const processNumericInput = (input: string) => {
                 updateConfig(index, 'align', data.value);
               }}
             >
-            {alignOptions.map((item) => (
+              {alignOptions.map((item) => (
                 <option key={item.value} value={item.value}>{item.name}</option>
               ))}
             </Select>
@@ -320,7 +319,7 @@ const processNumericInput = (input: string) => {
               disabled={btnPosition !== 'custom'}
               onChange={(e) => {
                 let newValue = e.target.value as string;
-                newValue = processNumericInput(newValue)
+                newValue = processNumericInput(newValue);
                 updateConfig(index, 'x', newValue);
               }}
             />
@@ -334,7 +333,7 @@ const processNumericInput = (input: string) => {
               disabled={btnPosition !== 'custom'}
               onChange={(e) => {
                 let newValue = e.target.value as string;
-                newValue = processNumericInput(newValue)
+                newValue = processNumericInput(newValue);
                 updateConfig(index, 'y', newValue);
               }}
             />
@@ -347,7 +346,7 @@ const processNumericInput = (input: string) => {
               value={scale as string}
               onChange={(e) => {
                 let newValue = e.target.value as string;
-                newValue = processNumericInput(newValue)
+                newValue = processNumericInput(newValue);
                 updateConfig(index, 'scale', newValue);
               }}
             />

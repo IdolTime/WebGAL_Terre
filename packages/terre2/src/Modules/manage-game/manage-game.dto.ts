@@ -85,6 +85,7 @@ export class GameConfigDto {
 export class UploadFilesDto {
   @ApiProperty({ description: 'Target directory for the uploaded files' })
   targetDirectory: string;
+  clearTargetDirectory: boolean;
 }
 
 export class MkDirDto {

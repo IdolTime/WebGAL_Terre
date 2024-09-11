@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import TopbarTab from '@/pages/editor/Topbar/components/TopbarTab';
 import { TabItem } from '@/pages/editor/Topbar/components/TabItem';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,6 +32,7 @@ import {
   DialogBody,
   DialogActions,
   Checkbox,
+  Select
 } from '@fluentui/react-components';
 import { WebgalConfig } from 'idoltime-parser/build/types/configParser/configParser';
 import {
@@ -51,6 +53,7 @@ import {
   UIItemConfig,
   CollectionItemKey,
   collectionItemInfoKey,
+  SliderItemKey,
 } from '@/pages/editor/types';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ChooseFile from '@/pages/editor/ChooseFile/ChooseFile';
@@ -58,8 +61,6 @@ import { cloneDeep } from 'lodash';
 import { useValue } from '@/hooks/useValue';
 import axios from 'axios';
 import { WebgalParser } from '@/pages/editor/GraphicalEditor/parser';
-import { EscMenu } from '@/pages/editor/Topbar/tabs/GameConfig/EscMenu/EscMenu';
-import { SoundSetting } from '@/pages/editor/Topbar/tabs/GameConfig/SoundSetting/SoundSetting';
 import { CollectionInfo } from './CollectionImgInfo';
 import { 
   IStyleConfig,
@@ -68,16 +69,26 @@ import {
   defaultInfo,
   ICollectionImages,
   defaultCollectionImages,
-  IStyleConfigArr,
+  defaultCollectionVideos,
+  alignPositionOptions,
   IBtnSoundConfig,
+  IStyleConfigArr,
   defaultBtnSoundConfig
 } from './confg';
+import { EscMenu } from '@/pages/editor/Topbar/tabs/GameConfig/EscMenu/EscMenu';
+import { SoundSetting } from '@/pages/editor/Topbar/tabs/GameConfig/SoundSetting/SoundSetting';
 
 interface IGameConfigEditor {
   key: string;
   value: string;
   onChange: Function;
 }
+
+const sliderKeyArr = [
+  SliderItemKey.slider, 
+  SliderItemKey.sliderBg, 
+  SliderItemKey.sliderThumb
+];
 
 export function ViewTab() {
   const dispatch = useDispatch();
@@ -163,6 +174,30 @@ export function ViewTab() {
         </Button>
         <SoundSetting key="soundSetting" />
       </TabItem>
+      <TabItem title={t("ESC菜单")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('escMenu');
+          }}
+        >
+          {t('UI设置')}
+        </Button>
+        <EscMenu key="escMenu" value="ESC_menu_button" />
+      </TabItem>
+      <TabItem title={t("界面音效")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('soundSetting');
+          }}
+        >
+          {t('音效设置')}
+        </Button>
+        <SoundSetting key="soundSetting" />
+      </TabItem>
     </TopbarTab>
   );
 }
@@ -191,7 +226,7 @@ function GameConfigEditorGameMenu() {
 
   function updateGameUIConfig() {
     const newConfig = cloneDeep(gameConfig.value);
-
+  
     function handleUpdate(
       key: string,
       value: ButtonItem | ContainerItem | SliderContainerItem | IndicatorContainerItem,
@@ -200,7 +235,7 @@ function GameConfigEditorGameMenu() {
       let styleContent: Record<string, string[]> = {};
       Object.keys(value.args).forEach((argKey) => {
         // @ts-ignore
-        if (argKey.toLowerCase().endsWith('style') && value.args[argKey]) {
+        if (argKey.toLowerCase().endsWith('style') && value.args[argKey] || sliderKeyArr.includes(argKey)) {
           styleContent[argKey] = [];
           // @ts-ignore
           Object.keys(value.args[argKey]).forEach((styleKey) => {
@@ -211,19 +246,21 @@ function GameConfigEditorGameMenu() {
               styleContent[argKey].push(`${newKey}=${value.args[argKey][newKey]}`);
             }
           });
-        } else if (argKey.toLowerCase().endsWith('info') || argKey.toLowerCase().endsWith('images')) {
+        } else if (argKey.toLowerCase().endsWith('info') || argKey.toLowerCase().endsWith('images') || argKey === 'videos') {
           styleContent[argKey] = [];
           // @ts-ignore
           Object.keys(value.args[argKey]).forEach((infoKey) => {
             let newKey = argKey.toLowerCase().endsWith('info') && infoKey as keyof InfoConfig || 
-              argKey.toLowerCase().endsWith('images') && infoKey as keyof ICollectionImages;
+              argKey.toLowerCase().endsWith('images') && infoKey as keyof ICollectionImages || 
+              argKey === 'videos' && infoKey as keyof typeof defaultCollectionVideos;
+
             // @ts-ignore
             if (value.args[argKey][newKey] !== undefined && value.args[argKey][newKey] !== null && value.args[argKey][newKey] !== '') {
               // @ts-ignore
               styleContent[argKey].push(`${newKey}=${value.args[argKey][newKey]}`);
             }
           });
-        } else if (argKey == "btnSound") {
+        } else if (argKey === "btnSound") {
           // console.log(argKey);
           // debugger;
 
@@ -232,8 +269,8 @@ function GameConfigEditorGameMenu() {
           Object.keys(value.args[argKey]).forEach((btnSoundKey) => {
             // @ts-ignore
             let val = value.args[argKey][btnSoundKey];
-            if (val == undefined || val == null || val == '') {
-              return
+            if (!val) {
+              return;
             }
             // @ts-ignore
             styleContent[argKey].push(`${btnSoundKey}=${val}`);
@@ -321,7 +358,7 @@ function GameConfigEditorGameMenu() {
       };
 
       const parsedArgs: any = { hide: false, style: {} };
-      const parsedKeys = ['hoverStyle', 'info', 'images', 'btnSound']
+      const parsedKeys = ['hoverStyle', 'info', 'images', 'btnSound', 'videos'];
 
       args.forEach((e: any) => {
         if (e.key === 'hide') {
@@ -520,7 +557,6 @@ function renderConfig(
   const key = item.key;
   let config: (UIItemConfig & { children: Record<string, UIItemConfig> }) | undefined;
 
-
   if (type === 'buttons') {
     const sceneConfig = sceneButtonConfig[currentEditScene];
 
@@ -543,7 +579,7 @@ function renderConfig(
 
   const [styleConfig, hasHoverStyle] = handleStyle(defaultStyle, config);
   const styleConfigArr: IStyleConfigArr[] = [
-    { label: '默认样式', style: styleConfig, key: 'style' }
+    { label: '默认样式', style: styleConfig, key: 'style' },
   ];
 
   if (hasHoverStyle) {
@@ -573,11 +609,18 @@ function renderConfig(
           style: {},
           images: defaultCollectionImages
         });
+      } else if (key === 'collection_videos') {
+        styleConfigArr.push({
+          label: '详情视频列表',
+          key: key,
+          style: {},
+          videos: defaultCollectionVideos,
+        });
       } else {
         styleConfigArr.push({ 
           label: value.label + '样式', 
           style: _styleConfig, 
-          key: value.label + 'Style' 
+          key: sliderKeyArr.includes(key as any) ? key : value.label + 'Style' 
         });
       }
 
@@ -589,6 +632,16 @@ function renderConfig(
         });
       }
     }
+  }
+  
+  // 按钮按钮点击音效配置项
+  if (config?.hasButtonSound) { 
+    styleConfigArr.push({ 
+      label: '按钮音效', 
+      key: 'buttonSound',
+      style: {},
+      btnSound: { ...defaultBtnSoundConfig }
+    });
   }
 
   // 按钮按钮点击音效配置项
@@ -621,8 +674,7 @@ function parseStyleConfig({
   setOptions,
   itemIndex,
 }: {
-  // styleConfigArr: { label: string; style: IStyleConfig; key: string }[];
-  styleConfigArr: IStyleConfigArr[]
+  styleConfigArr: IStyleConfigArr[];
   config: (UIItemConfig & { children: Record<string, UIItemConfig> }) | undefined;
   item: ButtonItem | IndicatorContainerItem | SliderContainerItem | ContainerItem | CollectionItemKey;
   type: 'buttons' | 'other';
@@ -686,7 +738,8 @@ function parseStyleConfig({
 
       
       if (
-        (config?.positionType === 'relative' && (styleKey === 'x' || styleKey === 'y') && !value)) {
+        (config?.positionType === 'relative' && (styleKey === 'x' || styleKey === 'y') && !value)
+      ) {
         // @ts-ignore
         newOptions[currentEditScene][type][key].args.style.position = 'relative';
       } else {
@@ -726,7 +779,7 @@ function parseStyleConfig({
     });
   }
 
-  function setImage(imgKey: keyof ICollectionImages, value: string) {
+  function setFile(fileType: 'videos' | 'images', fileKey: keyof ICollectionImages | keyof typeof defaultCollectionVideos, value: string) {
     setOptions((options) => {
       const newOptions = {
         ...options,
@@ -741,10 +794,10 @@ function parseStyleConfig({
               args: {
                 // @ts-ignore
                 ...options[currentEditScene][type][key].args,
-                'images': {
+                [fileType]: {
                   // @ts-ignore
-                  ...options[currentEditScene][type][key].args['images'],
-                  [imgKey]: value,
+                  ...options[currentEditScene][type][key].args[fileType],
+                  [fileKey]: value,
                 },
               },
             },
@@ -834,7 +887,7 @@ function parseStyleConfig({
         setStyle={setStyle}
         setHide={setHide}
         setInfo={setInfo}
-        setImage={setImage}
+        setFile={setFile}
       />
     );
   }
@@ -854,17 +907,33 @@ function parseStyleConfig({
     );
   }
 
+  const getChooseFileName = (key: string, item: ButtonItem, styleKey: any, type?: string) => {
+    let fileName = '';
+    if (type === 'bg' && key === 'style') {
+      fileName = item.content;
+    } else if (key === 'hoverStyle') {
+      fileName = (item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string;
+    } else if (sliderKeyArr.includes(key as any)) {
+      // @ts-ignore
+      fileName = item.args[key]?.[styleKey as keyof IStyleConfig] as string ?? '';
+    } else {
+      fileName = item.args.style?.[styleKey as keyof IStyleConfig] as string ?? '';
+    }
+
+    return fileName;
+  };
+
   return (
     <div className={s.row} key={itemIndex + config.label}>
       <span className={s.label}>{config.label}</span>
-      <div>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         <Checkbox
           checked={item.args.hide}
           onChange={(_, data) => {
             setHide(data.checked as boolean);
           }}
         />
-        <span>隐藏</span>
+        <span style={{ display: 'inline-block', width: '30px' }}>隐藏</span>
       </div>
       {styleConfigArr.map(({ label, style, key, btnSound }, index: number) => (
         <Dialog key={key + index}>
@@ -875,12 +944,11 @@ function parseStyleConfig({
             <DialogBody>
               <DialogTitle>{label}</DialogTitle>
               <DialogContent className={s.dialogContent}>
-
                 {key === 'buttonSound' && btnSound && 
                   Object.keys(btnSound).map((soundKey: string, idx: number) => {
                     return <div className={s.row} key={soundKey + idx}>
                       <GameConfigEditorWithFileChoose
-                        title={'点击音效'}
+                        title="点击音效"
                         extNameList={['.mp3', '.ogg', '.wav']}
                         sourceBase="bgm"
                         key={soundKey}
@@ -890,7 +958,7 @@ function parseStyleConfig({
                           setButtonSound(soundKey as keyof IBtnSoundConfig, val);
                         }}
                       />
-                    </div>
+                    </div>;
                   })
                 }
 
@@ -903,6 +971,28 @@ function parseStyleConfig({
                 {Object.entries(style).map(([styleKey, styleProp], idx: number) => (
                   <div className={s.row} key={styleKey + index + idx}>
                     <span className={s.optionLabel}>{styleProp.label}</span>
+
+                    {styleKey === 'alignPosition' && (
+                      <Select
+                        value={
+                          key === 'hoverStyle'
+                            ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                            : (item.args.style?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                        }
+                        onChange={(e, data) => {
+                          setStyle(
+                              styleKey as keyof IStyleConfig,
+                              data.value as string,
+                              key as keyof IStyleType,
+                          );
+                        }}
+                      >
+                        {alignPositionOptions.map((item: { name: string, value: string }, index: number) => {
+                          return <option key={item.value + index} value={item.value}>{item.name}</option>;
+                        })}
+                      </Select>
+                    )}
+
                     {styleProp.type === 'number' ? (
                       <Input
                         type="number"
@@ -943,11 +1033,12 @@ function parseStyleConfig({
                           }
                         />
                         <span style={{ marginLeft: 12 }}>
-                          {config.type === 'bg' && key === 'style'
+                          {getChooseFileName(key, item as ButtonItem, styleKey, config.type,)}
+                          {/* {config.type === 'bg' && key === 'style'
                             ? item.content
                             : key === 'hoverStyle'
                               ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
-                              : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''}
+                              : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''} */}
                         </span>
                       </div>
                     ) : null}

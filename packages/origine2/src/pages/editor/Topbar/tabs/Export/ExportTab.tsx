@@ -3,7 +3,7 @@ import {TabItem} from "@/pages/editor/Topbar/components/TabItem";
 import {IconWithTextItem} from "@/pages/editor/Topbar/components/IconWithTextItem";
 import useTrans from "@/hooks/useTrans";
 import s from './export.module.scss';
-import AndroidIcon from "material-icon-theme/icons/android.svg";
+// import AndroidIcon from "material-icon-theme/icons/android.svg";
 import {api} from "@/api";
 import {origineStore, RootState} from "@/store/origineStore";
 import { Desktop24Filled, Desktop24Regular, Globe24Filled, Globe24Regular, bundleIcon, Money20Regular, Money24Filled } from "@fluentui/react-icons";
@@ -16,8 +16,8 @@ import { WebgalParser } from "@/pages/editor/GraphicalEditor/parser";
 
 export function ExportTab() {
   const t = useTrans('editor.topBar.');
-  const gameName = origineStore.getState().status.editor.currentEditingGame;
-  const GlobeIcon = bundleIcon(Globe24Filled, Globe24Regular);
+  const editor = origineStore.getState().status.editor;
+  const gameName = editor.currentEditingGame;
   const DesktopIcon = bundleIcon(Desktop24Filled, Desktop24Regular);
   const MoneyIcon = bundleIcon(Money24Filled, Money20Regular);
   const userInfo = useSelector((state: RootState) => state.userData.userInfo);
@@ -45,6 +45,7 @@ export function ExportTab() {
       </Toast>,
       { position: 'top', timeout: 3000, intent: type }
     );
+  const GlobeIcon = bundleIcon(Globe24Filled, Globe24Regular);
 
   if (!gid && userInfo.editorType !== 2) return null;
 

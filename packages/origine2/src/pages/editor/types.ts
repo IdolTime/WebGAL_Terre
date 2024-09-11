@@ -1,4 +1,5 @@
-import { InfoConfig, ICollectionImages, IBtnSoundConfig } from '@/pages/editor/Topbar/tabs/ViewConfig/confg';
+import { InfoConfig, ICollectionImages, IBtnSoundConfig, defaultCollectionVideos } from '@/pages/editor/Topbar/tabs/ViewConfig/confg';
+
 
 export enum TitleSceneButtonKey {
   Game_start_button = 'Game_start_button', // 开始
@@ -15,7 +16,7 @@ export enum TitleSceneButtonKey {
 
 export interface UIItemConfig {
   label: string;
-  type?: 'image' | 'text' | 'container' | 'placeholder' | 'bgm' | 'bg';
+  type?: 'image' | 'text' | 'container' | 'placeholder' | 'bgm' | 'bg' | 'video';
   hasHoverStyle?: boolean;
   hasButtonSound?: boolean;
   hasXY?: boolean;
@@ -23,6 +24,14 @@ export interface UIItemConfig {
   hasText?: boolean;
   positionType?: 'absolute' | 'relative';
   customStyle?: {
+    marginTop?: {
+      type: 'number',
+      label: string,
+    };
+    marginBottom?: {
+      type: 'number',
+      label: string,
+    },
     marginLeft?: {
       type: 'number';
       label: string;
@@ -40,11 +49,23 @@ export interface UIItemConfig {
       label: string;
     };
     gap?: {
-      type: 'number';
-      label: string;
-    };
-  };
-  info?: InfoConfig;
+      type: 'number',
+      label: string,
+    },
+    alignPosition?: {
+      type: 'string',
+      label: string,
+    },
+    customColor?: {
+      type: 'color',
+      label: string,
+    },
+    customFontSize?: {
+      type: 'number',
+      label: string,
+    }
+  },
+  info?: InfoConfig,
   images?: ICollectionImages;
   btnSound?: IBtnSoundConfig;
 }
@@ -82,8 +103,9 @@ export interface CollectionItemKey {
     style?: Style;
     info?: InfoConfig;
     images?: ICollectionImages;
+    videos?: typeof defaultCollectionVideos;
     btnSound?: IBtnSoundConfig;
-  };
+  }
 }
 
 export interface ContainerItem {
@@ -100,7 +122,7 @@ export interface ContainerItem {
     extraStyle?: Style;
     extraHoverStyle?: Style;
     btnSound?: IBtnSoundConfig;
-  };
+  }
 }
 
 export interface SliderContainerItem {
@@ -113,7 +135,7 @@ export interface SliderContainerItem {
     sliderBgStyle?: Style;
     sliderThumbStyle?: Style;
     btnSound?: IBtnSoundConfig;
-  };
+  }
 }
 
 export interface IndicatorContainerItem {
@@ -129,7 +151,7 @@ export interface IndicatorContainerItem {
     indicatorRightStyle?: Style;
     indicatorRightHoverStyle?: Style;
     btnSound?: IBtnSoundConfig;
-  };
+  }
 }
 
 export const titleSceneButtonConfig: Record<TitleSceneButtonKey, UIItemConfig> = {
@@ -387,6 +409,12 @@ export const extraSceneOtherConfig: Record<
     label: '翻页指示器',
     hasHoverStyle: false,
     hasWidthHeight: false,
+    customStyle: {
+      alignPosition: {
+        type: 'string',
+        label: '对齐方式',
+      }
+    },
     children: {
       [IndicatorItemKey.indicatorLeft]: {
         hasHoverStyle: true,
@@ -432,7 +460,7 @@ export enum OptionSceneButtonKey {
 export const optionSceneButtonConfig: Record<OptionSceneButtonKey, UIItemConfig> = {
   [OptionSceneButtonKey.Option_back_button]: {
     label: '返回',
-    hasButtonSound: true
+    hasButtonSound: true,
   },
 };
 
@@ -452,6 +480,10 @@ export enum CollectionSceneOtherKey {
   Collection_detail_title = 'Collection_detail_title',
   Collection_detail_dialog_bg = 'Collection_detail_dialog_bg',
   Collection_detail_dialog_text = 'Collection_detail_dialog_text',
+  Collection_detail_left_bg = 'Collection_detail_left_bg',
+  Collection_detail_right_content_bg = 'Collection_detail_right_content_bg',
+  Collection_detail_right_thumbnail_bg = 'Collection_detail_right_thumbnail_bg',
+  Collection_detail_right_desc_bg = 'Collection_detail_right_desc_bg',
 }
 
 export const collectionSceneButtonConfig: Record<CollectionSceneButtonKey, UIItemConfig> = {
@@ -461,12 +493,14 @@ export const collectionSceneButtonConfig: Record<CollectionSceneButtonKey, UIIte
   },
   [CollectionSceneButtonKey.Collection_detail_dialog_prev_button]: {
     label: '详情弹窗上一个按钮元素',
+    hasXY: false,
     hasButtonSound: true
   },
   [CollectionSceneButtonKey.Collection_detail_dialog_next_button]: {
     label: '详情弹窗下一个按钮元素',
+    hasXY: false,
     hasButtonSound: true
-  },
+  }
 };
 
 export const collectionSceneOtherConfig: Record<
@@ -485,7 +519,6 @@ export const collectionSceneOtherConfig: Record<
   [CollectionSceneOtherKey.Collection_img1]: {
     label: '图鉴1',
     type: 'container',
-    hasXY: false,
     hasHoverStyle: false,
     children: {
       [collectionItemInfoKey.collectionInfo]: {
@@ -497,6 +530,7 @@ export const collectionSceneOtherConfig: Record<
       [CommonItemKey.content]: {
         type: 'text',
         label: '详情界面信息',
+        hasXY: false,
       },
       [collectionItemInfoKey.collectionImages]: {
         type: 'image',
@@ -504,12 +538,17 @@ export const collectionSceneOtherConfig: Record<
         hasXY: false,
         hasHoverStyle: false,
       },
-    },
+      [collectionItemInfoKey.collectionVideos]: {
+        type: 'video',
+        label: '详情界面信息视频列表',
+        hasXY: false,
+        hasHoverStyle: false,
+      },
+    }
   },
   [CollectionSceneOtherKey.Collection_img2]: {
     label: '图鉴2',
     type: 'container',
-    hasXY: false,
     hasHoverStyle: false,
     children: {
       [collectionItemInfoKey.collectionInfo]: {
@@ -528,12 +567,17 @@ export const collectionSceneOtherConfig: Record<
         hasXY: false,
         hasHoverStyle: false,
       },
-    },
+      [collectionItemInfoKey.collectionVideos]: {
+        type: 'video',
+        label: '详情界面信息视频列表',
+        hasXY: false,
+        hasHoverStyle: false,
+      },
+    }
   },
   [CollectionSceneOtherKey.Collection_img3]: {
     type: 'container',
     label: '图鉴3',
-    hasXY: false,
     hasHoverStyle: false,
     children: {
       [collectionItemInfoKey.collectionInfo]: {
@@ -552,7 +596,13 @@ export const collectionSceneOtherConfig: Record<
         hasXY: false,
         hasHoverStyle: false,
       },
-    },
+      [collectionItemInfoKey.collectionVideos]: {
+        type: 'video',
+        label: '详情界面信息视频列表',
+        hasXY: false,
+        hasHoverStyle: false,
+      },
+    }
   },
   [CollectionSceneOtherKey.Collection_detail_title]: {
     type: 'image',
@@ -563,13 +613,83 @@ export const collectionSceneOtherConfig: Record<
     type: 'bg',
     hasHoverStyle: false,
   },
+  [CollectionSceneOtherKey.Collection_detail_left_bg]: {
+    label: '详情界面左侧内容元素',
+    type: 'container',
+    hasHoverStyle: false,
+    hasXY: false,
+    // children: {
+    //   [CommonItemKey.content]: {
+    //     type: 'placeholder',
+    //     label: '左侧文字元素',
+    //     hasHoverStyle: false,
+    //   },
+    //   [CommonItemKey.background]: {
+    //     type: 'image',
+    //     hasText: false,
+    //     label: '左侧图片元素',
+    //     hasHoverStyle: false,
+    //   },
+    // }
+  },
+  [CollectionSceneOtherKey.Collection_detail_right_content_bg]: {
+    label: '详情界面右侧内容元素',
+    type: 'bg',
+    hasHoverStyle: false,
+    hasXY: false,
+    customStyle: {
+      marginTop: {
+        type: 'number',
+        label: '上边距',
+      },
+      marginBottom: {
+        type: 'number',
+        label: '下边距',
+      }
+    }
+  },
+  [CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg]: {
+    label: '详情界面右侧缩略图元素',
+    type: 'bg',
+    hasHoverStyle: false,
+    hasXY: false,
+  },
+  [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: {
+    label: '详情界面右侧信息元素',
+    type: 'bg',
+    hasHoverStyle: false,
+    hasXY: false,
+    customStyle: {
+      alignPosition: {
+        type: 'string',
+        label: '对齐方式',
+      },
+      marginTop: {
+        type: 'number',
+        label: '上边距',
+      },
+      marginBottom: {
+        type: 'number',
+        label: '下边距',
+      },
+      customColor: {
+        type: 'color',
+        label: '文字颜色',
+      },
+      customFontSize: {
+        type: 'number',
+        label: '文字大小',
+      }
+    }
+  },
   [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
     type: 'bg',
-    label: '详情弹窗元素背景',
+    label: '详情界面二级弹窗元素背景',
     hasHoverStyle: false,
+    hasXY: false
   },
   [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
-    label: '详情弹窗元素样式',
+    label: '详情界面二级弹窗元素样式',
     type: 'text',
     hasHoverStyle: false,
     hasXY: false,
@@ -581,7 +701,6 @@ export enum ProgressSceneOtherKey {
   Progress_bg = 'Progress_bg',
   Progress_content_container = 'Progress_content_container',
 }
-
 
 export const progressSceneOtherConfig: Record<ProgressSceneOtherKey, UIItemConfig> = {
   [ProgressSceneOtherKey.Progress_title]: {
@@ -864,19 +983,19 @@ export const optionSceneOtherConfig: Record<
   },
   [OptionSceneOtherKey.Option_effect_volume_slider]: {
     type: 'container',
-    label: '音效音量',
+    label: '音效',
     children: {
       [SliderItemKey.slider]: {
-        label: '音效音量滑动条',
+        label: '音效滑动条',
         hasHoverStyle: false,
       },
       [SliderItemKey.sliderBg]: {
         hasHoverStyle: false,
-        label: '音效音量滑动条背景',
+        label: '音效滑动条背景',
       },
       [SliderItemKey.sliderThumb]: {
         hasHoverStyle: false,
-        label: '音效音量滑动条拇指',
+        label: '音效滑动条拇指',
       },
     },
   },
@@ -900,9 +1019,11 @@ export const optionSceneOtherConfig: Record<
   },
   [OptionSceneOtherKey.Option_fullscreen_checkbox]: {
     label: '全屏模式复选框',
+    positionType: 'absolute',
   },
   [OptionSceneOtherKey.Option_window_checkbox]: {
     label: '窗口模式复选框',
+    positionType: 'absolute',
   },
   [OptionSceneOtherKey.Option_videoSize1080_checkbox]: {
     label: '视频尺寸1080P复选框',
@@ -1158,6 +1279,11 @@ export interface Style {
   height?: number;
   marginLeft?: number;
   marginRight?: number;
+  marginTop?: number;
+  marginBottom?: number;
+  alignPosition?: 'top' | 'bottom';
+  customColor?: string;
+  customFontSize?: number;
 }
 
 export type ButtonKey =
@@ -1274,54 +1400,59 @@ export interface ExtraSceneUIConfig {
 export interface OptionSceneUIConfig {
   key: Scene.option;
   other: {
-    [OptionSceneOtherKey.Option_bg]: ButtonItem;
-    [OptionSceneOtherKey.Option_title]: ButtonItem;
-    [OptionSceneOtherKey.Option_window_label]: ContainerItem;
-    [OptionSceneOtherKey.Option_text_speed_label]: ContainerItem;
-    [OptionSceneOtherKey.Option_text_speed_slider]: SliderContainerItem;
-    [OptionSceneOtherKey.Option_bg_music_volume_label]: ContainerItem;
-    [OptionSceneOtherKey.Option_bg_music_volume_slider]: SliderContainerItem;
-    [OptionSceneOtherKey.Option_effect_volume_label]: ContainerItem;
-    [OptionSceneOtherKey.Option_effect_volume_slider]: SliderContainerItem;
+    [OptionSceneOtherKey.Option_bg]: ButtonItem,
+    [OptionSceneOtherKey.Option_title]: ButtonItem,
+    [OptionSceneOtherKey.Option_window_label]: ContainerItem,
+    [OptionSceneOtherKey.Option_text_speed_label]: ContainerItem,
+    [OptionSceneOtherKey.Option_text_speed_slider]: SliderContainerItem,
+    [OptionSceneOtherKey.Option_bg_music_volume_label]: ContainerItem,
+    [OptionSceneOtherKey.Option_bg_music_volume_slider]: SliderContainerItem,
+    [OptionSceneOtherKey.Option_effect_volume_label]: ContainerItem,
     [OptionSceneOtherKey.Options_light_slider]: SliderContainerItem;
-    [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: ContainerItem;
-    [OptionSceneOtherKey.Option_fullscreen_checkbox]: ButtonItem;
-    [OptionSceneOtherKey.Option_window_checkbox_label]: ContainerItem;
-    [OptionSceneOtherKey.Option_window_checkbox]: ButtonItem;
-    [OptionSceneOtherKey.Option_videoSize1080_checkbox]: ButtonItem;
-    [OptionSceneOtherKey.Option_videoSize720_checkbox]: ButtonItem;
-    [OptionSceneOtherKey.Option_global_volume_label]: ContainerItem;
-    [OptionSceneOtherKey.Option_global_volume_slider]: SliderContainerItem;
-    [OptionSceneOtherKey.Option_voice_slider]: SliderContainerItem;
-    [OptionSceneOtherKey.Option_voice_volume_label]: ContainerItem;
+    [OptionSceneOtherKey.Option_effect_volume_slider]: SliderContainerItem,
+    [OptionSceneOtherKey.Option_global_volume_slider]: SliderContainerItem,
+    [OptionSceneOtherKey.Option_fullscreen_checkbox_label]: ContainerItem,
+    [OptionSceneOtherKey.Option_fullscreen_checkbox]: ButtonItem,
+    [OptionSceneOtherKey.Option_window_checkbox_label]: ContainerItem,
+    [OptionSceneOtherKey.Option_window_checkbox]: ButtonItem,
+    [OptionSceneOtherKey.Option_videoSize1080_checkbox]: ButtonItem
+    [OptionSceneOtherKey.Option_videoSize720_checkbox]: ButtonItem
+    [OptionSceneOtherKey.Option_global_volume_label]: ContainerItem,
+    [OptionSceneOtherKey.Option_voice_slider]: SliderContainerItem,
+    [OptionSceneOtherKey.Option_voice_volume_label]: ContainerItem
   };
   buttons: { [key in OptionSceneButtonKey]: ButtonItem };
 }
 
-export interface InfonItem {
+export interface InfoItem {
   key: AllKey;
   content: string;
   args: {
-    hide: boolean;
-    style?: Style;
-    info?: InfoConfig;
-    images?: ICollectionImages;
-    btnSound?: IBtnSoundConfig;
-  };
+    hide: boolean,
+    style?: Style,
+    info?: InfoConfig,
+    images?: ICollectionImages,
+    videos?: typeof defaultCollectionVideos,
+    btnSound?: IBtnSoundConfig,
+  }
 }
 
 export interface CollectionSceneUIConfig {
   key: Scene.collection;
   other: {
-    [CollectionSceneOtherKey.Collection_bg]: ButtonItem;
-    [CollectionSceneOtherKey.Collection_title]: ButtonItem;
-    [CollectionSceneOtherKey.Collection_img1]: InfonItem;
-    [CollectionSceneOtherKey.Collection_img2]: InfonItem;
-    [CollectionSceneOtherKey.Collection_img3]: InfonItem;
-    [CollectionSceneOtherKey.Collection_detail_title]: ButtonItem;
-    [CollectionSceneOtherKey.Collection_detail_bg]: ButtonItem;
-    [CollectionSceneOtherKey.Collection_detail_dialog_bg]: ButtonItem;
-    [CollectionSceneOtherKey.Collection_detail_dialog_text]: ButtonItem;
+    [CollectionSceneOtherKey.Collection_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_title]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_img1]: InfoItem,
+    [CollectionSceneOtherKey.Collection_img2]: InfoItem,
+    [CollectionSceneOtherKey.Collection_img3]: InfoItem,
+    [CollectionSceneOtherKey.Collection_detail_title]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_left_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_right_content_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_dialog_bg]: ButtonItem,
+    [CollectionSceneOtherKey.Collection_detail_dialog_text]: ButtonItem,
   };
   buttons: { [key in CollectionSceneButtonKey]: ButtonItem };
 }
@@ -1759,17 +1890,17 @@ export const sceneUIConfig: SceneUIConfig = {
       },
       [OptionSceneOtherKey.Option_videoSize720_checkbox]: {
         key: OptionSceneOtherKey.Option_videoSize720_checkbox,
-        content: '',
+        content: "",
         args: generateArgs(['hoverStyle']),
       },
       [OptionSceneOtherKey.Option_global_volume_slider]: {
         key: OptionSceneOtherKey.Option_global_volume_slider,
-        content: '',
+        content: "",
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
       [OptionSceneOtherKey.Option_voice_slider]: {
         key: OptionSceneOtherKey.Option_voice_slider,
-        content: '',
+        content: "",
         args: generateArgs(['sliderStyle', 'sliderBgStyle', 'sliderThumbStyle']),
       },
     },
@@ -1820,7 +1951,26 @@ export const sceneUIConfig: SceneUIConfig = {
         content: '',
         args: generateArgs(),
       },
-
+      [CollectionSceneOtherKey.Collection_detail_left_bg]: {
+        key: CollectionSceneOtherKey.Collection_detail_left_bg,
+        content: "",
+        args: generateArgs(),
+      },
+      [CollectionSceneOtherKey.Collection_detail_right_content_bg]: {
+        key: CollectionSceneOtherKey.Collection_detail_right_content_bg,
+        content: "",
+        args: generateArgs(),
+      },
+      [CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg]: {
+        key: CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg,
+        content: "",
+        args: generateArgs(),
+      },
+      [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: {
+        key: CollectionSceneOtherKey.Collection_detail_right_desc_bg,
+        content: "",
+        args: generateArgs(),
+      },
       [CollectionSceneOtherKey.Collection_detail_dialog_bg]: {
         key: CollectionSceneOtherKey.Collection_detail_dialog_bg,
         content: '',

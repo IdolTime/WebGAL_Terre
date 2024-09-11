@@ -1,56 +1,60 @@
 export interface IStyleConfig {
-    x?: {
-        type: 'number';
-        label: string;
-    };
-    y?: {
-        type: 'number';
-        label: string;
-    };
-    scale?: {
-        type: 'number';
-        label: string;
-    };
-    fontSize?: {
-        type: 'number';
-        label: string;
-    };
-    fontColor?: {
-        type: 'color';
-        label: string;
-    };
-    image?: {
-        type: 'image';
-        label: string;
-    };
-    width?: {
-        type: 'number';
-        label: string;
-    };
-    height?: {
-        type: 'number';
-        label: string;
-    };
-    marginLeft?: {
-        type: 'number';
-        label: string;
-    };
-    marginRight?: {
-        type: 'number';
-        label: string;
-    };
-    gap?: {
-        type: 'number';
-        label: string;
-    };
-    rowGap?: {
-        type: 'number';
-        label: string;
-    };
-    columnGap?: {
-        type: 'number';
-        label: string;
-    };
+  x?: {
+    type: 'number';
+    label: string;
+  };
+  y?: {
+    type: 'number';
+    label: string;
+  };
+  scale?: {
+    type: 'number';
+    label: string;
+  };
+  fontSize?: {
+    type: 'number';
+    label: string;
+  };
+  fontColor?: {
+    type: 'color';
+    label: string;
+  };
+  image?: {
+    type: 'image';
+    label: string;
+  };
+  width?: {
+    type: 'number';
+    label: string;
+  };
+  height?: {
+    type: 'number';
+    label: string;
+  };
+  marginLeft?: {
+    type: 'number';
+    label: string;
+  };
+  marginRight?: {
+    type: 'number';
+    label: string;
+  };
+  gap?: {
+    type: 'number';
+    label: string;
+  };
+  rowGap?: {
+    type: 'number';
+    label: string;
+  };
+  columnGap?: {
+    type: 'number';
+    label: string;
+  };
+  alignPosition?: {
+    type: 'string';
+    label: string;
+  };
 }
 
 export const defaultStyle: IStyleConfig = {
@@ -89,38 +93,38 @@ export const defaultStyle: IStyleConfig = {
 };
 
 export interface InfoConfig {
-    name: {
-        type: 'string';
-        label: string;
-    };
-    height: {
-        type: 'number';
-        label: string;
-    };
-    weight: {
-        type: 'number';
-        label: string;
-    };
-    bustSize: {
-        type: 'number';
-        label: string;
-    };
-    waistSize: {
-        type: 'number';
-        label: string;
-    };
-    hipSize: {
-        type: 'number';
-        label: string;
-    };
-    description: {
-        type: 'string';
-        label: string;
-    };
-    image: {
-        type: 'string';
-        label: '图片'
-    };
+  name: {
+    type: 'string';
+    label: string;
+  };
+  height: {
+    type: 'number';
+    label: string;
+  };
+  weight: {
+    type: 'number';
+    label: string;
+  };
+  bustSize: {
+    type: 'number';
+    label: string;
+  };
+  waistSize: {
+    type: 'number';
+    label: string;
+  };
+  hipSize: {
+    type: 'number';
+    label: string;
+  };
+  description: {
+    type: 'string';
+    label: string;
+  };
+  image: {
+    type: 'string';
+    label: '图片'
+  };
 }
 
 export const defaultInfo: InfoConfig = {
@@ -158,47 +162,47 @@ export const defaultInfo: InfoConfig = {
   }
 };
 
-export interface ICollectionImages  {
-    img1: {
-        type: 'string';
-        label: string;
-    },
-    img2: {
-        type: 'string';
-        label: string;
-    },
-    img3: {
-        type: 'string';
-        label: string;
-    },
-    img4: {
-        type: 'string';
-        label: string;
-    },
-    img5: {
-        type: 'string';
-        label: string;
-    },
-    img6: {
-        type: 'string';
-        label: string;
-    },
-    img7: {
-        type: 'string';
-        label: string;
-    },
-    img8: {
-        type: 'string';
-        label: string;
-    },
-    img9: {
-        type: 'string';
-        label: string;
-    },
-    img10: {
-        type: 'string';
-        label: string;
-    }
+export interface ICollectionImages {
+  img1: {
+    type: 'string';
+    label: string;
+  },
+  img2: {
+    type: 'string';
+    label: string;
+  },
+  img3: {
+    type: 'string';
+    label: string;
+  },
+  img4: {
+    type: 'string';
+    label: string;
+  },
+  img5: {
+    type: 'string';
+    label: string;
+  },
+  img6: {
+    type: 'string';
+    label: string;
+  },
+  img7: {
+    type: 'string';
+    label: string;
+  },
+  img8: {
+    type: 'string';
+    label: string;
+  },
+  img9: {
+    type: 'string';
+    label: string;
+  },
+  img10: {
+    type: 'string';
+    label: string;
+  }
 }
 
 export const defaultCollectionImages: ICollectionImages = {
@@ -244,6 +248,49 @@ export const defaultCollectionImages: ICollectionImages = {
   }
 };
 
+export const defaultCollectionVideos = {
+  video1: {
+    type: 'string',
+    label: '视频1'
+  },
+  video2: {
+    type: 'string',
+    label: '视频2'
+  },
+  video3: {
+    type: 'string',
+    label: '视频3'
+  },
+  video4: {
+    type: 'string',
+    label: '视频4'
+  },
+  video5: {
+    type: 'string',
+    label: '视频5'
+  },
+  video6: {
+    type: 'string',
+    label: '视频6'
+  },
+  video7: {
+    type: 'string',
+    label: '视频7'
+  },
+  video8: {
+    type: 'string',
+    label: '视频8'
+  },
+  video9: {
+    type: 'string',
+    label: '视频9',
+  },
+  video10: {
+    type: 'string',
+    label: '视频10',
+  }
+};
+
 export interface IBtnSoundConfig {
   clickSound?: {
     type: 'string';
@@ -265,13 +312,20 @@ export const defaultBtnSoundConfig: IBtnSoundConfig  = {
   //   type: 'string',
   //   label: '悬停音效'
   // }
-}
+};
+
+export const alignPositionOptions = [
+  { name: '默认', value: '' },
+  { name: '顶部对齐', value: 'top-center' },
+  { name: '底部对齐', value: 'bottom-center' }
+];
 
 export interface IStyleConfigArr {
-  label: string; 
-  style: IStyleConfig; 
+  label: string;
+  style: IStyleConfig;
   key: string;
   info?: InfoConfig;
   images?: ICollectionImages;
+  videos?: typeof defaultCollectionVideos;
   btnSound?: IBtnSoundConfig;
 }
