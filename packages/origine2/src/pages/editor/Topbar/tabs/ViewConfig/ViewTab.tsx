@@ -72,6 +72,8 @@ import {
   defaultCollectionVideos,
   alignPositionOptions
 } from './confg';
+import { EscMenu } from '@/pages/editor/Topbar/tabs/GameConfig/EscMenu/EscMenu';
+import { SoundSetting } from '@/pages/editor/Topbar/tabs/GameConfig/SoundSetting/SoundSetting';
 
 interface IGameConfigEditor {
   key: string;
@@ -144,6 +146,30 @@ export function ViewTab() {
           </Button>
         ))}
         <GameConfigEditorGameMenu key="gameMenu" />
+      </TabItem>
+      <TabItem title={t("ESC菜单")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('escMenu');
+          }}
+        >
+          {t('UI设置')}
+        </Button>
+        <EscMenu key="escMenu" value="ESC_menu_button" />
+      </TabItem>
+      <TabItem title={t("界面音效")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('soundSetting');
+          }}
+        >
+          {t('音效设置')}
+        </Button>
+        <SoundSetting key="soundSetting" />
       </TabItem>
     </TopbarTab>
   );
