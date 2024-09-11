@@ -71,7 +71,7 @@
 
     window.pubsub = new PubSub();
   </script>
-  <script type="module" crossorigin src="./assets/index-31d25869.js"></script>
+  <script type="module" crossorigin src="./assets/index-90a7061f.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -157,7 +157,6 @@
 
       const gameSizeVal = window.localStorage.getItem('game-screen-size');
       const sizeArr = gameSizeVal && typeof gameSizeVal === 'string' && gameSizeVal?.split('x') || []
-      console.log('sizeArr', sizeArr, gameSizeVal)
       if (sizeArr.length > 0) {
         targetWidth = parseInt(sizeArr[0]) * 2;
         targetHeight = parseInt(sizeArr[1]) * 2;
