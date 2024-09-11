@@ -30,9 +30,9 @@ import {
   Checkbox,
 } from "@fluentui/react-components";
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon, Image48Regular } from "@fluentui/react-icons";
-import { EscMenu } from './EscMenu/EscMenu';
 import configStyles from "./gameConfig.module.scss";
 import { animateCursor } from "@/utils/utils";
+import { setGamePackageName } from '@/store/statusReducer';
 
 interface ICursorConfig {
   normal: {
