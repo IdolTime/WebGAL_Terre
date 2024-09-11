@@ -467,6 +467,16 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         type: 'text',
         label: '详情界面信息',
         hasXY: false,
+        customStyle: {
+          customFontSize: {
+            type: 'number',
+            label: '参数文字大小',
+          },
+          customColor: {
+            type: 'color',
+            label: '参数文字颜色',
+          }
+        }
       },
       [collectionItemInfoKey.collectionImages]: {
         type: 'image',
@@ -496,6 +506,17 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
       [CommonItemKey.content]: {
         type: 'text',
         label: '详情界面信息',
+        hasXY: false,
+        customStyle: {
+          customFontSize: {
+            type: 'number',
+            label: '参数文字大小',
+          },
+          customColor: {
+            type: 'color',
+            label: '参数文字颜色',
+          }
+        }
       },
       [collectionItemInfoKey.collectionImages]: {
         type: 'image',
@@ -525,6 +546,17 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
       [CommonItemKey.content]: {
         type: 'text',
         label: '详情界面信息',
+        hasXY: false,
+        customStyle: {
+          customFontSize: {
+            type: 'number',
+            label: '参数文字大小',
+          },
+          customColor: {
+            type: 'color',
+            label: '参数文字颜色',
+          }
+        }
       },
       [collectionItemInfoKey.collectionImages]: {
         type: 'image',

@@ -154,6 +154,7 @@ export function ViewTab() {
         <Button
           appearance='primary'
           size="small"
+          style={{ height: 30 }}
           onClick={() => {
             eventBus.emit('escMenu');
           }}
@@ -166,6 +167,7 @@ export function ViewTab() {
         <Button
           appearance='primary'
           size="small"
+          style={{ height: 30 }}
           onClick={() => {
             eventBus.emit('soundSetting');
           }}
@@ -831,7 +833,7 @@ function parseStyleConfig({
 
   if (config.type === 'bgm') {
     return (
-      <div style={{ marginTop: 12 }}>
+      <div style={{ marginTop: 12 }} key={itemIndex+key}>
         <GameConfigEditorWithFileChoose
           title={config.label}
           extNameList={['.mp3', '.ogg', '.wav']}
