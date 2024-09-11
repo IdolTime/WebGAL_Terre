@@ -359,7 +359,7 @@ const processNumericInput = (input: string) => {
 
   return (
     <Dialog open={escMenuDialogOpen} onOpenChange={(event, data) => setESCMenuDialogOpen(data.open)}>
-      <DialogSurface style={{ maxWidth: '1000px' }}>
+      <DialogSurface style={{ maxWidth: '1200px' }}>
         <DialogBody>
           <DialogTitle>ESC菜单设置</DialogTitle>
           <DialogContent>
