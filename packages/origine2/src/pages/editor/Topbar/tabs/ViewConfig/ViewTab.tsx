@@ -148,7 +148,31 @@ export function ViewTab() {
             {sceneNameMap[key as keyof typeof Scene]}
           </Button>
         ))}
-        <GameConfigEditorGameMenu key="gameMenu" />
+        <GameConfigEditorGameMenu key="customGameMenu" />
+      </TabItem>
+      <TabItem title={t("ESC菜单")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('escMenu');
+          }}
+        >
+          {t('UI设置')}
+        </Button>
+        <EscMenu key="escMenu" value="ESC_menu_button" />
+      </TabItem>
+      <TabItem title={t("界面音效")}>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            eventBus.emit('soundSetting');
+          }}
+        >
+          {t('音效设置')}
+        </Button>
+        <SoundSetting key="soundSetting" />
       </TabItem>
       <TabItem title={t("ESC菜单")}>
         <Button
@@ -237,6 +261,21 @@ function GameConfigEditorGameMenu() {
               // @ts-ignore
               styleContent[argKey].push(`${newKey}=${value.args[argKey][newKey]}`);
             }
+          });
+        } else if (argKey === "btnSound") {
+          // console.log(argKey);
+          // debugger;
+
+          styleContent[argKey] = [];
+          // @ts-ignore
+          Object.keys(value.args[argKey]).forEach((btnSoundKey) => {
+            // @ts-ignore
+            let val = value.args[argKey][btnSoundKey];
+            if (!val) {
+              return;
+            }
+            // @ts-ignore
+            styleContent[argKey].push(`${btnSoundKey}=${val}`);
           });
         }
       });
@@ -329,6 +368,16 @@ function GameConfigEditorGameMenu() {
         } else if (e.key.endsWith('style') || parsedKeys.includes(e.key)) {
           parsedArgs[e.key] = parseStyleString(e.value as string);
         }
+        
+        // else if (e.key === 'hoverStyle') {
+        //   parsedArgs[e.key] = parseStyleString(e.value as string);
+        // } else if (e.key === 'info') {
+        //   parsedArgs[e.key] = parseStyleString(e.value as string);
+        // } else if (e.key === 'images') {
+        //   parsedArgs[e.key] = parseStyleString(e.value as string);
+        // } else if (e.key === 'btnSound') {
+        //   parsedArgs[e.key] = parseStyleString(e.value as string);
+        // } 
       });
 
       return parsedArgs;
@@ -536,7 +585,11 @@ function renderConfig(
   ];
 
   if (hasHoverStyle) {
-    styleConfigArr.push({ label: '选中样式', style: { ...styleConfig }, key: 'hoverStyle' });
+    styleConfigArr.push({ 
+      label: '选中样式', 
+      style: { ...styleConfig }, 
+      key: 'hoverStyle' 
+    });
   }
 
   if (config.children) {
@@ -583,6 +636,16 @@ function renderConfig(
     }
   }
   
+  // 按钮按钮点击音效配置项
+  if (config?.hasButtonSound) { 
+    styleConfigArr.push({ 
+      label: '按钮音效', 
+      key: 'buttonSound',
+      style: {},
+      btnSound: { ...defaultBtnSoundConfig }
+    });
+  }
+
   // 按钮按钮点击音效配置项
   if (config?.hasButtonSound) { 
     styleConfigArr.push({ 
@@ -641,7 +704,6 @@ function parseStyleConfig({
           },
         },
       };
-
       return newOptions;
     });
   }
@@ -676,6 +738,7 @@ function parseStyleConfig({
         },
       };
 
+      
       if (
         (config?.positionType === 'relative' && (styleKey === 'x' || styleKey === 'y') && !value)
       ) {
@@ -688,7 +751,7 @@ function parseStyleConfig({
           // @ts-ignore
           : delete newOptions[currentEditScene][type][key].args.style.position;
       }
-      console.log(newOptions);
+      
       return newOptions;
     });
   }
@@ -833,7 +896,7 @@ function parseStyleConfig({
 
   if (config.type === 'bgm') {
     return (
-      <div style={{ marginTop: 12 }} key={itemIndex+key}>
+      <div style={{ marginTop: 12 }} key={key + itemIndex}>
         <GameConfigEditorWithFileChoose
           title={config.label}
           extNameList={['.mp3', '.ogg', '.wav']}
@@ -887,7 +950,7 @@ function parseStyleConfig({
                   Object.keys(btnSound).map((soundKey: string, idx: number) => {
                     return <div className={s.row} key={soundKey + idx}>
                       <GameConfigEditorWithFileChoose
-                        title={'点击音效'}
+                        title="点击音效"
                         extNameList={['.mp3', '.ogg', '.wav']}
                         sourceBase="bgm"
                         key={soundKey}
@@ -897,7 +960,7 @@ function parseStyleConfig({
                           setButtonSound(soundKey as keyof IBtnSoundConfig, val);
                         }}
                       />
-                    </div>
+                    </div>;
                   })
                 }
 
@@ -915,19 +978,19 @@ function parseStyleConfig({
                       <Select
                         value={
                           key === 'hoverStyle'
-                          ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
-                          : (item.args.style?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                            ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                            : (item.args.style?.[styleKey as keyof IStyleConfig] as string) ?? ''
                         }
                         onChange={(e, data) => {
-                            setStyle(
+                          setStyle(
                               styleKey as keyof IStyleConfig,
                               data.value as string,
                               key as keyof IStyleType,
-                            );
+                          );
                         }}
                       >
                         {alignPositionOptions.map((item: { name: string, value: string }, index: number) => {
-                          return <option key={item.value + index} value={item.value}>{item.name}</option>
+                          return <option key={item.value + index} value={item.value}>{item.name}</option>;
                         })}
                       </Select>
                     )}
