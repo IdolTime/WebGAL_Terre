@@ -1245,6 +1245,7 @@ export interface InfoItem {
     info?: InfoConfig,
     images?: ICollectionImages,
     videos?: typeof defaultCollectionVideos,
+    btnSound?: IBtnSoundConfig,
   }
 }
 
