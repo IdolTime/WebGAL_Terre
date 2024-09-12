@@ -20,3 +20,5 @@ Progress_bg:bg.webp -hide=false -style={width=3126,height=720};
 Progress_content_container: -hide=false -style={width=3024,height=708,x=102,y=12};
 Game_progression_button:进度&成就 -hide=false;
 Affinity_bg:content-bg.webp -hide=false -style={width=3024,height=708};
+Game_cursor: -normal={"imgs":["./cursor/cursor-idle.png"],"interval":100} -active={"imgs":["./cursorActive/cursor-active.png"],"interval":100};
+
