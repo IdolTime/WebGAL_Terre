@@ -72,7 +72,8 @@ import {
   defaultCollectionVideos,
   IBtnSoundConfig,
   IStyleConfigArr,
-  defaultBtnSoundConfig
+  defaultBtnSoundConfig,
+  defaultBtnLinkConfig
 } from './confg';
 import { EscMenu } from '@/pages/editor/Topbar/tabs/GameConfig/EscMenu/EscMenu';
 import { SoundSetting } from '@/pages/editor/Topbar/tabs/GameConfig/SoundSetting/SoundSetting';
@@ -237,10 +238,7 @@ function GameConfigEditorGameMenu() {
               styleContent[argKey].push(`${newKey}=${value.args[argKey][newKey]}`);
             }
           });
-        } else if (argKey === "btnSound") {
-          // console.log(argKey);
-          // debugger;
-
+        } else if (argKey === "btnSound" || argKey === 'buttonLink') {
           styleContent[argKey] = [];
           // @ts-ignore
           Object.keys(value.args[argKey]).forEach((btnSoundKey) => {
@@ -335,7 +333,7 @@ function GameConfigEditorGameMenu() {
       };
 
       const parsedArgs: any = { hide: false, style: {} };
-      const parsedKeys = ['hoverStyle', 'info', 'images', 'btnSound', 'videos'];
+      const parsedKeys = ['hoverStyle', 'info', 'images', 'btnSound', 'videos', 'buttonLink'];
 
       args.forEach((e: any) => {
         if (e.key === 'hide') {
@@ -621,6 +619,15 @@ function renderConfig(
     });
   }
 
+  if (config?.hasLink) {
+    styleConfigArr.push({ 
+      label: '按钮链接配置', 
+      key: 'buttonLink',
+      style: {},
+      buttonLink: { ...defaultBtnLinkConfig }
+    });
+  }
+
   return parseStyleConfig({
     styleConfigArr,
     config,
@@ -804,6 +811,36 @@ function parseStyleConfig({
     });
   }
 
+  function setLink(linkKey: string, value: string | undefined, keyType: string) {
+    setOptions((options) => {
+      const newOptions = {
+        ...options,
+        [currentEditScene]: {
+          ...options[currentEditScene],
+          [type]: {
+            // @ts-ignore
+            ...options[currentEditScene][type],
+            [key]: {
+              // @ts-ignore
+              ...options[currentEditScene][type][key],
+              args: {
+                // @ts-ignore
+                ...options[currentEditScene][type][key].args,
+                [keyType]: {
+                  // @ts-ignore
+                  ...options[currentEditScene][type][key].args[keyType],
+                  [linkKey]: value,
+                },
+              },
+            },
+          },
+        },
+      };
+
+      return newOptions;
+    });
+  }
+
   /**
    * 
    * @param btnTypeKey 按钮类型：‘clickSound’ | 'hoverSound' => IBtnSoundConfig
@@ -902,7 +939,7 @@ function parseStyleConfig({
         />
         <span style={{ display: 'inline-block', width: '30px' }}>隐藏</span>
       </div>
-      {styleConfigArr.map(({ label, style, key, btnSound }, index: number) => (
+      {styleConfigArr.map(({ label, style, key, btnSound, buttonLink }, index: number) => (
         <Dialog key={key + index}>
           <DialogTrigger disableButtonEnhancement>
             <Button size="small">设置{label}</Button>
@@ -911,6 +948,18 @@ function parseStyleConfig({
             <DialogBody>
               <DialogTitle>{label}</DialogTitle>
               <DialogContent className={s.dialogContent}>
+
+                {key === 'buttonLink' && buttonLink && (
+                  <Input
+                    style={{ width: '600px' }}
+                    placeholder={'链接地址'}
+                    value={(item as ButtonItem)?.args?.buttonLink?.link ?? ''}
+                    onChange={(e) => {
+                      setLink('link',e.target.value, 'buttonLink');
+                    }}
+                  />
+                )}
+
                 {key === 'buttonSound' && btnSound && 
                   Object.keys(btnSound).map((soundKey: string, idx: number) => {
                     return <div className={s.row} key={soundKey + idx}>

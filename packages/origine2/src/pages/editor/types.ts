@@ -10,6 +10,7 @@ export enum TitleSceneButtonKey {
   Game_option_button = 'Game_option_button', // 设置
   Game_load_button = 'Game_load_button', // 读取
   Game_continue_button = 'Game_continue_button', // 继续游戏
+  Game_link_button = 'Game_link_button', // 链接按钮
 }
 
 export interface UIItemConfig {
@@ -17,6 +18,7 @@ export interface UIItemConfig {
   type?: 'image' | 'text' | 'container' | 'placeholder' | 'bgm' | 'bg' | 'video';
   hasHoverStyle?: boolean;
   hasButtonSound?: boolean;
+  hasLink?: boolean;
   hasXY?: boolean;
   hasWidthHeight?: boolean;
   hasText?: boolean;
@@ -193,6 +195,12 @@ export const titleSceneButtonConfig: Record<TitleSceneButtonKey, UIItemConfig> =
     hasHoverStyle: true,
     label: '继续游戏',
     hasButtonSound: true,
+  },
+  [TitleSceneButtonKey.Game_link_button]: {
+    hasHoverStyle: true,
+    label: '链接按钮',
+    hasButtonSound: true,
+    hasLink: true,
   },
 };
 
@@ -1173,6 +1181,10 @@ export interface Style {
   customFontSize?: number;
 }
 
+export interface ILink {
+  link: string
+}
+
 export type ButtonKey = LoadSceneButtonKey | TitleSceneButtonKey | OptionSceneButtonKey | StorylineSceneButtonKey | AchievementSceneButtonKey | ExtraSceneButtonKey | CollectionSceneButtonKey;
 export type OtherKey = LoadSceneOtherKey | TitleSceneOtherKey | OptionSceneOtherKey | StorylineSceneOtherKey | AchievementSceneOtherKey | ExtraSceneOtherKey | CollectionSceneOtherKey;
 type AllKey = ButtonKey | OtherKey;
@@ -1184,6 +1196,7 @@ export interface ButtonItem {
     hide: boolean,
     style: Style,
     hoverStyle?: Style
+    buttonLink?: ILink
   }
 }
 
@@ -1436,6 +1449,11 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(['hoverStyle']),
       },
+      [TitleSceneButtonKey.Game_link_button]: {
+        key: TitleSceneButtonKey.Game_link_button,
+        content: "",
+        args: generateArgs(['hoverStyle', 'buttonLink']),
+      }
     }
   },
   [Scene.load]: {

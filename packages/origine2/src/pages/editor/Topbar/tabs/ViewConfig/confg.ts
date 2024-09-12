@@ -302,6 +302,20 @@ export interface IBtnSoundConfig {
   }
 }
 
+export interface IBtnLink {
+  link: {
+    type: 'string';
+    label: string;
+  };
+}
+
+export const defaultBtnLinkConfig: IBtnLink = {
+  link: {
+    type: 'string',
+    label: '链接'
+  }
+}
+
 
 export const defaultBtnSoundConfig: IBtnSoundConfig  = {
   clickSound: {
@@ -327,4 +341,5 @@ export interface IStyleConfigArr {
   images?: ICollectionImages;
   videos?: typeof defaultCollectionVideos;
   btnSound?: IBtnSoundConfig;
+  buttonLink?: IBtnLink;
 }
