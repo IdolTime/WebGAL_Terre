@@ -13,11 +13,12 @@ export interface UserData {
   editorToken: string
 
   userInfo: {
-    userId: string,
+    userId: number,
     email: string,
     nickName: string,
     avatar: string,
     userName: string,
+    editorType: number; // 1：外部用户 2：内部用户
   }
 }
 
@@ -29,11 +30,12 @@ const initialState: UserData = {
   isWarp: false,
   editorToken: "",
   userInfo: {
-    userId: "",
+    userId: 0,
     email: "",
     nickName: "",
     avatar: "",
     userName: "",
+    editorType: 1,
   }
 };
 

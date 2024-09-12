@@ -30,11 +30,9 @@ import {
   Checkbox,
 } from "@fluentui/react-components";
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon, Image48Regular } from "@fluentui/react-icons";
-import { EscMenu } from './EscMenu/EscMenu';
-import { SoundSetting } from './SoundSetting/SoundSetting';
-import { setGamePackageName } from "@/store/statusReducer";
 import configStyles from "./gameConfig.module.scss";
 import { animateCursor } from "@/utils/utils";
+import { setGamePackageName } from '@/store/statusReducer';
 
 interface ICursorConfig {
   normal: {
@@ -348,30 +346,6 @@ export default function GameConfig() {
           value={getConfigContentAsStringArray('Game_r18')}
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_r18', e)}
         />
-      </TabItem>
-      <TabItem title={t("options.escMenu")}>
-        <Button
-          appearance='primary'
-          size="small"
-          onClick={() => {
-            eventBus.emit('escMenu');
-          }}
-        >
-          {t("escMenu.title")}
-        </Button>
-        <EscMenu key="escMenu" value="ESC_menu_button" />
-      </TabItem>
-      <TabItem title={t("options.sound")}>
-        <Button
-          appearance='primary'
-          size="small"
-          onClick={() => {
-            eventBus.emit('soundSetting');
-          }}
-        >
-          {t("sound.title")}
-        </Button>
-        <SoundSetting key="soundSetting" />
       </TabItem>
       <Dialog
         open={isShowCursorDialog.value}

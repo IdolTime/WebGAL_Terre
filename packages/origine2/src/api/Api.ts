@@ -301,11 +301,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Open Game Dictionary
      * @request GET:/api/manageGame/openGameDict/{gameName}
      */
-    manageGameControllerOpenGameDict: (gameName: string, params: RequestParams = {}) =>
+    manageGameControllerOpenGameDict: (gameName: string) =>
       this.request<void, any>({
         path: `/api/manageGame/openGameDict/${gameName}`,
         method: 'GET',
-        ...params,
       }),
 
     /**

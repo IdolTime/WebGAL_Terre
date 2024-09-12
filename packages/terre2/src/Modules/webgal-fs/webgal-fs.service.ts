@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ConsoleLogger, Injectable } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import { extname, join } from 'path';
@@ -203,18 +204,18 @@ export class WebgalFsService {
   }
 
   /**
- * 检查文件是否存在
- * @param filePath 文件路径
- * @returns 
- */
-async existsFile(filePath: string): Promise<boolean> {
-  try {
-    const stats = await fs.stat(filePath);
-    return stats.isFile(); // 检查路径是否为文件
-  } catch (error) {
-    return false; // 如果发生错误，通常是文件不存在
+   * 检查文件是否存在
+   * @param filePath 文件路径
+   * @returns
+   */
+  async existsFile(filePath: string): Promise<boolean> {
+    try {
+      const stats = await fs.stat(filePath);
+      return stats.isFile(); // 检查路径是否为文件
+    } catch (error) {
+      return false; // 如果发生错误，通常是文件不存在
+    }
   }
-}
 
   /**
    * 创建一个空文件
@@ -287,7 +288,7 @@ async existsFile(filePath: string): Promise<boolean> {
    * 读取文本文件
    * @param path 要读取的文本文件路径
    */
-  async readTextFile(path: string) {
+  async readTextFile(path: string): Promise<string> {
     return await new Promise((resolve) => {
       fs.readFile(decodeURI(path))
         .then((r) => resolve(r.toString()))
@@ -325,20 +326,62 @@ async existsFile(filePath: string): Promise<boolean> {
    * @param oldIconPath 读取的图标文件路径
    */
   async replaceIconFile(newIconPath, oldIconPath) {
-    //@ts-ignore
+    // @ts-ignore
     fs.readFile(newIconPath, (err, data) => {
       if (err) {
-          console.error('Error reading the new icon file:', err);
-          return;
+        console.error('Error reading the new icon file:', err);
+        return;
       }
-      //@ts-ignore
+      // @ts-ignore
       fs.writeFile(oldIconPath, data, (err) => {
-          if (err) {
-              console.error('Error writing the new icon to icon.icns:', err);
-              return;
-          }
-          console.log('Icon replacement successful!');
+        if (err) {
+          console.error('Error writing the new icon to icon.icns:', err);
+          return;
+        }
+        console.log('Icon replacement successful!');
       });
     });
+  }
+
+  async writeJSONFile(path: string, data: any) {
+    return await new Promise((resolve) => {
+      fs.writeFile(decodeURI(path), JSON.stringify(data))
+        .then(() => resolve('Created.'))
+        .catch(() => resolve('Path error or no right.'));
+    });
+  }
+
+  async readJSONFile(path: string) {
+    return await new Promise((resolve) => {
+      fs.readFile(decodeURI(path))
+        .then((r) => resolve(JSON.parse(r.toString())))
+        .catch(() => resolve('file not exist'));
+    });
+  }
+
+  async copyDirAsync(src, dest) {
+    try {
+      // Create the destination directory if it doesn't exist
+      await fs.mkdir(dest, { recursive: true });
+
+      // Read the contents of the source directory
+      const entries = await fs.readdir(src, { withFileTypes: true });
+
+      // Iterate over each item in the source directory
+      for (const entry of entries) {
+        const srcPath = join(src, entry.name);
+        const destPath = join(dest, entry.name);
+
+        if (entry.isDirectory()) {
+          // Recursively copy sub-directories
+          await this.copyDirAsync(srcPath, destPath);
+        } else {
+          // Copy files
+          await fs.copyFile(srcPath, destPath);
+        }
+      }
+    } catch (err) {
+      console.error('Error copying directory:', err);
+    }
   }
 }

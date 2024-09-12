@@ -74,7 +74,11 @@
 
     window.pubsub = new PubSub();
   </script>
+<<<<<<< HEAD
   <script type="module" crossorigin src="./assets/index-f197c2c4.js"></script>
+=======
+  <script type="module" crossorigin src="./assets/index-d524c8b1.js"></script>
+>>>>>>> develop/idol_vg
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -160,7 +164,6 @@
 
       const gameSizeVal = window.localStorage.getItem('game-screen-size');
       const sizeArr = gameSizeVal && typeof gameSizeVal === 'string' && gameSizeVal?.split('x') || []
-      console.log('sizeArr', sizeArr, gameSizeVal)
       if (sizeArr.length > 0) {
         targetWidth = parseInt(sizeArr[0]) * 2;
         targetHeight = parseInt(sizeArr[1]) * 2;

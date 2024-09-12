@@ -124,6 +124,7 @@ export const zhCn = {
           vocal: '语音',
           ui: 'UI',
           font: '字体',
+          image: '图片'
         }
       },
 
@@ -718,7 +719,7 @@ export const zhCn = {
         unlockAchieve: {
           title: "解锁成就",
           initText: 'unlockAchieve:;',
-          descText: '切换背景图片',
+          descText: '解锁后的成就将显示在成就页面中',
           tips: {
             edit: '提示：解锁后的成就将显示在成就页面中。'
           },

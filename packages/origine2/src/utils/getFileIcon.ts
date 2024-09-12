@@ -3,14 +3,16 @@ import audioIcon from "material-icon-theme/icons/audio.svg";
 import videoIcon from "material-icon-theme/icons/video.svg";
 import jsonIcon from "material-icon-theme/icons/json.svg";
 import textIcon from "material-icon-theme/icons/document.svg";
+import fontIcon from "material-icon-theme/icons/font.svg";
 import folderImageIcon from 'material-icon-theme/icons/folder-images.svg';
 import folderAudioIcon from 'material-icon-theme/icons/folder-audio.svg';
 import folderVideoIcon from 'material-icon-theme/icons/folder-video.svg';
 import folderJsonIcon from 'material-icon-theme/icons/folder-json.svg';
 import folderTextIcon from 'material-icon-theme/icons/folder-docs.svg';
+import folderFontIcon from 'material-icon-theme/icons/folder-font.svg';
 import folderIcon from 'material-icon-theme/icons/folder.svg';
 
-type FileType = "image" | "video" | "text" | "audio" | "json" | "unknown";
+type FileType = "image" | "video" | "text" | "audio" | "json" | 'font' | "unknown";
 
 export function extractExtension(filename: string): FileType {
   const extension = filename.split(".").pop()?.toLowerCase() ?? "unknown";
@@ -47,6 +49,8 @@ export function getFileIcon(filename: string) {
     return jsonIcon;
   case "text":
     return textIcon;
+  case "font":
+    return fontIcon;
   default:
     return textIcon;
   }
@@ -63,6 +67,8 @@ fileMappings.set("tex", "image");
 fileMappings.set("video", "video");
 fileMappings.set("vocal", "audio");
 fileMappings.set("ui", "image");
+fileMappings.set("image", "image");
+fileMappings.set("font", "font");
 
 // The function
 function getFileType(path: string): FileType {
@@ -85,6 +91,8 @@ export function getDirIcon(dirName:string){
     return folderJsonIcon;
   case "text":
     return folderTextIcon;
+  case "font":
+    return folderFontIcon;
   default:
     return folderIcon;
   }
