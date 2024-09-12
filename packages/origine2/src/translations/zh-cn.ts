@@ -867,6 +867,14 @@ export const zhCn = {
             }
           }
         },
+        clearScreen: {
+          title: "清屏",
+          initText: "clearScreen:true;",
+          descText: '清除屏幕内游戏元素',
+          options: {
+            next: "自动进行下一步",
+          },
+        },
         unknown: {
           title: "未识别",
           options: {

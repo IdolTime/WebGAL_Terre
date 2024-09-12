@@ -66,7 +66,6 @@ function getFileType(path: string): ResourceType | null {
   const fileName = parts[parts.length - 1];
   const fileNameSplit = fileName.split(".");
   const extension = fileNameSplit[fileNameSplit.length - 1].toLowerCase();
-
   if (imageTypes.includes(extension)) {
     return ResourceType.Image;
   } else if (videoTypes.includes(extension)) {

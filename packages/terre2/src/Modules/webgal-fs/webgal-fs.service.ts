@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ConsoleLogger, Injectable } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import { extname, join } from 'path';
@@ -325,13 +326,13 @@ export class WebgalFsService {
    * @param oldIconPath 读取的图标文件路径
    */
   async replaceIconFile(newIconPath, oldIconPath) {
-    //@ts-ignore
+    // @ts-ignore
     fs.readFile(newIconPath, (err, data) => {
       if (err) {
         console.error('Error reading the new icon file:', err);
         return;
       }
-      //@ts-ignore
+      // @ts-ignore
       fs.writeFile(oldIconPath, data, (err) => {
         if (err) {
           console.error('Error writing the new icon to icon.icns:', err);

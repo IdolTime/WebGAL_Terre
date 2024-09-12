@@ -233,4 +233,11 @@ setVar:a=人物名称;可以设置字符串`,
     detail: `command unlockAffinity:<expression>;`,
     insertText: 'unlockAffinity:',
   },
+  {
+    label: 'clearScreen',
+    kind: CompletionItemKind.Function,
+    documentation: `清屏`,
+    detail: `command clearScreen:<expression>;`,
+    insertText: 'clearScreen:true;',
+  },
 ];

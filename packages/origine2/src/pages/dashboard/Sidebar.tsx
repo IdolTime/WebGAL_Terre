@@ -42,7 +42,7 @@ export default function Sidebar(props: ISidebarProps) {
       </div>
       <div className={styles.game_list}>
         {
-          props.gameList.map(e => {
+          props.gameList.map((e, index) => {
             const checked = props.currentSetGame === e.gName;
             return <GameElement
               onClick={async () => {
@@ -57,7 +57,7 @@ export default function Sidebar(props: ISidebarProps) {
               }}
               refresh={props.refresh}
               gameInfo={e}
-              key={e.gId}
+              key={e.gId + index}
               checked={checked} 
             />;
           })

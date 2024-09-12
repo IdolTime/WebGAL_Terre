@@ -46,6 +46,7 @@ import {
   UploadGameDto,
   UploadPaymentConfigurationDto,
 } from './manage-game.dto';
+import { existsSync, mkdirSync, rmSync } from 'node:fs';
 
 @Controller('api/manageGame')
 @ApiTags('Manage Game')
@@ -199,7 +200,7 @@ export class ManageGameController {
       .then(() => this.logger.log(`${gameName} export as web app`));
   }
 
-  @Get('ejectGameAsExe/:gameName')
+  @Get('ejectGameAsExe/:gameName/:gamePackageName')
   @ApiOperation({ summary: 'Eject Game As EXE' })
   @ApiResponse({
     status: 200,
@@ -210,10 +211,19 @@ export class ManageGameController {
     type: String,
     description: 'Name of the game to be exported as EXE.',
   })
-  async ejectGameAsExe(@Param('gameName') gameName: string) {
+  @ApiParam({
+    name: 'gamePackageName',
+    type: String,
+    description: 'Description of the gamePackageName parameter.',
+  })
+  async ejectGameAsExe(
+    @Param('gameName') gameName: string,
+    @Param('gamePackageName') gamePackageName: string,
+  ) {
     gameName = decodeURI(gameName);
+    gamePackageName = decodeURI(gamePackageName);
     this.manageGame
-      .exportGame(gameName, 'electron-windows')
+      .exportGame(gameName, 'electron-windows', true, gamePackageName)
       .then(() => this.logger.log(`${gameName} export as exe`));
   }
 
@@ -383,6 +393,15 @@ export class ManageGameController {
       return Buffer.concat([markerBuffer, encryptedBuffer]);
     };
 
+    // 确保目标目录存在，如果不存在则创建它
+    const targetDirectory = uploadFilesDto.targetDirectory;
+    if (!existsSync(targetDirectory)) {
+      mkdirSync(targetDirectory, { recursive: true });
+    } else if (uploadFilesDto.clearTargetDirectory) {
+      rmSync(targetDirectory, { recursive: true, force: true });
+      mkdirSync(targetDirectory, { recursive: true });
+    }
+
     const fileInfos: IUploadFileInfo[] = files.map((file) => {
       let encryptedFile = file.buffer;
       const encryptedFileFormat = ['.mp4', '.flv', '.webm', '.ogv'];
@@ -396,7 +415,8 @@ export class ManageGameController {
 
       return { fileName: file.originalname, file: encryptedFile };
     });
-    return this.webgalFs.writeFiles(uploadFilesDto.targetDirectory, fileInfos);
+
+    return this.webgalFs.writeFiles(targetDirectory, fileInfos);
   }
 
   @Post('mkdir')

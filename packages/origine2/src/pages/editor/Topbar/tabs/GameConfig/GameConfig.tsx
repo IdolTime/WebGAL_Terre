@@ -1,7 +1,7 @@
 import styles from "../topbarTabs.module.scss";
 import {useValue} from "../../../../../hooks/useValue";
 import axios from "axios";
-import {useSelector} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {RootState} from "../../../../../store/origineStore";
 import React, {useEffect, useRef} from "react";
 import {cloneDeep} from "lodash";
@@ -18,23 +18,56 @@ import {
   Input,
   Option,
   Checkbox,
+  Dialog,
+  DialogSurface,
+  DialogBody,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@fluentui/react-components";
-import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
-import { EscMenu } from './EscMenu/EscMenu';
-import { SoundSetting } from './SoundSetting/SoundSetting';
-import { useDispatch } from "react-redux";
 import { setCurrentGameId } from "@/store/statusReducer";
+import { Dismiss24Filled, Dismiss24Regular, bundleIcon, Image48Regular } from "@fluentui/react-icons";
+import configStyles from "./gameConfig.module.scss";
+import { animateCursor } from "@/utils/utils";
+import { setGamePackageName } from '@/store/statusReducer';
+
+interface ICursorConfig {
+  normal: {
+    imgs: string[];
+    interval: number;
+  };
+  active: {
+    imgs: string[];
+    interval: number;
+  }
+}
 
 
 export default function GameConfig() {
   const t = useTrans("editor.sideBar.gameConfigs.");
   const state = useSelector((state: RootState) => state.status.editor);
   const dispatch = useDispatch();
-
+  const isShowCursorDialog = useValue(false);
+  const cursorOptions = useValue<ICursorConfig>({
+    normal: {
+      imgs: [],
+      interval: 100,
+    },
+    active: {
+      imgs: [],
+      interval: 100,
+    }
+  });
+  const disposeCallbackRef = useRef<{
+    normal: () => void,
+    active: () => void
+      }>({
+        normal: () => {},
+        active: () => {},
+      });
 
   // 拿到游戏配置
   const gameConfig = useValue<WebgalConfig>([]);
-  console.log(gameConfig);
   const getGameConfig = () => {
     axios
       .get(`/api/manageGame/getGameConfig/${state.currentEditingGame}`)
@@ -88,6 +121,50 @@ export default function GameConfig() {
     updateGameConfig();
   }
 
+  function updateCursorConfig() {
+    const newConfig = cloneDeep(gameConfig.value);
+    const index = newConfig.findIndex(e => e.command === 'Game_cursor');
+    const normalImgs = cursorOptions.value.normal.imgs;
+    const activeImgs = cursorOptions.value.active.imgs;
+
+    if (index >= 0) {
+      newConfig[index].options = [];
+      newConfig[index].options = [{
+        key: 'normal',
+        value: JSON.stringify({
+          imgs: normalImgs,
+          interval: cursorOptions.value.normal.interval
+        })
+      }];
+      newConfig[index].options.push({
+        key: 'active',
+        value: JSON.stringify({
+          imgs: activeImgs,
+          interval: cursorOptions.value.active.interval
+        })
+      });
+    } else {
+      newConfig.push({command: 'Game_cursor', args: [], options: [
+        {
+          key: 'normal',
+          value: JSON.stringify({
+            imgs: normalImgs,
+            interval: cursorOptions.value.normal.interval
+          })
+        },
+        {
+          key: 'active',
+          value: JSON.stringify({
+            imgs: activeImgs,
+            interval: cursorOptions.value.active.interval
+          })
+        }
+      ]});
+    }
+    gameConfig.set(newConfig);
+    updateGameConfig();
+  }
+
   function parseAndSetGameConfigState(data: string) {
     console.log('parse config\n', data);
     gameConfig.set(WebgalParser.parseConfig(data));
@@ -97,7 +174,88 @@ export default function GameConfig() {
       const randomCode = (Math.random() * 100000).toString(16).replace(".", "d");
       updateGameConfigSimpleByKey("Game_key", randomCode);
     }
+
+    // 游戏包名
+    const gamePackageName = getConfigContentAsString('Package_name');
+    if (gamePackageName) {
+      dispatch(setGamePackageName(gamePackageName));
+    }
   }
+
+  const setCursorOptions = (key: 'normal' | 'active', secondaryKey: 'imgs' | 'interval', value: string | string[]) => {
+    const newOptions = cloneDeep(cursorOptions.value);
+    
+    if (secondaryKey === 'interval') {
+      newOptions[key][secondaryKey] = Number(value);
+    } else {
+      if (Array.isArray(value)) {
+        newOptions[key][secondaryKey] = value;
+      } else {
+        newOptions[key][secondaryKey] = [];
+      }
+    }
+
+    cursorOptions.set(newOptions);
+  };
+
+  const handleUpload = (type: 'normal' | 'active', files: FileList | null, onUpload: () => void) => {
+    let targetDirectory = `public/games/${state.currentEditingGame}/game/ui`;
+    
+    const fileList = Array.from(files || []);
+
+    if (!fileList.length) {
+      return;
+    }
+
+    if (type === 'normal') {
+      targetDirectory += '/cursor';
+    } else {
+      targetDirectory += '/cursorActive';
+    }
+
+    const formData = new FormData();
+    formData.append("targetDirectory", targetDirectory);
+    formData.append("clearTargetDirectory", "true");
+
+    fileList.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    axios.post('/api/manageGame/uploadFiles', formData).then((response) => {
+      if (response.data) {
+        onUpload();
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (cursorOptions.value.normal.imgs.length && isShowCursorDialog.value) {
+      const imgs = cursorOptions.value.normal.imgs.map((e) => `/games/${state.currentEditingGame}/game/ui/${e.split('./')[1]}`);
+      disposeCallbackRef.current.normal = animateCursor(document.getElementById('normalContainer'), imgs, cursorOptions.value.normal.interval);
+    }
+  }, [cursorOptions.value.normal, isShowCursorDialog.value]);
+
+  useEffect(() => {
+    if (cursorOptions.value.active.imgs.length && isShowCursorDialog.value) {
+      const imgs = cursorOptions.value.active.imgs.map((e) => `/games/${state.currentEditingGame}/game/ui/${e.split('./')[1]}`);
+      disposeCallbackRef.current.active = animateCursor(document.getElementById('activeContainer'), imgs, cursorOptions.value.active.interval);
+    }
+  }, [cursorOptions.value.active, isShowCursorDialog.value]);
+
+  useEffect(() => {
+    const cursorConfig = gameConfig.value.find(k => k.command === 'Game_cursor');
+
+    if (cursorConfig) {
+      let normalCursorStr = cursorConfig.options[0].value as string;
+      let activeCursorStr = cursorConfig.options[1].value as string;
+      const normalCursor = JSON.parse(normalCursorStr);
+      const activeCursor = JSON.parse(activeCursorStr);
+      cursorOptions.set({
+        normal: normalCursor,
+        active: activeCursor
+      });
+    }
+  }, [gameConfig.value]);
 
   return (
     <>
@@ -157,12 +315,15 @@ export default function GameConfig() {
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_Logo', e)}/>
       </TabItem>
       <TabItem title={t("options.mouseCursor")}>
-        <GameConfigEditorWithImageFileChoose
-          sourceBase="background"
-          extNameList={[".jpg", ".png", ".webp"]}
-          key="mouseCursor"
-          value={getConfigContentAsStringArray('Game_cursor')}
-          onChange={(e: string[]) => updateGameConfigArrayByKey('Game_cursor', e)}/>
+        <Button
+          appearance='primary'
+          size="small"
+          onClick={() => {
+            isShowCursorDialog.set(true);
+          }}
+        >
+          光标设置
+        </Button>
       </TabItem>
       {/* <TabItem title={t("options.openingLogo")}>
         <GameConfigEditorWithImageFileChoose
@@ -180,30 +341,102 @@ export default function GameConfig() {
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_r18', e)}
         />
       </TabItem> */}
-      <TabItem title={t("options.escMenu")}>
-        <Button
-          appearance='primary'
-          size="small"
-          onClick={() => {
-            eventBus.emit('escMenu');
-          }}
-        >
-          {t("escMenu.title")}
-        </Button>
-        <EscMenu key="escMenu" value="ESC_menu_button" />
-      </TabItem>
-      <TabItem title={t("options.sound")}>
-        <Button
-          appearance='primary'
-          size="small"
-          onClick={() => {
-            eventBus.emit('soundSetting');
-          }}
-        >
-          {t("sound.title")}
-        </Button>
-        <SoundSetting key="soundSetting" />
-      </TabItem>
+      <Dialog
+        open={isShowCursorDialog.value}
+        onOpenChange={(_, v) => {
+          isShowCursorDialog.set(v.open);
+
+          if (!v.open) {
+            disposeCallbackRef.current.active?.();
+            disposeCallbackRef.current.normal?.();
+          }
+        }}
+      >
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>鼠标自定义</DialogTitle>
+            <DialogContent>
+              <div className={configStyles.cursorRow}>
+                <div>
+                  <div>
+                    <p>通常状态</p>
+                  </div>
+                  <div id="normalContainer" className={configStyles.previewContainer}>
+                    <Button appearance="transparent" className={configStyles.fileBtn}>
+                        点击替换
+                      <input
+                        className={configStyles.fileInput}
+                        type="file"
+                        multiple
+                        onChange={(e) => {  handleUpload('normal', e.target.files, () => setCursorOptions('normal', 'imgs', Array.from(e.target.files || []).map(x => `./cursor/${x.name}`))); }}
+                        accept=".png,.apng"
+                      />
+                    </Button>
+                    <div className={configStyles.preview}>
+                      <Image48Regular />
+                      <span>预览</span>
+                    </div>
+                  </div>
+                  <div>
+                    <span>间隔：</span>
+                    <Input
+                      value={cursorOptions.value.normal.interval.toString()}
+                      onChange={(e) => {
+                        setCursorOptions('normal', 'interval', e.target.value);
+                      }}
+                    />  
+                    <span className={configStyles.unitLabel}>毫秒</span>
+                  </div>
+                </div>
+                <div>
+                  <div>
+                    <p>可互动状态</p>
+                  </div>
+                  <div id="activeContainer" className={configStyles.previewContainer}>
+                    <Button appearance="transparent" className={configStyles.fileBtn}>
+                        点击替换
+                      <input
+                        className={configStyles.fileInput}
+                        type="file"
+                        multiple
+                        onChange={(e) => {  handleUpload('active', e.target.files, () => setCursorOptions('active', 'imgs', Array.from(e.target.files || []).map(x => `./cursorActive/${x.name}`))); }}
+                        accept=".png,.apng"
+                      />
+                    </Button>
+                    <div className={configStyles.preview}>
+                      <Image48Regular />
+                      <span>预览</span>
+                    </div>
+                  </div>
+                  <div>
+                    <span>间隔：</span>
+                    <Input
+                      value={cursorOptions.value.active.interval.toString()}
+                      onChange={(e) => {
+                        setCursorOptions('active', 'interval', e.target.value);
+                      }}
+                    />  
+                    <span className={configStyles.unitLabel}>毫秒</span>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button appearance='secondary' onClick={() => {
+                disposeCallbackRef.current.active?.();
+                disposeCallbackRef.current.normal?.();
+                isShowCursorDialog.set(false);
+              }}>取消</Button>
+              <Button appearance='primary' onClick={() => {
+                disposeCallbackRef.current.active?.();
+                disposeCallbackRef.current.normal?.();
+                isShowCursorDialog.set(false);
+                updateCursorConfig();
+              }}>确定</Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
     </>
   );
 }

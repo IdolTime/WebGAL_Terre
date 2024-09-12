@@ -13,8 +13,6 @@ export default function PlayVideo(props: ISentenceEditorProps) {
   const t = useTrans('editor.graphical.sentences.video.options.');
   const isNoFile = props.sentence.content === '';
 
-  console.log(3333, props.sentence.content);
-
   const configs = useValue({
     fileName: props.sentence.content,
     isSkipOff: !!getArgByKey(props.sentence, "skipOff"),

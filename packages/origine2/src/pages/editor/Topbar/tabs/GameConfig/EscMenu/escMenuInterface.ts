@@ -6,6 +6,7 @@ export interface IConfigESCMenus {
     hide: boolean;
     name: string;
     btnImage: string;
+    btnSound: string;
     btnPosition: string;
     fontFamily: string;
     fontSize: number | string;

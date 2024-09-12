@@ -13,6 +13,11 @@ export function useHashRoute() {
   const dispatch = useDispatch();
   const token = userState.editorToken;
   useEffect(() => {
+    if (!token) {
+      window.location.hash = '#/login';
+      return;
+    }
+
     setTimeout(() => {
       if (!token) {
         window.location.hash = '#/login';
@@ -38,7 +43,7 @@ export function useHashRoute() {
     }, 50);
 
   }, [isShowDashboard, editingGameName, currentTag, token]);
-
+  
   useEffect(() => {
     if (!token) return;
     const result = decodeHash();
