@@ -618,7 +618,7 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   },
   [CollectionSceneOtherKey.Collection_detail_right_thumbnail_bg]: {
     label: '详情界面右侧缩略图元素',
-    type: 'bg',
+    type: 'placeholder',
     hasHoverStyle: false,
     hasXY: false,
   },

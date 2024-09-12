@@ -314,11 +314,10 @@ export const defaultBtnSoundConfig: IBtnSoundConfig  = {
   // }
 };
 
-export const alignPositionOptions = [
-  { name: '默认', value: '' },
-  { name: '顶部对齐', value: 'top-center' },
-  { name: '底部对齐', value: 'bottom-center' }
-];
+// export const alignPositionOptions = [
+//   { name: '顶部对齐', value: 'top-center' },
+//   { name: '底部对齐', value: 'bottom-center' }
+// ];
 
 export interface IStyleConfigArr {
   label: string;

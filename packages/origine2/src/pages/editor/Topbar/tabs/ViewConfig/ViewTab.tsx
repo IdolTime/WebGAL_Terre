@@ -70,7 +70,6 @@ import {
   ICollectionImages,
   defaultCollectionImages,
   defaultCollectionVideos,
-  alignPositionOptions,
   IBtnSoundConfig,
   IStyleConfigArr,
   defaultBtnSoundConfig
@@ -149,30 +148,6 @@ export function ViewTab() {
           </Button>
         ))}
         <GameConfigEditorGameMenu key="customGameMenu" />
-      </TabItem>
-      <TabItem title={t("ESC菜单")}>
-        <Button
-          appearance='primary'
-          size="small"
-          onClick={() => {
-            eventBus.emit('escMenu');
-          }}
-        >
-          {t('UI设置')}
-        </Button>
-        <EscMenu key="escMenu" value="ESC_menu_button" />
-      </TabItem>
-      <TabItem title={t("界面音效")}>
-        <Button
-          appearance='primary'
-          size="small"
-          onClick={() => {
-            eventBus.emit('soundSetting');
-          }}
-        >
-          {t('音效设置')}
-        </Button>
-        <SoundSetting key="soundSetting" />
       </TabItem>
       <TabItem title={t("ESC菜单")}>
         <Button
@@ -339,7 +314,7 @@ function GameConfigEditorGameMenu() {
     const parseArgs = (args: WebgalConfig[0]['options']) => {
       const parseStyleString = (styleString: string): Style => {
         let styleObj: Style = {};
-        const styleRegex = /\{(.*?)\}/;
+        const styleRegex = /\{([^]*?)\}/; // /\{(.*?)\}/;
         const styleMatch = styleString.match(styleRegex);
         if (styleMatch) {
           const styleStr = styleMatch[1];
@@ -636,16 +611,6 @@ function renderConfig(
     }
   }
   
-  // 按钮按钮点击音效配置项
-  if (config?.hasButtonSound) { 
-    styleConfigArr.push({ 
-      label: '按钮音效', 
-      key: 'buttonSound',
-      style: {},
-      btnSound: { ...defaultBtnSoundConfig }
-    });
-  }
-
   // 按钮按钮点击音效配置项
   if (config?.hasButtonSound) { 
     styleConfigArr.push({ 
@@ -989,9 +954,9 @@ function parseStyleConfig({
                           );
                         }}
                       >
-                        {alignPositionOptions.map((item: { name: string, value: string }, index: number) => {
-                          return <option key={item.value + index} value={item.value}>{item.name}</option>;
-                        })}
+                        {/* {alignPositionOptions.map((item: { name: string, value: string }, index: number) => {
+                          return <option defaultValue={'top-center'} key={item.value + index} value={item.value}>{item.name}</option>;
+                        })} */}
                       </Select>
                     )}
 
