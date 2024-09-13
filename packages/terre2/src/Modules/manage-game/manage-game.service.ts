@@ -314,6 +314,13 @@ export class ManageGameService {
         }
       }
 
+      // 上传游戏付费配置
+      const payRes = await this.uploadGamePaymentConfig(gId, gameName, token);
+
+      if (payRes.status === 'failed') {
+        throw new Error('上传付费配置失败');
+      }
+
       const configFile: string = await this.webgalFs.readTextFile(
         `${gameRootDir}/config.txt`,
       );
@@ -805,8 +812,8 @@ export class ManageGameService {
    * @param gameName
    */
   async uploadGamePaymentConfig(
-    gameName: string,
     gId: number,
+    gameName: string,
     editorToken: string,
   ) {
     const dirPath = this.webgalFs.getPathFromRoot(
