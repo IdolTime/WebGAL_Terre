@@ -17,6 +17,7 @@ export interface UIItemConfig {
   label: string;
   type?: 'image' | 'text' | 'container' | 'placeholder' | 'bgm' | 'bg' | 'video';
   hasHoverStyle?: boolean;
+  hasActiveStyle?: boolean; // 激活状态
   hasButtonSound?: boolean;
   hasLink?: boolean;
   hasXY?: boolean;
@@ -160,41 +161,49 @@ export const titleSceneButtonConfig: Record<TitleSceneButtonKey, UIItemConfig> =
     label: '开始游戏',
     positionType: 'absolute',
     hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [TitleSceneButtonKey.Game_achievement_button]: {
     hasHoverStyle: true,
     label: '成就',
     hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [TitleSceneButtonKey.Game_storyline_button]: {
     hasHoverStyle: true,
     label: '故事线',
     hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [TitleSceneButtonKey.Game_extra_button]: {
     hasHoverStyle: true,
     label: '鉴赏',
     hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [TitleSceneButtonKey.Game_collection_button]: {
     hasHoverStyle: true,
     label: '图鉴',
     hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [TitleSceneButtonKey.Game_option_button]: {
     hasHoverStyle: true,
     label: '设置',
     hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [TitleSceneButtonKey.Game_load_button]: {
     hasHoverStyle: true,
     label: '读取存档',
     hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [TitleSceneButtonKey.Game_continue_button]: {
     hasHoverStyle: true,
     label: '继续游戏',
     hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [TitleSceneButtonKey.Game_link_button]: {
     hasHoverStyle: true,
@@ -212,7 +221,8 @@ export const loadSceneButtonConfig: Record<LoadSceneButtonKey, UIItemConfig & { 
   [LoadSceneButtonKey.Load_back_button]: {
     hasHoverStyle: true,
     label: '返回',
-    hasButtonSound: true
+    hasButtonSound: true,
+    hasActiveStyle: true,
   },
 };
 
@@ -224,7 +234,8 @@ export const storylineSceneButtonConfig: Record<StorylineSceneButtonKey, UIItemC
   [StorylineSceneButtonKey.Storyline_back_button]: {
     hasHoverStyle: true,
     label: '返回',
-    hasButtonSound: true
+    hasButtonSound: true,
+    hasActiveStyle: true,
   },
 };
 
@@ -236,7 +247,8 @@ export enum AchievementSceneButtonKey {
 export const achievementSceneButtonConfig: Record<AchievementSceneButtonKey, UIItemConfig> = {
   [AchievementSceneButtonKey.Achievement_back_button]: {
     label: '返回',
-    hasButtonSound: true
+    hasButtonSound: true,
+    hasActiveStyle: true,
   },
 };
 
@@ -249,7 +261,8 @@ export enum ExtraSceneButtonKey {
 export const extraSceneButtonConfig: Record<ExtraSceneButtonKey, UIItemConfig> = {
   [ExtraSceneButtonKey.Extra_back_button]: {
     label: '返回',
-    hasButtonSound: true
+    hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [ExtraSceneButtonKey.Extra_bgm_button]: {
     label: '切换BGM标签',
@@ -279,6 +292,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
   },
   [ExtraSceneOtherKey.Extra_bg]: {
     hasHoverStyle: false,
+    hasActiveStyle: false,
     label: '背景',
     type: 'bg',
   },
@@ -286,6 +300,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
     label: '未解锁BGM元素背景',
     hasXY: false,
     hasHoverStyle: false,
+    hasActiveStyle: false,
     customStyle: {
       columnGap: {
         type: 'number',
@@ -302,6 +317,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
     label: '已解锁BGM元素',
     hasXY: false,
     hasHoverStyle: false,
+    hasActiveStyle: false,
     customStyle: {
       columnGap: {
         type: 'number',
@@ -334,6 +350,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
     label: '已解锁VIDEO元素',
     hasXY: false,
     hasHoverStyle: false,
+    hasActiveStyle: false,
     children: {
       [CommonItemKey.content]: {
         type: 'placeholder',
@@ -350,11 +367,13 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
     label: '未解锁VIDEO元素背景',
     hasXY: false,
     hasHoverStyle: false,
+    hasActiveStyle: false,
   },
   [ExtraSceneOtherKey.Extra_indicator]: {
     type: 'container',
     label: '翻页指示器',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     hasWidthHeight: false,
     customStyle: {
       alignPosition: {
@@ -408,6 +427,7 @@ export const optionSceneButtonConfig: Record<OptionSceneButtonKey, UIItemConfig>
   [OptionSceneButtonKey.Option_back_button]: {
     label: '返回',
     hasButtonSound: true,
+    hasActiveStyle: true,
   },
 };
 
@@ -436,17 +456,20 @@ export enum CollectionSceneOtherKey {
 export const collectionSceneButtonConfig: Record<CollectionSceneButtonKey, UIItemConfig> = {
   [CollectionSceneButtonKey.Collection_back_button]: {
     label: '返回',
-    hasButtonSound: true
+    hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [CollectionSceneButtonKey.Collection_detail_dialog_prev_button]: {
     label: '详情弹窗上一个按钮元素',
     hasXY: false,
-    hasButtonSound: true
+    hasButtonSound: true,
+    hasActiveStyle: true,
   },
   [CollectionSceneButtonKey.Collection_detail_dialog_next_button]: {
     label: '详情弹窗下一个按钮元素',
     hasXY: false,
-    hasButtonSound: true
+    hasButtonSound: true,
+    hasActiveStyle: true,
   }
 };
 
@@ -458,17 +481,20 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   [CollectionSceneOtherKey.Collection_bg]: {
     label: '背景',
     type: 'bg',
-    hasHoverStyle: false
+    hasHoverStyle: false,
+    hasActiveStyle: false,
   },
   [CollectionSceneOtherKey.Collection_img1]: {
     label: '图鉴1',
     type: 'container',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     children: {
       [collectionItemInfoKey.collectionInfo]: {
         type: 'image',
         hasText: true,
         hasHoverStyle: false,
+        hasActiveStyle: false,
         label: '图鉴信息',
       },
       [CommonItemKey.content]: {
@@ -491,12 +517,14 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '详情界面信息图片列表',
         hasXY: false,
         hasHoverStyle: false,
+        hasActiveStyle: false,
       },
       [collectionItemInfoKey.collectionVideos]: {
         type: 'video',
         label: '详情界面信息视频列表',
         hasXY: false,
         hasHoverStyle: false,
+        hasActiveStyle: false,
       },
     }
   },
@@ -504,11 +532,13 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     label: '图鉴2',
     type: 'container',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     children: {
       [collectionItemInfoKey.collectionInfo]: {
         type: 'image',
         hasText: true,
         hasHoverStyle: false,
+        hasActiveStyle: false,
         label: '图鉴信息',
       },
       [CommonItemKey.content]: {
@@ -531,12 +561,14 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '详情界面信息图片列表',
         hasXY: false,
         hasHoverStyle: false,
+        hasActiveStyle: false,
       },
       [collectionItemInfoKey.collectionVideos]: {
         type: 'video',
         label: '详情界面信息视频列表',
         hasXY: false,
         hasHoverStyle: false,
+        hasActiveStyle: false,
       },
     }
   },
@@ -544,11 +576,13 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     type: 'container',
     label: '图鉴3',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     children: {
       [collectionItemInfoKey.collectionInfo]: {
         type: 'image',
         hasText: true,
         hasHoverStyle: false,
+        hasActiveStyle: false,
         label: '图鉴信息',
       },
       [CommonItemKey.content]: {
@@ -571,12 +605,14 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
         label: '详情界面信息图片列表',
         hasXY: false,
         hasHoverStyle: false,
+        hasActiveStyle: false,
       },
       [collectionItemInfoKey.collectionVideos]: {
         type: 'video',
         label: '详情界面信息视频列表',
         hasXY: false,
         hasHoverStyle: false,
+        hasActiveStyle: false,
       },
     }
   },
@@ -587,12 +623,14 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
   [CollectionSceneOtherKey.Collection_detail_bg]: {
     label: '详情界面背景',
     type: 'bg',
-    hasHoverStyle: false
+    hasHoverStyle: false,
+    hasActiveStyle: false,
   },
   [CollectionSceneOtherKey.Collection_detail_left_bg]: {
     label: '详情界面左侧内容元素',
     type: 'container',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     hasXY: false,
     // children: {
     //   [CommonItemKey.content]: {
@@ -612,6 +650,7 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     label: '详情界面右侧内容元素',
     type: 'bg',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     hasXY: false,
     customStyle: {
       marginTop: {
@@ -628,12 +667,14 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     label: '详情界面右侧缩略图元素',
     type: 'placeholder',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     hasXY: false,
   },
   [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: {
     label: '详情界面右侧信息元素',
     type: 'bg',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     hasXY: false,
     customStyle: {
       alignPosition: {
@@ -662,12 +703,14 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     type: 'bg',
     label: '详情界面二级弹窗元素背景',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     hasXY: false
   },
   [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
     label: '详情界面二级弹窗元素样式',
     type: 'text',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     hasXY: false
   },
 };
@@ -704,6 +747,7 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
     label: '背景',
     type: 'bg',
     hasHoverStyle: false,
+    hasActiveStyle: false,
   },
   // [OptionSceneOtherKey.Option_window_label]: {
   //   type: 'container',
@@ -850,13 +894,16 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
       [SliderItemKey.slider]: {
         label: '全局音量滑动条',
         hasHoverStyle: false,
+        hasActiveStyle: false,
       },
       [SliderItemKey.sliderBg]: {
         hasHoverStyle: false,
+        hasActiveStyle: false,
         label: '全局音量滑动条背景',
       },
       [SliderItemKey.sliderThumb]: {
         hasHoverStyle: false,
+        hasActiveStyle: false,
         label: '全局音量滑动条拇指',
       },
     }
@@ -886,13 +933,16 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
       [SliderItemKey.slider]: {
         label: '音效滑动条',
         hasHoverStyle: false,
+        hasActiveStyle: false,
       },
       [SliderItemKey.sliderBg]: {
         hasHoverStyle: false,
+        hasActiveStyle: false,
         label: '音效滑动条背景',
       },
       [SliderItemKey.sliderThumb]: {
         hasHoverStyle: false,
+        hasActiveStyle: false,
         label: '音效滑动条拇指',
       },
     }
@@ -904,13 +954,16 @@ export const optionSceneOtherConfig: Record<OptionSceneOtherKey, UIItemConfig & 
       [SliderItemKey.slider]: {
         label: '亮度滑动条',
         hasHoverStyle: false,
+        hasActiveStyle: false,
       },
       [SliderItemKey.sliderBg]: {
         hasHoverStyle: false,
+        hasActiveStyle: false,
         label: '亮度滑动条背景',
       },
       [SliderItemKey.sliderThumb]: {
         hasHoverStyle: false,
+        hasActiveStyle: false,
         label: '亮度滑动条拇指',
       },
     }
@@ -966,12 +1019,14 @@ export const achievementSceneOtherConfig: Record<AchievementSceneOtherKey, UIIte
     type: 'bg',
     hasXY: false,
     hasHoverStyle: false,
+    hasActiveStyle: false,
   },
   [AchievementSceneOtherKey.Achievement_progress_text]: {
     label: '成就进度文字',
     type: 'text',
     hasXY: false,
     hasHoverStyle: false,
+    hasActiveStyle: false,
   },
   [AchievementSceneOtherKey.Achievement_progress]: {
     label: '成就进度条',
@@ -984,6 +1039,7 @@ export const achievementSceneOtherConfig: Record<AchievementSceneOtherKey, UIIte
     type: 'image',
     hasXY: false,
     hasHoverStyle: false,
+    hasActiveStyle: false,
     hasText: false
   }
 };
@@ -1009,6 +1065,7 @@ export enum LoadSceneOtherKey {
 export const loadSceneOtherConfig: Record<LoadSceneOtherKey, UIItemConfig & { children?: Record<string, UIItemConfig> }> = {
   [LoadSceneOtherKey.Load_bg]: {
     hasHoverStyle: false,
+    hasActiveStyle: false,
     label: '背景',
     type: 'bg',
   },
@@ -1020,6 +1077,7 @@ export const loadSceneOtherConfig: Record<LoadSceneOtherKey, UIItemConfig & { ch
     type: 'container',
     hasXY: false,
     hasHoverStyle: false,
+    hasActiveStyle: false,
     customStyle: {
       rowGap: {
         type: 'number',
@@ -1063,6 +1121,7 @@ export const loadSceneOtherConfig: Record<LoadSceneOtherKey, UIItemConfig & { ch
   [LoadSceneOtherKey.Load_indicator]: {
     type: 'container',
     hasHoverStyle: false,
+    hasActiveStyle: false,
     hasWidthHeight: false,
     label: '翻页指示器',
     children: {
@@ -1111,11 +1170,13 @@ export enum TitleSceneOtherKey {
 export const titleSceneOtherConfig: Record<TitleSceneOtherKey, UIItemConfig> = {
   [TitleSceneOtherKey.Title_img]: {
     hasHoverStyle: false,
+    hasActiveStyle: false,
     label: '背景',
     type: 'bg',
   },
   [TitleSceneOtherKey.Title_bgm]: {
     hasHoverStyle: false,
+    hasActiveStyle: false,
     label: '背景音乐',
     type: 'bgm',
   },
@@ -1197,6 +1258,7 @@ export interface ButtonItem {
     style: Style,
     hoverStyle?: Style
     buttonLink?: ILink
+    activeStyle?: Style
   }
 }
 
@@ -1412,42 +1474,42 @@ export const sceneUIConfig: SceneUIConfig = {
       [TitleSceneButtonKey.Game_start_button]: {
         key: TitleSceneButtonKey.Game_start_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [TitleSceneButtonKey.Game_load_button]: {
         key: TitleSceneButtonKey.Game_load_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [TitleSceneButtonKey.Game_option_button]: {
         key: TitleSceneButtonKey.Game_option_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [TitleSceneButtonKey.Game_storyline_button]: {
         key: TitleSceneButtonKey.Game_storyline_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [TitleSceneButtonKey.Game_achievement_button]: {
         key: TitleSceneButtonKey.Game_achievement_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [TitleSceneButtonKey.Game_extra_button]: {
         key: TitleSceneButtonKey.Game_extra_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [TitleSceneButtonKey.Game_collection_button]: {
         key: TitleSceneButtonKey.Game_collection_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [TitleSceneButtonKey.Game_continue_button]: {
         key: TitleSceneButtonKey.Game_continue_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [TitleSceneButtonKey.Game_link_button]: {
         key: TitleSceneButtonKey.Game_link_button,
@@ -1467,7 +1529,7 @@ export const sceneUIConfig: SceneUIConfig = {
       [LoadSceneOtherKey.Load_title]: {
         key: LoadSceneOtherKey.Load_title,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [LoadSceneOtherKey.Load_item]: {
         key: LoadSceneOtherKey.Load_item,
@@ -1482,14 +1544,14 @@ export const sceneUIConfig: SceneUIConfig = {
       [LoadSceneOtherKey.Load_locked_item]: {
         key: LoadSceneOtherKey.Load_locked_item,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
     },
     buttons: {
       [LoadSceneButtonKey.Load_back_button]: {
         key: LoadSceneButtonKey.Load_back_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
     }
   },
@@ -1499,14 +1561,14 @@ export const sceneUIConfig: SceneUIConfig = {
       [StorylineSceneOtherKey.Storyline_title]: {
         key: StorylineSceneOtherKey.Storyline_title,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
     },
     buttons: {
       [StorylineSceneButtonKey.Storyline_back_button]: {
         key: StorylineSceneButtonKey.Storyline_back_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
     }
   },
@@ -1516,34 +1578,34 @@ export const sceneUIConfig: SceneUIConfig = {
       [AchievementSceneOtherKey.Achievement_title]: {
         key: AchievementSceneOtherKey.Achievement_title,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [AchievementSceneOtherKey.Achievement_progress_bg]: {
         key: AchievementSceneOtherKey.Achievement_progress_bg,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [AchievementSceneOtherKey.Achievement_progress_text]: {
         key: AchievementSceneOtherKey.Achievement_progress_text,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [AchievementSceneOtherKey.Achievement_progress]: {
         key: AchievementSceneOtherKey.Achievement_progress,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [AchievementSceneOtherKey.Achievement_notUnlock]: {
         key: AchievementSceneOtherKey.Achievement_notUnlock,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
     },
     buttons: {
       [AchievementSceneButtonKey.Achievement_back_button]: {
         key: AchievementSceneButtonKey.Achievement_back_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
     }
   },
@@ -1553,7 +1615,7 @@ export const sceneUIConfig: SceneUIConfig = {
       [ExtraSceneOtherKey.Extra_title]: {
         key: ExtraSceneOtherKey.Extra_title,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [ExtraSceneOtherKey.Extra_bgm_unlocked_item]: {
         key: ExtraSceneOtherKey.Extra_bgm_unlocked_item,
@@ -1590,17 +1652,17 @@ export const sceneUIConfig: SceneUIConfig = {
       [ExtraSceneButtonKey.Extra_back_button]: {
         key: ExtraSceneButtonKey.Extra_back_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [ExtraSceneButtonKey.Extra_video_button]: {
         key: ExtraSceneButtonKey.Extra_video_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [ExtraSceneButtonKey.Extra_bgm_button]: {
         key: ExtraSceneButtonKey.Extra_bgm_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
     }
   },
@@ -1615,28 +1677,28 @@ export const sceneUIConfig: SceneUIConfig = {
       [OptionSceneOtherKey.Option_title]: {
         key: OptionSceneOtherKey.Option_title,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [OptionSceneOtherKey.Option_fullscreen_checkbox]: {
         key: OptionSceneOtherKey.Option_fullscreen_checkbox,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [OptionSceneOtherKey.Option_window_checkbox]: {
         key: OptionSceneOtherKey.Option_window_checkbox,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
 
       [OptionSceneOtherKey.Option_videoSize1080_checkbox]: {
         key: OptionSceneOtherKey.Option_videoSize1080_checkbox,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [OptionSceneOtherKey.Option_videoSize720_checkbox]: {
         key: OptionSceneOtherKey.Option_videoSize720_checkbox,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [OptionSceneOtherKey.Options_light_slider]: {
         key: OptionSceneOtherKey.Options_light_slider,
@@ -1713,7 +1775,7 @@ export const sceneUIConfig: SceneUIConfig = {
       [OptionSceneButtonKey.Option_back_button]: {
         key: OptionSceneButtonKey.Option_back_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       }
     }
   },
@@ -1728,7 +1790,7 @@ export const sceneUIConfig: SceneUIConfig = {
       [CollectionSceneOtherKey.Collection_title]: {
         key: CollectionSceneOtherKey.Collection_title,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
 
       [CollectionSceneOtherKey.Collection_img1]: {
@@ -1749,7 +1811,7 @@ export const sceneUIConfig: SceneUIConfig = {
       [CollectionSceneOtherKey.Collection_detail_title]: {
         key: CollectionSceneOtherKey.Collection_detail_title,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [CollectionSceneOtherKey.Collection_detail_bg]: {
         key: CollectionSceneOtherKey.Collection_detail_bg,
@@ -1784,24 +1846,24 @@ export const sceneUIConfig: SceneUIConfig = {
       [CollectionSceneOtherKey.Collection_detail_dialog_text]: {
         key: CollectionSceneOtherKey.Collection_detail_dialog_text,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
     },
     buttons: {
       [CollectionSceneButtonKey.Collection_back_button]: {
         key: CollectionSceneButtonKey.Collection_back_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [CollectionSceneButtonKey.Collection_detail_dialog_prev_button]: {
         key: CollectionSceneButtonKey.Collection_detail_dialog_prev_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       },
       [CollectionSceneButtonKey.Collection_detail_dialog_next_button]: {
         key: CollectionSceneButtonKey.Collection_detail_dialog_next_button,
         content: "",
-        args: generateArgs(['hoverStyle']),
+        args: generateArgs(['hoverStyle', 'activeStyle']),
       }
     }
   },

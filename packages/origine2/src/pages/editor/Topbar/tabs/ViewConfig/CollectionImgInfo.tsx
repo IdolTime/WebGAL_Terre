@@ -25,7 +25,7 @@ import {
 } from '@/pages/editor/types';
 import ChooseFile from '@/pages/editor/ChooseFile/ChooseFile';
 import { IStyleConfig, InfoConfig, ICollectionImages, defaultCollectionVideos } from './confg';
-import { IStyleType } from './ViewTab';
+import { TStyleType,  } from './viewTabInterface';
 
 import s from './viewTab.module.scss';
 
@@ -41,8 +41,7 @@ interface IProps {
 	setStyle: (
 		styleKey: keyof IStyleConfig,
 		value: number | string | undefined,
-		// styleType?: string
-		styleType?: 'style' | 'hoverStyle',
+		styleType: TStyleType,
 	) => void;
 	setHide: (value: boolean) => void;
 	setInfo: (infoKey: keyof InfoConfig, value: number | string | undefined) => void;

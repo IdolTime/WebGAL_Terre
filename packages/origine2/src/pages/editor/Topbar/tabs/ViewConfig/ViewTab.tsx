@@ -75,6 +75,7 @@ import {
   defaultBtnSoundConfig,
   defaultBtnLinkConfig
 } from './confg';
+import { TStyleType, IStyleType } from './viewTabInterface'
 import { EscMenu } from '@/pages/editor/Topbar/tabs/GameConfig/EscMenu/EscMenu';
 import { SoundSetting } from '@/pages/editor/Topbar/tabs/GameConfig/SoundSetting/SoundSetting';
 
@@ -333,7 +334,7 @@ function GameConfigEditorGameMenu() {
       };
 
       const parsedArgs: any = { hide: false, style: {} };
-      const parsedKeys = ['hoverStyle', 'info', 'images', 'btnSound', 'videos', 'buttonLink'];
+      const parsedKeys = ['hoverStyle', 'info', 'images', 'btnSound', 'videos', 'buttonLink', 'activeStyle'];
 
       args.forEach((e: any) => {
         if (e.key === 'hide') {
@@ -341,16 +342,6 @@ function GameConfigEditorGameMenu() {
         } else if (e.key.endsWith('style') || parsedKeys.includes(e.key)) {
           parsedArgs[e.key] = parseStyleString(e.value as string);
         }
-        
-        // else if (e.key === 'hoverStyle') {
-        //   parsedArgs[e.key] = parseStyleString(e.value as string);
-        // } else if (e.key === 'info') {
-        //   parsedArgs[e.key] = parseStyleString(e.value as string);
-        // } else if (e.key === 'images') {
-        //   parsedArgs[e.key] = parseStyleString(e.value as string);
-        // } else if (e.key === 'btnSound') {
-        //   parsedArgs[e.key] = parseStyleString(e.value as string);
-        // } 
       });
 
       return parsedArgs;
@@ -462,15 +453,13 @@ function GameConfigEditorWithFileChoose(
   );
 }
 
-export interface IStyleType {
-  style: string;
-  hoverStyle: string;
-}
 
 
 
-function handleStyle(_style: IStyleConfig, config: UIItemConfig): [IStyleConfig, boolean] {
+
+function handleStyle(_style: IStyleConfig, config: UIItemConfig): [IStyleConfig, boolean, boolean] {
   let hasHoverStyle = false;
+  let hasActiveStyle = false;
   let style = { ..._style };
 
   if (config.hasXY === false) {
@@ -494,6 +483,10 @@ function handleStyle(_style: IStyleConfig, config: UIItemConfig): [IStyleConfig,
     hasHoverStyle = true;
   }
 
+  if (config.hasActiveStyle !== false && config.type === 'image') {
+    hasActiveStyle = true;
+  }
+
   if (config.type === 'text') {
     delete style.image;
     delete style.width;
@@ -506,6 +499,7 @@ function handleStyle(_style: IStyleConfig, config: UIItemConfig): [IStyleConfig,
 
   if (config.type === 'bg') {
     hasHoverStyle = false;
+    hasActiveStyle = false;
   }
 
   if (config.type !== 'image' && config.type !== 'text') {
@@ -518,7 +512,7 @@ function handleStyle(_style: IStyleConfig, config: UIItemConfig): [IStyleConfig,
     delete style.fontColor;
   }
 
-  return [style, hasHoverStyle];
+  return [style, hasHoverStyle, hasActiveStyle];
 }
 
 // eslint-disable-next-line
@@ -552,7 +546,7 @@ function renderConfig(
 
   config.type = config.type || 'image';
 
-  const [styleConfig, hasHoverStyle] = handleStyle(defaultStyle, config);
+  const [styleConfig, hasHoverStyle, hasActiveStyle] = handleStyle(defaultStyle, config);
   const styleConfigArr: IStyleConfigArr[] = [
     { label: '默认样式', style: styleConfig, key: 'style' },
   ];
@@ -564,11 +558,19 @@ function renderConfig(
       key: 'hoverStyle' 
     });
   }
+  
+  if (hasActiveStyle) {
+    styleConfigArr.push({ 
+      label: '激活样式', 
+      style: { ...styleConfig }, 
+      key: 'activeStyle' 
+    });
+  }
 
   if (config.children) {
     for (const [key, value] of Object.entries(config.children)) {
       value.type = value.type || 'image';
-      const [_styleConfig, _hasHoverStyle] = handleStyle(defaultStyle, value);
+      const [_styleConfig, _hasHoverStyle, _hasActiveStyle] = handleStyle(defaultStyle, value);
 
       if (key === collectionItemInfoKey.collectionInfo) {
         styleConfigArr.push({
@@ -606,6 +608,15 @@ function renderConfig(
           key: key + 'HoverStyle' 
         });
       }
+
+      if (_hasActiveStyle) {
+        styleConfigArr.push({ 
+          label: value.label + '激活样式', 
+          style: { ..._styleConfig }, 
+          key: key + 'ActiveStyle' 
+        });
+      }
+
     }
   }
   
@@ -683,7 +694,7 @@ function parseStyleConfig({
   function setStyle(
     styleKey: keyof IStyleConfig,
     value: number | string | undefined,
-    styleType: 'style' | 'hoverStyle' = 'style',
+    styleType: TStyleType
   ) {
     setOptions((options) => {
       const newOptions = {
@@ -917,6 +928,8 @@ function parseStyleConfig({
       fileName = item.content;
     } else if (key === 'hoverStyle') {
       fileName = (item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string;
+    } else if (key === 'activeStyle') {
+      fileName = (item as ButtonItem).args?.activeStyle?.[styleKey as keyof IStyleConfig] as string;
     } else if (sliderKeyArr.includes(key as any)) {
       // @ts-ignore
       fileName = item.args[key]?.[styleKey as keyof IStyleConfig] as string ?? '';
@@ -926,6 +939,14 @@ function parseStyleConfig({
 
     return fileName;
   };
+
+
+  function getStyleValue(type: TStyleType, item: ButtonItem, styleKey: keyof IStyleConfig) {
+    const args = (item as ButtonItem).args;
+    const styleConfig = args?.[type] || item.args.style;
+
+    return (styleConfig?.[styleKey] as string) || '';
+}
 
   return (
     <div className={s.row} key={itemIndex + config.label}>
@@ -991,9 +1012,11 @@ function parseStyleConfig({
                     {styleKey === 'alignPosition' && (
                       <Select
                         value={
-                          key === 'hoverStyle'
-                            ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
-                            : (item.args.style?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                          getStyleValue(
+                            key as TStyleType, 
+                            item as ButtonItem, 
+                            styleKey as keyof IStyleConfig
+                          )
                         }
                         onChange={(e, data) => {
                           setStyle(
@@ -1013,9 +1036,11 @@ function parseStyleConfig({
                       <Input
                         type="number"
                         value={
-                          key === 'hoverStyle'
-                            ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
-                            : (item.args.style?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                          getStyleValue(
+                            key as TStyleType, 
+                            item as ButtonItem, 
+                            styleKey as keyof IStyleConfig
+                          )
                         }
                         onChange={(e) => {
                           setStyle(
@@ -1029,12 +1054,18 @@ function parseStyleConfig({
                       <input
                         type="color"
                         value={
-                          key === 'hoverStyle'
-                            ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
-                            : (item.args.style?.[styleKey as keyof IStyleConfig] as string) ?? ''
+                          getStyleValue(
+                            key as TStyleType, 
+                            item as ButtonItem, 
+                            styleKey as keyof IStyleConfig
+                          )
                         }
                         onChange={(e) => {
-                          setStyle(styleKey as keyof IStyleConfig, e.target.value, key as keyof IStyleType);
+                          setStyle(
+                            styleKey as keyof IStyleConfig, 
+                            e.target.value, 
+                            key as keyof IStyleType
+                          );
                         }}
                       />
                     ) : styleProp.type === 'image' ? (
@@ -1049,12 +1080,7 @@ function parseStyleConfig({
                           }
                         />
                         <span style={{ marginLeft: 12 }}>
-                          {getChooseFileName(key, item as ButtonItem, styleKey, config.type,)}
-                          {/* {config.type === 'bg' && key === 'style'
-                            ? item.content
-                            : key === 'hoverStyle'
-                              ? ((item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string) ?? ''
-                              : item.args.style?.[styleKey as keyof IStyleConfig] ?? ''} */}
+                          {getChooseFileName(key, item as ButtonItem, styleKey, config.type)}
                         </span>
                       </div>
                     ) : null}
