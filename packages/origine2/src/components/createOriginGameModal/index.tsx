@@ -11,7 +11,8 @@ import {
   Upload, 
   UploadProps, 
   message,
-  InputNumber
+  InputNumber,
+  Checkbox
 } from 'antd';
 import { useEffect, useState } from 'react';
 import { addGame, upload, getClassificationList } from "@/utils/services";
@@ -191,6 +192,7 @@ export default function createOriginGameModal({ open, onClose, createGame }: pro
   const submit = async() => {
     const values = await formInstance.validateFields();
     console.log(values, 'values');
+
     setLoading(true);
     new Promise(() => {
       createGame(values.name, 0, values).then(res => {
@@ -370,7 +372,7 @@ export default function createOriginGameModal({ open, onClose, createGame }: pro
             <CustomFormItem noStyle shouldUpdate={(prevValues: any, currentValues: any) => prevValues.isFree !== currentValues.isFree}>
               <CustomFormItem
                 label="分辨率"
-                name="gameView"
+                name="resolvingPower"
                 rules={[{ required: true, message: '请选择游戏分辨率' }]}
                 labelCol={{
                   span: 7
@@ -391,6 +393,30 @@ export default function createOriginGameModal({ open, onClose, createGame }: pro
             </CustomFormItem>
           </Col>
         </Row>
+        <div style={{ display: 'flex' }}>
+          <div style={{ flex: 1 }} />
+          <div style={{ flex: 1, paddingLeft: 260 }}>
+            <CustomFormItem noStyle shouldUpdate={(prevValues: any, currentValues: any) => prevValues.resolvingPower !== currentValues.resolvingPower}>
+              {({ getFieldValue }) => (
+                getFieldValue('resolvingPower') === 1 ?
+                  <CustomFormItem
+                    label=""
+                    name="isMobileShow"
+                    valuePropName="checked"
+                    labelCol={{
+                      span: 0
+                    }}
+                    wrapperCol={{
+                      span: 24
+                    }}
+                  >
+                    <Checkbox>是否在手机端显示</Checkbox>
+                  </CustomFormItem>
+                  : null
+              )}
+            </CustomFormItem>
+          </div>
+        </div>
         <Row>
           <Col span={12}>
             <CustomFormItem 

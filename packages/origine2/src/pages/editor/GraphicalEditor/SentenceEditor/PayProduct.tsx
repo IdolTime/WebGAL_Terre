@@ -84,7 +84,7 @@ export default function PayProduct(props: ISentenceEditorProps) {
             }}
             onBlur={setContent}
           />
-          <span style={{ marginLeft: '8px' }}>星光</span>
+          <span style={{ marginLeft: '8px' }}>星石</span>
         </CommonOptions>
         <CommonOptions title='章节' key="payProduct-5">
           <span style={{ marginRight: '8px' }}>第</span>

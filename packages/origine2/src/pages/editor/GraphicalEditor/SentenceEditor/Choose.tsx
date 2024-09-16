@@ -363,7 +363,7 @@ export default function Choose(props: any) {
               placeholder="价格"
               style={{ width: "10%", margin: "0 6px 0 6px" }}
             />
-            <span style={{ marginLeft: 4 }}>星光</span>
+            <span style={{ marginLeft: 4 }}>星石</span>
           </>
         )}
       </div>
