@@ -254,8 +254,8 @@ export const achievementSceneButtonConfig: Record<AchievementSceneButtonKey, UII
 
 export enum ExtraSceneButtonKey {
   Extra_back_button = 'Extra_back_button',
-  Extra_bgm_button = 'Extra_bgm_button',
-  Extra_video_button = 'Extra_video_button',
+  // Extra_bgm_button = 'Extra_bgm_button',
+  // Extra_video_button = 'Extra_video_button',
 }
 
 export const extraSceneButtonConfig: Record<ExtraSceneButtonKey, UIItemConfig> = {
@@ -264,14 +264,14 @@ export const extraSceneButtonConfig: Record<ExtraSceneButtonKey, UIItemConfig> =
     hasButtonSound: true,
     hasActiveStyle: true,
   },
-  [ExtraSceneButtonKey.Extra_bgm_button]: {
-    label: '切换BGM标签',
-    hasButtonSound: true
-  },
-  [ExtraSceneButtonKey.Extra_video_button]: {
-    label: '切换VIDEO标签',
-    hasButtonSound: true
-  },
+  // [ExtraSceneButtonKey.Extra_bgm_button]: {
+  //   label: '切换BGM标签',
+  //   hasButtonSound: true
+  // },
+  // [ExtraSceneButtonKey.Extra_video_button]: {
+  //   label: '切换VIDEO标签',
+  //   hasButtonSound: true
+  // },
 };
 
 export enum ExtraSceneOtherKey {
@@ -279,9 +279,9 @@ export enum ExtraSceneOtherKey {
   Extra_bg = 'Extra_bg',
   Extra_bgm_locked_item_bg = 'Extra_bgm_locked_item_bg',
   Extra_bgm_unlocked_item = 'Extra_bgm_unlocked_item',
-  Extra_video_unlocked_item = 'Extra_video_unlocked_item',
+  // Extra_video_unlocked_item = 'Extra_video_unlocked_item',
   Extra_indicator = 'Extra_indicator',
-  Extra_video_locked_item_bg = 'Extra_video_locked_item_bg',
+  // Extra_video_locked_item_bg = 'Extra_video_locked_item_bg',
 }
 
 export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
@@ -297,7 +297,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
     type: 'bg',
   },
   [ExtraSceneOtherKey.Extra_bgm_locked_item_bg]: {
-    label: '未解锁BGM元素背景',
+    label: '未解锁VIDEO元素背景',
     hasXY: false,
     hasHoverStyle: false,
     hasActiveStyle: false,
@@ -314,7 +314,7 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
   },
   [ExtraSceneOtherKey.Extra_bgm_unlocked_item]: {
     type: 'container',
-    label: '已解锁BGM元素',
+    label: '已解锁VIDEO元素',
     hasXY: false,
     hasHoverStyle: false,
     hasActiveStyle: false,
@@ -331,12 +331,12 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
     children: {
       [CommonItemKey.content]: {
         type: 'text',
-        label: '已解锁bgm文字元素',
+        label: '已解锁VIDEO文字元素',
       },
       [CommonItemKey.background]: {
         type: 'image',
         hasText: false,
-        label: 'bgm元素背景',
+        label: 'video元素背景',
       },
       [CommonItemKey.extra]: {
         type: 'image',
@@ -345,30 +345,30 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
       },
     }
   },
-  [ExtraSceneOtherKey.Extra_video_unlocked_item]: {
-    type: 'container',
-    label: '已解锁VIDEO元素',
-    hasXY: false,
-    hasHoverStyle: false,
-    hasActiveStyle: false,
-    children: {
-      [CommonItemKey.content]: {
-        type: 'placeholder',
-        label: '已解锁video图片元素',
-      },
-      [CommonItemKey.background]: {
-        type: 'image',
-        hasText: false,
-        label: 'video元素背景',
-      },
-    }
-  },
-  [ExtraSceneOtherKey.Extra_video_locked_item_bg]: {
-    label: '未解锁VIDEO元素背景',
-    hasXY: false,
-    hasHoverStyle: false,
-    hasActiveStyle: false,
-  },
+  // [ExtraSceneOtherKey.Extra_video_unlocked_item]: {
+  //   type: 'container',
+  //   label: '已解锁VIDEO元素',
+  //   hasXY: false,
+  //   hasHoverStyle: false,
+  //   hasActiveStyle: false,
+  //   children: {
+  //     [CommonItemKey.content]: {
+  //       type: 'placeholder',
+  //       label: '已解锁video图片元素',
+  //     },
+  //     [CommonItemKey.background]: {
+  //       type: 'image',
+  //       hasText: false,
+  //       label: 'video元素背景',
+  //     },
+  //   }
+  // },
+  // [ExtraSceneOtherKey.Extra_video_locked_item_bg]: {
+  //   label: '未解锁VIDEO元素背景',
+  //   hasXY: false,
+  //   hasHoverStyle: false,
+  //   hasActiveStyle: false,
+  // },
   [ExtraSceneOtherKey.Extra_indicator]: {
     type: 'container',
     label: '翻页指示器',
@@ -677,10 +677,10 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     hasActiveStyle: false,
     hasXY: false,
     customStyle: {
-      alignPosition: {
-        type: 'string',
-        label: '对齐方式',
-      },
+      // alignPosition: {
+      //   type: 'string',
+      //   label: '对齐方式',
+      // },
       marginTop: {
         type: 'number',
         label: '上边距',
@@ -1046,12 +1046,22 @@ export const achievementSceneOtherConfig: Record<AchievementSceneOtherKey, UIIte
 
 export enum StorylineSceneOtherKey {
   Storyline_title = 'Storyline_title',
+  Storyline_item = 'Storyline_item'
 }
 
 export const storylineSceneOtherConfig: Record<StorylineSceneOtherKey, UIItemConfig> = {
   [StorylineSceneOtherKey.Storyline_title]: {
     label: '标题',
   },
+  [StorylineSceneOtherKey.Storyline_item]: {
+    label: '故事线元素',
+    type: 'image',
+    hasXY: false,
+    hasHoverStyle: false,
+    hasActiveStyle: false,
+    hasText: false,
+    hasWidthHeight: true
+  }
 };
 
 export enum LoadSceneOtherKey {
@@ -1310,8 +1320,8 @@ export interface ExtraSceneUIConfig {
     [ExtraSceneOtherKey.Extra_bgm_locked_item_bg]: ButtonItem;
     [ExtraSceneOtherKey.Extra_bgm_unlocked_item]: ContainerItem;
     [ExtraSceneOtherKey.Extra_indicator]: IndicatorContainerItem;
-    [ExtraSceneOtherKey.Extra_video_unlocked_item]: ContainerItem;
-    [ExtraSceneOtherKey.Extra_video_locked_item_bg]: ButtonItem;
+    // [ExtraSceneOtherKey.Extra_video_unlocked_item]: ContainerItem;
+    // [ExtraSceneOtherKey.Extra_video_locked_item_bg]: ButtonItem;
   };
   buttons: { [key in ExtraSceneButtonKey]: ButtonItem };
 }
@@ -1563,6 +1573,11 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(['hoverStyle', 'activeStyle']),
       },
+      [StorylineSceneOtherKey.Storyline_item]: {
+        key: StorylineSceneOtherKey.Storyline_item,
+        content: "",
+        args: generateArgs(['hoverStyle', 'activeStyle']),
+      },
     },
     buttons: {
       [StorylineSceneButtonKey.Storyline_back_button]: {
@@ -1637,16 +1652,16 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(),
       },
-      [ExtraSceneOtherKey.Extra_video_locked_item_bg]: {
-        key: ExtraSceneOtherKey.Extra_video_locked_item_bg,
-        content: "",
-        args: generateArgs(),
-      },
-      [ExtraSceneOtherKey.Extra_video_unlocked_item]: {
-        key: ExtraSceneOtherKey.Extra_video_unlocked_item,
-        content: "",
-        args: generateArgs(['contentStyle', 'backgroundStyle', 'extraStyle', 'contentHoverStyle', 'backgroundHoverStyle', 'extraHoverStyle']),
-      },
+      // [ExtraSceneOtherKey.Extra_video_locked_item_bg]: {
+      //   key: ExtraSceneOtherKey.Extra_video_locked_item_bg,
+      //   content: "",
+      //   args: generateArgs(),
+      // },
+      // [ExtraSceneOtherKey.Extra_video_unlocked_item]: {
+      //   key: ExtraSceneOtherKey.Extra_video_unlocked_item,
+      //   content: "",
+      //   args: generateArgs(['contentStyle', 'backgroundStyle', 'extraStyle', 'contentHoverStyle', 'backgroundHoverStyle', 'extraHoverStyle']),
+      // },
     },
     buttons: {
       [ExtraSceneButtonKey.Extra_back_button]: {
@@ -1654,16 +1669,16 @@ export const sceneUIConfig: SceneUIConfig = {
         content: "",
         args: generateArgs(['hoverStyle', 'activeStyle']),
       },
-      [ExtraSceneButtonKey.Extra_video_button]: {
-        key: ExtraSceneButtonKey.Extra_video_button,
-        content: "",
-        args: generateArgs(['hoverStyle', 'activeStyle']),
-      },
-      [ExtraSceneButtonKey.Extra_bgm_button]: {
-        key: ExtraSceneButtonKey.Extra_bgm_button,
-        content: "",
-        args: generateArgs(['hoverStyle', 'activeStyle']),
-      },
+      // [ExtraSceneButtonKey.Extra_video_button]: {
+      //   key: ExtraSceneButtonKey.Extra_video_button,
+      //   content: "",
+      //   args: generateArgs(['hoverStyle', 'activeStyle']),
+      // },
+      // [ExtraSceneButtonKey.Extra_bgm_button]: {
+      //   key: ExtraSceneButtonKey.Extra_bgm_button,
+      //   content: "",
+      //   args: generateArgs(['hoverStyle', 'activeStyle']),
+      // },
     }
   },
   [Scene.option]: {
