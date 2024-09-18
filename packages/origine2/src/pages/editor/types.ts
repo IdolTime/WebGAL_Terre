@@ -677,10 +677,10 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     hasActiveStyle: false,
     hasXY: false,
     customStyle: {
-      alignPosition: {
-        type: 'string',
-        label: '对齐方式',
-      },
+      // alignPosition: {
+      //   type: 'string',
+      //   label: '对齐方式',
+      // },
       marginTop: {
         type: 'number',
         label: '上边距',
@@ -1046,12 +1046,22 @@ export const achievementSceneOtherConfig: Record<AchievementSceneOtherKey, UIIte
 
 export enum StorylineSceneOtherKey {
   Storyline_title = 'Storyline_title',
+  Storyline_item = 'Storyline_item'
 }
 
 export const storylineSceneOtherConfig: Record<StorylineSceneOtherKey, UIItemConfig> = {
   [StorylineSceneOtherKey.Storyline_title]: {
     label: '标题',
   },
+  [StorylineSceneOtherKey.Storyline_item]: {
+    label: '故事线元素',
+    type: 'image',
+    hasXY: false,
+    hasHoverStyle: false,
+    hasActiveStyle: false,
+    hasText: false,
+    hasWidthHeight: true
+  }
 };
 
 export enum LoadSceneOtherKey {
@@ -1560,6 +1570,11 @@ export const sceneUIConfig: SceneUIConfig = {
     other: {
       [StorylineSceneOtherKey.Storyline_title]: {
         key: StorylineSceneOtherKey.Storyline_title,
+        content: "",
+        args: generateArgs(['hoverStyle', 'activeStyle']),
+      },
+      [StorylineSceneOtherKey.Storyline_item]: {
+        key: StorylineSceneOtherKey.Storyline_item,
         content: "",
         args: generateArgs(['hoverStyle', 'activeStyle']),
       },
