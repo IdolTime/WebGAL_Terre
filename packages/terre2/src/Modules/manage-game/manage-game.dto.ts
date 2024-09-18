@@ -10,7 +10,7 @@ export class CreateGameDto {
     description: string;
     detailPic: string;
     gType: string;
-    gameView: number;
+    resolvingPower: number;
     isFree: number;
     name: string;
     salesAmount: number;

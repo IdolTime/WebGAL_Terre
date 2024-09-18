@@ -314,6 +314,13 @@ export class ManageGameService {
         }
       }
 
+      // 上传游戏付费配置
+      const payRes = await this.uploadGamePaymentConfig(gId, gameName, token);
+
+      if (payRes.status === 'failed') {
+        throw new Error('上传付费配置失败');
+      }
+
       const configFile: string = await this.webgalFs.readTextFile(
         `${gameRootDir}/config.txt`,
       );
@@ -805,8 +812,8 @@ export class ManageGameService {
    * @param gameName
    */
   async uploadGamePaymentConfig(
-    gameName: string,
     gId: number,
+    gameName: string,
     editorToken: string,
   ) {
     const dirPath = this.webgalFs.getPathFromRoot(
@@ -831,6 +838,7 @@ export class ManageGameService {
               const payInfoProps = payInfoStr.split(',');
               let productId = 0;
               let amount = 0;
+              let salesType = 1;
 
               payInfoProps.forEach((prop) => {
                 const [key, value] = prop.split('=');
@@ -842,6 +850,10 @@ export class ManageGameService {
                   amount = isNaN(Number(value.trim()))
                     ? 0
                     : Number(value.trim());
+                } else if (key === 'salesType') {
+                  salesType = isNaN(Number(value.trim()))
+                    ? 1
+                    : Number(value.trim());
                 }
               });
 
@@ -849,8 +861,8 @@ export class ManageGameService {
                 data.push({
                   buy_type: 2,
                   buy_type_text: '付费选项',
-                  sales_type: 1,
-                  sales_type_text: '星石',
+                  sales_type: salesType,
+                  sales_type_text: salesType === 1 ? '星石' : '星光',
                   sales_amount: amount,
                   is_pay: 1,
                   productId,
@@ -865,6 +877,7 @@ export class ManageGameService {
               const [productId, ...options] = mainPart.split(' -');
               let amount: number | null = null;
               let chapter = 0;
+              let salesType = 1;
 
               options.forEach((option) => {
                 const [key, value] = option.split('=');
@@ -876,6 +889,10 @@ export class ManageGameService {
                   chapter = isNaN(Number(value.trim()))
                     ? 0
                     : Number(value.trim());
+                } else if (key === 'salesType') {
+                  salesType = isNaN(Number(value.trim()))
+                    ? 1
+                    : Number(value.trim());
                 }
               });
 
@@ -884,8 +901,8 @@ export class ManageGameService {
                   chapter: chapter,
                   buy_type: 1,
                   buy_type_text: '章节付费',
-                  sales_type: 1,
-                  sales_type_text: '星石',
+                  sales_type: salesType,
+                  sales_type_text: salesType === 1 ? '星石' : '星光',
                   sales_amount: amount,
                   is_pay: 1,
                   productId: Number(productId),
@@ -935,8 +952,8 @@ interface IUploadPaymentConfiguration {
   chapter?: number;
   buy_type: 1 | 2;
   buy_type_text: string;
-  sales_type: 1;
-  sales_type_text: '星石';
+  sales_type: number;
+  sales_type_text: '星石' | '星光';
   sales_amount: number;
   is_pay: 1;
   productId: number;

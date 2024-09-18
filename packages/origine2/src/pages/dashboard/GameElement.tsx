@@ -132,24 +132,10 @@ export default function GameElement(props: IGameElementProps) {
     }
 
     setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 1 });
-    const res = await request.post('/api/manageGame/updatePaymentConfig', {
-      gameName,
-      gId,
-    }).then((res) => {
+    request.post("/api/manageGame/uploadGame", { gameName, gId }).then((res) => {
       if (res.data.status === 'success') {
-        notify("上传付费配置成功", "success");
-        request.post("/api/manageGame/uploadGame", { gameName, gId }).then((res) => {
-          if (res.data.status === 'success') {
-            setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 2 });
-            notify("上传成功", "success");
-          } else {
-            setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
-            notify(res.data.message, "error");
-          }
-        }).catch((err) => {
-          setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
-          notify(err.message, "error");
-        });
+        setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 2 });
+        notify("上传成功", "success");
       } else {
         setLoadingStatusMap({ ...loadingStatusMap, [gameName]: 3 });
         notify(res.data.message, "error");

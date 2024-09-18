@@ -479,8 +479,8 @@ export class ManageGameController {
     @Headers('editorToken') editorToken: string,
   ) {
     return this.manageGame.uploadGamePaymentConfig(
-      paymentConfigData.gameName,
       paymentConfigData.gId,
+      paymentConfigData.gameName,
       editorToken,
     );
   }

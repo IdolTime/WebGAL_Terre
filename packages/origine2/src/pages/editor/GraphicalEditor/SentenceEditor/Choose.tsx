@@ -2,12 +2,13 @@ import styles from "./sentenceEditor.module.scss";
 import { cloneDeep } from "lodash";
 import ChooseFile from "../../ChooseFile/ChooseFile";
 import useTrans from "@/hooks/useTrans";
-import { Button } from "@fluentui/react-components";
+import { Button, Dropdown, Option } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 import WhenARG from '../components/WhenARG';
 import { getWhenARGExpression } from '@/utils/utils';
 import TerreToggle from "@/components/terreToggle/TerreToggle";
 import CommonOptions from "../components/CommonOption";
+import { useValue } from "@/hooks/useValue";
 
 interface IOptions {
   text: string;
@@ -17,6 +18,7 @@ interface IOptions {
   shouldPay?: boolean;
   amount?: number;
   productId?: number;
+  salesType?: string;
   style: {
     x?: number;
     y?: number;
@@ -33,6 +35,8 @@ interface Variable {
   value?: string;
   operator?: string;
 }
+
+const salesTypeMap = new Map([['1', '星石'], ['2', '星光']]);
 
 const parse = (script: string) => {
   const parts = script.split('->');
@@ -81,6 +85,7 @@ const parse = (script: string) => {
     const payInfoProps = payInfoStr.split(',');
     let productId = 0;
     let amount = 0;
+    let salesType = '1';
 
     payInfoProps.forEach((prop) => {
       const [key, value] = prop.split('=');
@@ -88,6 +93,8 @@ const parse = (script: string) => {
         productId = isNaN(Number(value.trim())) ? 0 : Number(value.trim());
       } else if (key === 'amount') {
         amount = isNaN(Number(value.trim())) ? 0 : Number(value.trim());
+      } else if (key === 'salesType') {
+        salesType = value.trim();
       }
     });
 
@@ -95,6 +102,7 @@ const parse = (script: string) => {
       option.shouldPay = true;
       option.productId = productId;
       option.amount = amount;
+      option.salesType = salesType;
     }
   }
 
@@ -157,7 +165,7 @@ export default function Choose(props: any) {
     setOptions(newList);
   };
 
-  const setOption = (index: number, key: 'shouldPay' | 'amount', value: boolean | string | number | undefined) => {
+  const setOption = (index: number, key: 'shouldPay' | 'amount' | 'salesType', value: boolean | string | number | undefined) => {
     const newList = [...options];
     
     if (value === undefined) {
@@ -171,9 +179,11 @@ export default function Choose(props: any) {
       if (value) {
         newList[index].productId = Date.now();
         newList[index].amount = 100;
+        newList[index].salesType = value as string;
       } else {
         delete newList[index].productId;
         delete newList[index].amount;
+        delete newList[index].salesType;
       }
     }
 
@@ -211,7 +221,7 @@ export default function Choose(props: any) {
       let jump = item.jump || '';
 
       if (item.shouldPay && item.productId && item.amount) {
-        mainPart += `#{productId=${item.productId},amount=${item.amount}}`;
+        mainPart += `#{productId=${item.productId},amount=${item.amount},salesType=${item.salesType}}`;
       }
 
       return mainPart + text + ':' + jump;
@@ -363,7 +373,19 @@ export default function Choose(props: any) {
               placeholder="价格"
               style={{ width: "10%", margin: "0 6px 0 6px" }}
             />
-            <span style={{ marginLeft: 4 }}>星光</span>
+            <span style={{ marginLeft: 20, marginRight: 6 }}>售卖单位</span>
+            <Dropdown
+              value={salesTypeMap.get(item.salesType)}
+              selectedOptions={[item.salesType]}
+              onOptionSelect={(ev, data) => {
+                const newOptions = setOption(i, 'salesType', data.optionValue);
+                submit(newOptions);
+              }}
+              style={{ minWidth: 0 }}
+            >
+              <Option value="1">星石</Option>
+              <Option value="2">星光</Option>
+            </Dropdown>
           </>
         )}
       </div>

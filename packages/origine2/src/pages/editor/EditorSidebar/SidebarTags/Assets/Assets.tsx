@@ -12,9 +12,7 @@ import { extractPathAfterPublic } from "../../../ResourceDisplay/ResourceDisplay
 import useTrans from "@/hooks/useTrans";
 import IconWrapper from "@/components/iconWrapper/IconWrapper";
 import { getDirIcon, getFileIcon } from "@/utils/getFileIcon";
-import TagTitleWrapper from "@/components/TagTitleWrapper/TagTitleWrapper";
 import { api } from "@/api";
-import { RequestParams } from "@/api/Api";
 import { Button, Input, Popover, PopoverSurface, PopoverTrigger, Text, Toast, Toaster, ToastIntent, ToastTitle, useId, useToastController } from "@fluentui/react-components";
 import { ArrowClockwise16Filled, ArrowClockwise16Regular, bundleIcon } from "@fluentui/react-icons";
 import { request } from "@/utils/request";
@@ -269,7 +267,7 @@ export default function Assets() {
       </div>
       <div className={assetsStyles.materialBtns}>
         <Button appearance="primary" size="small" onClick={() => {
-          window.open('http://ec2-13-229-109-223.ap-southeast-1.compute.amazonaws.com:3000/creativeCenter/materialMall', '_blank');
+          window.open('https://p.idoltime.games/creativeCenter/materialMall', '_blank');
         }}>素材商城</Button>
         <Button disabled={syncing} icon={<SpinIcon className={syncing ? assetsStyles.spin : ""} />} appearance="primary" size="small" onClick={syncMaterial}>同步素材</Button>
       </div>
