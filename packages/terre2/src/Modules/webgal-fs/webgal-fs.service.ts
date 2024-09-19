@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ConsoleLogger, Injectable } from '@nestjs/common';
 import * as fs from 'fs/promises';
-import { extname, join } from 'path';
+import { dirname, extname, join } from 'path';
+import { createHash } from 'crypto';
+import { existsSync } from 'fs';
 
 export interface IFileInfo {
   name: string;
@@ -382,6 +384,95 @@ export class WebgalFsService {
       }
     } catch (err) {
       console.error('Error copying directory:', err);
+    }
+  }
+
+  // 计算文件的哈希值
+  async calculateFileHash(filePath: string) {
+    const fileBuffer = await fs.readFile(filePath);
+    const hashSum = createHash('sha256');
+    hashSum.update(fileBuffer);
+    return hashSum.digest('hex');
+  }
+
+  // 递归遍历目录，生成包含文件路径和哈希值的对象
+  async generateHashForDirectory(directoryPath: string, relativePath = '') {
+    const hashData: Record<string, string> = {};
+    const items = await fs.readdir(directoryPath);
+
+    const ignoreFiles = {
+      '.DS_Store': true,
+      'hash.json': true,
+    };
+
+    for (const item of items) {
+      if (ignoreFiles[item]) continue;
+      const itemPath = join(directoryPath, item);
+      const stats = await fs.stat(itemPath);
+      const itemRelativePath = join(relativePath, item); // 文件的相对路径
+
+      if (stats.isFile()) {
+        const fileHash = await this.calculateFileHash(itemPath);
+        hashData[itemRelativePath] = fileHash; // 使用相对路径作为 key
+      } else if (stats.isDirectory()) {
+        // 递归处理子目录
+        const subDirHash = await this.generateHashForDirectory(
+          itemPath,
+          itemRelativePath,
+        );
+        Object.assign(hashData, subDirHash); // 合并子目录中的文件哈希结果
+      }
+    }
+
+    return hashData;
+  }
+
+  async generateHashJson(
+    directoryPath: string,
+    hashFilePath: string,
+  ): Promise<[string[], Record<string, string>]> {
+    const currentHash = await this.generateHashForDirectory(directoryPath);
+    let changedFiles: string[] = [];
+
+    if (existsSync(hashFilePath)) {
+      const previousHash = JSON.parse(await fs.readFile(hashFilePath, 'utf-8'));
+
+      // 检查哪些文件发生了变化
+      changedFiles = Object.keys(currentHash).filter(
+        (file) => currentHash[file] !== previousHash[file],
+      );
+    }
+
+    return [changedFiles, currentHash];
+  }
+
+  // 复制文件并确保目录结构
+  async copyChangedFiles(
+    changedFiles: string[],
+    sourceDir: string,
+    targetDir: string,
+  ) {
+    await this.clearDirectory(targetDir);
+    for (const file of changedFiles) {
+      const sourceFilePath = join(sourceDir, file);
+      const targetFilePath = join(targetDir, file);
+
+      // 确保目标目录存在
+      const targetDirPath = dirname(targetFilePath);
+      await fs.mkdir(targetDirPath, { recursive: true });
+
+      // 复制文件
+      await fs.copyFile(sourceFilePath, targetFilePath);
+      console.log(`Copied ${sourceFilePath} to ${targetFilePath}`);
+    }
+  }
+
+  async clearDirectory(directoryPath: string) {
+    const isExist = await existsSync(directoryPath);
+
+    if (isExist) {
+      // 删除整个目录
+      await fs.rm(directoryPath, { recursive: true, force: true });
     }
   }
 }
