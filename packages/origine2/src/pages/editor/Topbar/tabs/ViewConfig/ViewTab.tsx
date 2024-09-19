@@ -21,9 +21,7 @@ import {
 } from '@fluentui/react-icons';
 import {
   Button,
-  Dropdown,
   Input,
-  Option,
   Dialog,
   DialogTrigger,
   DialogSurface,
@@ -37,10 +35,8 @@ import {
 import { WebgalConfig } from 'idoltime-parser/build/types/configParser/configParser';
 import {
   ButtonItem,
-  ButtonKey,
   ContainerItem,
   IndicatorContainerItem,
-  LoadSceneButtonKey,
   Scene,
   sceneButtonConfig,
   SceneKeyMap,
@@ -630,7 +626,7 @@ function renderConfig(
       btnSound: { ...defaultBtnSoundConfig }
     });
   }
-
+  // 配置按钮链接
   if (config?.hasLink) {
     styleConfigArr.push({ 
       label: '按钮链接配置', 
@@ -794,71 +790,11 @@ function parseStyleConfig({
     });
   }
 
-  function setInfo(infoKey: keyof InfoConfig, value: number | string | undefined) {
-    setOptions((options) => {
-      const newOptions = {
-        ...options,
-        [currentEditScene]: {
-          ...options[currentEditScene],
-          [type]: {
-            // @ts-ignore
-            ...options[currentEditScene][type],
-            [key]: {
-              // @ts-ignore
-              ...options[currentEditScene][type][key],
-              args: {
-                // @ts-ignore
-                ...options[currentEditScene][type][key].args,
-                'info': {
-                  // @ts-ignore
-                  ...options[currentEditScene][type][key].args['info'],
-                  [infoKey]: value,
-                },
-              },
-            },
-          },
-        },
-      };
-      return newOptions;
-    });
-  }
-
-  function setLink(linkKey: string, value: string | undefined, keyType: string) {
-    setOptions((options) => {
-      const newOptions = {
-        ...options,
-        [currentEditScene]: {
-          ...options[currentEditScene],
-          [type]: {
-            // @ts-ignore
-            ...options[currentEditScene][type],
-            [key]: {
-              // @ts-ignore
-              ...options[currentEditScene][type][key],
-              args: {
-                // @ts-ignore
-                ...options[currentEditScene][type][key].args,
-                [keyType]: {
-                  // @ts-ignore
-                  ...options[currentEditScene][type][key].args[keyType],
-                  [linkKey]: value,
-                },
-              },
-            },
-          },
-        },
-      };
-
-      return newOptions;
-    });
-  }
 
   /**
-   * 
-   * @param btnTypeKey 按钮类型：‘clickSound’ | 'hoverSound' => IBtnSoundConfig
-   * @param value 声音文件
+   * 设置参数
    */
-  function setButtonSound(btnTypeKey: keyof IBtnSoundConfig, value: string) {
+  function setParams(argsType: string, argsTypeKey: string, value: any) {
     setOptions((options) => {
       const newOptions = {
         ...options,
@@ -873,10 +809,10 @@ function parseStyleConfig({
               args: {
                 // @ts-ignore
                 ...options[currentEditScene][type][key].args,
-                'btnSound': {
+                [argsType]: {
                   // @ts-ignore
-                  ...options[currentEditScene][type][key].args['btnSound'],
-                  [btnTypeKey]: value,
+                  ...options[currentEditScene][type][key].args[argsType],
+                  [argsTypeKey]: value,
                 },
               },
             },
@@ -902,7 +838,7 @@ function parseStyleConfig({
         setContent={setContent}
         setStyle={setStyle}
         setHide={setHide}
-        setInfo={setInfo}
+        setInfo={setParams}
         setFile={setFile}
       />
     );
@@ -925,13 +861,14 @@ function parseStyleConfig({
 
   const getChooseFileName = (key: string, item: ButtonItem, styleKey: any, type?: string) => {
     let fileName = '';
-    if (type === 'bg' && key === 'style') {
+    const argsKeys = ['hoverStyle', 'activeStyle'];
+
+    if (key === 'style' && type === 'bg' ) {
       fileName = item.content;
-    } else if (key === 'hoverStyle') {
-      fileName = (item as ButtonItem).args?.hoverStyle?.[styleKey as keyof IStyleConfig] as string;
-    } else if (key === 'activeStyle') {
-      fileName = (item as ButtonItem).args?.activeStyle?.[styleKey as keyof IStyleConfig] as string;
-    } else if (sliderKeyArr.includes(key as any)) {
+    } else if (argsKeys.includes(key as string)) {
+       // @ts-ignore
+      fileName = (item as ButtonItem).args?.[key]?.[styleKey as keyof IStyleConfig] as string;
+    }  else if (sliderKeyArr.includes(key as any)) {
       // @ts-ignore
       fileName = item.args[key]?.[styleKey as keyof IStyleConfig] as string ?? '';
     } else {
@@ -941,13 +878,14 @@ function parseStyleConfig({
     return fileName;
   };
 
-
+  /**
+   * 获取样式参数
+   */
   function getStyleValue(type: TStyleType, item: ButtonItem, styleKey: keyof IStyleConfig) {
     const args = (item as ButtonItem).args;
     const styleConfig = args?.[type] || item.args.style;
-
     return (styleConfig?.[styleKey] as string) || '';
-}
+  }
 
   return (
     <div className={s.row} key={itemIndex + config.label}>
@@ -977,7 +915,7 @@ function parseStyleConfig({
                     placeholder={'链接地址'}
                     value={(item as ButtonItem)?.args?.buttonLink?.link ?? ''}
                     onChange={(e) => {
-                      setLink('link',e.target.value, 'buttonLink');
+                      setParams('buttonLink', 'link', e.target.value);
                     }}
                   />
                 )}
@@ -993,7 +931,7 @@ function parseStyleConfig({
                         // @ts-ignore
                         value={item?.args?.btnSound?.[soundKey] ?? ''}
                         onChange={(val: string) => {
-                          setButtonSound(soundKey as keyof IBtnSoundConfig, val);
+                          setParams('btnSound', soundKey as keyof IBtnSoundConfig, val)
                         }}
                       />
                     </div>;
