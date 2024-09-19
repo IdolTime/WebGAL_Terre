@@ -138,12 +138,12 @@ export const CollectionInfo: FC<IProps> = (props: IProps) => {
 									      <span className={s.optionLabel}>{infoProp.label}</span>
 									      {infoKey === 'description' ? (
 									        <Textarea
-									          // @ts-ignore
-									          value={(item.args?.info?.[infoKey as keyof InfoConfig] as string) ?? ''}
-									          onChange={(e) => {
-									            const val = e.target.value as string;
-									            setInfo(infoKey as keyof InfoConfig, val);
-									          }}
+                              // @ts-ignore
+                            value={(item.args?.info?.[infoKey as keyof InfoConfig] as string)?.toString()?.replace(/<br\/>/g, '\n') ?? ''}
+                            onChange={(e) => {
+                              const val = e.target.value?.replace(/\n/g, '<br/>') as string ?? e.target.value;
+                              setInfo(infoKey as keyof InfoConfig, val);
+                            }}
 									        />
 									      ) : infoKey === 'image' ? (
 									        <div>
