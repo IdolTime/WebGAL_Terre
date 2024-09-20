@@ -405,7 +405,7 @@ export class ManageGameService {
     let mobileKey = `${gId}_${now + 100}_wap.zip`;
     let zipFilePath = `${gameDir}/${key}`;
     let mobileZipFilePath = `${gameDir}/${mobileKey}`;
-    const hasUploadedGame = this.webgalFs.existsFile(hashJSONPath);
+    const hasUploadedGame = await this.webgalFs.existsFile(hashJSONPath);
     let incrementalUpload = false;
 
     if (hasUploadedGame && changedFiles.length === 0) {
@@ -504,7 +504,7 @@ export class ManageGameService {
         `https://test-api.idoltime.games/editor/author/game_approval_upload`,
         {
           gId,
-          approvalLink,
+          approvalLink: hasUploadedGame ? undefined : approvalLink,
           fileName: key,
           mobileFileName: mobileKey,
           size: size.toString(),
