@@ -73,7 +73,8 @@ import {
   IBtnSoundConfig,
   IStyleConfigArr,
   defaultBtnSoundConfig,
-  defaultBtnLinkConfig
+  defaultBtnLinkConfig,
+  alignPositionOptions
 } from './confg';
 import { TStyleType, IStyleType } from './viewTabInterface'
 import { EscMenu } from '@/pages/editor/Topbar/tabs/GameConfig/EscMenu/EscMenu';
@@ -1026,9 +1027,9 @@ function parseStyleConfig({
                           );
                         }}
                       >
-                        {/* {alignPositionOptions.map((item: { name: string, value: string }, index: number) => {
+                        {alignPositionOptions.map((item: { name: string, value: string }, index: number) => {
                           return <option defaultValue={'top-center'} key={item.value + index} value={item.value}>{item.name}</option>;
-                        })} */}
+                        })}
                       </Select>
                     )}
 
