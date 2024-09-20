@@ -1017,7 +1017,7 @@ export const achievementSceneOtherConfig: Record<AchievementSceneOtherKey, UIIte
   [AchievementSceneOtherKey.Achievement_progress_bg]: {
     label: '成就进度背景',
     type: 'bg',
-    hasXY: true,
+    hasXY: false,
     hasHoverStyle: false,
     hasActiveStyle: false,
   },
