@@ -22,8 +22,10 @@
     "@uiw/react-json-view": "^2.0.0-alpha.12",
     "axios": "^1.6.0",
     "cloudlogjs": "^1.0.11",
+    "crypto-js": "^4.2.0",
     "flv.js": "^1.6.2",
     "i18next": "^22.4.15",
+    "idoltime-parser": "4.4.24",
     "lodash": "^4.17.21",
     "material-icon-theme": "^4.27.0",
     "mitt": "^3.0.1",
@@ -39,8 +41,7 @@
     "react-redux": "^8.0.1",
     "redux-persist": "^6.0.0",
     "sass": "^1.51.0",
-    "swr": "^2.2.4",
-    "idoltime-parser": "4.4.24"
+    "swr": "^2.2.4"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.182",
