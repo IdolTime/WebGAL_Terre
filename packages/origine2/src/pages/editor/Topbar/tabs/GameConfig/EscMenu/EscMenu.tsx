@@ -160,20 +160,39 @@ export const EscMenu: FC<IProps> = (props: IProps) => {
   };
 
   // 封装提取数字部分并处理非数字字符的函数
-  const processNumericInput = (input: string) => {
-    const regex = /^\d*$/; // 正则表达式，匹配数字
+  const processNumericInput = (input: string, allowDecimal = false) => {
+    let regexStr = allowDecimal ? '^\d*\.?\d*$' : '^\d*$';
+    const regex = new RegExp(regexStr); // 正则表达式，匹配数字（包括小数）
     let newValue = input;
+    
     if (newValue.length > 0 && !(/^\d/.test(newValue))) {
       return '';
     }
+    
     // @ts-ignore
-    const numberPart = newValue.match(/^\d*/)[0];
+    const numberPart = newValue.match(allowDecimal ? /^\d*\.?\d*/ : /^\d*/)[0];
     const nonNumberPart = newValue.substring(numberPart.length);
+    
     if (nonNumberPart.length > 0) {
       newValue = numberPart + nonNumberPart.replace(/\D/g, '');
     }
+    
     return newValue;
   };
+  // const processNumericInput = (input: string) => {
+  //   const regex = /^\d*$/; // 正则表达式，匹配数字
+  //   let newValue = input;
+  //   if (newValue.length > 0 && !(/^\d/.test(newValue))) {
+  //       return '';
+  //   }
+  //   //@ts-ignore
+  //   const numberPart = newValue.match(/^\d*/)[0];
+  //   const nonNumberPart = newValue.substring(numberPart.length);
+  //   if (nonNumberPart.length > 0) {
+  //       newValue = numberPart + nonNumberPart.replace(/\D/g, '');
+  //   }
+  //   return newValue;
+  // };
 
   const btnPositionOptions = [
     { name: '居中', value: 'center' },
@@ -346,7 +365,7 @@ export const EscMenu: FC<IProps> = (props: IProps) => {
               value={scale as string}
               onChange={(e) => {
                 let newValue = e.target.value as string;
-                newValue = processNumericInput(newValue);
+                newValue = processNumericInput(newValue, true);
                 updateConfig(index, 'scale', newValue);
               }}
             />
