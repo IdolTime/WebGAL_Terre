@@ -245,7 +245,7 @@ export default function GameConfig() {
   useEffect(() => {
     const cursorConfig = gameConfig.value.find(k => k.command === 'Game_cursor');
 
-    if (cursorConfig) {
+    if (cursorConfig && cursorConfig?.options?.length) {
       let normalCursorStr = cursorConfig.options[0].value as string;
       let activeCursorStr = cursorConfig.options[1].value as string;
       const normalCursor = JSON.parse(normalCursorStr);
