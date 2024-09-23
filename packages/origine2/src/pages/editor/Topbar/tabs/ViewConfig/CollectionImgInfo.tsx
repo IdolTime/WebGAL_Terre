@@ -14,12 +14,8 @@ import {
 } from '@fluentui/react-components';
 import {
   ButtonItem,
-  ButtonKey,
-  ContainerItem,
   Scene,
   SceneUIConfig,
-  SliderContainerItem,
-  Style,
   UIItemConfig,
   CollectionItemKey,
 } from '@/pages/editor/types';
@@ -44,7 +40,7 @@ interface IProps {
 		styleType: TStyleType,
 	) => void;
 	setHide: (value: boolean) => void;
-	setInfo: (infoKey: keyof InfoConfig, value: number | string | undefined) => void;
+	setInfo: (argType: string, infoKey: keyof InfoConfig, value: number | string | undefined) => void;
 	setFile: (fileType: 'images' | 'videos', imageKey: keyof ICollectionImages | keyof typeof defaultCollectionVideos, value: string) => void;
 }
 
@@ -138,12 +134,12 @@ export const CollectionInfo: FC<IProps> = (props: IProps) => {
 									      <span className={s.optionLabel}>{infoProp.label}</span>
 									      {infoKey === 'description' ? (
 									        <Textarea
-									          // @ts-ignore
-									          value={(item.args?.info?.[infoKey as keyof InfoConfig] as string) ?? ''}
-									          onChange={(e) => {
-									            const val = e.target.value as string;
-									            setInfo(infoKey as keyof InfoConfig, val);
-									          }}
+                              // @ts-ignore
+                            value={(item.args?.info?.[infoKey as keyof InfoConfig] as string)?.toString()?.replace(/<br\/>/g, '\n') ?? ''}
+                            onChange={(e) => {
+                              const val = e.target.value?.replace(/\n/g, '<br/>') as string ?? e.target.value;
+                              setInfo('info', infoKey as keyof InfoConfig, val);
+                            }}
 									        />
 									      ) : infoKey === 'image' ? (
 									        <div>
@@ -151,7 +147,7 @@ export const CollectionInfo: FC<IProps> = (props: IProps) => {
 									            extName={['.png', '.jpg', '.jpeg', '.gif']}
 									            sourceBase="ui"
 									            onChange={(file) => {
-									              setInfo(infoKey as keyof InfoConfig, file?.name ?? '',);
+									              setInfo('info', infoKey as keyof InfoConfig, file?.name ?? '',);
 									            }}
 									          />
 									          <span style={{ marginLeft: 12 }}>
@@ -164,7 +160,7 @@ export const CollectionInfo: FC<IProps> = (props: IProps) => {
 									          value={(item.args?.info?.[infoKey as keyof InfoConfig] as string) ?? ''}
 									          onChange={(e) => {
 									            const val = e.target.value as string;
-									            setInfo(infoKey as keyof InfoConfig, val);
+									            setInfo('info', infoKey as keyof InfoConfig, val);
 									          }}
 									        />
 									      )}

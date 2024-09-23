@@ -1060,7 +1060,17 @@ export const storylineSceneOtherConfig: Record<StorylineSceneOtherKey, UIItemCon
     hasHoverStyle: false,
     hasActiveStyle: false,
     hasText: false,
-    hasWidthHeight: true
+    hasWidthHeight: true,
+    customStyle: {
+      customFontSize: {
+        type: 'number',
+        label: '文字大小',
+      },
+      customColor: {
+        type: 'color',
+        label: '文字颜色',
+      }
+    }
   }
 };
 
