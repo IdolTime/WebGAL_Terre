@@ -19,20 +19,20 @@ export default function ShowUI(props: ISentenceEditorProps) {
     return (
         <div className={styles.sentenceEditorContent}>
             <div className={styles.editItem}>
-            <CommonTips text={t('tip')} />
-            <CommonOptions key="isNoDialog" title={t('hide.title')}>
-                <TerreToggle 
-                    title="" 
-                    onText={t('hide.off')} 
-                    offText={t('hide.on')} 
-                    isChecked={isHide.value}
-                    onChange={(newValue) => {
-                        isHide.set(newValue);
-                        submit();
-                    }}
-                />
-            </CommonOptions>   
+                <CommonOptions key="isNoDialog" title={t('hide.title')}>
+                    <TerreToggle 
+                        title="" 
+                        onText={t('hide.off')} 
+                        offText={t('hide.on')} 
+                        isChecked={isHide.value}
+                        onChange={(newValue) => {
+                            isHide.set(newValue);
+                            submit();
+                        }}
+                    />
+                </CommonOptions>   
             </div>
+            <CommonTips text={t('tip')} />
         </div>
     )
 }
