@@ -318,16 +318,16 @@ export const extraSceneOtherConfig: Record<ExtraSceneOtherKey, UIItemConfig & {
     hasXY: false,
     hasHoverStyle: false,
     hasActiveStyle: false,
-    customStyle: {
-      columnGap: {
-        type: 'number',
-        label: '列间距',
-      },
-      rowGap: {
-        type: 'number',
-        label: '行间距',
-      },
-    },
+    // customStyle: {
+    //   columnGap: {
+    //     type: 'number',
+    //     label: '列间距',
+    //   },
+    //   rowGap: {
+    //     type: 'number',
+    //     label: '行间距',
+    //   },
+    // },
     children: {
       [CommonItemKey.content]: {
         type: 'text',
