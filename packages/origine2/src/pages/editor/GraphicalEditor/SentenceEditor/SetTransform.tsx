@@ -21,7 +21,7 @@ export default function SetTransform(props: ISentenceEditorProps) {
   const transform = useValue((json ?? '') as string);
   const duration = useValue((durationFromArgs ?? 0) as number);
   const {updateExpandIndex} = useExpand();
-  const isGoNext = useValue(!!getArgByKey(props.sentence, "next"));
+  const isGoNext = useValue(!!getArgByKey(props.sentence, "continue"));
   const target = useValue(getArgByKey(props.sentence, "target")?.toString() ?? "");
   const presetTargets = new Map<PresetTarget, string>([
     [ "fig-left", tTarget('preparedTarget.choose.options.figLeft') ],
@@ -32,7 +32,7 @@ export default function SetTransform(props: ISentenceEditorProps) {
   const isPresetTarget = Array.from(presetTargets.keys()).includes(target.value as PresetTarget);
   const isUsePreset = useValue(isPresetTarget);
   const submit = () => {
-    const isGoNextStr = isGoNext.value ? " -next" : "";
+    const isGoNextStr = isGoNext.value ? " -continue" : "";
     const str = `setTransform:${transform.value} -target=${target.value} -duration=${duration.value}${isGoNextStr};`;
     props.onSubmit(str);
   };

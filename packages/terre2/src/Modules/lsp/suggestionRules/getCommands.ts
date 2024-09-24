@@ -238,6 +238,6 @@ setVar:a=人物名称;可以设置字符串`,
     kind: CompletionItemKind.Function,
     documentation: `清屏`,
     detail: `command clearScreen:<expression>;`,
-    insertText: 'clearScreen:true;',
+    insertText: 'clearScreen:true -next;',
   },
 ];
