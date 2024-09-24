@@ -51,6 +51,7 @@ import UnlockStoryline from './UnlockStoryline';
 import UnlockAchieve from './UnlockAchieve';
 import ShowValue from './ShowValue';
 import MoveCamera from "./MoveCamera";
+import ShowUI from './ShowUI';
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -294,5 +295,13 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: MoveCamera,
     icon: <EnterTheKeyboard theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'moveCamera.descText')
-  }
+  },
+  {
+    type: commandType.showUI,
+    title: () => t(tPrefix + 'showUI.title'),
+    initialText: () => t(tPrefix + 'showUI.initText'),
+    component: ShowUI,
+    icon: <AlignTextBottomOne theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'showUI.descText')
+  },
 ];

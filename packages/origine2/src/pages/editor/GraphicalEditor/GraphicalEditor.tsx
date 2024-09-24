@@ -160,7 +160,6 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
               {parsedScene.sentenceList.map((sentence, i) => {
                 // 实际显示的行数
                 const index = i + 1;
-                // console.log(sentence.command);
                 const sentenceConfig = sentenceEditorConfig.find((e) => e.type === sentence.command) ?? sentenceEditorDefault;
                 // console.log('sentenceConfig 8888 ', { sentenceEditorConfig, sentenceConfig })
                 const SentenceEditor = sentenceConfig.component;

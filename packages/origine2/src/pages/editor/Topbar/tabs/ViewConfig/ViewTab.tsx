@@ -50,6 +50,7 @@ import {
   CollectionItemKey,
   collectionItemInfoKey,
   SliderItemKey,
+  IndicatorItemKey
 } from '@/pages/editor/types';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ChooseFile from '@/pages/editor/ChooseFile/ChooseFile';
@@ -85,7 +86,19 @@ interface IGameConfigEditor {
 const sliderKeyArr = [
   SliderItemKey.slider, 
   SliderItemKey.sliderBg, 
-  SliderItemKey.sliderThumb
+  SliderItemKey.sliderThumb,
+  'indicatorStyle',
+  'indicatorHoverStyle',
+  'indicatorLeftStyle',
+  'indicatorLeftHoverStyle',
+  'indicatorRightStyle',
+  'indicatorRightHoverStyle'
+];
+
+const indicatorKey = [
+  IndicatorItemKey.indicatorLeft,
+  IndicatorItemKey.indicatorRight,
+  IndicatorItemKey.indicator,
 ];
 
 export function ViewTab() {
@@ -211,7 +224,7 @@ function GameConfigEditorGameMenu() {
       let styleContent: Record<string, string[]> = {};
       Object.keys(value.args).forEach((argKey) => {
         // @ts-ignore
-        if (argKey.toLowerCase().endsWith('style') && value.args[argKey] || sliderKeyArr.includes(argKey)) {
+        if (argKey.toLowerCase().endsWith('style') && value.args[argKey] || sliderKeyArr.includes(argKey) || indicatorKey.includes(argKey)) {
           styleContent[argKey] = [];
           // @ts-ignore
           Object.keys(value.args[argKey]).forEach((styleKey) => {
@@ -336,7 +349,7 @@ function GameConfigEditorGameMenu() {
       args.forEach((e: any) => {
         if (e.key === 'hide') {
           parsedArgs.hide = e.value === true;
-        } else if (e.key.endsWith('style') || parsedKeys.includes(e.key)) {
+        } else if (e.key.endsWith('style') || parsedKeys.includes(e.key) || sliderKeyArr.includes(e.key)) {
           parsedArgs[e.key] = parseStyleString(e.value as string);
         }
       });
@@ -590,11 +603,11 @@ function renderConfig(
           style: {},
           videos: defaultCollectionVideos,
         });
-      } else {
+      } else {  
         styleConfigArr.push({ 
           label: value.label + '样式', 
           style: _styleConfig, 
-          key: sliderKeyArr.includes(key as any) ? key : value.label + 'Style' 
+          key: sliderKeyArr.includes(key as any) && key ||  indicatorKey.includes(key as any) && `${key}Style`  || value.label + 'Style' 
         });
       }
 
@@ -718,7 +731,6 @@ function parseStyleConfig({
         },
       };
 
-      
       if (
         (config?.positionType === 'relative' && (styleKey === 'x' || styleKey === 'y') && !value)
       ) {
@@ -868,7 +880,7 @@ function parseStyleConfig({
     } else if (argsKeys.includes(key as string)) {
        // @ts-ignore
       fileName = (item as ButtonItem).args?.[key]?.[styleKey as keyof IStyleConfig] as string;
-    }  else if (sliderKeyArr.includes(key as any)) {
+    }  else if (sliderKeyArr.includes(key as any) || indicatorKey.includes(key as any)) {
       // @ts-ignore
       fileName = item.args[key]?.[styleKey as keyof IStyleConfig] as string ?? '';
     } else {
@@ -1012,7 +1024,7 @@ function parseStyleConfig({
                         <ChooseFile
                           extName={['.png', '.jpg', '.jpeg', '.gif', '.webp']}
                           sourceBase={config.type === 'bg' ? 'background' : 'ui'}
-                          onChange={(file) =>
+                          onChange={(file) => 
                             config.type === 'bg' && key === 'style'
                               ? setContent(file?.name ?? '')
                               : setStyle(styleKey as keyof IStyleConfig, file?.name ?? '', key as keyof IStyleType)
