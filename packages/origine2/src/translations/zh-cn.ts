@@ -443,6 +443,22 @@ export const zhCn = {
             }
           }
         },
+        showUI: {
+          title: "UI显示",
+          initText: "showUI:on;",
+          descText: '打开/关闭视频控制UI',
+          options: {
+            hide: {
+              title: "打开/关闭视频控制UI",
+              on: "显示 UI",
+              off: "关闭 UI"
+            },
+            tip: '此指令可控制视频UI，关闭则播放视频时，视频下方的暂停、加速、倒退、跳过、收藏等按钮不显示，无法操作。'
+          }
+        },
+        text: {
+          title: "显示文本",
+        },
         specialEffect: {
           title: "使用特效",
           initText: "pixiPerform:snow;",
