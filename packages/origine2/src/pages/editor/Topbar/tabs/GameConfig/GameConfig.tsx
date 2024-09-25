@@ -186,7 +186,7 @@ export default function GameConfig() {
 
   const setCursorOptions = (key: 'normal' | 'active', secondaryKey: 'imgs' | 'interval', value: string | string[]) => {
     const newOptions = cloneDeep(cursorOptions.value);
-    
+
     if (secondaryKey === 'interval') {
       newOptions[key][secondaryKey] = Number(value);
     } else {
@@ -202,7 +202,7 @@ export default function GameConfig() {
 
   const handleUpload = (type: 'normal' | 'active', files: FileList | null, onUpload: () => void) => {
     let targetDirectory = `public/games/${state.currentEditingGame}/game/ui`;
-    
+
     const fileList = Array.from(files || []);
 
     if (!fileList.length) {
@@ -290,6 +290,14 @@ export default function GameConfig() {
       <TabItem title={t("options.gameId")}>
         <GameConfigEditor key="Game_Id" value={getConfigContentAsString('Game_Id')}
           onChange={(e: string) => updateGameConfigSimpleByKey('Game_Id', e)}/>
+      </TabItem>
+      <TabItem title={t("options.gameJsLink")}>
+        <GameConfigEditor key="Game_Js_Link" value={getConfigContentAsString('Game_Js_Link')}
+          onChange={(e: string) => updateGameConfigSimpleByKey('Game_Js_Link', e)}/>
+      </TabItem>
+      <TabItem title={t("options.gameCssLink")}>
+        <GameConfigEditor key="Game_Css_Link" value={getConfigContentAsString('Game_Css_Link')}
+          onChange={(e: string) => updateGameConfigSimpleByKey('Game_Css_Link', e)}/>
       </TabItem>
       {/* <TabItem title={t("options.textboxTheme")}> */}
       {/*  <GameConfigEditorWithSelector key="packageName" value={getConfigContentAsString('Textbox_theme')} */}
@@ -390,7 +398,7 @@ export default function GameConfig() {
                       onChange={(e) => {
                         setCursorOptions('normal', 'interval', e.target.value);
                       }}
-                    />  
+                    />
                     <span className={configStyles.unitLabel}>毫秒</span>
                   </div>
                 </div>
@@ -421,7 +429,7 @@ export default function GameConfig() {
                       onChange={(e) => {
                         setCursorOptions('active', 'interval', e.target.value);
                       }}
-                    />  
+                    />
                     <span className={configStyles.unitLabel}>毫秒</span>
                   </div>
                 </div>
@@ -463,7 +471,7 @@ function GameConfigEditor(props: IGameConfigEditor) {
   const t = useTrans("common.");
   const showEditBox = useValue(false);
 
-  return <div className={styles.textEditArea} style={{maxWidth: 200}}>
+  return <div className={`${styles.textEditArea} ${styles.desText}`}>
     {!showEditBox.value && props.value}
     {!showEditBox.value &&
     <span className={styles.editButton} onClick={() => showEditBox.set(true)}>

@@ -73,6 +73,12 @@
   //align-items: center;
 }
 
+.desText{
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .editButton {
   //display: inline-block;
   font-size: smaller;
