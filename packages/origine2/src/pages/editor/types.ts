@@ -149,8 +149,10 @@ export interface IndicatorContainerItem {
     indicatorHoverStyle?: Style;
     indicatorLeftStyle?: Style;
     indicatorLeftHoverStyle?: Style;
+    indicatorLeftActiveStyle?: Style;
     indicatorRightStyle?: Style;
     indicatorRightHoverStyle?: Style;
+    indicatorRightActiveStyle?: Style;
     btnSound?: IBtnSoundConfig;
   }
 }
