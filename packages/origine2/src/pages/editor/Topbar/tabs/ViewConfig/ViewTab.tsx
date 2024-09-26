@@ -91,8 +91,10 @@ const sliderKeyArr = [
   'indicatorHoverStyle',
   'indicatorLeftStyle',
   'indicatorLeftHoverStyle',
+  'indicatorLeftActiveStyle',
   'indicatorRightStyle',
-  'indicatorRightHoverStyle'
+  'indicatorRightHoverStyle',
+  'indicatorRightActiveStyle'
 ];
 
 const indicatorKey = [

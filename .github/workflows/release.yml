@@ -15,7 +15,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
           cache: 'yarn'
       - name: Build
         env:
@@ -37,7 +37,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
           cache: 'yarn'
       - name: Build
         shell: bash
@@ -58,7 +58,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
           cache: 'yarn'
       - name: Build
         shell: bash

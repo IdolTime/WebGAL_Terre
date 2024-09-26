@@ -14,8 +14,8 @@
     "build:arm64": "electron-builder --arm64"
   },
   "devDependencies": {
-    "electron": "^18.3.7",
-    "electron-builder": "^23.0.3"
+    "electron": "^32.1.2",
+    "electron-builder": "^25.0.5"
   },
   "build": {
     "productName": "IdolTime",
