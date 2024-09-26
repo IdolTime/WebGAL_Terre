@@ -777,16 +777,16 @@ export class ManageGameService {
           `${electronExportDir}/Contents/Resources/app/public/game/`,
         );
 
-        const iconDir = await this.webgalFs.getPath(
-          `${electronExportDir}/Contents/Resources/app/public/game/background/`,
-        );
+        // const iconDir = await this.webgalFs.getPath(
+        //   `${electronExportDir}/Contents/Resources/app/public/game/background/`,
+        // );
 
-        if (gameConfig.Game_Icon && iconDir) {
-          await replaceIconFile(
-            `${iconDir}/${gameConfig.Game_Icon}`,
-            `${electronExportDir}/Contents/Resources/icon.icns`,
-          );
-        }
+        // if (gameConfig.Game_Icon && iconDir) {
+        //   await replaceIconFile(
+        //     `${iconDir}/${gameConfig.Game_Icon}`,
+        //     `${electronExportDir}/Contents/Resources/icon.icns`,
+        //   );
+        // }
 
         if (openFileExplorer) {
           await _open(exportDir);

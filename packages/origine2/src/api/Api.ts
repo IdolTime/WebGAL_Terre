@@ -354,9 +354,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Eject Game As EXE
      * @request GET:/api/manageGame/ejectGameAsExe/{gameName}
      */
-    manageGameControllerEjectGameAsExe: (gameName: string, params: RequestParams = {}) =>
+    manageGameControllerEjectGameAsExe: (gameName: string, gamePackageName: string, params: RequestParams = {}) =>
       this.request<void, any>({
-        path: `/api/manageGame/ejectGameAsExe/${gameName}`,
+        path: `/api/manageGame/ejectGameAsExe/${gameName}/${gamePackageName}`,
         method: 'GET',
         ...params,
       }),

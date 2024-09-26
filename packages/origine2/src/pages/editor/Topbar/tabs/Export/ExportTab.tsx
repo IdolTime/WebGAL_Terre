@@ -54,9 +54,12 @@ export function ExportTab() {
       <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsWeb(gameName)}
         icon={<GlobeIcon aria-label="Export Web" className={s.iconColor}/>}
         text={t('commandBar.items.release.items.web')}/>
-      <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsExe(gameName)}
-        icon={<DesktopIcon aria-label="Export Exe" className={s.iconColor}/>}
-        text={t('commandBar.items.release.items.exe')}/>
+      <IconWithTextItem onClick={() => {
+        const gamePackageName  = editor.gamePackageName || gameName;
+        api.manageGameControllerEjectGameAsExe(gamePackageName, gameName);
+      }}
+      icon={<DesktopIcon aria-label="Export Exe" className={s.iconColor}/>}
+      text={t('commandBar.items.release.items.exe')}/>
       {/* <IconWithTextItem onClick={() => api.manageGameControllerEjectGameAsAndroid(gameName)}
         icon={<img src={AndroidIcon} className={s.iconColor} alt="Export Android"/>}
         text={t('commandBar.items.release.items.android')}/> */}
