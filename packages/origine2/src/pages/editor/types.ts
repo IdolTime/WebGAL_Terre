@@ -71,6 +71,17 @@ export interface UIItemConfig {
   btnSound?: IBtnSoundConfig;
 }
 
+export enum IndicatorStyleKey {
+  indicatorStyle = 'indicatorStyle',
+  indicatorHoverStyle = 'indicatorHoverStyle',
+  indicatorLeftStyle = 'indicatorLeftStyle',
+  indicatorLeftHoverStyle = 'indicatorLeftHoverStyle',
+  indicatorLeftActiveStyle = 'indicatorLeftActiveStyle',
+  indicatorRightStyle = 'indicatorRightStyle',
+  indicatorRightHoverStyle = 'indicatorRightHoverStyle',
+  indicatorRightActiveStyle = 'indicatorRightActiveStyle'
+}
+
 export enum IndicatorItemKey {
   indicatorLeft = 'indicatorLeft',
   indicatorRight = 'indicatorRight',
