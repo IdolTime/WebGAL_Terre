@@ -136,6 +136,8 @@ export const zhCn = {
           description: '游戏简介',
           packageName: '游戏包名',
           gameIcon: '游戏icon',
+          gameJsLink: 'sdk-js地址',
+          gameCssLink: 'sdk-css地址',
           textboxTheme: '文本框主题',
           bg: '标题背景图片',
           bgm: '标题背景音乐',

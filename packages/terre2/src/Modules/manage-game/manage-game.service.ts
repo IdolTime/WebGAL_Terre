@@ -468,6 +468,8 @@ export class ManageGameService {
       Game_key: string;
       Package_name: string;
       Game_Icon: string;
+      Game_Js_Link: string;
+      Game_Css_Link: string;
     }
     const config: Config = {
       Game_name: '',
@@ -475,6 +477,8 @@ export class ManageGameService {
       Game_key: '',
       Package_name: '',
       Game_Icon: '',
+      Game_Js_Link: '',
+      Game_Css_Link: '',
     };
     // 根据 GameName 找到游戏所在目录
     const gameDir = this.webgalFs.getPathFromRoot(
