@@ -269,24 +269,88 @@ export class ManageGameService {
       `/Exported_Games/${gameName}`,
     );
     const now = Date.now();
-    const gameWebDir = join(gameDir, 'web');
-    const gameMobileDir = join(gameDir, 'wap');
+    let gameWebDir = join(gameDir, 'web');
+    let gameMobileDir = join(gameDir, 'wap');
     const gameRootDir = this.webgalFs.getPathFromRoot(
       `/public/games/${gameName}/game/`,
     );
+    const changedFilesDir = join(gameDir, 'changedFiles');
+    const webChangedFilesDir = join(changedFilesDir, 'web');
+    const mobileChangedFilesDir = join(changedFilesDir, 'wap');
     const bundleFile = process.platform === 'darwin' ? 'ToPack' : 'ToPack.exe';
     // 获取打包工具
     const bundleCommand = this.webgalFs.getPathFromRoot(
       '/assets/tools/' + bundleFile,
     );
+    const hashJSONPath = join(gameWebDir, 'hash.json');
+    let size = 0;
 
     const args = [gameRootDir, gameMobileDir];
+
+    const prevMobileHash = await this.webgalFs.readJSONFile(
+      join(gameMobileDir, '_md5.json'),
+    );
+
+    const [changedFiles, hashData] = await this.webgalFs.generateHashJson(
+      gameWebDir,
+      join(gameWebDir, 'hash.json'),
+    );
 
     spawnSync(bundleCommand, args, {
       env: process.env, // 使用相同的环境变量
       stdio: 'inherit', // 继承标准输入输出，便于调试
       cwd: dirname(bundleCommand),
     });
+
+    const addressJSONFile = await this.webgalFs.readJSONFile(
+      join(gameMobileDir, '_address.json'),
+    );
+
+    if (typeof addressJSONFile === 'object') {
+      Object.values(addressJSONFile).forEach((item) => {
+        size += item[1];
+      });
+    }
+
+    if (changedFiles.length > 0) {
+      await this.webgalFs.copyChangedFiles(
+        changedFiles,
+        gameWebDir,
+        webChangedFilesDir,
+      );
+
+      const currentMobileHash = await this.webgalFs.readJSONFile(
+        join(gameMobileDir, '_md5.json'),
+      );
+
+      const changedMobileFileKeys = Object.keys(currentMobileHash).filter(
+        (file) => currentMobileHash[file] !== prevMobileHash[file],
+      );
+      const changedMobileFiles = changedMobileFileKeys.map((key) => {
+        return currentMobileHash[key];
+      });
+
+      await this.webgalFs.copyChangedFiles(
+        changedMobileFiles,
+        gameMobileDir,
+        mobileChangedFilesDir,
+      );
+
+      if (changedMobileFiles.length > 0) {
+        fs.copyFileSync(
+          join(gameMobileDir, '_address.json'),
+          join(mobileChangedFilesDir, '_address.json'),
+        );
+        fs.copyFileSync(
+          join(gameMobileDir, '_address.hash'),
+          join(mobileChangedFilesDir, '_address.hash'),
+        );
+        fs.copyFileSync(
+          join(gameMobileDir, '_md5.json'),
+          join(mobileChangedFilesDir, '_md5.json'),
+        );
+      }
+    }
 
     try {
       if (!gId) {
@@ -337,10 +401,31 @@ export class ManageGameService {
       throw new Error(error.message);
     }
 
-    const key = `${gId}_${now}_web.zip`;
-    const mobileKey = `${gId}_${now + 100}_wap.zip`;
-    const zipFilePath = `${gameDir}/${key}`;
-    const mobileZipFilePath = `${gameDir}/${mobileKey}`;
+    let key = `${gId}_${now}_web.zip`;
+    let mobileKey = `${gId}_${now + 100}_wap.zip`;
+    let zipFilePath = `${gameDir}/${key}`;
+    let mobileZipFilePath = `${gameDir}/${mobileKey}`;
+    const hasUploadedGame = await this.webgalFs.existsFile(hashJSONPath);
+    let incrementalUpload = false;
+
+    if (hasUploadedGame && changedFiles.length === 0) {
+      throw new Error('没有需要上传的文件');
+    }
+
+    if (hasUploadedGame) {
+      key = `${gId}_${now}_web_increment.zip`;
+      mobileKey = `${gId}_${now + 100}_wap_increment.zip`;
+      zipFilePath = `${changedFilesDir}/${key}`;
+      mobileZipFilePath = `${changedFilesDir}/${mobileKey}`;
+      gameWebDir = webChangedFilesDir;
+      gameMobileDir = mobileChangedFilesDir;
+      incrementalUpload = true;
+
+      fs.writeFileSync(
+        join(gameWebDir, 'hash.json'),
+        JSON.stringify(hashData, null, 2),
+      );
+    }
 
     // 创建压缩包
     await Promise.all([
@@ -351,7 +436,9 @@ export class ManageGameService {
     // 上传压缩包
     const [res, res2] = await Promise.all([
       axios.post(
-        `https://test-api.idoltime.games/editor/game/game_put_object_pre_sign`,
+        `https://test-api.idoltime.games/editor/game/${
+          incrementalUpload ? 'increment' : 'game'
+        }_put_object_pre_sign`,
         { fileName: key },
         {
           headers: {
@@ -361,7 +448,9 @@ export class ManageGameService {
         },
       ),
       axios.post(
-        `https://test-api.idoltime.games/editor/game/game_put_object_pre_sign`,
+        `https://test-api.idoltime.games/editor/game/${
+          incrementalUpload ? 'increment' : 'game'
+        }_put_object_pre_sign`,
         { fileName: mobileKey },
         {
           headers: {
@@ -415,9 +504,10 @@ export class ManageGameService {
         `https://test-api.idoltime.games/editor/author/game_approval_upload`,
         {
           gId,
-          approvalLink,
+          approvalLink: hasUploadedGame ? undefined : approvalLink,
           fileName: key,
           mobileFileName: mobileKey,
+          size: size.toString(),
         },
         {
           headers: {
@@ -434,6 +524,7 @@ export class ManageGameService {
       fs.unlinkSync(mobileZipFilePath);
 
       if (approvalResData.code === 0) {
+        fs.writeFileSync(hashJSONPath, JSON.stringify(hashData, null, 2));
         return true;
       } else {
         throw new Error(approvalResData.message);
@@ -690,16 +781,16 @@ export class ManageGameService {
           `${electronExportDir}/Contents/Resources/app/public/game/`,
         );
 
-        const iconDir = await this.webgalFs.getPath(
-          `${electronExportDir}/Contents/Resources/app/public/game/background/`,
-        );
+        // const iconDir = await this.webgalFs.getPath(
+        //   `${electronExportDir}/Contents/Resources/app/public/game/background/`,
+        // );
 
-        if (gameConfig.Game_Icon && iconDir) {
-          await replaceIconFile(
-            `${iconDir}/${gameConfig.Game_Icon}`,
-            `${electronExportDir}/Contents/Resources/icon.icns`,
-          );
-        }
+        // if (gameConfig.Game_Icon && iconDir) {
+        //   await replaceIconFile(
+        //     `${iconDir}/${gameConfig.Game_Icon}`,
+        //     `${electronExportDir}/Contents/Resources/icon.icns`,
+        //   );
+        // }
 
         if (openFileExplorer) {
           await _open(exportDir);

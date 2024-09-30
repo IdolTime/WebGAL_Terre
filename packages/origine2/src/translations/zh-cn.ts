@@ -871,7 +871,7 @@ export const zhCn = {
         },
         clearScreen: {
           title: "清屏",
-          initText: "clearScreen:true;",
+          initText: "clearScreen:true -next;",
           descText: '清除屏幕内游戏元素',
           options: {
             next: "自动进行下一步",

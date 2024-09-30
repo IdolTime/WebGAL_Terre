@@ -27,7 +27,7 @@ jobs:
         # Use "-mx9" option for extreme compression
         7z a -t7z -mx9 WebGAL_Terre.7z release/*
     - name: Upload Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: WebGAL_Terre.7z
         path: WebGAL_Terre.7z

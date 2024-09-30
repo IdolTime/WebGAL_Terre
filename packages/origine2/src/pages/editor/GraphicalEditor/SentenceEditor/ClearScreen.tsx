@@ -15,6 +15,8 @@ export default function ClearScreen(props: ISentenceEditorProps) {
     const nextItem = props.sentence.args.find((k) => k.key === 'next');
     if (nextItem) {
       nextValue.set(nextItem.value as boolean);
+    } else {
+      nextValue.set(false);
     }
   }, []);
 
@@ -22,11 +24,13 @@ export default function ClearScreen(props: ISentenceEditorProps) {
     let content = `clearScreen:true`;
 
     if (nextValue.value === true) {
-      content += ` -next=true`;
+      content += ` -next`;
     }
 
     props.onSubmit(content + ';');
   }
+
+  console.log(3333, typeof nextValue.value, nextValue.value);
 
   return (
     <div className={styles.sentenceEditorContent}>

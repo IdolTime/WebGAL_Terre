@@ -302,6 +302,20 @@ export interface IBtnSoundConfig {
   }
 }
 
+export interface IBtnLink {
+  link: {
+    type: 'string';
+    label: string;
+  };
+}
+
+export const defaultBtnLinkConfig: IBtnLink = {
+  link: {
+    type: 'string',
+    label: '链接'
+  }
+}
+
 
 export const defaultBtnSoundConfig: IBtnSoundConfig  = {
   clickSound: {
@@ -315,7 +329,6 @@ export const defaultBtnSoundConfig: IBtnSoundConfig  = {
 };
 
 export const alignPositionOptions = [
-  { name: '默认', value: '' },
   { name: '顶部对齐', value: 'top-center' },
   { name: '底部对齐', value: 'bottom-center' }
 ];
@@ -328,4 +341,5 @@ export interface IStyleConfigArr {
   images?: ICollectionImages;
   videos?: typeof defaultCollectionVideos;
   btnSound?: IBtnSoundConfig;
+  buttonLink?: IBtnLink;
 }

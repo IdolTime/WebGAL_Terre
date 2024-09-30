@@ -15,7 +15,7 @@ import { Button, Input } from "@fluentui/react-components";
 export default function ChangeBg(props: ISentenceEditorProps) {
   const t = useTrans('editor.graphical.sentences.changeBg.');
   const isNoFile = props.sentence.content === "";
-  const isGoNext = useValue(!!getArgByKey(props.sentence, "next"));
+  const isGoNext = useValue(!!getArgByKey(props.sentence, "continue"));
   const bgFile = useValue(props.sentence.content);
   const unlockName = useValue(getArgByKey(props.sentence, "unlockname").toString() ?? "");
   const unlockSeries = useValue(getArgByKey(props.sentence, "series").toString() ?? "");
@@ -26,7 +26,7 @@ export default function ChangeBg(props: ISentenceEditorProps) {
   const y = useValue<string>(getArgByKey(props.sentence, "y").toString() ?? "");
 
   const submit = () => {
-    const isGoNextStr = isGoNext.value ? " -next" : "";
+    const isGoNextStr = isGoNext.value ? " -continue" : "";
     const durationStr = duration.value === "" ? '' : ` -duration=${duration.value}`;
     const transformStr = json.value === "" ? '' : ` -transform=${json.value}`;
     const xStr = x.value === "" ? '' : ` -x=${x.value}`;

@@ -22,7 +22,7 @@ type AnimationFlag = "" | "on";
 export default function ChangeFigure(props: ISentenceEditorProps) {
   const gameName = useSelector((state: RootState) => state.status.editor.currentEditingGame);
   const t = useTrans('editor.graphical.sentences.changeFigure.');
-  const isGoNext = useValue(!!getArgByKey(props.sentence, "next"));
+  const isGoNext = useValue(!!getArgByKey(props.sentence, "continue"));
   const figureFile = useValue(props.sentence.content);
   const figurePosition = useValue<FigurePosition>("");
   const isNoFile = props.sentence.content === "";
@@ -116,7 +116,7 @@ export default function ChangeFigure(props: ISentenceEditorProps) {
     }
   }, [animationFlag.value]);
   const submit = () => {
-    const isGoNextStr = isGoNext.value ? " -next" : "";
+    const isGoNextStr = isGoNext.value ? " -continue" : "";
     const pos = figurePosition.value !== "" ? ` -${figurePosition.value}` : "";
     const idStr = id.value !== "" ? ` -id=${id.value}` : "";
     const durationStr = duration.value === "" ? '' : ` -duration=${duration.value}`;

@@ -23,10 +23,10 @@ export default function SetAnimation(props: ISentenceEditorProps) {
   ]);
   const isPresetTarget = Array.from(presetTargets.keys()).includes(target.value as PresetTarget);
   const isUsePreset = useValue(isPresetTarget);
-  const isGoNext = useValue(!!getArgByKey(props.sentence, "next"));
+  const isGoNext = useValue(!!getArgByKey(props.sentence, "continue"));
 
   const submit = () => {
-    const isGoNextStr = isGoNext.value ? " -next" : "";
+    const isGoNextStr = isGoNext.value ? " -continue" : "";
     props.onSubmit(`setAnimation:${fileName.value} -target=${target.value}${isGoNextStr};`);
   };
   return <div className={styles.sentenceEditorContent}>
