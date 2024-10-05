@@ -59,7 +59,6 @@ export class ManageGameController {
   ) {}
 
   @Get('gameList')
-  @Get('gameList')
   @ApiOperation({ summary: 'Retrieve game list' })
   @ApiResponse({ status: 200, description: 'Returned game list.' })
   async getGameList() {
