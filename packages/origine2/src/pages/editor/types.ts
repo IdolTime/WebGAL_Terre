@@ -64,6 +64,10 @@ export interface UIItemConfig {
     customFontSize?: {
       type: 'number',
       label: string,
+    },
+    customImage?: {
+      type: 'image',
+      label: string,
     }
   },
   info?: InfoConfig,
@@ -682,6 +686,12 @@ export const collectionSceneOtherConfig: Record<CollectionSceneOtherKey, UIItemC
     hasHoverStyle: false,
     hasActiveStyle: false,
     hasXY: false,
+    customStyle: {
+      customImage: {
+        type: 'image',
+        label: '底图元素',
+      },
+    }
   },
   [CollectionSceneOtherKey.Collection_detail_right_desc_bg]: {
     label: '详情界面右侧信息元素',
@@ -1273,6 +1283,7 @@ export interface Style {
   alignPosition?: 'top' | 'bottom';
   customColor?: string;
   customFontSize?: number;
+  customImage?: string;
 }
 
 export interface ILink {
