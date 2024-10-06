@@ -50,7 +50,8 @@ import {
   CollectionItemKey,
   collectionItemInfoKey,
   SliderItemKey,
-  IndicatorItemKey
+  IndicatorItemKey,
+  IndicatorStyleKey
 } from '@/pages/editor/types';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ChooseFile from '@/pages/editor/ChooseFile/ChooseFile';
@@ -87,14 +88,14 @@ const sliderKeyArr = [
   SliderItemKey.slider, 
   SliderItemKey.sliderBg, 
   SliderItemKey.sliderThumb,
-  'indicatorStyle',
-  'indicatorHoverStyle',
-  'indicatorLeftStyle',
-  'indicatorLeftHoverStyle',
-  'indicatorLeftActiveStyle',
-  'indicatorRightStyle',
-  'indicatorRightHoverStyle',
-  'indicatorRightActiveStyle'
+  IndicatorStyleKey.indicatorStyle,
+  IndicatorStyleKey.indicatorHoverStyle,
+  IndicatorStyleKey.indicatorLeftStyle,
+  IndicatorStyleKey.indicatorLeftHoverStyle,
+  IndicatorStyleKey.indicatorLeftActiveStyle,
+  IndicatorStyleKey.indicatorRightStyle,
+  IndicatorStyleKey.indicatorRightHoverStyle,
+  IndicatorStyleKey.indicatorRightActiveStyle
 ];
 
 const indicatorKey = [
