@@ -4,6 +4,7 @@ import * as fs from 'fs/promises';
 import { dirname, extname, join } from 'path';
 import { createHash } from 'crypto';
 import { existsSync } from 'fs';
+import { parseScene } from 'src/util/parser';
 
 export interface IFileInfo {
   name: string;
@@ -474,5 +475,28 @@ export class WebgalFsService {
       // 删除整个目录
       await fs.rm(directoryPath, { recursive: true, force: true });
     }
+  }
+
+  async getAllWordCounts(gameName: string) {
+    const gameSceneDir = `/public/games/${gameName}/game/scene`;
+    let scenes = (await this.getDirInfo(
+      this.getPathFromRoot(gameSceneDir),
+    )) as IFileInfo[];
+    scenes = scenes.filter((e) => e.extName === '.txt');
+    let wordCount = 0;
+
+    for (const scene of scenes) {
+      const scenePath = this.getPathFromRoot(`${gameSceneDir}/${scene.name}`);
+      const rawScene = await this.readTextFile(scenePath);
+
+      const parsedScene = parseScene(rawScene);
+      parsedScene.sentenceList.forEach((sentence) => {
+        if (sentence.command === 0) {
+          wordCount += sentence.content.trim().length;
+        }
+      });
+    }
+
+    return wordCount;
   }
 }

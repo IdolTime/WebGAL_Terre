@@ -88,7 +88,7 @@
       margin-left: 30px;
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-af13002f.js"></script>
+  <script type="module" crossorigin src="./assets/index-20ece597.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -400,7 +400,12 @@
     const transformString = (title.style.transform?.split('scale') || [])[1]
     const matches = transformString?.match(/\(([^,]+),\s*([^)]+)\)/);
     const downloadCompleteRef = { current: 0 };
-    const progressTimerRef = { current: null }
+    const progressTimerRef = { current: null };
+    const sceneLoadedRef = {
+      'start.txt': false,
+      '__custom-ui__.txt': false,
+      '__default-ui__.txt': false,
+    }
     let scaleX = 1;
     let scaleY = 1;
 
@@ -449,34 +454,37 @@
       assets: false,
       gameInfo: false,
     }
-    const callback1 = () => {
-      if (!loadedRef.assets || !loadedRef.gameInfo) {
-        return;
-      }
-      if (!progressTimerRef.current) {
-          downloadCompleteRef.current = 1;
-        } else {
-          clearTimeout(progressTimerRef.current);
-          setProgress(100, barImageLayout.width / scaleX, barImageLayout.height / scaleY);
-          setTimeout(() => {
-            show();
-          }, 500);
-        }
-    }
-
     const dispose = window.pubsub.subscribe('sceneAssetsLoaded', ({ sceneName }) => {
-      if (sceneName === 'start.txt') {
-        dispose();
-        loadedRef.assets = true;
-        callback1();
+      if (sceneName === 'start.txt' || sceneName === '__custom-ui__.txt' || sceneName === '__default-ui__.txt') {
+        sceneLoadedRef[sceneName] = true;
+        checkAllLoaded(sceneName);
       }
     })
 
     const dispose2 = window.pubsub.subscribe('gameInfoReady', () => {
       dispose2();
       loadedRef.gameInfo = true;
-      callback1();
+      checkAllLoaded();
     })
+
+    function checkAllLoaded() {
+      const hasAllLoaded = Object.values(sceneLoadedRef).every((x) => x === true);
+
+      if (hasAllLoaded) {
+        dispose();
+        
+        if (!loadedRef.gameInfo) return;
+        if (!progressTimerRef.current) {
+          downloadCompleteRef.current = 1;
+        } else {
+          clearTimeout(progressTimerRef.current);
+            setProgress(100, barImageLayout.width / scaleX, barImageLayout.height / scaleY);
+            setTimeout(() => {
+              show();
+          }, 500);
+        }
+      }
+    }
 
     let enterPromise = new Promise(res => window.enterPromise = res);
     let renderPromise = new Promise(res => window.renderPromise = res);
