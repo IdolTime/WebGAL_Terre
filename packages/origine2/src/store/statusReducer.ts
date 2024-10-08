@@ -53,6 +53,7 @@ interface IEditorState {
   isShowDebugger: boolean,
   currentGameId: number
   gamePackageName: string;
+  gameChapterId: number;
 }
 
 // tag的假数据，用于测试
@@ -79,6 +80,7 @@ export const editorInitState: IEditorState = {
   },
   isShowDebugger: false,
   gamePackageName: '',
+  gameChapterId: 1, // 游戏章节ID
 };
 
 const initialState = {
@@ -193,6 +195,10 @@ const statusSlice = createSlice({
     setCurrentGameId:(state,action:PayloadAction<number>)=>{
       state.editor.currentGameId = action.payload;
     },
+
+    setGameChapterId:(state,action:PayloadAction<number>)=>{
+      state.editor.gameChapterId = action.payload;
+    },
   }
 });
 
@@ -208,7 +214,8 @@ export const {
   setIsLivePreview,
   updateGraphicalEditorCurrentExpandSentence,
   setCurrentGameId,
-  setGamePackageName
+  setGamePackageName,
+  setGameChapterId
 } = statusSlice.actions;
 
 export const statusActions = statusSlice.actions;

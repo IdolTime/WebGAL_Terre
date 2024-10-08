@@ -2,13 +2,14 @@ import styles from "./sentenceEditor.module.scss";
 import { cloneDeep } from "lodash";
 import ChooseFile from "../../ChooseFile/ChooseFile";
 import useTrans from "@/hooks/useTrans";
-import { Button, Dropdown, Option } from "@fluentui/react-components";
+import { Button, Dropdown, Option, Input, Switch } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 import WhenARG from '../components/WhenARG';
 import { getWhenARGExpression } from '@/utils/utils';
 import TerreToggle from "@/components/terreToggle/TerreToggle";
 import CommonOptions from "../components/CommonOption";
 import { useValue } from "@/hooks/useValue";
+import { getArgByKey } from '../utils/getArgByKey';
 
 interface IOptions {
   text: string;
@@ -137,6 +138,8 @@ export default function Choose(props: any) {
   const t = useTrans('editor.graphical.sentences.choose.');
   const content = props.chooseValue ? props.chooseValue : props.sentence.content;
   const [options, setOptions] = useState<IOptions[]>(content.split('|').map(parse));
+  const [isChooseEvent, setIsChooseEvent] = useState(!!getArgByKey(props.sentence, 'isChooseEvent'));
+  const [chooseEventId, setChooseEventId] = useState(getArgByKey(props.sentence, 'chooseEventId'));
 
   useEffect(() => {
     const value = content.split('|');
@@ -167,7 +170,7 @@ export default function Choose(props: any) {
 
   const setOption = (index: number, key: 'shouldPay' | 'amount' | 'salesType', value: boolean | string | number | undefined) => {
     const newList = [...options];
-    
+
     if (value === undefined) {
       delete newList[index][key];
     } else {
@@ -227,243 +230,275 @@ export default function Choose(props: any) {
       return mainPart + text + ':' + jump;
     });
 
+    let chooseEventIdStr = '';
+    if (isChooseEvent) {
+      chooseEventIdStr = ` -chooseEventId=${chooseEventId} -isChooseEvent=${isChooseEvent}`
+    }
+
     if (props.chooseValue) {
       props.onSubmit(optionStr.join('|'));
     } else {
-      props.onSubmit(`choose:${optionStr.join('|')};`);
+      props.onSubmit(`choose:${optionStr.join('|') + chooseEventIdStr};`);
     }
   };
 
   const chooseList = options.map((item: any, i: number) => {
-    return <div style={{ display: "flex", flexDirection: "column", width:'100%', justifyContent: "center",padding:'0 0 4px 0' }} key={i}>
-      <div style={{  display: "flex", alignItems: "center", marginBottom: "8px" }}>
-        <Button
-          onClick={()=>{
+    return (
+      <div style={{ display: "flex", flexDirection: "column", width: '100%', justifyContent: "center", padding: '0 0 4px 0' }} key={i}>
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+          <Button
+            onClick={() => {
+              const newList = cloneDeep(options);
+              newList.splice(i, 1);
+              setOptions(newList);
+              submit(newList);
+            }}
+          >
+            {t('delete')}
+          </Button>
+          <span style={{ marginLeft: '6px' }}>选项名称</span>
+          <input value={item.text}
+            onChange={(ev) => {
+              const newValue = ev.target.value;
+              const newList = cloneDeep(options);
+              newList[i].text = newValue;
+              setOptions(newList);
+            }}
+            onBlur={() => submit(options)}
+            className={styles.sayInput}
+            placeholder={t('option.name')}
+            style={{ width: "10%", margin: "0 6px 0 6px" }}
+          />
+          <span style={{ marginRight: '6px' }}>跳转 {item.jump}</span>
+          <ChooseFile sourceBase="scene" onChange={(newFile) => {
+            const newValue = newFile?.name ?? "";
             const newList = cloneDeep(options);
-            newList.splice(i,1);
+            newList[i].jump = newValue;
             setOptions(newList);
             submit(newList);
-          }}
-        >
-          {t('delete')}
-        </Button>
-        <span style={{ marginLeft: '6px' }}>选项名称</span>
-        <input value={item.text}
-          onChange={(ev) => {
-            const newValue = ev.target.value;
-            const newList = cloneDeep(options);
-            newList[i].text = newValue;
-            setOptions(newList);
-          }}
-          onBlur={() => submit(options)}
-          className={styles.sayInput}
-          placeholder={t('option.name')}
-          style={{ width: "10%", margin: "0 6px 0 6px" }}
-        />
-        <span style={{ marginRight: '6px' }}>跳转 {item.jump}</span>
-        <ChooseFile sourceBase="scene" onChange={(newFile) => {
-          const newValue = newFile?.name ?? "";
-          const newList = cloneDeep(options);
-          newList[i].jump = newValue;
-          setOptions(newList);
-          submit(newList);
-        }} extName={[".txt"]} />
-        <span style={{ margin: '0 6px 0 6px' }}>按钮样式 {item.style.image}</span>
-        <ChooseFile sourceBase="ui" onChange={(newFile) => {
-          const newValue = newFile?.name ?? "";
+          }} extName={[".txt"]} />
+          <span style={{ margin: '0 6px 0 6px' }}>按钮样式 {item.style.image}</span>
+          <ChooseFile sourceBase="ui" onChange={(newFile) => {
+            const newValue = newFile?.name ?? "";
 
-          if (newFile) {
-            setStyle(i, 'image', newValue);
-          } else {
-            setStyle(i, 'image', undefined);
-          }
-          submit(options);
-        }} extName={[".jpg", ".png", "webp"]} />
+            if (newFile) {
+              setStyle(i, 'image', newValue);
+            } else {
+              setStyle(i, 'image', undefined);
+            }
+            submit(options);
+          }} extName={[".jpg", ".png", "webp"]} />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", paddingLeft: "96px", marginBottom: "8px" }}>
+          <span style={{ marginLeft: '6px' }}>按钮位置X</span>
+          <input type="number" value={item.style.x}
+            onChange={(ev) => {
+              setStyle(i, 'x', ev.target.value);
+            }}
+            onBlur={() => submit(options)}
+            className={styles.sayInput}
+            placeholder="X"
+            style={{ width: "10%", margin: "0 6px 0 6px" }}
+          />
+          <span style={{ marginLeft: '6px' }}>按钮位置Y</span>
+          <input type="number" value={item.style.y}
+            onChange={(ev) => {
+              setStyle(i, 'y', ev.target.value);
+            }}
+            onBlur={() => submit(options)}
+            className={styles.sayInput}
+            placeholder="Y"
+            style={{ width: "10%", margin: "0 6px 0 6px" }}
+          />
+          <span style={{ marginLeft: '6px' }}>缩放</span>
+          <input type="number" value={item.style.scale}
+            onChange={(ev) => {
+              setStyle(i, 'scale', ev.target.value);
+            }}
+            onBlur={() => submit(options)}
+            className={styles.sayInput}
+            placeholder="缩放"
+            style={{ width: "10%", margin: "0 6px 0 6px" }}
+          />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", paddingLeft: "96px" }}>
+          <span style={{ marginLeft: '6px' }}>文字大小</span>
+          <input type="number" value={item.style.fontSize}
+            onChange={(ev) => {
+              setStyle(i, 'fontSize', ev.target.value);
+            }}
+            onBlur={() => submit(options)}
+            className={styles.sayInput}
+            placeholder="文字大小"
+            style={{ width: "10%", margin: "0 6px 0 6px" }}
+          />
+          <span style={{ marginLeft: '6px' }}>文字颜色</span>
+          <input type="color" value={item.style.fontColor || '#8E354A'}
+            onChange={(ev) => {
+              setStyle(i, 'fontColor', ev.target.value);
+            }}
+            onBlur={() => submit(options)}
+            className={styles.sayInput}
+            placeholder="文字颜色"
+            style={{ width: "10%", margin: "0 6px 0 6px" }}
+          />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", paddingLeft: "96px", marginTop: '6px' }}>
+          <span style={{ marginLeft: '6px' }}>倒计时选项</span>
+          <TerreToggle title="" onChange={(newValue) => {
+            if (newValue) {
+              setStyle(i, 'countdown', 5);
+            } else {
+              setStyle(i, 'countdown', undefined);
+            }
+          }} onText='是' offText='否' isChecked={!!item.style.countdown} />
+          {item.style.countdown !== undefined && <span style={{ marginLeft: '20px' }}>倒计时时间</span>}
+          {item.style.countdown !== undefined && <input type="number" value={item.style.countdown}
+            onChange={(ev) => {
+              setStyle(i, 'countdown', Number(ev.target.value));
+            }}
+            onBlur={() => submit(options)}
+            className={styles.sayInput}
+            placeholder="倒计时时间"
+            style={{ width: "10%", margin: "0 6px 0 6px" }}
+          />}
+          {item.style.countdown !== undefined && <span style={{ marginLeft: '4px' }}>秒</span>}
+          <span style={{ marginLeft: '32px' }}>付费选项</span>
+          <TerreToggle title="" onChange={(newValue) => {
+            const newOptions = setOption(i, 'shouldPay', newValue);
+            submit(newOptions);
+          }} onText='是' offText='否' isChecked={!!item.shouldPay} />
+          {!!item.shouldPay && (
+            <>
+              <span style={{ marginLeft: '20px' }}>付费价格</span>
+              <input
+                type="number"
+                value={item.amount}
+                onChange={(ev) => {
+                  setOption(i, 'amount', Number(ev.target.value));
+                }}
+                onBlur={() => submit(options)}
+                className={styles.sayInput}
+                placeholder="价格"
+                style={{ width: "10%", margin: "0 6px 0 6px" }}
+              />
+              <span style={{ marginLeft: 20, marginRight: 6 }}>售卖单位</span>
+              <Dropdown
+                value={salesTypeMap.get(item.salesType)}
+                selectedOptions={[item.salesType]}
+                onOptionSelect={(ev, data) => {
+                  const newOptions = setOption(i, 'salesType', data.optionValue);
+                  submit(newOptions);
+                }}
+                style={{ minWidth: 0 }}
+              >
+                <Option value="1">星石</Option>
+                <Option value="2">星光</Option>
+              </Dropdown>
+            </>
+          )}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '102px' }}>
+          <span>条件：</span>
+          <WhenARG
+            name={options[i].showCondition.name ?? ''}
+            setName={(value) => {
+              setCondition(i, 'show', {
+                ...options[i].showCondition,
+                name: value
+              });
+            }}
+            operator={options[i].showCondition.operator ?? '>'}
+            setOperator={(value) => {
+              setCondition(i, 'show', {
+                ...options[i].showCondition,
+                operator: value,
+              });
+            }}
+            value={options[i].showCondition.value ?? ''}
+            setValue={(value) => {
+              setCondition(i, 'show', {
+                ...options[i].showCondition,
+                value,
+              });
+            }}
+            submit={() => submit(options)}
+            tips="否则隐藏"
+          />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '102px' }}>
+          <span>条件：</span>
+          <WhenARG
+            name={options[i].enableCondition.name ?? ''}
+            setName={(value) => {
+              setCondition(i, 'enable', {
+                ...options[i].enableCondition,
+                name: value
+              });
+            }}
+            operator={options[i].enableCondition.operator ?? '>'}
+            setOperator={(value) => {
+              setCondition(i, 'enable', {
+                ...options[i].enableCondition,
+                operator: value,
+              });
+            }}
+            value={options[i].enableCondition.value ?? ''}
+            setValue={(value) => {
+              setCondition(i, 'enable', {
+                ...options[i].enableCondition,
+                value,
+              });
+            }}
+            submit={() => submit(options)}
+            tips="否则禁用"
+          />
+        </div>
       </div>
-      <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px", marginBottom: "8px"}}>
-        <span style={{ marginLeft: '6px' }}>按钮位置X</span>
-        <input type="number" value={item.style.x}
-          onChange={(ev) => {
-            setStyle(i, 'x', ev.target.value);
+    );
+  });
+
+  return (
+    <div className={styles.sentenceEditorContent}>
+      <div style={{ display: "flex", alignItems: 'center', marginBottom: '8px' }}>
+        <span style={{ marginLeft: '6px' }}>选项埋点</span>
+        <Switch
+          checked={isChooseEvent}
+          onChange={(ev, data) => {
+            setIsChooseEvent(data.checked ?? false);
           }}
-          onBlur={() => submit(options)}
-          className={styles.sayInput}
-          placeholder="X"
-          style={{ width: "10%", margin: "0 6px 0 6px" }}
         />
-        <span style={{ marginLeft: '6px' }}>按钮位置Y</span>
-        <input type="number" value={item.style.y}
-          onChange={(ev) => {
-            setStyle(i, 'y', ev.target.value);
-          }}
-          onBlur={() => submit(options)}
-          className={styles.sayInput}
-          placeholder="Y"
-          style={{ width: "10%", margin: "0 6px 0 6px" }}
-        />
-        <span style={{ marginLeft: '6px' }}>缩放</span>
-        <input type="number" value={item.style.scale}
-          onChange={(ev) => {
-            setStyle(i, 'scale', ev.target.value);
-          }}
-          onBlur={() => submit(options)}
-          className={styles.sayInput}
-          placeholder="缩放"
-          style={{ width: "10%", margin: "0 6px 0 6px" }}
-        />
-      </div>
-      <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px"}}>
-        <span style={{ marginLeft: '6px' }}>文字大小</span>
-        <input type="number" value={item.style.fontSize}
-          onChange={(ev) => {
-            setStyle(i, 'fontSize', ev.target.value);
-          }}
-          onBlur={() => submit(options)}
-          className={styles.sayInput}
-          placeholder="文字大小"
-          style={{ width: "10%", margin: "0 6px 0 6px" }}
-        />
-        <span style={{ marginLeft: '6px' }}>文字颜色</span>
-        <input type="color" value={item.style.fontColor || '#8E354A'}
-          onChange={(ev) => {
-            setStyle(i, 'fontColor', ev.target.value);
-          }}
-          onBlur={() => submit(options)}
-          className={styles.sayInput}
-          placeholder="文字颜色"
-          style={{ width: "10%", margin: "0 6px 0 6px" }}
-        />
-      </div>
-      <div style={{  display: "flex", alignItems: "center", paddingLeft: "96px", marginTop: '6px' }}>
-        <span style={{ marginLeft: '6px' }}>倒计时选项</span>
-        <TerreToggle title="" onChange={(newValue) => {
-          if (newValue) {
-            setStyle(i, 'countdown', 5);
-          } else {
-            setStyle(i, 'countdown', undefined);
-          }
-        }} onText='是' offText='否' isChecked={!!item.style.countdown} />
-        {item.style.countdown !== undefined && <span style={{ marginLeft: '20px' }}>倒计时时间</span>}
-        {item.style.countdown !== undefined && <input type="number" value={item.style.countdown}
-          onChange={(ev) => {
-            setStyle(i, 'countdown', Number(ev.target.value));
-          }}
-          onBlur={() => submit(options)}
-          className={styles.sayInput}
-          placeholder="倒计时时间"
-          style={{ width: "10%", margin: "0 6px 0 6px" }}
-        />}
-        {item.style.countdown !== undefined && <span style={{ marginLeft: '4px' }}>秒</span>}
-        <span style={{ marginLeft: '32px' }}>付费选项</span>
-        <TerreToggle title="" onChange={(newValue) => {
-          const newOptions = setOption(i, 'shouldPay', newValue);
-          submit(newOptions);
-        }} onText='是' offText='否' isChecked={!!item.shouldPay} />
-        {!!item.shouldPay && (
+        {isChooseEvent ? '是' : '否'}
+        {isChooseEvent && (
           <>
-            <span style={{ marginLeft: '20px' }}>付费价格</span>
-            <input
-              type="number"
-              value={item.amount}
-              onChange={(ev) => {
-                setOption(i, 'amount', Number(ev.target.value));
-              }}
+            <span style={{ margin: '0 6px 0 10px' }}>选项ID</span>
+            <Input
+              value={isChooseEvent ? chooseEventId?.toString() : ''}
               onBlur={() => submit(options)}
-              className={styles.sayInput}
-              placeholder="价格"
-              style={{ width: "10%", margin: "0 6px 0 6px" }}
-            />
-            <span style={{ marginLeft: 20, marginRight: 6 }}>售卖单位</span>
-            <Dropdown
-              value={salesTypeMap.get(item.salesType)}
-              selectedOptions={[item.salesType]}
-              onOptionSelect={(ev, data) => {
-                const newOptions = setOption(i, 'salesType', data.optionValue);
-                submit(newOptions);
+              onChange={(ev) => {
+                setChooseEventId(ev.target.value);
               }}
-              style={{ minWidth: 0 }}
-            >
-              <Option value="1">星石</Option>
-              <Option value="2">星光</Option>
-            </Dropdown>
+            />
           </>
         )}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '102px' }}>
-        <span>条件：</span>
-        <WhenARG
-          name={options[i].showCondition.name ?? ''}
-          setName={(value) => {
-            setCondition(i, 'show', {
-              ...options[i].showCondition,
-              name: value
-            });
-          }}
-          operator={options[i].showCondition.operator ?? '>'}
-          setOperator={(value) => {
-            setCondition(i, 'show', {
-              ...options[i].showCondition,
-              operator: value,
-            });
-          }}
-          value={options[i].showCondition.value ?? ''}
-          setValue={(value) => {
-            setCondition(i, 'show', {
-              ...options[i].showCondition,
-              value,
-            });
-          }}
-          submit={() => submit(options)}
-          tips="否则隐藏"
-        />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '102px' }}>
-        <span>条件：</span>
-        <WhenARG
-          name={options[i].enableCondition.name ?? ''}
-          setName={(value) => {
-            setCondition(i, 'enable', {
-              ...options[i].enableCondition,
-              name: value
-            });
-          }}
-          operator={options[i].enableCondition.operator ?? '>'}
-          setOperator={(value) => {
-            setCondition(i, 'enable', {
-              ...options[i].enableCondition,
-              operator: value,
-            });
-          }}
-          value={options[i].enableCondition.value ?? ''}
-          setValue={(value) => {
-            setCondition(i, 'enable', {
-              ...options[i].enableCondition,
-              value,
-            });
-          }}
-          submit={() => submit(options)}
-          tips="否则禁用"
-        />
-      </div>
-    </div>;
-  });
-  return <div className={styles.sentenceEditorContent}>
-    {chooseList}
-    <Button
-      onClick={() => {
-        const newList = cloneDeep(options);
-        const trans = t('option.option', 'option.chooseFile');
-        newList.push({
-          text: trans[0],
-          jump: trans[1],
-          style: {},
-          showCondition: {},
-          enableCondition: {}
-        });
-        setOptions(newList);
-        submit(newList);
-      }}>
-      {t('add')}
-    </Button>
-  </div>;
+
+      {chooseList}
+      <Button
+        onClick={() => {
+          const newList = cloneDeep(options);
+          const trans = t('option.option', 'option.chooseFile');
+          newList.push({
+            text: trans[0],
+            jump: trans[1],
+            style: {},
+            showCondition: {},
+            enableCondition: {}
+          });
+          setOptions(newList);
+          submit(newList);
+        }}>
+        {t('add')}
+      </Button>
+    </div>);
 }
