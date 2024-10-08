@@ -728,6 +728,12 @@ export const zhCn = {
           descText: '结束当前游戏并回到标题画面',
           tip: '此指令将结束游戏',
         },
+        eventData: {
+          title: "设置章节进度埋点",
+          initText: "eventData:;",
+          descText: '此指令将会上报埋点数据',
+          tip: '此指令将会上报埋点数据',
+        },
         setVar: {
           title: "设置变量",
           initText: "setVar:a=123;",

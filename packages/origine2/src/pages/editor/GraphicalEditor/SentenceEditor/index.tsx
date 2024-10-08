@@ -58,6 +58,7 @@ import MoveCamera from "./MoveCamera";
 import ChangeAffinity from './ChangeAffinity';
 import PopUpImage from './PopUpImage';
 import ClearScreen from "./ClearScreen";
+import EventData from "./EventData";
 
 export interface ISentenceEditorProps {
   sentence: ISentence;
@@ -349,5 +350,13 @@ export const sentenceEditorConfig: ISentenceEditorConfig[] = [
     component: PopUpImage,
     icon: <ImageFiles theme="multi-color" className={styles.iconSvg} size="24"/>,
     descText: () => t(tPrefix + 'popUpImage.descText')
+  },
+  {
+    type: commandType.eventData,
+    title: () => t(tPrefix + 'eventData.title'),
+    initialText: () => t(tPrefix + 'eventData.initText'),
+    component: EventData,
+    icon: <AlignTextBottomOne theme="multi-color" className={styles.iconSvg} size="24"/>,
+    descText: () => t(tPrefix + 'eventData.descText')
   },
 ];
