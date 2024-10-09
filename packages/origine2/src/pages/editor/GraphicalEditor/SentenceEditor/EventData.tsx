@@ -25,7 +25,7 @@ export default function EventData(props: ISentenceEditorProps) {
 
   const chapterId = useValue(props.sentence.content || editor.gameChapterId);
   const submit = () => {
-    props.onSubmit(`eventData:${chapterId.value};`);
+    props.onSubmit(`eventData:${chapterId.value} -next;`);
   };
 
 
