@@ -534,7 +534,7 @@ export const en = {
         unlockCg: {
           title: "Extra CG",
           initText: "unlockCg:;",
-          descText: 'Add a picture to CG extra guide',
+          descText: 'Add a picture or video to CG extra guide',
           options: {
             tips: {
               afterEdit: "Tip: If there are CG/BGM ineffective after edited, clear them in \"Clear All Data\" in options of WebGAL Game"
@@ -543,7 +543,8 @@ export const en = {
               title: "Unlock CG type",
               options: {
                 cg: "CG",
-                bgm: "BGM"
+                bgm: "BGM",
+                video: "VIDEO"
               }
             },
             file: {
