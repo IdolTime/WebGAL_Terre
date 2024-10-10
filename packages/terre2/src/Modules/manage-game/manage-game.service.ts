@@ -354,9 +354,15 @@ export class ManageGameService {
 
     try {
       if (!gId) {
-        const localInfo = await this.webgalFs.readJSONFile(
+        const localInfo: any = await this.webgalFs.readJSONFile(
           `${gameRootDir}/gameInfo.json`,
         );
+
+        if (localInfo === null || localInfo !== 'object') {
+          throw new Error('没有本地游戏创建记录');
+        }
+
+        localInfo.isMobileShow = localInfo.isMobileShow === true ? 2 : 1;
 
         if (typeof localInfo === 'object') {
           const res = await axios.post(
@@ -389,10 +395,14 @@ export class ManageGameService {
         `${gameRootDir}/config.txt`,
       );
       const newGameId = gId;
-      const updatedText = configFile.replace(
-        /(Game_id:)\d+;/,
-        `$1${newGameId};`,
-      );
+      let updatedText;
+      if (/Game_id:\d+;/.test(configFile)) {
+        // 如果 Game_id 存在，替换它
+        updatedText = configFile.replace(/(Game_id:)\d+;/, `$1${newGameId};`);
+      } else {
+        // 如果 Game_id 不存在，新增到文件的末尾
+        updatedText = `${configFile.trim()}\nGame_id:${newGameId};\n`;
+      }
       await this.webgalFs.updateTextFile(
         `${gameRootDir}/config.txt`,
         updatedText,
@@ -499,7 +509,7 @@ export class ManageGameService {
       }
 
       const approvalLink = `https://idol-unzip-dst.s3.ap-southeast-1.amazonaws.com/${gId}/${now}/web/index.html`;
-
+      const wordCount = await this.webgalFs.getAllWordCounts(gameName);
       const approvalRes = await axios.post(
         `https://test-api.idoltime.games/editor/author/game_approval_upload`,
         {
@@ -508,6 +518,7 @@ export class ManageGameService {
           fileName: key,
           mobileFileName: mobileKey,
           size: size.toString(),
+          wordCount,
         },
         {
           headers: {

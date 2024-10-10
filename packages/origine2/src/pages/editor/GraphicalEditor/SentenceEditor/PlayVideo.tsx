@@ -21,6 +21,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
     continueBgm: !!getArgByKey(props.sentence, "continueBgm"),
     keep: !!getArgByKey(props.sentence, "keep"),
     id: getArgByKey(props.sentence, "id"),
+    continue: !!getArgByKey(props.sentence, "continue"),
   });
 
   const chooseValueRef = useRef(
@@ -46,6 +47,9 @@ export default function PlayVideo(props: ISentenceEditorProps) {
   }
   if (configs.value.id) {
     initComanRef.push(`-id=${configs.value.id}`);
+  }
+  if (configs.value.continue) {
+    initComanRef.push('-continue');
   }
 
   const commandRef = useRef<any>(initComanRef);
@@ -155,6 +159,12 @@ export default function PlayVideo(props: ISentenceEditorProps) {
               configs.set({ ...configs.value, keep: newValue });
               updateCommandRef(newValue, '-keep=true');
             }} onText='是' offText='否' isChecked={configs.value.keep} />
+          </CommonOptions>
+          <CommonOptions key="5" title={t('$editor.graphical.sentences.common.options.goNext.title')}>
+            <TerreToggle title="" onChange={(newValue) => {
+              configs.set({ ...configs.value, continue: newValue });
+              updateCommandRef(newValue, '-continue');
+            }} onText={t('$editor.graphical.sentences.common.options.goNext.on')} offText={t('$editor.graphical.sentences.common.options.goNext.off')} isChecked={configs.value.continue} />
           </CommonOptions>
         </>
       )}
