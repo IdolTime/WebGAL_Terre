@@ -13,7 +13,7 @@ export interface CompletionDto {
   /** Editor input value for which the completion is required */
   editorValue: string;
   /** Parameters required for completion */
-  params: object;
+  params: object
 }
 
 export interface CreateGameDto {
