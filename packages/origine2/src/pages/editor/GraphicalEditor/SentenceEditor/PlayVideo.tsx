@@ -117,7 +117,10 @@ export default function PlayVideo(props: ISentenceEditorProps) {
             configs.set({ ...configs.value, id: newValue });
           }}
           onBlur={() => {
-            updateCommandRef((configs.value.id as string).trim() !== "", `-id=${(configs.value.id as string).trim()}`);
+            updateCommandRef(
+              (configs.value.id as string).trim() !== "", 
+              `-id=${(configs.value.id as string).trim()}`
+            );
           }}
           className={styles.sayInput}
           placeholder="视频ID"
