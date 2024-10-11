@@ -12,7 +12,6 @@ import Choose from "./Choose";
 export default function PlayVideo(props: ISentenceEditorProps) {
   const t = useTrans('editor.graphical.sentences.video.options.');
   const isNoFile = props.sentence.content === '';
-
   const configs = useValue({
     fileName: props.sentence.content,
     isSkipOff: !!getArgByKey(props.sentence, "skipOff"),
@@ -173,6 +172,12 @@ export default function PlayVideo(props: ISentenceEditorProps) {
       )}
     </div>
     {configs.value.isChoose &&
-      <Choose chooseValue={chooseValueRef.current} onSubmit={onChoose} />}
+      <Choose 
+        chooseValue={chooseValueRef.current} 
+        sentence={props.sentence} 
+        onSubmit={onChoose}
+        isChoose={configs.value.isChoose}
+      />
+    }
   </div>;
 }
