@@ -138,8 +138,8 @@ export default function Choose(props: any) {
   const t = useTrans('editor.graphical.sentences.choose.');
   const content = props.chooseValue ? props.chooseValue : props.sentence.content;
   const [options, setOptions] = useState<IOptions[]>(content.split('|').map(parse));
-  const [isChooseEvent, setIsChooseEvent] = useState(!!getArgByKey(props.sentence, 'isChooseEvent'));
-  const [chooseEventId, setChooseEventId] = useState(getArgByKey(props.sentence, 'chooseEventId'));
+  const [isChooseEvent, setIsChooseEvent] = useState(props?.sentence ? !!getArgByKey(props.sentence, 'isChooseEvent') : false);
+  const [chooseEventId, setChooseEventId] = useState(props?.sentence ? getArgByKey(props.sentence, 'chooseEventId') : '');
 
   useEffect(() => {
     const value = content.split('|');
@@ -236,7 +236,7 @@ export default function Choose(props: any) {
     }
 
     if (props.chooseValue) {
-      props.onSubmit(optionStr.join('|'));
+      props.onSubmit(optionStr.join('|') + props.isChoose ? chooseEventIdStr : '' + ';');
     } else {
       props.onSubmit(`choose:${optionStr.join('|') + chooseEventIdStr};`);
     }
