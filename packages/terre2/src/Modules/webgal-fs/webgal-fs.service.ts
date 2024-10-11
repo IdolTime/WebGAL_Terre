@@ -103,11 +103,10 @@ export class WebgalFsService {
    */
   async renameFile(path: string, newName: string) {
     // 取出旧文件的路径
-    const oldPath = join(...decodeURI(path).split(/[\/\\]/g));
+    const oldPath = join('/', ...decodeURI(path).split(/[\/\\]/g));
     const pathAsArray = path.split(/[\/\\]/g);
     const newPathAsArray = pathAsArray.slice(0, pathAsArray.length - 1);
-    const newPath = join(...newPathAsArray, decodeURI(newName));
-
+    const newPath = join('/', ...newPathAsArray, decodeURI(newName));
     return await new Promise((resolve) => {
       fs.rename(oldPath, newPath)
         .then(() => resolve('File renamed!'))
