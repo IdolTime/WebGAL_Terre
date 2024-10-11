@@ -620,9 +620,9 @@ export const zhCn = {
           }
         },
         unlockCg: {
-          title: "鉴赏图片",
+          title: "鉴赏图片/视频",
           initText: "unlockCg:;",
-          descText: '添加一张图片到 CG 鉴赏界面',
+          descText: '添加一张图片或视频到 CG 鉴赏界面',
           options: {
             tips: {
               afterEdit: "提示：在编辑结束后，如果发现有失效的鉴赏 CG/BGM ，在 IdolTime 游戏界面的选项中选择清除全部数据以清空。"
@@ -631,7 +631,8 @@ export const zhCn = {
               title: "解锁鉴赏类型",
               options: {
                 cg: "CG",
-                bgm: "BGM"
+                bgm: "BGM",
+                video: "VIDEO"
               }
             },
             file: {
