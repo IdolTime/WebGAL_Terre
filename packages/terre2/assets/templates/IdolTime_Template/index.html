@@ -80,7 +80,7 @@
       text-align: center;
       color: #fff;
       font-size: 36px;
-      bottom: 3.5%;
+      bottom: 3.7%;
       line-height: 44px;
     }
 
@@ -88,7 +88,7 @@
       margin-left: 30px;
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-371b6190.js"></script>
+  <script type="module" crossorigin src="./assets/index-e717a784.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -158,14 +158,22 @@
           right: 0;
           bottom: 0;
           z-index: 997;
-        ">
-        <div style="position: relative;height:100%;width: auto;">
+          background-color: #000;
+      ">
+        <div style="position: relative; width: auto; height: 100%;">
           <div id="updating-text">
             正在更新中... <span>0%</span>
             <br />
             建议在wifi环境下进行下载，资源文件较多，请耐心等待！
           </div>
-          <img style="display: block; width: auto; height: 100%; object-fit: cover;"
+          <img 
+            style="
+              display: block; 
+              width: auto; 
+              height: 100%; 
+              aspect-ratio: 16 / 9;
+              object-fit: contain;
+            "
             src="./assets/loading-enter.webp" />
           <img style="position: absolute;width: 100%;height: auto;bottom:10%;left:0;"
             src="./assets/loading-bar-bg.png" />
@@ -365,7 +373,7 @@
      */
     window.pubsub.subscribe('isPreviewMode', (res) => {
       if (res) {
-        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        navigator.serviceWorker?.getRegistrations().then(function (registrations) {
           for (let registration of registrations) {
             registration.unregister().then(function () {
               console.log('Service Worker unregistered:', registration);
