@@ -572,6 +572,7 @@ export class ManageGameService {
       Game_Icon: string;
       Game_Js_Link: string;
       Game_Css_Link: string;
+      Is_FinishTrial: string;
     }
     const config: Config = {
       Game_name: '',
@@ -581,6 +582,7 @@ export class ManageGameService {
       Game_Icon: '',
       Game_Js_Link: '',
       Game_Css_Link: '',
+      Is_FinishTrial: '0',
     };
     // 根据 GameName 找到游戏所在目录
     const gameDir = this.webgalFs.getPathFromRoot(

@@ -15,6 +15,7 @@ import useTrans from "@/hooks/useTrans";
 import {editorLineHolder} from "@/runtime/WG_ORIGINE_RUNTIME";
 import {eventBus} from "@/utils/eventBus";
 import { setGameChapterId } from '@/store/statusReducer';
+import { updateGameConfigSimpleByKey } from './utils/getArgByKey';
 
 interface IGraphicalEditorProps {
   targetPath: string;
@@ -28,6 +29,7 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
   const showSentence = useValue<Array<boolean>>([]);
   const dispatch = useDispatch();
   const editor = origineStore.getState().status.editor;
+  const { updateGameConfigKey } = updateGameConfigSimpleByKey('Is_FinishTrial', '0')
 
   function updateScene() {
     const url = `/games/${currentEditingGame}/game/scene/${props.targetName}`;
@@ -77,6 +79,10 @@ export default function GraphicalEditor(props: IGraphicalEditorProps) {
 
   function deleteOneSentence(index: number) {
     const arr = splitToArray(sceneText.value);
+    if (arr[index] === 'finishTrial:true;') {
+      // del试玩gameConfig
+      updateGameConfigKey()
+    }
     arr.splice(index, 1);
     submitSceneAndUpdate(mergeToString(arr), index);
     const showSentenceList = [...showSentence.value];

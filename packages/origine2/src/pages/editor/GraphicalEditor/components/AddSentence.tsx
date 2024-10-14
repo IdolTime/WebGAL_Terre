@@ -7,6 +7,7 @@ import stylesGe from '../graphicalEditor.module.scss';
 import { commandType } from "idoltime-parser/src/interface/sceneInterface";
 import useTrans from "@/hooks/useTrans";
 import { Dismiss24Filled, Dismiss24Regular, bundleIcon } from "@fluentui/react-icons";
+import { updateGameConfigSimpleByKey } from '../utils/getArgByKey';
 
 export enum addSentenceType {
   forward,
@@ -21,12 +22,19 @@ interface IAddSentenceProps {
 
 export default function AddSentence(props: IAddSentenceProps) {
   const t = useTrans('editor.graphical.components.addSentence.');
+
+  const { updateGameConfigKey } = updateGameConfigSimpleByKey('Is_FinishTrial', '1')
+
   const DismissIcon = bundleIcon(Dismiss24Filled, Dismiss24Regular);
   const isShowCallout = useValue(false);
   const addSentenceButtons = sentenceEditorConfig.filter(e => e.type !== commandType.comment).map((sentenceConfig, index) => {
     return <div className={stylesAs.sentenceTypeButton} key={`${sentenceConfig.type}-${index}`} onClick={() => {
       props.onChoose(sentenceConfig.initialText());
       isShowCallout.set(false);
+      if (sentenceConfig.component.name === 'FinishTrial') {
+        // save试玩gameConfig
+        updateGameConfigKey()
+      }
     }}>
       <div style={{padding:'1px 0 0 0'}}>
         {sentenceConfig.icon}
