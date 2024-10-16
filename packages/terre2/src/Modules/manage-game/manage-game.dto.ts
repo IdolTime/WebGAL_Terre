@@ -115,6 +115,13 @@ export class RenameDto {
   newName: string;
 }
 
+export class SyncGameIdDto {
+  @ApiProperty({ description: 'The name of the game' })
+  gameName: string;
+  @ApiProperty({ description: 'The gameId of the game' })
+  gameId: string;
+}
+
 export class CheckGameFolderDto {
   @ApiProperty({ description: 'The name of the game' })
   gameName: string;

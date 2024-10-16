@@ -42,6 +42,7 @@ import {
   GameConfigDto,
   MkDirDto,
   RenameDto,
+  SyncGameIdDto,
   UploadFilesDto,
   UploadGameDto,
   UploadPaymentConfigurationDto,
@@ -481,6 +482,41 @@ export class ManageGameController {
       paymentConfigData.gId,
       paymentConfigData.gameName,
       editorToken,
+    );
+  }
+
+  @Post('syncGameId')
+  @ApiOperation({ summary: 'Sync Game Id in config.txt' })
+  @ApiResponse({
+    status: 200,
+    description: 'Game Id synced successfully.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Failed to sync game Id.',
+  })
+  async syncGameId(@Body() options: SyncGameIdDto) {
+    const gameName = options.gameName;
+    const gameId = options.gameId;
+    const gameRootDir = this.webgalFs.getPathFromRoot(
+      `/public/games/${gameName}/game/`,
+    );
+    const configFile: string = await this.webgalFs.readTextFile(
+      `${gameRootDir}/config.txt`,
+    );
+    let updatedText;
+
+    if (/Game_id:\d+;/.test(configFile)) {
+      // 如果 Game_id 存在，替换它
+      updatedText = configFile.replace(/(Game_id:)\d+;/, `$1${gameId};`);
+    } else {
+      // 如果 Game_id 不存在，新增到文件的末尾
+      updatedText = `${configFile.trim()}\nGame_id:${gameId};\n`;
+    }
+
+    return this.webgalFs.updateTextFile(
+      `${gameRootDir}/config.txt`,
+      updatedText,
     );
   }
 }
