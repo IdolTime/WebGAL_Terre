@@ -390,23 +390,6 @@ export class ManageGameService {
       if (payRes.status === 'failed') {
         throw new Error('上传付费配置失败');
       }
-
-      const configFile: string = await this.webgalFs.readTextFile(
-        `${gameRootDir}/config.txt`,
-      );
-      const newGameId = gId;
-      let updatedText;
-      if (/Game_id:\d+;/.test(configFile)) {
-        // 如果 Game_id 存在，替换它
-        updatedText = configFile.replace(/(Game_id:)\d+;/, `$1${newGameId};`);
-      } else {
-        // 如果 Game_id 不存在，新增到文件的末尾
-        updatedText = `${configFile.trim()}\nGame_id:${newGameId};\n`;
-      }
-      await this.webgalFs.updateTextFile(
-        `${gameRootDir}/config.txt`,
-        updatedText,
-      );
     } catch (error) {
       throw new Error(error.message);
     }
@@ -417,6 +400,23 @@ export class ManageGameService {
     let mobileZipFilePath = `${gameDir}/${mobileKey}`;
     const hasUploadedGame = await this.webgalFs.existsFile(hashJSONPath);
     let incrementalUpload = false;
+
+    const configFile: string = await this.webgalFs.readTextFile(
+      `${gameRootDir}/config.txt`,
+    );
+    const newGameId = gId;
+    let updatedText;
+    if (/Game_id:\d+;/.test(configFile)) {
+      // 如果 Game_id 存在，替换它
+      updatedText = configFile.replace(/(Game_id:)\d+;/, `$1${newGameId};`);
+    } else {
+      // 如果 Game_id 不存在，新增到文件的末尾
+      updatedText = `${configFile.trim()}\nGame_id:${newGameId};\n`;
+    }
+    await this.webgalFs.updateTextFile(
+      `${gameRootDir}/config.txt`,
+      updatedText,
+    );
 
     if (hasUploadedGame && changedFiles.length === 0) {
       throw new Error('没有需要上传的文件');
