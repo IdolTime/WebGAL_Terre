@@ -641,6 +641,9 @@ export const zhCn = {
             name: {
               title: "解锁名称",
               placeholder: "解锁的 CG 或 BGM 名称"
+            },
+            poster: {
+              title: "视频封面图片",
             }
           }
         },

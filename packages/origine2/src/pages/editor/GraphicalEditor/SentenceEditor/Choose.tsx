@@ -232,11 +232,11 @@ export default function Choose(props: any) {
 
     let chooseEventIdStr = '';
     if (isChooseEvent) {
-      chooseEventIdStr = ` -chooseEventId=${chooseEventId} -isChooseEvent=${isChooseEvent}`
+      chooseEventIdStr = ` -chooseEventId=${chooseEventId} -isChooseEvent=${isChooseEvent}`;
     }
 
     if (props.chooseValue) {
-      props.onSubmit(optionStr.join('|') + props.isChoose ? chooseEventIdStr : '' + ';');
+      props.onSubmit((optionStr.join('|') + props.isChoose ? chooseEventIdStr : '') + ';');
     } else {
       props.onSubmit(`choose:${optionStr.join('|') + chooseEventIdStr};`);
     }
