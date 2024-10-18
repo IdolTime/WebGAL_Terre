@@ -21,6 +21,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
     keep: !!getArgByKey(props.sentence, "keep"),
     id: getArgByKey(props.sentence, "id"),
     continue: !!getArgByKey(props.sentence, "continue"),
+    poster: getArgByKey(props.sentence, "poster"),
   });
 
   const chooseValueRef = useRef(
@@ -28,74 +29,50 @@ export default function PlayVideo(props: ISentenceEditorProps) {
     '选项:选择场景文件|选项:选择场景文件'
   );
 
-  const initComanRef: any = [];
-  if (configs.value.isSkipOff) {
-    initComanRef.push('-skipOff=true');
-  }
-  if (configs.value.isLoop) {
-    initComanRef.push('-loop=true');
-  }
-  if (configs.value.isChoose) {
-    initComanRef.push(`-choose=${chooseValueRef.current}`);
-  }
-  if (configs.value.continueBgm) {
-    initComanRef.push('-continueBgm=true');
-  }
-  if (configs.value.keep) {
-    initComanRef.push('-keep=true');
-  }
-  if (configs.value.id) {
-    initComanRef.push(`-id=${configs.value.id}`);
-  }
-  if (configs.value.continue) {
-    initComanRef.push('-continue');
-  }
-
-  const commandRef = useRef<any>(initComanRef);
-
   useEffect(() => {
     chooseValueRef.current = (props.sentence.args.filter(ele => ele.key === 'choose')[0]?.value as string) || '选项:选择场景文件|选项:选择场景文件';
   }, [props.sentence]);
 
-  const updateCommandRef = (value: boolean, commandStr: string) => {
-    setTimeout(() => {
-      let res: any = [];
-      if (value) {
-        res = [...commandRef.current, commandStr];
-      } else {
-        res = commandRef.current.filter((item: string) => item !== commandStr);
-      }
-      commandRef.current = res;
-      dispacthProps(res);
-    }, 0);
+  const generateString = () => {
+    let res = '';
+    if (configs.value.isSkipOff) {
+      res += '-skipOff=true ';
+    }
+    if (configs.value.isLoop) {
+      res += '-loop=true ';
+    }
+    if (configs.value.continueBgm) {
+      res += '-continueBgm=true ';
+    }
+    if (configs.value.keep) {
+      res += '-keep=true ';
+    }
+    if (configs.value.id) {
+      res += `-id=${configs.value.id} `;
+    }
+    if (configs.value.poster) {
+      res += `-poster=${configs.value.poster} `;
+    }
+    if (configs.value.isChoose) {
+      res += `-choose=${chooseValueRef.current} `;
+    }
+    if (configs.value.continue) {
+      res += '-continue=true ';
+    }
+    return res;
   };
-
-  const submit = () => updateCommandRef(configs.value.isSkipOff, '-skipOff=true');
-  const submitLoop = () => updateCommandRef(configs.value.isLoop, '-loop=true');
-  const submitChoose = useCallback(() => updateCommandRef( configs.value.isChoose, `-choose=${chooseValueRef.current}`), [configs.value.isChoose]);
-  const submitContinueBgm = () => updateCommandRef(configs.value.continueBgm, '-continueBgm=true');
+  const updateProps = () => {
+    setTimeout(() => {
+      const res = generateString().trim();
+      props.onSubmit(`playVideo:${configs.value.fileName}${res.length ? ' ' + res : ''};`);
+    }, 16);
+  };
 
   const onChoose = (val: string) => {
-    const idx = commandRef.current.findIndex((item: string) => item === `-choose=${chooseValueRef.current}`);
-    const res = commandRef.current.map((ele: any, i: number) => {
-      if (i === idx) {
-        return `-choose=${val}`;
-      }
-      return ele;
-    });
-    commandRef.current = res;
+    configs.set({ ...configs.value, isChoose: !!val.trim() });
     chooseValueRef.current = val;
-    dispacthProps(res);
+    updateProps();
   };
-
-  function dispacthProps(res: any) {
-    const str = res.join(' ');
-    if (res.length > 0) {
-      props.onSubmit(`playVideo:${configs.value.fileName} ${str};`);
-    } else {
-      props.onSubmit(`playVideo:${configs.value.fileName};`);
-    }
-  }
 
   return <div className={styles.sentenceEditorContent}>
     <div className={styles.editItem}>
@@ -106,7 +83,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
           } else {
             configs.set({ ...configs.value, fileName: 'none' });
           }
-          submit();
+          updateProps();
         }} onText="关闭视频" offText="显示视频" isChecked={isNoFile} />
       </CommonOptions>
       <CommonOptions title="视频ID（可选" key="101">
@@ -115,12 +92,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
             const newValue = ev.target.value;
             configs.set({ ...configs.value, id: newValue });
           }}
-          onBlur={() => {
-            updateCommandRef(
-              (configs.value.id as string).trim() !== "", 
-              `-id=${(configs.value.id as string).trim()}`
-            );
-          }}
+          onBlur={updateProps}
           className={styles.sayInput}
           placeholder="视频ID"
           style={{ width: "100%" }}
@@ -133,7 +105,7 @@ export default function PlayVideo(props: ISentenceEditorProps) {
               {(configs.value.fileName) + "\u00a0\u00a0"}
               <ChooseFile sourceBase="video" onChange={(fileDesc) => {
                 configs.set({ ...configs.value, fileName: fileDesc?.name ?? "" });
-                submit();
+                updateProps();
               }}
               extName={[".mp4", ".webm", ".ogg", ".flv"]} />
             </>
@@ -141,37 +113,50 @@ export default function PlayVideo(props: ISentenceEditorProps) {
           <CommonOptions key="3" title='循环播放视频'>
             <TerreToggle title="" onChange={(newValue) => {
               configs.set({ ...configs.value, isLoop: newValue });
-              submitLoop();
+              updateProps();
             }} onText='是' offText='否' isChecked={configs.value.isLoop} />
+          </CommonOptions>
+          <CommonOptions key="poster" title='视频封面图'>
+            <>
+              {configs.value.poster}{"\u00a0"}
+              <ChooseFile
+                sourceBase="image"
+                onChange={(newFile) => {
+                  configs.set({ ...configs.value, poster: newFile?.name ?? "" });
+                  updateProps();
+                }}
+                extName={[".png", ".jpg", ".webp"]}
+              />
+            </>
           </CommonOptions>
           <CommonOptions key="4" title='开启分支选择'>
             <TerreToggle title="" onChange={(newValue) => {
               configs.set({ ...configs.value, isChoose: newValue });
-              submitChoose();
+              updateProps();
             }} onText='是' offText='否' isChecked={configs.value.isChoose} />
           </CommonOptions>
           <CommonOptions key="5" title='继续播放BGM'>
             <TerreToggle title="" onChange={(newValue) => {
               configs.set({ ...configs.value, continueBgm: newValue });
-              submitContinueBgm();
+              updateProps();
             }} onText='继续' offText='暂停' isChecked={configs.value.continueBgm} />
           </CommonOptions>
           <CommonOptions key="102" title='持续播放'>
             <TerreToggle title="" onChange={(newValue) => {
               configs.set({ ...configs.value, keep: newValue });
-              updateCommandRef(newValue, '-keep=true');
+              updateProps();
             }} onText='是' offText='否' isChecked={configs.value.keep} />
           </CommonOptions>
           <CommonOptions key="5" title={t('$editor.graphical.sentences.common.options.goNext.title')}>
             <TerreToggle title="" onChange={(newValue) => {
               configs.set({ ...configs.value, continue: newValue });
-              updateCommandRef(newValue, '-continue');
+              updateProps();
             }} onText={t('$editor.graphical.sentences.common.options.goNext.on')} offText={t('$editor.graphical.sentences.common.options.goNext.off')} isChecked={configs.value.continue} />
           </CommonOptions>
         </>
       )}
     </div>
-    {configs.value.isChoose &&
+    {!!configs.value.isChoose &&
       <Choose 
         chooseValue={chooseValueRef.current} 
         sentence={props.sentence} 

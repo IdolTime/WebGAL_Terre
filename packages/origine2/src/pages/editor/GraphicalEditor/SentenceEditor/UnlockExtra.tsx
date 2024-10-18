@@ -25,16 +25,17 @@ export default function UnlockExtra(props: ISentenceEditorProps) {
     unlockName: getArgByKey(props.sentence, "name").toString() ?? "",
     unlockSeries: getArgByKey(props.sentence, "series").toString() ?? "",
     unlockType: props.sentence.command === commandType.unlockCg ? "unlockCg" : "unlockBgm",
+    poster: getArgByKey(props.sentence, "poster").toString() ?? "",
     isVideo: props.sentence.content.includes(".mp4") || props.sentence.content.includes(".flv"),
   });
 
   const submit = () => {
-    const { fileName, unlockName, unlockSeries, unlockType } = unlockExtraState.value;
+    const { fileName, unlockName, unlockSeries, unlockType, poster } = unlockExtraState.value;
     if (unlockName === "") {
       // props.onSubmit(`${unlockType}:;`);
     }
     
-    props.onSubmit(`${unlockType}:${fileName}${unlockName !== "" ? " -name=" + unlockName : ""}${unlockSeries !== "" ? " -series=" + unlockSeries : ""};`);
+    props.onSubmit(`${unlockType}:${fileName}${unlockName !== "" ? " -name=" + unlockName : ""}${unlockSeries !== "" ? " -series=" + unlockSeries : ""}${poster !== "" ? " -poster=" + poster : ""};`);
   };
 
   return (
@@ -111,6 +112,25 @@ export default function UnlockExtra(props: ISentenceEditorProps) {
             placeholder={t('name.placeholder')}
           />
         </CommonOptions>
+        
+        {unlockExtraState.value.unlockType === "unlockCg"&& unlockExtraState.value.isVideo && (
+          <CommonOptions title={t('poster.title')}>
+            <>
+              {unlockExtraState.value.poster}{"\u00a0"}
+              <ChooseFile
+                sourceBase="image"
+                onChange={(newFile) => {
+                  unlockExtraState.set({
+                    ...unlockExtraState.value,
+                    poster: newFile?.name ?? "",
+                  });
+                  submit();
+                }}
+                extName={[".png", ".jpg", ".webp"]}
+              />
+            </>
+          </CommonOptions>)
+        }
       </div>
     </div>
   );
