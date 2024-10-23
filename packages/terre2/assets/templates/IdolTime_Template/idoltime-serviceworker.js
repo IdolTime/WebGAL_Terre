@@ -28,11 +28,16 @@ self.addEventListener('activate', function (event) {
 // fetch事件
 self.addEventListener('fetch', (event) => {
   // console.log('[Service Worker] Fetching:', event.request.url);
-  const ignoreResources = ['.mp4', '.flv', '.webm', '.txt'];
+  const ignoreResources = {
+    txt: 1,
+    'index.html': 1,
+    css: 1,
+  };
 
   const url = event.request.url;
+  const extName = url.split('.').pop();
   let shouldReturningFromCache = !!(url.match('/assets/') || url.match('/game/')) && url.indexOf('api.') === -1;
-  const shouldIgnore = ignoreResources.some((x) => url.endsWith(x));
+  const shouldIgnore = ignoreResources[extName];
 
   if (shouldReturningFromCache) {
     console.log('%cCACHED: ' + url, 'color: #005CAF; padding: 2px;');
