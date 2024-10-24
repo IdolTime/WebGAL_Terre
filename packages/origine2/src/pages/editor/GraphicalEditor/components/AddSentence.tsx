@@ -31,7 +31,7 @@ export default function AddSentence(props: IAddSentenceProps) {
     return <div className={stylesAs.sentenceTypeButton} key={`${sentenceConfig.type}-${index}`} onClick={() => {
       props.onChoose(sentenceConfig.initialText());
       isShowCallout.set(false);
-      if (sentenceConfig.component.name === 'FinishTrial') {
+      if (sentenceConfig.initialText() === 'finishTrial:true;') {
         // save试玩gameConfig
         updateGameConfigKey()
       }
