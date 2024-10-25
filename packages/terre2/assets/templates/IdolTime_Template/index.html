@@ -90,7 +90,7 @@
       margin-left: 30px;
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-9e64a7b5.js"></script>
+  <script type="module" crossorigin src="./assets/index-b8b81ed7.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -203,6 +203,8 @@
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     const isAndroidDevice = /android/i.test(ua);  // 检测安卓设备
     const isIOSDevice = !!ua.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+    const isSamsungBrowser = /SamsungBrowser/i.test(ua); // 检测是否为三星浏览器
+
     function isSafari() {
       const ua = navigator.userAgent.toLowerCase();
       return ua.includes('safari') && !ua.includes('chrome') && !ua.includes('android');
@@ -249,6 +251,11 @@
       if (title) {
         title.style.width = `${targetWidth}px`;
         title.style.height = `${targetHeight}px`;
+      }
+
+      if (isSamsungBrowser) {
+        // 处理三星浏览器的颜色渲染问题
+        document.documentElement.style.filter = 'none'; // 移除任何 filter 影响
       }
 
       if (w > h) {
@@ -315,6 +322,7 @@
       resize();
       window.onload = resize;
       window.onresize = resize;
+      
       // 监听键盘 F11 事件，全屏时触发页面调整
       document.onkeydown = function (event) {
         const e = event;
