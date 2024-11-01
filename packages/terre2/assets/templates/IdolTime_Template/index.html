@@ -2,7 +2,7 @@
 <html lang="zh-Hans">
 
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <link rel="icon" type="image/x-icon" href="./icons/favicon.ico" id="dynamic-favicon" />
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
   <link rel="manifest" href="./manifest.json" />
@@ -10,32 +10,32 @@
   <title>IdolTime</title>
   <style>
     :root {
-        --scale-factor: 0.5;
+      --scale-factor: 0.5;
 
-        --screenWidth: 2560px;
-        --screenHeight: 1440px;
+      --screenWidth: 2560px;
+      --screenHeight: 1440px;
 
-        --options_checkbox_top: 478px;
-        --options_checkbox_left: 882px;
+      --options_checkbox_top: 478px;
+      --options_checkbox_left: 882px;
 
-        --options_checkbox_window_top: 436px;
-        --options_checkbox_window_left: 1322px;
+      --options_checkbox_window_top: 436px;
+      --options_checkbox_window_left: 1322px;
 
 
-        --options_checkbox_1080P_top: calc(266px*2);
-        --options_checkbox_1080P_left: calc(441px*2);
+      --options_checkbox_1080P_top: calc(266px*2);
+      --options_checkbox_1080P_left: calc(441px*2);
 
-        --options_checkbox_720P_top: calc(266px*2);
-        --options_checkbox_720P_left: calc(640px*2);
+      --options_checkbox_720P_top: calc(266px*2);
+      --options_checkbox_720P_left: calc(640px*2);
 
-        --options_light_slider_top: 750px;
-        --options_light_slider_left: 1244px;
+      --options_light_slider_top: 750px;
+      --options_light_slider_left: 1244px;
 
-        --options_sound_slider_top: 890px;
-        --options_sound_slider_left: 1244px;
+      --options_sound_slider_top: 890px;
+      --options_sound_slider_left: 1244px;
 
-        --options_light_main_top: 1020px;
-        --options_light_main_left: 1244px;
+      --options_light_main_top: 1020px;
+      --options_light_main_left: 1244px;
 
     }
   </style>
@@ -90,7 +90,7 @@
       margin-left: 30px;
     }
   </style>
-  <script type="module" crossorigin src="./assets/index-e02c8bd9.js"></script>
+  <script type="module" crossorigin src="./assets/index-b01e1d27.js"></script>
   <link rel="stylesheet" href="./assets/index.css">
 </head>
 
@@ -98,8 +98,8 @@
   <!--快速显示落地页，让用户感知不到加载的过程-->
   <div id="ebg"></div>
   <div id="Title_enter_page" style="
-            width: 1920px;
-            height: 1080px;
+            width: 2560px;
+            height: 1440px;
             overflow: hidden;
             position: absolute;
             top: 0;
@@ -168,15 +168,13 @@
             <br />
             建议在wifi环境下进行下载，资源文件较多，请耐心等待！
           </div>
-          <img 
-            style="
+          <img style="
               display: block; 
               width: auto; 
               height: 100%; 
               aspect-ratio: 16 / 9;
               object-fit: contain;
-            "
-            src="./assets/loading-enter.webp" />
+            " src="./assets/loading-enter.webp" />
           <img style="position: absolute;width: 100%;height: auto;bottom:10%;left:0;"
             src="./assets/loading-bar-bg.png" />
           <img id="bar-img"
@@ -211,6 +209,56 @@
     }
     window.isSafari = isSafari();
     window.isIOSDevice = isIOSDevice;
+
+    function resizeIOS() {
+      let targetHeight = 1440;
+      let targetWidth = 2560;
+
+      const h = window.innerHeight; // 窗口高度
+      const w = window.innerWidth; // 窗口宽度
+      const zoomH = h / targetHeight; // 以窗口高度为基准的变换比
+      const zoomW = w / targetWidth; // 以窗口宽度为基准的变换比
+      const zoomH2 = w / targetHeight; // 竖屏时以窗口高度为基础的变换比
+      const zoomW2 = h / targetWidth; // 竖屏时以窗口宽度为基础的变换比
+      let mh = (targetHeight - h) / 2; // y轴移动距离
+      let mw = (targetWidth - w) / 2; // x轴移动距离
+      let transform = '';
+      const root = document.getElementById('root'); // 获取根元素
+      const elements = [root];
+
+      if (root) {
+        root.style.width = `${targetWidth}px`;
+        root.style.height = `${targetHeight}px`;
+      }
+
+      if (w > h) {
+        mw = -mw;
+        mh = -mh;
+        if (w * (9 / 16) >= h) {
+          transform = `translate(${mw}px, ${mh}px) scale(${zoomH},${zoomH})`;
+        }
+        if (w * (9 / 16) < h) {
+          transform = `translate(${mw}px, ${mh}px) scale(${zoomW},${zoomW})`;
+        }
+      } else {
+        /**
+         * iOS 不强制旋转
+         */
+        if (isIOSDevice) {
+          const zoomWi = w / targetWidth;
+          transform = `translate(${-mw}px, ${-mh}px) scale(${zoomWi},${zoomWi})`
+        }
+      }
+      for (const element of elements) {
+        if (element) {
+          element.style.transform = transform;
+        }
+      }
+
+      setTimeout(() => {
+        document.getElementById('root')?.scrollIntoView();
+      }, 500);
+    }
 
     function resize() {
       let targetHeight = 1440;
@@ -293,10 +341,10 @@
         /**
          * iOS 不强制旋转
          */
-        // if (isIOSDevice) {
-        //   const zoomWi = w / targetWidth;
-        //   transform = `translate(${-mw}px, ${-mh}px) scale(${zoomWi},${zoomWi})`
-        // }
+        if (isIOSDevice) {
+          const zoomWi = w / targetWidth;
+          transform = `translate(${-mw}px, ${-mh}px) scale(${zoomWi},${zoomWi})`
+        }
       }
       if (ebg) {
         ebg.style.transform = ebgTransform;
@@ -322,7 +370,7 @@
       resize();
       window.onload = resize;
       window.onresize = resize;
-      
+
       // 监听键盘 F11 事件，全屏时触发页面调整
       document.onkeydown = function (event) {
         const e = event;
@@ -332,7 +380,6 @@
           }, 100);
         }
       };
-      
     } else {
       // ios
       const meta = document.createElement('meta');
@@ -343,40 +390,55 @@
       style.type = 'text/css';
       style.textContent = '* { font-synthesis: none !important; }';
       document.head.appendChild(style);
-      const root = document.getElementById('root');
-      root.style.position = 'absolute';
-      root.style.left = '50%';
-      root.style.top = '50%';
-      root.style.transform = 'translate(-50%,-50%)';
+
+      document.addEventListener('fullscreenchange', (event) => {
+        if (document.fullscreenElement) {
+          resizeIOS();
+        } else {
+          console.log('已退出全屏模式');
+          const root = document.getElementById('root');
+          root.style.transform = '';
+        }
+      });
+
+      // 对于旧版浏览器的兼容性
+      document.addEventListener('webkitfullscreenchange', (event) => {
+        if (document.webkitFullscreenElement) {
+          resizeIOS();
+        } else {
+          const root = document.getElementById('root');
+          root.style.transform = '';
+        }
+      });
     }
 
     function setStyleProps() {
       const rootEle = document.documentElement;
-        const MS = 3;
-        const MSTop = 3.2;
+      const MS = 3;
+      const MSTop = 3.2;
 
-        rootEle.style.setProperty('--scale-factor', 0.3333);
+      rootEle.style.setProperty('--scale-factor', 0.3333);
 
-        rootEle.style.setProperty('--options_checkbox_top', `${239 * MS}px`);
-        rootEle.style.setProperty('--options_checkbox_left', `${441 * MS}px`);
+      rootEle.style.setProperty('--options_checkbox_top', `${239 * MS}px`);
+      rootEle.style.setProperty('--options_checkbox_left', `${441 * MS}px`);
 
-        rootEle.style.setProperty('--options_checkbox_window_top', `728px`);
-        rootEle.style.setProperty('--options_checkbox_window_left', `${661 * MS}px`);
+      rootEle.style.setProperty('--options_checkbox_window_top', `728px`);
+      rootEle.style.setProperty('--options_checkbox_window_left', `${661 * MS}px`);
 
-        rootEle.style.setProperty('--options_checkbox_1080P_top', `${266 * MSTop}px`);
-        rootEle.style.setProperty('--options_checkbox_1080P_left', `${441 * MS}px`);
+      rootEle.style.setProperty('--options_checkbox_1080P_top', `${266 * MSTop}px`);
+      rootEle.style.setProperty('--options_checkbox_1080P_left', `${441 * MS}px`);
 
-        rootEle.style.setProperty('--options_checkbox_720P_top', `${266 * MSTop}px`);
-        rootEle.style.setProperty('--options_checkbox_720P_left', `${640 * MS}px`);
+      rootEle.style.setProperty('--options_checkbox_720P_top', `${266 * MSTop}px`);
+      rootEle.style.setProperty('--options_checkbox_720P_left', `${640 * MS}px`);
 
-        rootEle.style.setProperty('--options_light_slider_top', `1148px`);
-        rootEle.style.setProperty('--options_light_slider_left', `${622 * MS}px`);
+      rootEle.style.setProperty('--options_light_slider_top', `1148px`);
+      rootEle.style.setProperty('--options_light_slider_left', `${622 * MS}px`);
 
-        rootEle.style.setProperty('--options_sound_slider_top', `1370px`);
-        rootEle.style.setProperty('--options_sound_slider_left', `${622 * MS}px`);
+      rootEle.style.setProperty('--options_sound_slider_top', `1370px`);
+      rootEle.style.setProperty('--options_sound_slider_left', `${622 * MS}px`);
 
-        rootEle.style.setProperty('--options_light_main_top', `1577px`);
-        rootEle.style.setProperty('--options_light_main_left', `${622 * MS}px`);
+      rootEle.style.setProperty('--options_light_main_top', `1577px`);
+      rootEle.style.setProperty('--options_light_main_left', `${622 * MS}px`);
     }
 
   </script>
@@ -493,15 +555,15 @@
 
       if (hasAllLoaded) {
         dispose();
-        
+
         if (!loadedRef.gameInfo) return;
         if (!progressTimerRef.current) {
           downloadCompleteRef.current = 1;
         } else {
           clearTimeout(progressTimerRef.current);
-            setProgress(100, barImageLayout.width / scaleX, barImageLayout.height / scaleY);
-            setTimeout(() => {
-              show();
+          setProgress(100, barImageLayout.width / scaleX, barImageLayout.height / scaleY);
+          setTimeout(() => {
+            show();
           }, 500);
         }
       }
