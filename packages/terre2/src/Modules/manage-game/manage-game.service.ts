@@ -570,6 +570,7 @@ export class ManageGameService {
       Game_key: string;
       Package_name: string;
       Game_Icon: string;
+      Game_Id: string;
       Game_Js_Link: string;
       Game_Css_Link: string;
       Is_FinishTrial: string;
@@ -580,6 +581,7 @@ export class ManageGameService {
       Game_key: '',
       Package_name: '',
       Game_Icon: '',
+      Game_Id: '',
       Game_Js_Link: '',
       Game_Css_Link: '',
       Is_FinishTrial: '0',

@@ -285,6 +285,10 @@ export default function GameConfig() {
           onChange={(e: string[]) => updateGameConfigArrayByKey('Game_Icon', e)}
         />
       </TabItem>
+      <TabItem title={t("options.gameId")}>
+        <GameConfigEditor key="Game_Id" value={getConfigContentAsString('Game_Id')}
+          onChange={(e: string) => updateGameConfigSimpleByKey('Game_Id', e)}/>
+      </TabItem>
       <TabItem title={t("options.gameJsLink")}>
         <GameConfigEditor key="Game_Js_Link" value={getConfigContentAsString('Game_Js_Link')}
           onChange={(e: string) => updateGameConfigSimpleByKey('Game_Js_Link', e)}/>
